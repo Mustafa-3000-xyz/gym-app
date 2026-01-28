@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+/* ====== */
+:root {
+    --primary: #3b82f6;
+    --orange: #d7573b;
+}
+
+body {
+    background-color: #ECECEC;
+}
