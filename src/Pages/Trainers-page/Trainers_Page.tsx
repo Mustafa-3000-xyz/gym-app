@@ -4,15 +4,16 @@ import { useEffect, useState } from "react";
 import { getTrainerById, getTrainers } from "@/db";
 // ========================================================== //
 interface trainer {
-    id: number;
+    trainerId: number;
+    isSubscriptionActive: boolean;
+    activeSessionsList: number[];
     firstName: string;
     lastName: string;
     phone: string;
     address: string;
-    price: number;
-    sessionsCount: number;
-    isSubscriptionActive: boolean;
     subscriptionName: string;
+    sessionsCount: number;
+    price: number;
     subscriptionStart: string;
     subscriptionEnd: string;
 }
@@ -23,17 +24,17 @@ export default function Trainers_Page() {
     const [trainersList, setTrainersList] = useState<trainer[]>([]);
     const [allPrice, setAllPrice] = useState(0);
 
-    function clickOnAddTrainerBtn() {
+    function addTrianer() {
         setIsShowAddTrainer(true);
     }
 
-    async function showDetailsTrainer(id: number){
+    async function showDetailsTrainer(id: number) {
         const trainer = await getTrainerById(id);
         console.log(trainer);
     }
 
     async function getAllTrainers() {
-        const data = await getTrainers();
+        const data = await getTrainers();        
         setTrainersList(data as trainer[]);
     }
 
@@ -62,7 +63,7 @@ export default function Trainers_Page() {
 
             <div className="flex items-center gap-3">
                 <button
-                    onClick={clickOnAddTrainerBtn}
+                    onClick={addTrianer}
                     className={`
                         transition duration-500 hover:bg-blue-600
                         flex items-center gap-2 bg-[var(--primary)] cursor-pointer text-white py-2 px-5 rounded-sm
@@ -121,11 +122,11 @@ export default function Trainers_Page() {
             <tbody>
                 {
                     trainersList.map(ele => <tr
-                        key={ele.id}
-                        onClick={()=> showDetailsTrainer(ele.id)}
+                        key={ele.trainerId}
+                        onClick={() => showDetailsTrainer(ele.trainerId)}
                         className="text-center bg-slate-100 cursor-pointer transition duration-100 hover:bg-[var(--primary)] hover:text-white"
                     >
-                        <td>{ele.id}</td>
+                        <td>{ele.trainerId}</td>
                         <td className="p-2 py-4">{ele.firstName} {ele.lastName}</td>
                         <td className="p-2 py-4">{ele.subscriptionName}</td>
                         <td className="p-2 py-4">{ele.subscriptionStart}</td>

@@ -5,25 +5,26 @@ let db: Awaited<ReturnType<typeof Database.load>> | null = null;
 export async function getDb() {
     if (!db) {
         try {
-            db = await Database.load("sqlite:app_v5.db");
+            db = await Database.load("sqlite:app_v10.db");
 
             await db.execute(`
                 CREATE TABLE IF NOT EXISTS trainers (
-                    id INTEGER PRIMARY KEY, 
+                    trainerId INTEGER PRIMARY KEY, 
+                    isSubscriptionActive BOOLEAN,
+                    activeSessionsList ARRAY,
                     firstName TEXT,
                     lastName TEXT,
-                    phone TEXT,
+                    phone INTEGER,
                     address TEXT,
                     subscriptionName TEXT,
                     sessionsCount INTEGER,
-                    isSubscriptionActive BOOLEAN,
-                    price REAL,
+                    price INTEGER,
                     subscriptionStart TEXT,
                     subscriptionEnd TEXT
                 )
             `);
         } catch (error) {
-            console.error("Error : ", error);
+            console.error(error);
             throw error;
         }
     }
@@ -33,20 +34,21 @@ export async function getDb() {
 export async function addTrainer(data: any) {
     const database = await getDb();
     const query = `INSERT INTO trainers (
-        id, firstName, lastName, phone, address, 
-        subscriptionName, sessionsCount, isSubscriptionActive, price, 
-        subscriptionStart, subscriptionEnd
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        trainerId, isSubscriptionActive, activeSessionsList, firstName, lastName, 
+        phone, address, subscriptionName, sessionsCount, 
+        price, subscriptionStart, subscriptionEnd
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     const values = [
-        Number(data.trainerId),
+        data.trainerId,
+        data.isSubscriptionActive,
+        data.activeSessionsList,
         data.firstName,
         data.lastName,
-        data.phone?.toString() || "",
+        data.phone,
         data.address,
         data.subscriptionName,
         data.sessionsCount,
-        data.isSubscriptionActive == "true" ? true : false,
         data.price,
         data.subscriptionStart,
         data.subscriptionEnd
@@ -63,7 +65,7 @@ export async function getTrainers() {
 export async function getTrainerById(id: number) {
     const database = await getDb();
     const result = await database.select<any[]>(
-        "SELECT * FROM trainers WHERE id = ?", 
+        "SELECT * FROM trainers WHERE trainerId = ?",
         [id]
     );
 

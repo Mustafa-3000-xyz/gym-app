@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { regexPhone, regexTranierName } from "@/REGEX";
+import { useState } from "react";
 // ========================================================== //
 interface Trainer_Info_Form_Props {
     setGetFirstName: (x: string) => void,
@@ -10,119 +11,112 @@ interface Trainer_Info_Form_Props {
 export default function Trainer_Info_Form(
     { setGetFirstName, setGetLastName, setGetPhone, setGetAddress }: Trainer_Info_Form_Props
 ) {
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [phone, setPhone] = useState(0);
-    const [address, setAddress] = useState("");
     const [messageError, setMessageError] = useState({
-        firstNameError: "",
-        lastNameError: ""
+        firstName: "",
+        lastName: "",
+        phone: ""
     });
 
 
     function checkInpName(input: HTMLInputElement) {
-        const REGEX = /\s/g;
         const getAttrInInp = input.getAttribute("inp-type");
 
-        if (input.value.match(REGEX) && getAttrInInp == "firstName") {
+        if (input.value.match(regexTranierName) && getAttrInInp == "firstName") {
             setMessageError(prev => ({
                 ...prev,
-                firstNameError: "قم بوضع اسم واحد فقط"
+                firstName: "لا تضع المسافات"
             }));
 
             input.classList.add("!bg-red-600");
         }
-        else if (!input.value.match(REGEX) && getAttrInInp == "firstName") {
+        else if (!input.value.match(regexTranierName) && getAttrInInp == "firstName") {
             setMessageError(prev => ({
                 ...prev,
-                firstNameError: ""
+                firstName: ""
             }));
 
+            setGetFirstName(input.value);
             input.classList.remove("!bg-red-600");
         }
 
-        if (input.value.match(REGEX) && getAttrInInp == "lastName") {
+        if (input.value.match(regexTranierName) && getAttrInInp == "lastName") {
             setMessageError(prev => ({
                 ...prev,
-                lastNameError: "قم بوضع اسم واحد فقط"
+                lastName: "لا تضع المسافات"
             }));
 
             input.classList.add("!bg-red-600");
         }
-        else if (!input.value.match(REGEX) && getAttrInInp == "lastName") {
+        else if (!input.value.match(regexTranierName) && getAttrInInp == "lastName") {
             setMessageError(prev => ({
                 ...prev,
-                lastNameError: ""
+                lastName: ""
             }));
 
+            setGetLastName(input.value);
             input.classList.remove("!bg-red-600");
         }
     }
 
+    function checkInpNumber(input: HTMLInputElement) {
+        if (input.value.match(regexPhone) || input.value == "") {
+            input.classList.remove("!bg-red-600");
 
-    useEffect(function () {
-        if (messageError.firstNameError == "") {
-            setGetFirstName(firstName);
+            setMessageError(prev => ({
+                ...prev,
+                phone: ""
+            }));
         } else {
-            setGetFirstName("");
+            input.classList.add("!bg-red-600");
+
+            setMessageError(prev => ({
+                ...prev,
+                phone: "يجب ان يكون 10 ارقام فقط"
+            }));
         }
 
-        if (messageError.lastNameError == "") {
-            setGetLastName(lastName);
-        } else {
-            setGetLastName("");
-        }
-
-        setGetPhone(phone);
-        setGetAddress(address);
-    }, [firstName, lastName, messageError.firstNameError, messageError.lastNameError, phone, address]);
-
+        setGetPhone(+input.value);
+    }
 
 
     return <form className="px-3">
         {/* First name & Last name */}
         <div className="flex justify-center gap-3 mb-5">
-            <div className=" flex flex-col">
+            <div className="flex flex-col">
                 <h4 className="font-bold">الاسم الاول</h4>
                 <input
-                    onChange={(e) => {
-                        setFirstName(e.target.value)
-                        checkInpName(e.target);
-                    }}
+                    onChange={(e) => checkInpName(e.target)}
                     inp-type="firstName"
                     type="text"
                     className="bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0"
                 />
 
                 <span className="text-red-600">
-                    {messageError.firstNameError}
+                    {messageError.firstName}
                 </span>
             </div>
 
             <div className="flex flex-col">
                 <h4 className="font-bold">الاسم الثاني</h4>
                 <input
-                    onChange={(e) => {
-                        setLastName(e.target.value);
-                        checkInpName(e.target);
-                    }}
+                    onChange={(e) => checkInpName(e.target)}
                     inp-type="lastName"
                     type="text"
                     className=" bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0"
                 />
 
                 <span className="text-red-600">
-                    {messageError.lastNameError}
+                    {messageError.lastName}
                 </span>
             </div>
         </div>
 
         {/* Phone number & Adrees */}
         <div className="flex justify-center gap-3">
-            <div>
+            <div className="flex flex-col">
                 <h4 className="font-bold">رقم الموبايل (اختياري)</h4>
                 <input
-                    onChange={(e) => setPhone(Number(e.target.value))}
+                    onChange={(e) => checkInpNumber(e.target)}
                     type="number"
                     className={`
                             bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0
@@ -131,12 +125,16 @@ export default function Trainer_Info_Form(
                             [&::-webkit-outer-spin-button]:appearance-none"
                         `}
                 />
+
+                <span className="text-red-600">
+                    {messageError.phone}
+                </span>
             </div>
 
             <div>
                 <h4 className="font-bold">العنوان (اختياري)</h4>
                 <input
-                    onChange={(e) => setAddress(e.target.value)}
+                    onChange={(e) => setGetAddress(e.target.value)}
                     type="text"
                     className=" bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0"
                 />

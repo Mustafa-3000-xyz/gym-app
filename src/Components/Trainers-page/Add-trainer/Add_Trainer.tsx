@@ -6,6 +6,7 @@ import Trainer_Info_Form from "./Trainer-info-form/Trainer_Info_Form";
 import Subscription_Info_Form from "./Subscription-info/Subscription_Info_Form";
 import Date_Info from "./Subscription-info/Date-info/Date_Info";
 import Add_Subscription_From_Settings from "./Subscription-info/Add-subscription-from-settings/Add_Subscription_From_Settings";
+import { regexPhone } from "@/REGEX";
 // ========================================================== //
 interface Add_Trainer_Props {
     setIsShowAddTrainer: (x: boolean) => void,
@@ -18,7 +19,7 @@ export default function Add_Trainer(
     // Get trainer info
     const [getFirstName, setGetFirstName] = useState("");
     const [getLastName, setGetLastName] = useState("");
-    const [getPhone, setGetPhone] = useState(0);
+    const [getPhone, setGetPhone] = useState<string | number>(0);
     const [getAddress, setGetAddress] = useState("");
 
     // Get subscription info
@@ -27,17 +28,13 @@ export default function Add_Trainer(
     const [price, setPrice] = useState(0);
 
     // Get date info
-    const [getSubscriptionStart, setGetSubscriptionStart] = useState("");
-    const [getSubscriptionEnd, setGetSubscriptionEnd] = useState("");
+    const [getSubscriptionStart, setGetSubscriptionStart] = useState<string | null>(null);
+    const [getSubscriptionEnd, setGetSubscriptionEnd] = useState<string | null>(null);
 
     // These variables
     const [trainerId, setTrainerId] = useState("");
     const [isAllInfoComplete, setIsAllInfoComplete] = useState(false);
 
-
-    function closeThisWinow() {
-        setIsShowAddTrainer(false);
-    }
 
     async function saveTrainerInfo() {
         if (isAllInfoComplete) {
@@ -45,15 +42,15 @@ export default function Add_Trainer(
                 trainerId,
                 isSubscriptionActive: true,
                 activeSessionsList: [],
-                getFirstName,
-                getLastName,
-                getPhone,
-                getAddress,
+                firstName: getFirstName,
+                lastName: getLastName,
+                phone: getPhone,
+                address: getAddress,
                 subscriptionName,
                 sessionsCount,
                 price,
-                getSubscriptionStart,
-                getSubscriptionEnd,
+                subscriptionStart: getSubscriptionStart,
+                subscriptionEnd: getSubscriptionEnd,
             });
 
             getAllTrainers();
@@ -61,7 +58,12 @@ export default function Add_Trainer(
         }
     }
 
+    function closeThisWinow() {
+        setIsShowAddTrainer(false);
+    }
 
+
+    // This for get random id and run saveTrainerInfo function when click on enter
     useEffect(function () {
         const id = Array.from({ length: 4 }, function () {
             return Math.trunc(Math.random() * 10)
@@ -76,7 +78,7 @@ export default function Add_Trainer(
         })
     }, []);
 
-
+    // This check the trainer info is compolete or no
     useEffect(() => {
         if (
             getFirstName &&
@@ -84,7 +86,8 @@ export default function Add_Trainer(
             subscriptionName &&
             sessionsCount &&
             price &&
-            getSubscriptionStart && getSubscriptionEnd
+            getSubscriptionStart && getSubscriptionEnd &&
+            getPhone == 0 || new String(getPhone).match(regexPhone)
         ) {
             setIsAllInfoComplete(true);
         } else {
@@ -96,10 +99,9 @@ export default function Add_Trainer(
         subscriptionName,
         sessionsCount,
         price,
-        getSubscriptionStart,
-        getSubscriptionEnd
+        getPhone,
+        getSubscriptionStart, getSubscriptionEnd
     ]);
-
 
 
     return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none">
