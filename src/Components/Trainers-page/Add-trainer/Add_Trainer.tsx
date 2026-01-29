@@ -81,13 +81,15 @@ export default function Add_Trainer(
     // This check the trainer info is compolete or no
     useEffect(() => {
         if (
+            (
+                getPhone == 0 || new String(getPhone).match(regexPhone)
+            ) &&
             getFirstName &&
             getLastName &&
             subscriptionName &&
             sessionsCount &&
             price &&
-            getSubscriptionStart && getSubscriptionEnd &&
-            getPhone == 0 || new String(getPhone).match(regexPhone)
+            getSubscriptionStart && getSubscriptionEnd
         ) {
             setIsAllInfoComplete(true);
         } else {
