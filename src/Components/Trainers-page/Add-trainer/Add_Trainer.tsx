@@ -173,9 +173,10 @@ export default function Add_Trainer(
                 />
             </div>
 
+            {/* Trainer id */}
             <div className="mb-5 text-center">
                 {
-                    trainerId ?
+                    isAllInfoComplete ?
                         <>
                             <span>
                                 ال ID الخاص بالمستخدم هو :
