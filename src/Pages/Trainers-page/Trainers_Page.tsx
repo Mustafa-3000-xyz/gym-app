@@ -1,7 +1,7 @@
 import { ListFilter, Plus, Search } from "lucide-react";
 import Add_Trainer from "../../Components/Trainers-page/Add-trainer/Add_Trainer";
 import { useEffect, useState } from "react";
-import { getTrainerById, getTrainers } from "@/db";
+import { getTrainerById, getTrainers } from "@/trainerDb";
 // ========================================================== //
 interface trainer {
     trainerId: number;

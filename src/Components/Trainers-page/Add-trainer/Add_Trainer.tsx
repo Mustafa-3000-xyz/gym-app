@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 import { Presentation, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { addTrainer } from "@/db";
+import { addTrainer } from "@/trainerDb";
 import Trainer_Info_Form from "./Trainer-info-form/Trainer_Info_Form";
 import Date_Info from "./Subscription-info/Date-info/Date_Info";
 import Add_Subscription_From_Settings from "./Subscription-info/Add-subscription-from-settings/Add_Subscription_From_Settings";
 import { regexPhone } from "@/REGEX";
-import Subscription_Info_Form from "./Subscription-info/Subscription-info-form/Subscription_Info_Form";
+import Subscription_Info_Form from "./Subscription-info/Subscription_Info_Form";
 import { Flip, toast } from "react-toastify";
 // ========================================================== //
 interface Add_Trainer_Props {

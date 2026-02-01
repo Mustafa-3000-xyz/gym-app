@@ -1,35 +1,33 @@
 import Database from "@tauri-apps/plugin-sql";
+// ========================================================== //
+async function getDb() {
+    const db = await Database.load("sqlite:app-gym-db.db");
 
-let db: Awaited<ReturnType<typeof Database.load>> | null = null;
-
-export async function getDb() {
-    if (!db) {
-        try {
-            db = await Database.load("sqlite:app_v10.db");
-
-            await db.execute(`
-                CREATE TABLE IF NOT EXISTS trainers (
-                    trainerId INTEGER PRIMARY KEY, 
-                    isSubscriptionActive BOOLEAN,
-                    activeSessionsList ARRAY,
-                    firstName TEXT,
-                    lastName TEXT,
-                    phone INTEGER,
-                    address TEXT,
-                    subscriptionName TEXT,
-                    sessionsCount INTEGER,
-                    price INTEGER,
-                    subscriptionStart TEXT,
-                    subscriptionEnd TEXT
-                )
-            `);
-        } catch (error) {
-            console.error(error);
-            throw error;
-        }
+    try {
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS trainers (
+                trainerId INTEGER PRIMARY KEY, 
+                isSubscriptionActive BOOLEAN,
+                activeSessionsList TEXT,
+                firstName TEXT,
+                lastName TEXT,
+                phone INTEGER,
+                address TEXT,
+                subscriptionName TEXT,
+                sessionsCount INTEGER,
+                price INTEGER,
+                subscriptionStart TEXT,
+                subscriptionEnd TEXT
+            )
+        `);
+    } catch (error) {
+        console.error("DB Error:", error);
+        throw error;
     }
+
     return db;
 }
+
 
 export async function addTrainer(data: any) {
     const database = await getDb();
@@ -69,9 +67,5 @@ export async function getTrainerById(id: number) {
         [id]
     );
 
-    if (result.length > 0) {
-        return result[0];
-    }
-
-    return null;
+    return result;
 }
