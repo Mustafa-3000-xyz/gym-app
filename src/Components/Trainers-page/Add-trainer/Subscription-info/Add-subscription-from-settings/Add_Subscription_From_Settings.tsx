@@ -5,7 +5,7 @@ export default function Add_Subscription_From_Settings() {
         <StyledWrapper className=' w-3/4'>
             <button className="btn-96 w-full font-bold">
                 <span className='border border-slate-200'>
-                    اختر نوع الاشتراك من الاعدادات
+                    قائمة الإشتراكات 
                 </span>
             </button>
         </StyledWrapper>
