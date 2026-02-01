@@ -46,7 +46,7 @@ const StyledWrapper = styled.div`
     }
 
     .btn-96:after{
-        background: #ccc;
+        background: #ededed;
         content: "";
         height: 100%;
         left: 0;

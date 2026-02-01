@@ -116,19 +116,19 @@ export default function Trainer_Info_Form(
         <div className="flex justify-center gap-3">
             <div className="flex flex-col">
                 <h4 className="font-bold">رقم الموبايل (اختياري)</h4>
-                <div className="bg-slate-100 border border-slate-200 rounded-lg">
+                <div className="bg-slate-100 border border-slate-200 rounded-lg relative">
                     <input
                         onChange={(e) => checkInpNumber(e.target)}
                         type="number"
                         className={`
-                            p-2 w-[84%]  focus:outline-0
+                            p-2 w-[80%] focus:outline-0
                             appearance-none
                             [&::-webkit-inner-spin-button]:appearance-none
                             [&::-webkit-outer-spin-button]:appearance-none"
                         `}
                     />
 
-                    <span className=" ms-1">
+                    <span className="absolute top-2 left-2">
                         20+
                     </span>
                 </div>

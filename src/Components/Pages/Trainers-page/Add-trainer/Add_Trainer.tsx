@@ -136,7 +136,7 @@ export default function Add_Trainer(
             }}
         >
             {/* Title & x */}
-            <div className="px-3 flex justify-between mb-3 pt-5">
+            <div className="px-5 flex justify-between items-center mb-3 bg-black/5 p-5 border-b border-b-slate-300">
                 <div>
                     <h3 className=" font-bold text-lg">
                         إضافة متدرب جديد
@@ -144,10 +144,8 @@ export default function Add_Trainer(
                     <Discription discription="يمكنك الان إضافة اي متدرب انت تريده" />
                 </div>
 
-                <X size={23} onClick={closeThisWinow} className="cursor-pointer text-red-700" />
+                <X size={23} onClick={closeThisWinow} className="cursor-pointer text-red-500" />
             </div>
-
-            <div className="h-0.5 w-full bg-slate-200"></div>
 
             {/* Trainer info */}
             <div className="my-6">
