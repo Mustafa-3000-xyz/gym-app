@@ -67,5 +67,7 @@ export async function getTrainerById(id: number) {
         [id]
     );
 
-    return result;
+
+
+    return result[0];
 }

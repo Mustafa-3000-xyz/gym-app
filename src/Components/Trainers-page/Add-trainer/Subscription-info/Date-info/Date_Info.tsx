@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import { Date_Picker } from "./Date-picker/Date_Picker";
 import { format, parse, differenceInDays } from "date-fns";
+import { Date_Info_Props } from "@/Pages/Trainers-page/trainersTypes";
 // ========================================================== //
-interface Date_Info_Props {
-    setGetSubscriptionStart: (x: string) => void,
-    setGetSubscriptionEnd: (x: string) => void,
-}
-
 export default function Date_Info(
     { setGetSubscriptionStart, setGetSubscriptionEnd}: Date_Info_Props
 ) {

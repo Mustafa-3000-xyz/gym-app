@@ -1,15 +1,14 @@
+import { Trainer_Info_Form_Props } from "@/Pages/Trainers-page/trainersTypes";
 import { regexPhone, regexTranierName } from "@/REGEX";
 import { useState } from "react";
 // ========================================================== //
-interface Trainer_Info_Form_Props {
-    setGetFirstName: (x: string) => void,
-    setGetLastName: (x: string) => void,
-    setGetPhone: (x: number) => void,
-    setGetAddress: (x: string) => void,
-}
-
 export default function Trainer_Info_Form(
-    { setGetFirstName, setGetLastName, setGetPhone, setGetAddress }: Trainer_Info_Form_Props
+    {
+        setGetFirstName,
+        setGetLastName,
+        setGetPhone,
+        setGetAddress
+    }: Trainer_Info_Form_Props
 ) {
     const [messageError, setMessageError] = useState({
         firstName: "",

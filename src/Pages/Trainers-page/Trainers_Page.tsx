@@ -1,55 +1,32 @@
 import { ListFilter, Plus, Search } from "lucide-react";
 import Add_Trainer from "../../Components/Trainers-page/Add-trainer/Add_Trainer";
 import { useEffect, useState } from "react";
-import { getTrainerById, getTrainers } from "@/trainerDb";
+import All_Trainers from "@/Components/Trainers-page/All-trainers/All_Trainers";
+import { getTrainers } from "@/trainerDb";
+import { trainer } from "./trainersTypes";
+import Show_Traine_Details from "@/Components/Trainers-page/Show-traine-details/Show_Traine_Details";
 // ========================================================== //
-interface trainer {
-    trainerId: number;
-    isSubscriptionActive: boolean;
-    activeSessionsList: number[];
-    firstName: string;
-    lastName: string;
-    phone: string;
-    address: string;
-    subscriptionName: string;
-    sessionsCount: number;
-    price: number;
-    subscriptionStart: string;
-    subscriptionEnd: string;
-}
-
-
 export default function Trainers_Page() {
-    const [isShowAddTrainer, setIsShowAddTrainer] = useState(false);
+    const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
+    const [isShowTrainerDetails, setIsShowTrainerDetails] = useState<boolean>(false);
+
     const [trainersList, setTrainersList] = useState<trainer[]>([]);
-    const [allPrice, setAllPrice] = useState(0);
+    const [getTrainerDetails, setGetTrainerDetails] = useState<trainer | null>(null);
+
 
     function addTrianer() {
         setIsShowAddTrainer(true);
     }
 
-    async function showDetailsTrainer(id: number) {
-        const trainer = await getTrainerById(id);
-        console.log(trainer);
-    }
-
     async function getAllTrainers() {
-        const data = await getTrainers();        
+        const data = await getTrainers();
         setTrainersList(data as trainer[]);
     }
-
 
 
     useEffect(function () {
         getAllTrainers();
     }, []);
-
-    useEffect(function () {
-        if (trainersList.length == 0) return;
-
-        const totalPrice = trainersList.reduce((sum, ele) => sum += ele.price, 0);
-        setAllPrice(totalPrice);
-    }, [trainersList]);
 
     return <section>
         {/* Title and discription and add new trainer */}
@@ -107,69 +84,26 @@ export default function Trainers_Page() {
         </div>
 
         {/* Table for show some trainers */}
-        <table className="w-full mt-10 border-separate select-none">
-            <thead>
-                <tr className="bg-black/5 text-center">
-                    <td className="rounded-tr-2xl">ID</td>
-                    <td className="p-2 py-4">المتدرب</td>
-                    <td className="p-2 py-4">الاشتراك</td>
-                    <td className="p-2 py-4">بداية الاشتراك</td>
-                    <td className="p-2 py-4">نهاية الاشتراك</td>
-                    <td className="p-2 py-4 rounded-tl-2xl">الحاله</td>
-                </tr>
-            </thead>
-
-            <tbody>
-                {
-                    trainersList.map(ele => <tr
-                        key={ele.trainerId}
-                        onClick={() => showDetailsTrainer(ele.trainerId)}
-                        className="text-center bg-slate-100 cursor-pointer transition duration-100 hover:bg-[var(--primary)] hover:text-white"
-                    >
-                        <td>{ele.trainerId}</td>
-                        <td className="p-2 py-4">{ele.firstName} {ele.lastName}</td>
-                        <td className="p-2 py-4">{ele.subscriptionName}</td>
-                        <td className="p-2 py-4">{ele.subscriptionStart}</td>
-                        <td className="p-2 py-4">{ele.subscriptionEnd}</td>
-                        <td className="p-2 py-4">
-                            <span className={`
-                                    ${ele.isSubscriptionActive ?
-                                    "bg-emerald-100 text-emerald-500"
-                                    :
-                                    "bg-yellow-100 text-yellow-500"
-                                }
-                                    p-1 px-2 rounded-full
-                                `}
-                            >
-                                {
-                                    ele.isSubscriptionActive ?
-                                        "مفعل"
-                                        :
-                                        "معلق"
-                                }
-                            </span>
-                        </td>
-                    </tr>)
-                }
-            </tbody>
-
-            <tfoot>
-                <tr>
-                    <td className="p-4 bg-black/5 rounded-b-2xl text-center" colSpan={7}>
-                        <span>مجموع ارباح الاشتراكات الحاليه : </span>
-                        <span className=" text-emerald-600">
-                            {allPrice}$
-                        </span>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
+        <All_Trainers
+            trainersList={trainersList}
+            setGetTrainerDetails={setGetTrainerDetails}
+            setIsShowTrainerDetails={setIsShowTrainerDetails}
+        />
 
         {
             isShowAddTrainer ?
                 <Add_Trainer
                     getAllTrainers={getAllTrainers}
                     setIsShowAddTrainer={setIsShowAddTrainer}
+                />
+                : null
+        }
+
+        {
+            isShowTrainerDetails ?
+                <Show_Traine_Details
+                    trainer={getTrainerDetails as trainer}
+                    setIsShowTrainerDetails={setIsShowTrainerDetails}
                 />
                 : null
         }

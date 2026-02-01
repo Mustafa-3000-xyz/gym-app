@@ -8,12 +8,8 @@ import Add_Subscription_From_Settings from "./Subscription-info/Add-subscription
 import { regexPhone } from "@/REGEX";
 import Subscription_Info_Form from "./Subscription-info/Subscription-info-form/Subscription_Info_Form";
 import { Flip, toast } from "react-toastify";
+import { Add_Trainer_Props } from "@/Pages/Trainers-page/trainersTypes";
 // ========================================================== //
-interface Add_Trainer_Props {
-    setIsShowAddTrainer: (x: boolean) => void,
-    getAllTrainers: () => void
-}
-
 export default function Add_Trainer(
     { setIsShowAddTrainer, getAllTrainers }: Add_Trainer_Props
 ) {

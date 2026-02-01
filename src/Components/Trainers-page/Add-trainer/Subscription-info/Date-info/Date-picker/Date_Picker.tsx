@@ -8,15 +8,14 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import { Date_Picker_Props } from "@/Pages/Trainers-page/trainersTypes";
 // ========================================================== //
-interface Date_Picker_Props {
-    subscriptionEnd: string,
-    subscriptionStart: string,
-    setSubscriptionEnd: (x: string) => void
-}
-
 export function Date_Picker(
-    { subscriptionStart, subscriptionEnd, setSubscriptionEnd }: Date_Picker_Props
+    {
+        subscriptionStart,
+        subscriptionEnd,
+        setSubscriptionEnd
+    }: Date_Picker_Props
 ) {
     const [open, setOpen] = React.useState(false)
     const [date, setDate] = React.useState<Date | undefined>(undefined);

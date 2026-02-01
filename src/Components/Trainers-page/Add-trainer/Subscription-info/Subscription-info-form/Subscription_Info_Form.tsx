@@ -1,13 +1,5 @@
-interface Subscription_Info_Form_Props{
-    subscriptionName: string,
-    sessionsCount: number,
-    price: number,
-    setSubscriptionName: (x: string)=> void,
-    setSessionsCount: (x: number)=> void,
-    setPrice: (x: number)=> void,
-}
-
-
+import { Subscription_Info_Form_Props } from "@/Pages/Trainers-page/trainersTypes";
+// ========================================================== //
 export default function Subscription_Info_Form(
     {
         subscriptionName,
