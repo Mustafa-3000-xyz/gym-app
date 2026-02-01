@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Presentation, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { addTrainer } from "@/trainerDb";
+import { addTrainer } from "@/db/trainerDb";
 import Trainer_Info_Form from "./Trainer-info-form/Trainer_Info_Form";
 import Date_Info from "./Subscription-info/Date-info/Date_Info";
 import Add_Subscription_From_Settings from "./Subscription-info/Add-subscription-from-settings/Add_Subscription_From_Settings";

@@ -2,7 +2,7 @@ import { ListFilter, Plus, Search } from "lucide-react";
 import Add_Trainer from "../../Components/Trainers-page/Add-trainer/Add_Trainer";
 import { useEffect, useState } from "react";
 import All_Trainers from "@/Components/Trainers-page/All-trainers/All_Trainers";
-import { getTrainers } from "@/trainerDb";
+import { getTrainers } from "@/db/trainerDb";
 import { trainer } from "./trainersTypes";
 import Show_Traine_Details from "@/Components/Trainers-page/Show-traine-details/Show_Traine_Details";
 // ========================================================== //

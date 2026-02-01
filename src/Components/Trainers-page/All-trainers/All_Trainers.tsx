@@ -1,5 +1,5 @@
 import { All_Trainers_Props, trainer } from "@/Pages/Trainers-page/trainersTypes";
-import { getTrainerById } from "@/trainerDb";
+import { getTrainerById } from "@/db/trainerDb";
 import { useEffect, useState } from "react";
 // ========================================================== //
 export default function All_Trainers(
