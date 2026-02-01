@@ -59,15 +59,17 @@ export default function Trainer_Info_Form(
     }
 
     function checkInpNumber(input: HTMLInputElement) {
+        const parent = input.parentNode as HTMLDivElement;
+
         if (input.value.match(regexPhone) || input.value == "") {
-            input.classList.remove("!bg-red-600");
+            parent.classList.remove("!bg-red-600");
 
             setMessageError(prev => ({
                 ...prev,
                 phone: ""
             }));
         } else {
-            input.classList.add("!bg-red-600");
+            parent.classList.add("!bg-red-600");
 
             setMessageError(prev => ({
                 ...prev,

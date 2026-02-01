@@ -7,6 +7,7 @@ import Date_Info from "./Subscription-info/Date-info/Date_Info";
 import Add_Subscription_From_Settings from "./Subscription-info/Add-subscription-from-settings/Add_Subscription_From_Settings";
 import { regexPhone } from "@/REGEX";
 import Subscription_Info_Form from "./Subscription-info/Subscription-info-form/Subscription_Info_Form";
+import { Flip, toast } from "react-toastify";
 // ========================================================== //
 interface Add_Trainer_Props {
     setIsShowAddTrainer: (x: boolean) => void,
@@ -55,7 +56,22 @@ export default function Add_Trainer(
 
             getAllTrainers();
             closeThisWinow();
+            showAlert();
         }
+    }
+
+    function showAlert() {
+        toast.success(`Will done, ID ${trainerId}`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Flip,
+        });
     }
 
     function closeThisWinow() {
@@ -71,11 +87,14 @@ export default function Add_Trainer(
 
         setTrainerId(id);
 
-        window.addEventListener("keydown", function (e) {
+        function event(e: KeyboardEvent) {
             if (e.key == "Enter") {
                 saveTrainerInfo();
             }
-        })
+        }
+
+        window.addEventListener("keydown", event);
+        () => window.removeEventListener("keydown", event);
     }, []);
 
     // This check the trainer info is compolete or no
@@ -175,24 +194,6 @@ export default function Add_Trainer(
                     setGetSubscriptionStart={setGetSubscriptionStart}
                     setGetSubscriptionEnd={setGetSubscriptionEnd}
                 />
-            </div>
-
-            {/* Trainer id */}
-            <div className="mb-5 text-center">
-                {
-                    isAllInfoComplete ?
-                        <>
-                            <span>
-                                ال ID الخاص بالمستخدم هو :
-                            </span>
-
-                            <span className="mx-1 font-bold underline">
-                                {trainerId}
-                            </span>
-                        </>
-                        :
-                        null
-                }
             </div>
 
             {/* Btn save and cancel */}
