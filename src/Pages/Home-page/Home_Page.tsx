@@ -1,8 +1,9 @@
 import { Moon, Plus } from "lucide-react";
-import Active_Subscriptions from "../../Components/Home-page/Active-subscriptions/Active_Subscriptions";
-import Pending_Subscriptions from "../../Components/Home-page/Pending-subscriptions/Pending_Subscriptions";
-import All_Subscriptions from "../../Components/Home-page/All-subscriptions/All_Subscriptions";
+import Active_Subscriptions from "../../Components/Pages/Home-page/Active-subscriptions/Active_Subscriptions";
+import Pending_Subscriptions from "../../Components/Pages/Home-page/Pending-subscriptions/Pending_Subscriptions";
+import All_Subscriptions from "../../Components/Pages/Home-page/All-subscriptions/All_Subscriptions";
 import { Link } from "react-router-dom";
+import Discription from "@/Components/Description/Discription";
 // ========================================================== //
 export default function Home_page() {
     return <section>
@@ -10,9 +11,7 @@ export default function Home_page() {
         <div className="select-none flex mb-5 justify-between items-center w-full">
             <div>
                 <h3 className="text-2xl font-bold">الصفحة الرئيسيه</h3>
-                <p className="opacity-45">
-                    اهلا بك يا كابتن عمرو , تلك الصفحه لمعرفة بعض التفاصيل الخاصه بالمشتركين
-                </p>
+                <Discription discription=" اهلا بك يا كابتن عمرو , تلك الصفحه لمعرفة بعض التفاصيل الخاصه بالمشتركين" />
             </div>
 
             <div className="flex items-center gap-3">

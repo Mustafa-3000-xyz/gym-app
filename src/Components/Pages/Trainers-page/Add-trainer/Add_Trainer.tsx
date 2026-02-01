@@ -9,6 +9,7 @@ import { regexPhone } from "@/REGEX";
 import Subscription_Info_Form from "./Subscription-info/Subscription-info-form/Subscription_Info_Form";
 import { Flip, toast } from "react-toastify";
 import { Add_Trainer_Props } from "@/Pages/Trainers-page/trainersTypes";
+import Discription from "@/Components/Description/Discription";
 // ========================================================== //
 export default function Add_Trainer(
     { setIsShowAddTrainer, getAllTrainers }: Add_Trainer_Props
@@ -140,9 +141,7 @@ export default function Add_Trainer(
                     <h3 className=" font-bold text-lg">
                         إضافة متدرب جديد
                     </h3>
-                    <p className=" opacity-45">
-                        يمكنك الان إضافة اي متدرب انت تريده
-                    </p>
+                    <Discription discription="يمكنك الان إضافة اي متدرب انت تريده" />
                 </div>
 
                 <X size={23} onClick={closeThisWinow} className="cursor-pointer text-red-700" />

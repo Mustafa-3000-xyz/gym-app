@@ -1,10 +1,11 @@
 import { ListFilter, Plus, Search } from "lucide-react";
-import Add_Trainer from "../../Components/Trainers-page/Add-trainer/Add_Trainer";
+import Add_Trainer from "../../Components/Pages/Trainers-page/Add-trainer/Add_Trainer";
 import { useEffect, useState } from "react";
-import All_Trainers from "@/Components/Trainers-page/All-trainers/All_Trainers";
+import All_Trainers from "@/Components/Pages/Trainers-page/All-trainers/All_Trainers";
 import { getTrainers } from "@/db/trainerDb";
 import { trainer } from "./trainersTypes";
-import Show_Traine_Details from "@/Components/Trainers-page/Show-traine-details/Show_Traine_Details";
+import Show_Traine_Details from "@/Components/Pages/Trainers-page/Show-traine-details/Show_Traine_Details";
+import Discription from "@/Components/Description/Discription";
 // ========================================================== //
 export default function Trainers_Page() {
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
@@ -33,9 +34,7 @@ export default function Trainers_Page() {
         <div className="select-none flex mb-5 justify-between items-center w-full">
             <div>
                 <h3 className="text-2xl font-bold">صفحة المتدربين</h3>
-                <p className="opacity-45">
-                    اهلا بك يا كابتن عمرو , تلك الصفحه لمعرفة التفاصيل الخاصه بالمشتركين
-                </p>
+                <Discription discription="اهلا بك يا كابتن عمرو , تلك الصفحه لمعرفة التفاصيل الخاصه بالمشتركين" />
             </div>
 
             <div className="flex items-center gap-3">

@@ -6,7 +6,7 @@ import Settings_Page from "./Pages/Settings-page/Settings_Page";
 import Profits_Page from "./Pages/Profits-page/Profits_Page";
 import Expenses_page from "./Pages/Expenses-page/Expenses_Page";
 import { ToastContainer } from "react-toastify";
-import SideBar from "./Components/Constants/Sidebar/SideBar";
+import SideBar from "./Components/Constants/SideBar";
 // ========================================================== //
 function App() {
   return <main dir="rtl" className="flex">
