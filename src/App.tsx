@@ -1,5 +1,4 @@
 import { Route, Routes } from "react-router-dom";
-import SideBar from "./Sidebar/SideBar";
 import Home_page from "./Pages/Home-page/Home_Page";
 import Trainers_Page from "./Pages/Trainers-page/Trainers_Page";
 import Notifications_Page from "./Pages/Notifications-page/Notifications_Page";
@@ -7,12 +6,11 @@ import Settings_Page from "./Pages/Settings-page/Settings_Page";
 import Profits_Page from "./Pages/Profits-page/Profits_Page";
 import Expenses_page from "./Pages/Expenses-page/Expenses_Page";
 import { ToastContainer } from "react-toastify";
+import SideBar from "./Components/Constants/Sidebar/SideBar";
 // ========================================================== //
 function App() {
   return <main dir="rtl" className="flex">
-    <div>
-      <SideBar />
-    </div>
+    <SideBar />
 
     <div className="mt-7 w-full px-10">
       <Routes>
