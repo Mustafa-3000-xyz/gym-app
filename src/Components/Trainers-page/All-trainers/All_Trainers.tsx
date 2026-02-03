@@ -6,7 +6,7 @@ export default function All_Trainers(
     {
         trainersList,
         setGetTrainerDetails,
-        setIsShowTrainerDetails
+        setIsShowTrainerDetails,
     }: All_Trainers_Props
 ) {
     const [allPrice, setAllPrice] = useState(0);
@@ -21,11 +21,11 @@ export default function All_Trainers(
 
 
     useEffect(function () {
-        if (trainersList.length == 0) return;
-
         const totalPrice = trainersList.reduce((sum, ele) => sum += ele.price, 0);
         setAllPrice(totalPrice);
     }, [trainersList]);
+
+
 
     return <table className="w-full mt-10 border-separate select-none">
         <thead>

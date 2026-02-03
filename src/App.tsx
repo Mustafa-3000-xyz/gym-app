@@ -5,7 +5,6 @@ import Notifications_Page from "./Pages/Notifications-page/Notifications_Page";
 import Settings_Page from "./Pages/Settings-page/Settings_Page";
 import Profits_Page from "./Pages/Profits-page/Profits_Page";
 import Expenses_page from "./Pages/Expenses-page/Expenses_Page";
-import { ToastContainer } from "react-toastify";
 import SideBar from "./Components/Constants/SideBar";
 // ========================================================== //
 function App() {
@@ -21,10 +20,6 @@ function App() {
         <Route path="/profits-page" element={<Profits_Page />} />
         <Route path="/expenses-page" element={<Expenses_page />} />
       </Routes>
-    </div>
-
-    <div dir="ltr">
-      <ToastContainer />
     </div>
   </main>
 }

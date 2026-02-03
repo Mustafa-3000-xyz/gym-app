@@ -1,7 +1,7 @@
 import { Moon, Plus } from "lucide-react";
-import Active_Subscriptions from "../../Components/Pages/Home-page/Active-subscriptions/Active_Subscriptions";
-import Pending_Subscriptions from "../../Components/Pages/Home-page/Pending-subscriptions/Pending_Subscriptions";
-import All_Subscriptions from "../../Components/Pages/Home-page/All-subscriptions/All_Subscriptions";
+import Active_Subscriptions from "../../Components/Home-page/Active-subscriptions/Active_Subscriptions";
+import Pending_Subscriptions from "../../Components/Home-page/Pending-subscriptions/Pending_Subscriptions";
+import All_Subscriptions from "../../Components/Home-page/All-subscriptions/All_Subscriptions";
 import { Link } from "react-router-dom";
 import Discription from "@/Components/Description/Discription";
 // ========================================================== //

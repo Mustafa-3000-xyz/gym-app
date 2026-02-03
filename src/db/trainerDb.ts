@@ -71,3 +71,12 @@ export async function getTrainerById(id: number) {
 
     return result[0];
 }
+
+export async function deleteTrainerById(id: number) {
+    const database = await getDb();
+
+    await database.execute(
+        "DELETE FROM trainers WHERE trainerId = ?",
+        [id]
+    );
+}

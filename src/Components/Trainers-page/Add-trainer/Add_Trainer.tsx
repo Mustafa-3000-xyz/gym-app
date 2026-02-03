@@ -3,13 +3,13 @@ import { Presentation, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { addTrainer } from "@/db/trainerDb";
 import Trainer_Info_Form from "./Trainer-info-form/Trainer_Info_Form";
-import Date_Info from "./Subscription-info/Date-info/Date_Info";
+import Date_Info_Form from "./Subscription-info/Date-info-form/Date_Info_Form";
 import Add_Subscription_From_Settings from "./Subscription-info/Add-subscription-from-settings/Add_Subscription_From_Settings";
 import { regexPhone } from "@/REGEX";
 import Subscription_Info_Form from "./Subscription-info/Subscription-info-form/Subscription_Info_Form";
-import { Flip, toast } from "react-toastify";
 import { Add_Trainer_Props } from "@/Pages/Trainers-page/trainersTypes";
 import Discription from "@/Components/Description/Discription";
+import Swal from "sweetalert2";
 // ========================================================== //
 export default function Add_Trainer(
     { setIsShowAddTrainer, getAllTrainers }: Add_Trainer_Props
@@ -58,16 +58,11 @@ export default function Add_Trainer(
     }
 
     function showAlert() {
-        toast.success(`Will done, ID ${trainerId}`, {
-            position: "top-right",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Flip,
+        Swal.fire({
+            title: "تم إضافة المتدرب بنجاح",
+            text: `الرقم الخاص بالمتدرب هو : ${trainerId}`,
+            icon: "success",
+            confirmButtonText: "تمام"
         });
     }
 
@@ -183,7 +178,7 @@ export default function Add_Trainer(
 
             {/* Date info */}
             <div className="mb-5">
-                <Date_Info
+                <Date_Info_Form
                     setGetSubscriptionStart={setGetSubscriptionStart}
                     setGetSubscriptionEnd={setGetSubscriptionEnd}
                 />

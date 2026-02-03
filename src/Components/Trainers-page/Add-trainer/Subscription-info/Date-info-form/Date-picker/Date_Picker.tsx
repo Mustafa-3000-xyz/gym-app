@@ -49,7 +49,7 @@ export function Date_Picker(
                         captionLayout="dropdown"
                         selected={date}
                         defaultMonth={date}
-                        disabled={{ before: beforeDates }}
+                        disabled={(day) => day <= beforeDates}
                         fromYear={2026}
                         toYear={2040}
                         onSelect={(date) => {

@@ -3,7 +3,7 @@ import { Date_Picker } from "./Date-picker/Date_Picker";
 import { format, parse, differenceInDays } from "date-fns";
 import { Date_Info_Props } from "@/Pages/Trainers-page/trainersTypes";
 // ========================================================== //
-export default function Date_Info(
+export default function Date_Info_Form(
     { setGetSubscriptionStart, setGetSubscriptionEnd}: Date_Info_Props
 ) {
     const [subscriptionStart, setSubscriptionStart] = useState("");
@@ -30,7 +30,7 @@ export default function Date_Info(
     }, [subscriptionStart, subscriptionEnd]);
 
 
-    return <div className="flex justify-center items-center gap-2 px-3" >
+    return <form className="flex justify-center items-center gap-2 px-3" >
         {/* Start subscription */}
         <div className="w-3/4">
             <h4>تاريخ بدأ الاشتراك</h4>
@@ -64,5 +64,5 @@ export default function Date_Info(
                 setSubscriptionEnd={setSubscriptionEnd}
             />
         </div>
-    </div >
+    </form>
 }

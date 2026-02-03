@@ -28,12 +28,13 @@ export interface Trainer_Info_Form_Props {
 export interface All_Trainers_Props {
     trainersList: trainer[],
     setGetTrainerDetails: (x: trainer) => void,
-    setIsShowTrainerDetails: (x: boolean) => void
+    setIsShowTrainerDetails: (x: boolean) => void,
 }
 
 export interface Show_Traine_Details_Props {
     trainer: trainer,
-    setIsShowTrainerDetails: (x: boolean) => void
+    setIsShowTrainerDetails: (x: boolean) => void,
+    getAllTrainers: ()=> void 
 }
 
 export interface Subscription_Info_Form_Props {

@@ -1,10 +1,10 @@
 import { ListFilter, Plus, Search } from "lucide-react";
-import Add_Trainer from "../../Components/Pages/Trainers-page/Add-trainer/Add_Trainer";
+import Add_Trainer from "../../Components/Trainers-page/Add-trainer/Add_Trainer";
 import { useEffect, useState } from "react";
-import All_Trainers from "@/Components/Pages/Trainers-page/All-trainers/All_Trainers";
+import All_Trainers from "@/Components/Trainers-page/All-trainers/All_Trainers";
 import { getTrainers } from "@/db/trainerDb";
 import { trainer } from "./trainersTypes";
-import Show_Traine_Details from "@/Components/Pages/Trainers-page/Show-traine-details/Show_Traine_Details";
+import Show_Trainer_Details from "@/Components/Trainers-page/Show-trainer-details/Show_Trainer_Details";
 import Discription from "@/Components/Description/Discription";
 // ========================================================== //
 export default function Trainers_Page() {
@@ -20,7 +20,7 @@ export default function Trainers_Page() {
     }
 
     async function getAllTrainers() {
-        const data = await getTrainers();
+        const data = await getTrainers();        
         setTrainersList(data as trainer[]);
     }
 
@@ -29,12 +29,13 @@ export default function Trainers_Page() {
         getAllTrainers();
     }, []);
 
+
     return <section>
         {/* Title and discription and add new trainer */}
         <div className="select-none flex mb-5 justify-between items-center w-full">
             <div>
                 <h3 className="text-2xl font-bold">صفحة المتدربين</h3>
-                <Discription discription="اهلا بك يا كابتن عمرو , تلك الصفحه لمعرفة التفاصيل الخاصه بالمشتركين" />
+                <Discription discription="اهلا بك يا كابتن , تلك الصفحه لمعرفة التفاصيل الخاصه بالمشتركين" />
             </div>
 
             <div className="flex items-center gap-3">
@@ -100,9 +101,10 @@ export default function Trainers_Page() {
 
         {
             isShowTrainerDetails ?
-                <Show_Traine_Details
+                <Show_Trainer_Details
                     trainer={getTrainerDetails as trainer}
                     setIsShowTrainerDetails={setIsShowTrainerDetails}
+                    getAllTrainers={getAllTrainers}
                 />
                 : null
         }
