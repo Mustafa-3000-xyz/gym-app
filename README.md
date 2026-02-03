@@ -18,3 +18,6 @@ rustup target add x86_64-pc-windows-gnu
 
 <!-- This command make build to project and run app in windows  -->
 cargo tauri build --target x86_64-pc-windows-gnu
+
+<!-- This command for run virtual box -->
+sudo modprobe -r kvm_intel
