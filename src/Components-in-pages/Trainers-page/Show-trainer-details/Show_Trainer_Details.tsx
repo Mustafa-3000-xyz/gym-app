@@ -12,6 +12,7 @@ import Swal from "sweetalert2";
 
 import "swiper/css/navigation"
 import "swiper/css";
+import Add_Subscription_From_Settings from "@/Components/Add-subscription-from-settings/Add_Subscription_From_Settings";
 // ========================================================== //
 export default function Show_Trainer_Details(
     { trainer, setIsShowTrainerDetails, getAllTrainers }: Show_Traine_Details_Props
@@ -57,7 +58,7 @@ export default function Show_Trainer_Details(
         if (!el) return
 
         setHasOverflow(el.clientHeight > 100)
-    }, [trainer.sessionsCount])
+    }, [trainer.sessionsCount]);
 
 
     return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none">
@@ -135,7 +136,7 @@ export default function Show_Trainer_Details(
             </div>
 
             {/* Trainer informations */}
-            <div className="px-5 mb-1">
+            <div className="px-5 mb-7">
                 <div className="mb-3">
                     <div className="flex items-center gap-2 text-(--primary)">
                         <SquarePen size={23} />
@@ -235,6 +236,8 @@ export default function Show_Trainer_Details(
 
                     {/* Subscription info */}
                     <SwiperSlide>
+                        <Add_Subscription_From_Settings />
+
                         <div className="grid grid-cols-3 gap-3 mb-3">
                             <div>
                                 <h4>اسم الاشتراك</h4>

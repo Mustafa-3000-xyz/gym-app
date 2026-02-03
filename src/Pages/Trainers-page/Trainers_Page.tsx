@@ -1,11 +1,11 @@
 import { ListFilter, Plus, Search } from "lucide-react";
-import Add_Trainer from "../../Components/Trainers-page/Add-trainer/Add_Trainer";
 import { useEffect, useState } from "react";
-import All_Trainers from "@/Components/Trainers-page/All-trainers/All_Trainers";
 import { getTrainers } from "@/db/trainerDb";
 import { trainer } from "./trainersTypes";
-import Show_Trainer_Details from "@/Components/Trainers-page/Show-trainer-details/Show_Trainer_Details";
 import Discription from "@/Components/Description/Discription";
+import All_Trainers from "@/Components-in-pages/Trainers-page/All-trainers/All_Trainers";
+import Add_Trainer from "@/Components-in-pages/Trainers-page/Add-trainer/Add_Trainer";
+import Show_Trainer_Details from "@/Components-in-pages/Trainers-page/Show-trainer-details/Show_Trainer_Details";
 // ========================================================== //
 export default function Trainers_Page() {
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);

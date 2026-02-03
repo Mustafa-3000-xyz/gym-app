@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { addTrainer } from "@/db/trainerDb";
 import Trainer_Info_Form from "./Trainer-info-form/Trainer_Info_Form";
 import Date_Info_Form from "./Subscription-info/Date-info-form/Date_Info_Form";
-import Add_Subscription_From_Settings from "./Subscription-info/Add-subscription-from-settings/Add_Subscription_From_Settings";
+import Add_Subscription_From_Settings from "../../../Components/Add-subscription-from-settings/Add_Subscription_From_Settings";
 import { regexPhone } from "@/REGEX";
 import Subscription_Info_Form from "./Subscription-info/Subscription-info-form/Subscription_Info_Form";
 import { Add_Trainer_Props } from "@/Pages/Trainers-page/trainersTypes";
