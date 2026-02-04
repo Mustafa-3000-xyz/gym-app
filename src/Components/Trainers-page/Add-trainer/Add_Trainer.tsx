@@ -22,12 +22,12 @@ export default function Add_Trainer(
 
     // Get subscription info
     const [getSubscriptionName, setGetSubscriptionName] = useState("");
-    const [getSessionsCount, setGetSessionsCount] = useState(0);
-    const [getPrice, setGetPrice] = useState(0);
+    const [getSessionsCount, setGetSessionsCount] = useState<number | null>(null);
+    const [getPrice, setGetPrice] = useState<number | null>(null);
 
     // Get date info
-    const [getSubscriptionStart, setGetSubscriptionStart] = useState<string | null>(null);
-    const [getSubscriptionEnd, setGetSubscriptionEnd] = useState<string | null>(null);
+    const [getSubscriptionStart, setGetSubscriptionStart] = useState<Date | null>(null);
+    const [getSubscriptionEnd, setGetSubscriptionEnd] = useState<Date | null>(null);
 
     // These variables
     const [trainerId, setTrainerId] = useState("");

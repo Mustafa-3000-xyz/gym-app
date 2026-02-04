@@ -15,14 +15,13 @@ export default function Date_Info_Form(
 
     // This for get days between subscriptionStart and subscriptionEnd
     useEffect(function () {
-        if (!subscriptionStart || !subscriptionEnd) return;
-        const startDate = format(subscriptionStart as any, styleDate);
-        const endDate = format(subscriptionEnd as any, styleDate);
+        const startDate = format(subscriptionStart as Date, styleDate);
+        const endDate = format(subscriptionEnd as Date, styleDate);
         const diff = differenceInDays(endDate, startDate);
 
 
-        onGetSubscriptionStart(startDate as string);
-        onGetSubscriptionEnd(endDate as string);
+        onGetSubscriptionStart(subscriptionStart as Date);
+        onGetSubscriptionEnd(subscriptionEnd as Date);
         setTheDaysBetweenSubStartAndSubEnd(diff);
     }, [subscriptionStart, subscriptionEnd]);
 

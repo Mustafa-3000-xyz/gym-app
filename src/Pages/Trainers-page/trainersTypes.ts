@@ -31,13 +31,13 @@ export interface Subscription_Info_Form_Props {
 }
 
 export interface Date_Info_Props {
-    onGetSubscriptionStart: (x: string) => void,
-    onGetSubscriptionEnd: (x: string) => void,
+    onGetSubscriptionStart: (x: Date) => void,
+    onGetSubscriptionEnd: (x: Date) => void,
 }
 
 export interface End_Date_Picker_Props {
     subscriptionStart: Date,
-    getDate: (x: Date) => void
+    getDate: (x: Date | null) => void
 }
 
 export interface Trainer_Info_Form_Props {

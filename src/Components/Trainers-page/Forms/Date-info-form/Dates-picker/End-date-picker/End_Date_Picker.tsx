@@ -18,22 +18,21 @@ export function End_Date_Picker(
     const [formatDate, setFormatDate] = React.useState<string | null>(null);
     const [openMenu, setOpenMenu] = React.useState(false);
 
-    React.useEffect(() => {
-        if (!selectDate) return;
-        const result = format(selectDate, styleDate);
-
-        setFormatDate(result);
-        getDate(selectDate);
-    }, [selectDate]);
 
 
     // When the date end small than date start, so return the selectDate and formatDate to default value
     React.useEffect(function () {
-        if (!subscriptionStart || !selectDate) return;
+        if (!selectDate) return;
 
-        if (subscriptionStart > selectDate) {
+        if (subscriptionStart >= selectDate) {
             setSelectDate(null);
             setFormatDate(null);
+            getDate(null);
+        } else {
+            const result = format(selectDate, styleDate);
+
+            setFormatDate(result);
+            getDate(selectDate);
         }
     }, [subscriptionStart, selectDate]);
 
