@@ -1,6 +1,6 @@
 import { Show_Traine_Details_Props } from "@/Pages/Trainers-page/trainersTypes";
 import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, BanknoteX, CircleUserRound, Presentation, SquarePen, Trash, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, BanknoteX, CircleUserRound, Presentation, RefreshCcw, SquarePen, Trash, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -17,13 +17,16 @@ export default function Show_Trainer_Details(
     { trainer, onIsShowTrainerDetails, getAllTrainers }: Show_Traine_Details_Props
 ) {
     const containerRef = useRef<HTMLDivElement | null>(null)
-    const [hasOverflow, setHasOverflow] = useState(false)
-    const [isBeginning, setIsBeginning] = useState(true);
-    const [isEnd, setIsEnd] = useState(false);
-    const [isSubscriptionActive, setIsSubscriptionActive] = useState(trainer.subscriptionState);
+    const [hasOverflow, setHasOverflow] = useState(false);
+
+    const [subscriptionState, setSubscriptionState] = useState(trainer.subscriptionState);
     const [activeSessionsList, setActiveSessionsList] = useState(
         JSON.parse(trainer.activeSessionsList as any)
     );
+
+    // These for swiper
+    const [isBeginning, setIsBeginning] = useState(true);
+    const [isEnd, setIsEnd] = useState(false);
 
 
     function closeThisWinow() {
@@ -89,7 +92,7 @@ export default function Show_Trainer_Details(
                     confirmButtonText: "تمام"
                 });
 
-                setIsSubscriptionActive(stateIsFinished);
+                setSubscriptionState(stateIsFinished);
                 await updateTrainerProperty(trainer.trainerId, "subscriptionState", stateIsFinished);
                 getAllTrainers();
                 closeThisWinow();
@@ -97,9 +100,9 @@ export default function Show_Trainer_Details(
         });
     }
 
-    async function update() {
+    async function checkInActiveSessionsList() {
         if (activeSessionsList.length == trainer.sessionsCount) {
-            setIsSubscriptionActive(stateIsFinished);
+            setSubscriptionState(stateIsFinished);
             await updateTrainerProperty(trainer.trainerId, "subscriptionState", stateIsFinished);
             getAllTrainers();
         }
@@ -112,8 +115,9 @@ export default function Show_Trainer_Details(
         const el = containerRef.current;
 
         setHasOverflow(el!.clientHeight > 100);
-        update();
-    }, [trainer.sessionsCount, activeSessionsList]);
+        checkInActiveSessionsList();
+    }, [trainer.sessionsCount, trainer.activeSessionsList, activeSessionsList]);
+
 
 
     return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none">
@@ -134,11 +138,11 @@ export default function Show_Trainer_Details(
                 <div className=" flex items-center gap-4">
                     <div className={`
                             p-3 rounded-full
-                            ${isSubscriptionActive == stateIsActive ?
+                            ${subscriptionState == stateIsActive ?
                             "bg-emerald-100 text-emerald-500"
-                            : isSubscriptionActive == stateIsPending ?
+                            : subscriptionState == stateIsPending ?
                                 "bg-amber-100 text-amber-500"
-                                : isSubscriptionActive == stateIsFinished && "bg-red-100 text-red-500"
+                                : subscriptionState == stateIsFinished && "bg-red-100 text-red-500"
                         }
                         `}
                     >
@@ -169,7 +173,7 @@ export default function Show_Trainer_Details(
 
                     <div className="opacity-60 mb-4">
                         {
-                            isSubscriptionActive == stateIsFinished ?
+                            subscriptionState == stateIsFinished ?
                                 <p>
                                     تم إكمال الحصص
                                 </p>
@@ -203,10 +207,11 @@ export default function Show_Trainer_Details(
                             key={i}
                             onClick={() => clickOnSession(i)}
                             className={`
-                                ${temp ? "bg-[var(--primary)] text-white" : "bg-slate-200 text-black"}
-                                ${isSubscriptionActive == stateIsActive ?
-                                    "pointer-events-auto cursor-pointer" : "pointer-events-none cursor-not-allowed opacity-45"}
                                 cursor-pointer rounded-full h-12 w-12 flex items-center justify-center
+                                ${temp ? "bg-[var(--primary)] text-white" :
+                                    "bg-slate-200 text-black"}
+                                ${subscriptionState == stateIsActive ? "pointer-events-auto cursor-pointer" :
+                                    "pointer-events-none cursor-not-allowed opacity-45"}
                             `}
                         >
                             {i + 1}
@@ -399,20 +404,36 @@ export default function Show_Trainer_Details(
                     </h3>
 
                     <div className=" flex  gap-2">
-                        {/* Finshid subscription */}
-                        <button
-                            onClick={finishedSubscription}
-                            className="flex items-center gap-2 font-bold px-6 py-3 cursor-pointer rounded-lg bg-amber-300/40 text-amber-700"
-                        >
-                            <span>
-                                <BanknoteX size={23} />
-                            </span>
+                        {
+                            subscriptionState == stateIsActive || subscriptionState == stateIsPending ?
+                                // Finshid subscription 
+                                <button
+                                    onClick={finishedSubscription}
+                                    className="flex items-center gap-2 font-bold px-6 py-3 cursor-pointer rounded-lg bg-amber-300/40 text-amber-700"
+                                >
+                                    <span>
+                                        <BanknoteX size={23} />
+                                    </span>
 
-                            <span>
-                                إنهاء الاشتراك
-                            </span>
-                        </button>
+                                    <span>
+                                        إنهاء الاشتراك
+                                    </span>
+                                </button>
+                                :
+                                <button
+                                    className="flex items-center gap-2 font-bold px-6 py-3 cursor-pointer rounded-lg bg-amber-300/40 text-amber-700"
+                                >
+                                    <span>
+                                        <RefreshCcw size={23} />
+                                    </span>
 
+                                    <span>
+                                        تجديد الاشتراك
+                                    </span>
+                                </button>
+                        }
+
+                        {/* Delete trainer */}
                         <button
                             onClick={deleteTrainer}
                             className="flex items-center gap-2 font-bold px-6 py-3 cursor-pointer rounded-lg bg-red-300/40 text-amber-700"
