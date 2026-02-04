@@ -2,13 +2,13 @@ import { motion } from "framer-motion";
 import { Presentation, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { addTrainer } from "@/db/trainerDb";
-import Trainer_Info_Form from "../../Forms/Trainer-info-form/Trainer_Info_Form";
+import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/lib/REGEX";
-import Subscription_Info_Form from "../../Forms/Subscription-info-form/Subscription_Info_Form";
+import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
 import { Add_Trainer_Props } from "@/Pages/Trainers-page/trainersTypes";
 import Discription from "@/Components/Description/Discription";
 import Swal from "sweetalert2";
-import Date_Info_Form from "@/Components/Forms/Date-info-form/Date_Info_Form";
+import Date_Info_Form from "@/Components/Trainers-page/Forms/Date-info-form/Date_Info_Form";
 import { stateIsActive } from "@/lib/customs";
 // ========================================================== //
 export default function Add_Trainer(
