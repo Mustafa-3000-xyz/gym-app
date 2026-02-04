@@ -9,8 +9,9 @@ import { Navigation } from "swiper/modules";
 import { deleteTrainerById, updateTrainerProperty } from "@/db/trainerDb";
 import Swal from "sweetalert2";
 
-import "swiper/css/navigation"
+import "swiper/css/navigation";
 import "swiper/css";
+import { stateIsActive, stateIsFinished, stateIsPending } from "@/lib/customs";
 // ========================================================== //
 export default function Show_Trainer_Details(
     { trainer, onIsShowTrainerDetails, getAllTrainers }: Show_Traine_Details_Props
@@ -19,9 +20,7 @@ export default function Show_Trainer_Details(
     const [hasOverflow, setHasOverflow] = useState(false)
     const [isBeginning, setIsBeginning] = useState(true);
     const [isEnd, setIsEnd] = useState(false);
-    const [isSubscriptionActive, setIsSubscriptionActive] = useState(
-        true
-    );
+    const [isSubscriptionActive, setIsSubscriptionActive] = useState(trainer.subscriptionState);
     const [activeSessionsList, setActiveSessionsList] = useState(
         JSON.parse(trainer.activeSessionsList as any)
     );
@@ -29,32 +28,6 @@ export default function Show_Trainer_Details(
 
     function closeThisWinow() {
         onIsShowTrainerDetails(false);
-    }
-
-    function deleteTrainer(id: number) {
-        Swal.fire({
-            title: "هل تريد حقا حذف ذلك المتدرب ؟",
-            text: "يجب ان تتأكد جيدا من هذا القرار",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "نعم , انا متأكد",
-            cancelButtonText: "إلغاء",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: "لقد تم حذف المتدرب بنجاح",
-                    text: "ذلك المتدرب لم يعد موجود في الجدول",
-                    icon: "success",
-                    confirmButtonText: "تمام"
-                });
-
-                await deleteTrainerById(id);
-                getAllTrainers();
-                closeThisWinow();
-            }
-        });
     }
 
     async function clickOnSession(numCircle: number) {
@@ -71,10 +44,64 @@ export default function Show_Trainer_Details(
         }
     }
 
+    function deleteTrainer() {
+        Swal.fire({
+            title: "!! تحذير",
+            text: "هل تريد حقا حذف ذلك المتدرب ؟",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "نعم , انا متأكد",
+            cancelButtonText: "إلغاء",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "لقد تم حذف المتدرب بنجاح",
+                    text: "ذلك المتدرب لم يعد موجود في الجدول",
+                    icon: "success",
+                    confirmButtonText: "تمام"
+                });
+
+                await deleteTrainerById(trainer.trainerId);
+                getAllTrainers();
+                closeThisWinow();
+            }
+        });
+    }
+
+    function finishedSubscription() {
+        Swal.fire({
+            title: "!! تحذير",
+            text: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "نعم , انا متأكد",
+            cancelButtonText: "إلغاء",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "تمت العمليه",
+                    text: "تم إنتهاء الاشتراك",
+                    icon: "success",
+                    confirmButtonText: "تمام"
+                });
+
+                setIsSubscriptionActive(stateIsFinished);
+                await updateTrainerProperty(trainer.trainerId, "subscriptionState", stateIsFinished);
+                getAllTrainers();
+                closeThisWinow();
+            }
+        });
+    }
+
     async function update() {
         if (activeSessionsList.length == trainer.sessionsCount) {
-            setIsSubscriptionActive(false);
-            await updateTrainerProperty(trainer.trainerId, "subscriptionState", isSubscriptionActive);
+            setIsSubscriptionActive(stateIsFinished);
+            await updateTrainerProperty(trainer.trainerId, "subscriptionState", stateIsFinished);
+            getAllTrainers();
         }
 
         await updateTrainerProperty(trainer.trainerId, "activeSessionsList", activeSessionsList);
@@ -83,16 +110,10 @@ export default function Show_Trainer_Details(
 
     useEffect(() => {
         const el = containerRef.current;
-        if (!el) return
 
-        setHasOverflow(el.clientHeight > 100)
-    }, [trainer.sessionsCount]);
-
-
-    useEffect(function () {
+        setHasOverflow(el!.clientHeight > 100);
         update();
-    }, [activeSessionsList]);
-
+    }, [trainer.sessionsCount, activeSessionsList]);
 
 
     return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none">
@@ -111,15 +132,24 @@ export default function Show_Trainer_Details(
             {/* Title & x & icon */}
             <div className="p-5 flex justify-between items-center mb-7 bg-black/5 border-b border-b-slate-300">
                 <div className=" flex items-center gap-4">
-                    <div className="bg-(--primary)/10 text-(--primary) p-3 rounded-full">
+                    <div className={`
+                            p-3 rounded-full
+                            ${isSubscriptionActive == stateIsActive ?
+                            "bg-emerald-100 text-emerald-500"
+                            : isSubscriptionActive == stateIsPending ?
+                                "bg-amber-100 text-amber-500"
+                                : isSubscriptionActive == stateIsFinished && "bg-red-100 text-red-500"
+                        }
+                        `}
+                    >
                         <CircleUserRound strokeWidth={1.75} size={33} />
                     </div>
 
                     <div>
-                        <h3 className=" font-bold text-lg">
+                        <h3 className="font-bold text-lg">
                             {trainer.firstName} {trainer.lastName}
                         </h3>
-                        <p className=" ">
+                        <p>
                             <span>رقم المتدرب : </span>
                             <span className=" underline font-bold">{trainer.trainerId}</span>
                         </p>
@@ -134,12 +164,12 @@ export default function Show_Trainer_Details(
                 <div className="mb-1">
                     <div className="flex items-center gap-2 text-(--primary)">
                         <Presentation strokeWidth={1.75} size={23} />
-                        <h3 className=" font-bold mb-1">الحصص</h3>
+                        <h3 className="font-bold mb-1">الحصص</h3>
                     </div>
 
                     <div className="opacity-60 mb-4">
                         {
-                            isSubscriptionActive == false ?
+                            isSubscriptionActive == stateIsFinished ?
                                 <p>
                                     تم إكمال الحصص
                                 </p>
@@ -174,7 +204,8 @@ export default function Show_Trainer_Details(
                             onClick={() => clickOnSession(i)}
                             className={`
                                 ${temp ? "bg-[var(--primary)] text-white" : "bg-slate-200 text-black"}
-                                ${isSubscriptionActive ? "pointer-events-auto" : "pointer-events-none opacity-45"}
+                                ${isSubscriptionActive == stateIsActive ?
+                                    "pointer-events-auto cursor-pointer" : "pointer-events-none cursor-not-allowed opacity-45"}
                                 cursor-pointer rounded-full h-12 w-12 flex items-center justify-center
                             `}
                         >
@@ -369,7 +400,10 @@ export default function Show_Trainer_Details(
 
                     <div className=" flex  gap-2">
                         {/* Finshid subscription */}
-                        <button className="flex items-center gap-2 font-bold px-6 py-3 cursor-pointer rounded-lg bg-amber-300/40 text-amber-700">
+                        <button
+                            onClick={finishedSubscription}
+                            className="flex items-center gap-2 font-bold px-6 py-3 cursor-pointer rounded-lg bg-amber-300/40 text-amber-700"
+                        >
                             <span>
                                 <BanknoteX size={23} />
                             </span>
@@ -380,7 +414,7 @@ export default function Show_Trainer_Details(
                         </button>
 
                         <button
-                            onClick={() => deleteTrainer(trainer.trainerId)}
+                            onClick={deleteTrainer}
                             className="flex items-center gap-2 font-bold px-6 py-3 cursor-pointer rounded-lg bg-red-300/40 text-amber-700"
                         >
                             <span>
