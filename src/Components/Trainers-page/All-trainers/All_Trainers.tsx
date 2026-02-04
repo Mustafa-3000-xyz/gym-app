@@ -1,5 +1,7 @@
 import { All_Trainers_Props, trainer } from "@/Pages/Trainers-page/trainersTypes";
 import { getTrainerById } from "@/db/trainerDb";
+import { styleDate } from "@/lib/customs";
+import { format } from "date-fns";
 import { useEffect, useState } from "react";
 // ========================================================== //
 export default function All_Trainers(
@@ -49,8 +51,12 @@ export default function All_Trainers(
                     <td>{ele.trainerId}</td>
                     <td className="p-2 py-4">{ele.firstName} {ele.lastName}</td>
                     <td className="p-2 py-4">{ele.subscriptionName}</td>
-                    <td className="p-2 py-4">{ele.subscriptionStart}</td>
-                    <td className="p-2 py-4">{ele.subscriptionEnd}</td>
+                    <td className="p-2 py-4">
+                        {format(ele.subscriptionStart, styleDate)}
+                    </td>
+                    <td className="p-2 py-4">
+                        {format(ele.subscriptionEnd, styleDate)}
+                    </td>
                     <td className="p-2 py-4">
                         <span className={`
                                     ${ele.subscriptionState ?
@@ -62,7 +68,7 @@ export default function All_Trainers(
                                 `}
                         >
                             {
-                                ele.subscriptionState == "active"?
+                                ele.subscriptionState == "active" ?
                                     "مفعل"
                                     :
                                     "معلق"
