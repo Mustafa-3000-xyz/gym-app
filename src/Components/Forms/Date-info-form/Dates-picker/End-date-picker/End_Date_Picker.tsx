@@ -9,7 +9,7 @@ import {
     PopoverTrigger,
 } from "@/Components/Shadcn/popover"
 import { End_Date_Picker_Props } from "@/Pages/Trainers-page/trainersTypes";
-import { styleDate } from "@/lib/dates";
+import { styleDate } from "@/lib/customs";
 // ========================================================== //
 export function End_Date_Picker(
     { subscriptionStart, getDate }: End_Date_Picker_Props
@@ -28,7 +28,7 @@ export function End_Date_Picker(
 
 
     // When the date end small than date start, so return the selectDate and formatDate to default value
-    React.useEffect(function(){
+    React.useEffect(function () {
         if (!subscriptionStart || !selectDate) return;
 
         if (subscriptionStart > selectDate) {
@@ -39,7 +39,10 @@ export function End_Date_Picker(
 
 
     return <Field className="w-full">
-        <Popover open={openMenu} onOpenChange={(open) => setOpenMenu(open)}>
+        <Popover
+            open={!subscriptionStart ? false : openMenu}
+            onOpenChange={(open) => setOpenMenu(open)}
+        >
             <PopoverTrigger asChild>
                 <Button
                     variant="outline"

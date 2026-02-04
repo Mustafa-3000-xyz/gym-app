@@ -9,6 +9,7 @@ import { Add_Trainer_Props } from "@/Pages/Trainers-page/trainersTypes";
 import Discription from "@/Components/Description/Discription";
 import Swal from "sweetalert2";
 import Date_Info_Form from "@/Components/Forms/Date-info-form/Date_Info_Form";
+import { stateIsActive } from "@/lib/customs";
 // ========================================================== //
 export default function Add_Trainer(
     { onIsShowAddTrainer, getAllTrainers }: Add_Trainer_Props
@@ -41,7 +42,7 @@ export default function Add_Trainer(
         if (isAllInfoComplete) {
             await addTrainer({
                 trainerId,
-                subscriptionState: "active",
+                subscriptionState: stateIsActive,
                 activeSessionsList: [],
                 firstName: getFirstName,
                 lastName: getLastName,

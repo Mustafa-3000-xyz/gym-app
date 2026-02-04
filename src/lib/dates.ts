@@ -1,1 +1,0 @@
-export const styleDate = "yyyy/MM/dd";
