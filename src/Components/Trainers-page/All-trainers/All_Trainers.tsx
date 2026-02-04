@@ -1,6 +1,6 @@
 import { All_Trainers_Props, trainer } from "@/Pages/Trainers-page/trainersTypes";
 import { getTrainerById } from "@/db/trainerDb";
-import { styleDate } from "@/lib/customs";
+import { stateIsActive, stateIsFinished, stateIsPending, styleDate } from "@/lib/customs";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 // ========================================================== //
@@ -37,7 +37,7 @@ export default function All_Trainers(
                 <td className="p-2 py-4">الاشتراك</td>
                 <td className="p-2 py-4">بداية الاشتراك</td>
                 <td className="p-2 py-4">نهاية الاشتراك</td>
-                <td className="p-2 py-4 rounded-tl-2xl">الحاله</td>
+                <td className="p-2 py-4 rounded-tl-2xl">حالة الاشتراك</td>
             </tr>
         </thead>
 
@@ -59,19 +59,20 @@ export default function All_Trainers(
                     </td>
                     <td className="p-2 py-4">
                         <span className={`
-                                    ${ele.subscriptionState ?
+                            px-3 py-1 rounded-full font-bold
+                            ${ele.subscriptionState == stateIsActive ?
                                 "bg-emerald-100 text-emerald-500"
-                                :
-                                "bg-yellow-100 text-yellow-500"
+                                : ele.subscriptionState == stateIsPending ?
+                                    "bg-amber-100 text-amber-500"
+                                    : ele.subscriptionState == stateIsFinished && "bg-red-100 text-red-500"
                             }
-                                    p-1 px-2 rounded-full
-                                `}
+                        `}
                         >
-                            {
-                                ele.subscriptionState == "active" ?
-                                    "مفعل"
-                                    :
+                            {ele.subscriptionState == stateIsActive ?
+                                "مفعل"
+                                : ele.subscriptionState == stateIsPending ?
                                     "معلق"
+                                    : ele.subscriptionState == stateIsFinished && "منتهي"
                             }
                         </span>
                     </td>

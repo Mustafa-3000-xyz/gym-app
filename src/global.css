@@ -10,16 +10,23 @@ body {
     background-color: #ECECEC;
 }
 
-/* حطها في css العام */
-.swiper-button-next,
-.swiper-button-prev {
-    color: var(--primary);
-    width: 20px;
-    height: 20px;
+::-webkit-scrollbar {
+    width: 5px;
 }
 
-.swiper-button-next::after,
-.swiper-button-prev::after {
-    font-size: 18px;
-    font-weight: bold;
+/* scrollbar track */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 1px;
+}
+
+/* scrollbar thumb */
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 1px;
+}
+
+/* hover on thumb */
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
