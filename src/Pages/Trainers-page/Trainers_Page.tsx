@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { getTrainers } from "@/db/trainerDb";
 import { trainer } from "./trainersTypes";
 import Discription from "@/Components/Description/Discription";
-import All_Trainers from "@/Components-in-pages/Trainers-page/All-trainers/All_Trainers";
-import Add_Trainer from "@/Components-in-pages/Trainers-page/Add-trainer/Add_Trainer";
-import Show_Trainer_Details from "@/Components-in-pages/Trainers-page/Show-trainer-details/Show_Trainer_Details";
+import All_Trainers from "@/Components/Trainers-page/All-trainers/All_Trainers";
+import Add_Trainer from "@/Components/Trainers-page/Add-trainer/Add_Trainer";
+import Show_Trainer_Details from "@/Components/Trainers-page/Show-trainer-details/Show_Trainer_Details";
 // ========================================================== //
 export default function Trainers_Page() {
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
@@ -20,7 +20,7 @@ export default function Trainers_Page() {
     }
 
     async function getAllTrainers() {
-        const data = await getTrainers();        
+        const data = await getTrainers();
         setTrainersList(data as trainer[]);
     }
 
@@ -86,7 +86,7 @@ export default function Trainers_Page() {
         {/* Table for show some trainers */}
         <All_Trainers
             trainersList={trainersList}
-            setGetTrainerDetails={setGetTrainerDetails}
+            onGetTrainerDetails={setGetTrainerDetails}
             setIsShowTrainerDetails={setIsShowTrainerDetails}
         />
 
@@ -94,7 +94,7 @@ export default function Trainers_Page() {
             isShowAddTrainer ?
                 <Add_Trainer
                     getAllTrainers={getAllTrainers}
-                    setIsShowAddTrainer={setIsShowAddTrainer}
+                    onIsShowAddTrainer={setIsShowAddTrainer}
                 />
                 : null
         }
@@ -103,7 +103,7 @@ export default function Trainers_Page() {
             isShowTrainerDetails ?
                 <Show_Trainer_Details
                     trainer={getTrainerDetails as trainer}
-                    setIsShowTrainerDetails={setIsShowTrainerDetails}
+                    onIsShowTrainerDetails={setIsShowTrainerDetails}
                     getAllTrainers={getAllTrainers}
                 />
                 : null

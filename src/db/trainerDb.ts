@@ -1,5 +1,19 @@
 import Database from "@tauri-apps/plugin-sql";
 // ========================================================== //
+type TrainerColumn =
+    | "subscriptionState"
+    | "activeSessionsList"
+    | "firstName"
+    | "lastName"
+    | "phone"
+    | "address"
+    | "subscriptionName"
+    | "sessionsCount"
+    | "price"
+    | "subscriptionStart"
+    | "subscriptionEnd";
+
+
 async function getDb() {
     const db = await Database.load("sqlite:app-gym-db.db");
 
@@ -7,7 +21,7 @@ async function getDb() {
         await db.execute(`
             CREATE TABLE IF NOT EXISTS trainers (
                 trainerId INTEGER PRIMARY KEY, 
-                isSubscriptionActive BOOLEAN,
+                subscriptionState TEXT,
                 activeSessionsList TEXT,
                 firstName TEXT,
                 lastName TEXT,
@@ -28,18 +42,17 @@ async function getDb() {
     return db;
 }
 
-
 export async function addTrainer(data: any) {
     const database = await getDb();
     const query = `INSERT INTO trainers (
-        trainerId, isSubscriptionActive, activeSessionsList, firstName, lastName, 
+        trainerId, subscriptionState, activeSessionsList, firstName, lastName, 
         phone, address, subscriptionName, sessionsCount, 
         price, subscriptionStart, subscriptionEnd
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     const values = [
         data.trainerId,
-        data.isSubscriptionActive,
+        data.subscriptionState,
         data.activeSessionsList,
         data.firstName,
         data.lastName,
@@ -67,8 +80,6 @@ export async function getTrainerById(id: number) {
         [id]
     );
 
-
-
     return result[0];
 }
 
@@ -78,5 +89,18 @@ export async function deleteTrainerById(id: number) {
     await database.execute(
         "DELETE FROM trainers WHERE trainerId = ?",
         [id]
+    );
+}
+
+export async function updateTrainerProperty(
+    trainerId: number,
+    column: TrainerColumn,
+    value: string | number | boolean
+) {
+    const database = await getDb();
+
+    await database.execute(
+        `UPDATE trainers SET ${column} = ? WHERE trainerId = ?`,
+        [value, trainerId]
     );
 }

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 // ========================================================== //
-export default function Add_Subscription_From_Settings() {
+export default function Subscriptions_Menu() {
     return <div className='flex justify-center mb-3'>
         <StyledWrapper className=' w-3/4'>
             <button className="btn-96 w-full font-bold">

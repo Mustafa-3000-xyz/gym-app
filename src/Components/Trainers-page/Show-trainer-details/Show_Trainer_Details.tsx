@@ -6,24 +6,29 @@ import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
-import { Date_Picker } from "../Add-trainer/Subscription-info/Date-info-form/Date-picker/Date_Picker";
-import { deleteTrainerById } from "@/db/trainerDb";
+import { deleteTrainerById, updateTrainerProperty } from "@/db/trainerDb";
 import Swal from "sweetalert2";
 
 import "swiper/css/navigation"
 import "swiper/css";
-import Add_Subscription_From_Settings from "@/Components/Add-subscription-from-settings/Add_Subscription_From_Settings";
 // ========================================================== //
 export default function Show_Trainer_Details(
-    { trainer, setIsShowTrainerDetails, getAllTrainers }: Show_Traine_Details_Props
+    { trainer, onIsShowTrainerDetails, getAllTrainers }: Show_Traine_Details_Props
 ) {
     const containerRef = useRef<HTMLDivElement | null>(null)
     const [hasOverflow, setHasOverflow] = useState(false)
     const [isBeginning, setIsBeginning] = useState(true);
     const [isEnd, setIsEnd] = useState(false);
+    const [isSubscriptionActive, setIsSubscriptionActive] = useState(
+        true
+    );
+    const [activeSessionsList, setActiveSessionsList] = useState(
+        JSON.parse(trainer.activeSessionsList as any)
+    );
+
 
     function closeThisWinow() {
-        setIsShowTrainerDetails(false);
+        onIsShowTrainerDetails(false);
     }
 
     function deleteTrainer(id: number) {
@@ -52,6 +57,29 @@ export default function Show_Trainer_Details(
         });
     }
 
+    async function clickOnSession(numCircle: number) {
+        const arr = [...activeSessionsList];
+
+        if (!activeSessionsList.includes(numCircle)) {
+            arr.push(numCircle);
+            setActiveSessionsList(arr);
+        }
+        // This for return about active session
+        else {
+            const result = arr.filter(num => num != numCircle);
+            setActiveSessionsList(result);
+        }
+    }
+
+    async function update() {
+        if (activeSessionsList.length == trainer.sessionsCount) {
+            setIsSubscriptionActive(false);
+            await updateTrainerProperty(trainer.trainerId, "subscriptionState", isSubscriptionActive);
+        }
+
+        await updateTrainerProperty(trainer.trainerId, "activeSessionsList", activeSessionsList);
+    }
+
 
     useEffect(() => {
         const el = containerRef.current;
@@ -59,6 +87,12 @@ export default function Show_Trainer_Details(
 
         setHasOverflow(el.clientHeight > 100)
     }, [trainer.sessionsCount]);
+
+
+    useEffect(function () {
+        update();
+    }, [activeSessionsList]);
+
 
 
     return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none">
@@ -103,35 +137,50 @@ export default function Show_Trainer_Details(
                         <h3 className=" font-bold mb-1">الحصص</h3>
                     </div>
 
-                    <div className="opacity-60">
-                        <p className="mb-4">
-                            <span> تم إكمال </span>
-                            <span className="font-bold me-1">
-                                {JSON.parse(trainer.activeSessionsList as any).length}
-                            </span>
-                            <span>
-                                من اصل
-                            </span>
-                            <span className="font-bold"> {trainer.sessionsCount} </span>
-                        </p>
+                    <div className="opacity-60 mb-4">
+                        {
+                            isSubscriptionActive == false ?
+                                <p>
+                                    تم إكمال الحصص
+                                </p>
+                                :
+                                <p>
+                                    <span> تم إكمال </span>
+                                    <span className="font-bold me-1">
+                                        {activeSessionsList.length}
+                                    </span>
+                                    <span>
+                                        من اصل
+                                    </span>
+                                    <span className="font-bold"> {trainer.sessionsCount} </span>
+                                </p>
+                        }
                     </div>
                 </div>
 
                 <div
                     ref={containerRef}
                     className={`
+                        transition duration-500
                         flex gap-2 flex-wrap overflow-auto
                         ${hasOverflow ? "h-[120px]" : "h-auto"}
                     `}
                 >
-                    {Array.from({ length: trainer.sessionsCount }).map((_, i) => (
-                        <div
+                    {Array.from({ length: trainer.sessionsCount }).map((_, i) => {
+                        const temp = activeSessionsList.includes(i);
+
+                        return <div
                             key={i}
-                            className="bg-slate-200 rounded-full h-12 w-12 flex items-center justify-center cursor-pointer"
+                            onClick={() => clickOnSession(i)}
+                            className={`
+                                ${temp ? "bg-[var(--primary)] text-white" : "bg-slate-200 text-black"}
+                                ${isSubscriptionActive ? "pointer-events-auto" : "pointer-events-none opacity-45"}
+                                cursor-pointer rounded-full h-12 w-12 flex items-center justify-center
+                            `}
                         >
                             {i + 1}
                         </div>
-                    ))}
+                    })}
                 </div>
             </div>
 
@@ -236,8 +285,6 @@ export default function Show_Trainer_Details(
 
                     {/* Subscription info */}
                     <SwiperSlide>
-                        <Add_Subscription_From_Settings />
-
                         <div className="grid grid-cols-3 gap-3 mb-3">
                             <div>
                                 <h4>اسم الاشتراك</h4>
@@ -302,11 +349,11 @@ export default function Show_Trainer_Details(
                             <div className=" w-3/6">
                                 <h4>تاريخ نهاية الاشتراك</h4>
 
-                                <Date_Picker
+                                {/* <End_Date_Picker
                                     subscriptionStart={trainer.subscriptionStart}
                                     subscriptionEnd={trainer.subscriptionEnd}
                                     setSubscriptionEnd={() => null}
-                                />
+                                /> */}
                             </div>
                         </div>
                     </SwiperSlide>

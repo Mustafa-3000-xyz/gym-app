@@ -2,17 +2,16 @@ import { motion } from "framer-motion";
 import { Presentation, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { addTrainer } from "@/db/trainerDb";
-import Trainer_Info_Form from "./Trainer-info-form/Trainer_Info_Form";
-import Date_Info_Form from "./Subscription-info/Date-info-form/Date_Info_Form";
-import Add_Subscription_From_Settings from "../../../Components/Add-subscription-from-settings/Add_Subscription_From_Settings";
-import { regexPhone } from "@/REGEX";
-import Subscription_Info_Form from "./Subscription-info/Subscription-info-form/Subscription_Info_Form";
+import Trainer_Info_Form from "../../Forms/Trainer-info-form/Trainer_Info_Form";
+import { regexPhone } from "@/lib/REGEX";
+import Subscription_Info_Form from "../../Forms/Subscription-info-form/Subscription_Info_Form";
 import { Add_Trainer_Props } from "@/Pages/Trainers-page/trainersTypes";
 import Discription from "@/Components/Description/Discription";
 import Swal from "sweetalert2";
+import Date_Info_Form from "@/Components/Forms/Date-info-form/Date_Info_Form";
 // ========================================================== //
 export default function Add_Trainer(
-    { setIsShowAddTrainer, getAllTrainers }: Add_Trainer_Props
+    { onIsShowAddTrainer, getAllTrainers }: Add_Trainer_Props
 ) {
     // Get trainer info
     const [getFirstName, setGetFirstName] = useState("");
@@ -21,9 +20,9 @@ export default function Add_Trainer(
     const [getAddress, setGetAddress] = useState("");
 
     // Get subscription info
-    const [subscriptionName, setSubscriptionName] = useState("");
-    const [sessionsCount, setSessionsCount] = useState(0);
-    const [price, setPrice] = useState(0);
+    const [getSubscriptionName, setGetSubscriptionName] = useState("");
+    const [getSessionsCount, setGetSessionsCount] = useState(0);
+    const [getPrice, setGetPrice] = useState(0);
 
     // Get date info
     const [getSubscriptionStart, setGetSubscriptionStart] = useState<string | null>(null);
@@ -34,19 +33,23 @@ export default function Add_Trainer(
     const [isAllInfoComplete, setIsAllInfoComplete] = useState(false);
 
 
+    function closeThisWinow() {
+        onIsShowAddTrainer(false);
+    }
+
     async function saveTrainerInfo() {
         if (isAllInfoComplete) {
             await addTrainer({
                 trainerId,
-                isSubscriptionActive: true,
+                subscriptionState: "active",
                 activeSessionsList: [],
                 firstName: getFirstName,
                 lastName: getLastName,
                 phone: getPhone,
                 address: getAddress,
-                subscriptionName,
-                sessionsCount,
-                price,
+                subscriptionName: getSubscriptionName,
+                sessionsCount: getSessionsCount,
+                price: getPrice,
                 subscriptionStart: getSubscriptionStart,
                 subscriptionEnd: getSubscriptionEnd,
             });
@@ -66,12 +69,8 @@ export default function Add_Trainer(
         });
     }
 
-    function closeThisWinow() {
-        setIsShowAddTrainer(false);
-    }
 
-
-    // This for get random id and run saveTrainerInfo function when click on enter
+    // This for get random id, and save trainer info when click on enter
     useEffect(function () {
         const id = Array.from({ length: 4 }, function () {
             return Math.trunc(Math.random() * 10)
@@ -97,9 +96,9 @@ export default function Add_Trainer(
             ) &&
             getFirstName &&
             getLastName &&
-            subscriptionName &&
-            sessionsCount &&
-            price &&
+            getSubscriptionName &&
+            getSessionsCount &&
+            getPrice &&
             getSubscriptionStart && getSubscriptionEnd
         ) {
             setIsAllInfoComplete(true);
@@ -109,9 +108,9 @@ export default function Add_Trainer(
     }, [
         getFirstName,
         getLastName,
-        subscriptionName,
-        sessionsCount,
-        price,
+        getSubscriptionName,
+        getSessionsCount,
+        getPrice,
         getPhone,
         getSubscriptionStart, getSubscriptionEnd
     ]);
@@ -150,10 +149,10 @@ export default function Add_Trainer(
                 </div>
 
                 <Trainer_Info_Form
-                    setGetFirstName={setGetFirstName}
-                    setGetLastName={setGetLastName}
-                    setGetPhone={setGetPhone}
-                    setGetAddress={setGetAddress}
+                    onGetFirstName={setGetFirstName}
+                    onGetLastName={setGetLastName}
+                    onGetPhone={setGetPhone}
+                    onGetAddress={setGetAddress}
                 />
             </div>
 
@@ -164,23 +163,18 @@ export default function Add_Trainer(
                     <p className="leading-none pt-0.5">تفاصيل الاشتراك</p>
                 </div>
 
-                <Add_Subscription_From_Settings />
-
                 <Subscription_Info_Form
-                    subscriptionName={subscriptionName}
-                    sessionsCount={sessionsCount}
-                    price={price}
-                    setSubscriptionName={setSubscriptionName}
-                    setSessionsCount={setSessionsCount}
-                    setPrice={setPrice}
+                    onGetSubscriptionName={setGetSubscriptionName}
+                    onGetSessionsCount={setGetSessionsCount}
+                    onGetPrice={setGetPrice}
                 />
             </div>
 
             {/* Date info */}
             <div className="mb-5">
                 <Date_Info_Form
-                    setGetSubscriptionStart={setGetSubscriptionStart}
-                    setGetSubscriptionEnd={setGetSubscriptionEnd}
+                    onGetSubscriptionStart={setGetSubscriptionStart}
+                    onGetSubscriptionEnd={setGetSubscriptionEnd}
                 />
             </div>
 

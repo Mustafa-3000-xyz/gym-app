@@ -1,13 +1,13 @@
 import { Trainer_Info_Form_Props } from "@/Pages/Trainers-page/trainersTypes";
-import { regexPhone, regexTranierName } from "@/REGEX";
+import { regexPhone, regexTranierName } from "@/lib/REGEX";
 import { useState } from "react";
 // ========================================================== //
 export default function Trainer_Info_Form(
     {
-        setGetFirstName,
-        setGetLastName,
-        setGetPhone,
-        setGetAddress
+        onGetFirstName,
+        onGetLastName,
+        onGetPhone,
+        onGetAddress
     }: Trainer_Info_Form_Props
 ) {
     const [messageError, setMessageError] = useState({
@@ -34,7 +34,7 @@ export default function Trainer_Info_Form(
                 firstName: ""
             }));
 
-            setGetFirstName(input.value);
+            onGetFirstName(input.value);
             input.classList.remove("!bg-red-600");
         }
 
@@ -52,7 +52,7 @@ export default function Trainer_Info_Form(
                 lastName: ""
             }));
 
-            setGetLastName(input.value);
+            onGetLastName(input.value);
             input.classList.remove("!bg-red-600");
         }
     }
@@ -76,7 +76,7 @@ export default function Trainer_Info_Form(
             }));
         }
 
-        setGetPhone(+input.value);
+        onGetPhone(+input.value);
     }
 
 
@@ -141,7 +141,7 @@ export default function Trainer_Info_Form(
             <div>
                 <h4 className="font-bold">العنوان (اختياري)</h4>
                 <input
-                    onChange={(e) => setGetAddress(e.target.value)}
+                    onChange={(e) => onGetAddress(e.target.value)}
                     type="text"
                     className=" bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0"
                 />

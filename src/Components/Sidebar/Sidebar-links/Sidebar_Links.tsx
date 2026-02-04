@@ -15,7 +15,8 @@ export default function Sidebar_Links(
 
     return <li className={`
             mb-3 transition duration-300 p-2 rounded-sm 
-            ${pathname == path ? "bg-[var(--primary)]/10 text-[var(--primary)]" : "hover:bg-[var(--primary)]/10 hover:text-[var(--primary)]"}
+            ${pathname == path ? "bg-(--primary)/10 text-(--primary)" 
+                : "hover:bg-(--primary)/10 hover:text-(--primary)"}
         `}
     >
         <Link to={path} className="flex items-center gap-2">

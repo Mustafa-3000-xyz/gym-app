@@ -5,7 +5,7 @@ import Notifications_Page from "./Pages/Notifications-page/Notifications_Page";
 import Settings_Page from "./Pages/Settings-page/Settings_Page";
 import Profits_Page from "./Pages/Profits-page/Profits_Page";
 import Expenses_page from "./Pages/Expenses-page/Expenses_Page";
-import SideBar from "./Components/Constants/SideBar";
+import SideBar from "./Components/Sidebar/SideBar";
 // ========================================================== //
 function App() {
   return <main dir="rtl" className="flex">

@@ -1,32 +1,29 @@
 import { useEffect, useState } from "react";
-import { Date_Picker } from "./Date-picker/Date_Picker";
-import { format, parse, differenceInDays } from "date-fns";
+import { End_Date_Picker } from "./Dates-picker/End-date-picker/End_Date_Picker";
+import { format, differenceInDays } from "date-fns";
 import { Date_Info_Props } from "@/Pages/Trainers-page/trainersTypes";
+import { styleDate } from "@/lib/dates";
+import Start_Date_Picker from "./Dates-picker/Start-date-picker/Start_Date_Picker";
 // ========================================================== //
 export default function Date_Info_Form(
-    { setGetSubscriptionStart, setGetSubscriptionEnd}: Date_Info_Props
+    { onGetSubscriptionStart, onGetSubscriptionEnd }: Date_Info_Props
 ) {
-    const [subscriptionStart, setSubscriptionStart] = useState("");
-    const [subscriptionEnd, setSubscriptionEnd] = useState("");
+    const [subscriptionStart, setSubscriptionStart] = useState<Date | null>(null);
+    const [subscriptionEnd, setSubscriptionEnd] = useState<Date | null>(null);
     const [theDaysBetweenSubStartAndSubEnd, setTheDaysBetweenSubStartAndSubEnd] = useState(0);
 
-    // This for get today date
-    useEffect(function () {
-        const date = new Date();
-        const formatted = format(date, "yyyy/MM/dd");
-        setSubscriptionStart(formatted);
-    }, []);
 
     // This for get days between subscriptionStart and subscriptionEnd
     useEffect(function () {
         if (!subscriptionStart || !subscriptionEnd) return;
-        const startDate = parse(subscriptionStart, "yyyy/MM/dd", new Date());
-        const endDate = parse(subscriptionEnd, "yyyy/MM/dd", new Date());
+        const startDate = format(subscriptionStart as any, styleDate);
+        const endDate = format(subscriptionEnd as any, styleDate);
         const diff = differenceInDays(endDate, startDate);
 
+
+        onGetSubscriptionStart(startDate as string);
+        onGetSubscriptionEnd(endDate as string);
         setTheDaysBetweenSubStartAndSubEnd(diff);
-        setGetSubscriptionStart(subscriptionStart);
-        setGetSubscriptionEnd(subscriptionEnd);
     }, [subscriptionStart, subscriptionEnd]);
 
 
@@ -35,9 +32,9 @@ export default function Date_Info_Form(
         <div className="w-3/4">
             <h4>تاريخ بدأ الاشتراك</h4>
 
-            <p className="w-full bg-slate-100 border border-slate-200 p-2 rounded-lg opacity-70 cursor-not-allowed">
-                {subscriptionStart}
-            </p>
+            <Start_Date_Picker
+                getDate={(date) => setSubscriptionStart(date as Date)}
+            />
         </div>
 
         {/* Days */}
@@ -58,10 +55,9 @@ export default function Date_Info_Form(
         <div className="w-3/4">
             <h4>تاريخ نهاية الاشتراك</h4>
 
-            <Date_Picker
-                subscriptionStart={subscriptionStart}
-                subscriptionEnd={subscriptionEnd}
-                setSubscriptionEnd={setSubscriptionEnd}
+            <End_Date_Picker
+                subscriptionStart={subscriptionStart as Date}
+                getDate={(date) => setSubscriptionEnd(date as Date)}
             />
         </div>
     </form>

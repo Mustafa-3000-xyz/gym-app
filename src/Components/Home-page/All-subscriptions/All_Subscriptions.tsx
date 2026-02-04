@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 export default function All_Subscriptions() {
     return <button className={`
             transform transition duration-500 hover:scale-105
-            bg-[var(--primary)] text-white p-5 rounded-lg select-none cursor-pointer
+            bg-(--primary) text-white p-5 rounded-lg select-none cursor-pointer
         `}
     >
         <Link to={"/trainers-page"}>

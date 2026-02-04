@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 export default function All_Trainers(
     {
         trainersList,
-        setGetTrainerDetails,
+        onGetTrainerDetails,
         setIsShowTrainerDetails,
     }: All_Trainers_Props
 ) {
@@ -16,7 +16,7 @@ export default function All_Trainers(
         const trainerInof = await getTrainerById(id);
 
         setIsShowTrainerDetails(true);
-        setGetTrainerDetails(trainerInof as trainer);
+        onGetTrainerDetails(trainerInof as trainer);
     }
 
 
@@ -53,7 +53,7 @@ export default function All_Trainers(
                     <td className="p-2 py-4">{ele.subscriptionEnd}</td>
                     <td className="p-2 py-4">
                         <span className={`
-                                    ${ele.isSubscriptionActive ?
+                                    ${ele.subscriptionState ?
                                 "bg-emerald-100 text-emerald-500"
                                 :
                                 "bg-yellow-100 text-yellow-500"
@@ -62,7 +62,7 @@ export default function All_Trainers(
                                 `}
                         >
                             {
-                                ele.isSubscriptionActive ?
+                                ele.subscriptionState == "active"?
                                     "مفعل"
                                     :
                                     "معلق"
