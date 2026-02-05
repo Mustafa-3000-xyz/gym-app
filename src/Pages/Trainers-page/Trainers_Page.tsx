@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { getTrainers } from "@/db/trainerDb";
 import { trainer } from "./trainersTypes";
 import Discription from "@/Components/Description/Discription";
-import All_Trainers from "@/Components/Trainers-page/All-trainers/All_Trainers";
-import Add_Trainer from "@/Components/Trainers-page/Add-trainer/Add_Trainer";
-import Show_Trainer_Details from "@/Components/Trainers-page/Show-trainer-details/Show_Trainer_Details";
+import Show_Trainer_Details from "./Show-trainer-details/Show_Trainer_Details";
+import Add_Trainer from "./Add-trainer/Add_Trainer";
+import All_Trainers from "./All-trainers/All_Trainers";
 // ========================================================== //
 export default function Trainers_Page() {
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
