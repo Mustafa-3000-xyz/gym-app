@@ -10,9 +10,7 @@ import All_Trainers from "./All-trainers/All_Trainers";
 export default function Trainers_Page() {
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
     const [isShowTrainerDetails, setIsShowTrainerDetails] = useState<boolean>(false);
-
     const [trainersList, setTrainersList] = useState<trainer[]>([]);
-    const [getTrainerDetails, setGetTrainerDetails] = useState<trainer | null>(null);
 
 
     function addTrianer() {
@@ -86,7 +84,6 @@ export default function Trainers_Page() {
         {/* Table for show some trainers */}
         <All_Trainers
             trainersList={trainersList}
-            onGetTrainerDetails={setGetTrainerDetails}
             setIsShowTrainerDetails={setIsShowTrainerDetails}
         />
 
@@ -102,7 +99,6 @@ export default function Trainers_Page() {
         {
             isShowTrainerDetails ?
                 <Show_Trainer_Details
-                    trainer={getTrainerDetails as trainer}
                     onIsShowTrainerDetails={setIsShowTrainerDetails}
                     getAllTrainers={getAllTrainers}
                 />

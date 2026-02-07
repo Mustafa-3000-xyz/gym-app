@@ -15,7 +15,6 @@ export interface trainer {
 
 export interface All_Trainers_Props {
     trainersList: trainer[],
-    onGetTrainerDetails: (x: trainer) => void,
     setIsShowTrainerDetails: (x: boolean) => void,
 }
 
@@ -48,7 +47,6 @@ export interface Trainer_Info_Form_Props {
 }
 
 export interface Show_Traine_Details_Props {
-    trainer: trainer,
     onIsShowTrainerDetails: (x: boolean) => void,
     getAllTrainers: () => void
 }

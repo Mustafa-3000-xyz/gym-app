@@ -12,16 +12,23 @@ import Swal from "sweetalert2";
 import "swiper/css/navigation";
 import "swiper/css";
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/lib/customs";
+import { useAtomValue } from "jotai";
+import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
 // ========================================================== //
 export default function Show_Trainer_Details(
-    { trainer, onIsShowTrainerDetails, getAllTrainers }: Show_Traine_Details_Props
+    {
+        onIsShowTrainerDetails,
+        getAllTrainers
+    }: Show_Traine_Details_Props
 ) {
+    const trainer = useAtomValue(trainerDetails_Atom);
+
     const containerRef = useRef<HTMLDivElement | null>(null)
     const [hasOverflow, setHasOverflow] = useState(false);
 
-    const [subscriptionState, setSubscriptionState] = useState(trainer.subscriptionState);
+    const [subscriptionState, setSubscriptionState] = useState(trainer?.subscriptionState);
     const [activeSessionsList, setActiveSessionsList] = useState(
-        JSON.parse(trainer.activeSessionsList as any)
+        JSON.parse(trainer?.activeSessionsList as any)
     );
 
     // These for swiper
@@ -66,7 +73,7 @@ export default function Show_Trainer_Details(
                     confirmButtonText: "تمام"
                 });
 
-                await deleteTrainerById(trainer.trainerId);
+                await deleteTrainerById(trainer?.trainerId as number);
                 getAllTrainers();
                 closeThisWinow();
             }
@@ -93,7 +100,8 @@ export default function Show_Trainer_Details(
                 });
 
                 setSubscriptionState(stateIsFinished);
-                await updateTrainerProperty(trainer.trainerId, "subscriptionState", stateIsFinished);
+                await updateTrainerProperty(trainer?.trainerId as number, 
+                    "subscriptionState", stateIsFinished);
                 getAllTrainers();
                 closeThisWinow();
             }
@@ -101,13 +109,15 @@ export default function Show_Trainer_Details(
     }
 
     async function checkInActiveSessionsList() {
-        if (activeSessionsList.length == trainer.sessionsCount) {
+        if (activeSessionsList.length == trainer?.sessionsCount) {
             setSubscriptionState(stateIsFinished);
-            await updateTrainerProperty(trainer.trainerId, "subscriptionState", stateIsFinished);
+            await updateTrainerProperty(trainer?.trainerId as number, 
+                "subscriptionState", stateIsFinished);
             getAllTrainers();
         }
 
-        await updateTrainerProperty(trainer.trainerId, "activeSessionsList", activeSessionsList);
+        await updateTrainerProperty(trainer?.trainerId as number, 
+            "activeSessionsList", activeSessionsList);
     }
 
 
@@ -116,9 +126,10 @@ export default function Show_Trainer_Details(
 
         setHasOverflow(el!.clientHeight > 100);
         checkInActiveSessionsList();
-    }, [trainer.sessionsCount, trainer.activeSessionsList, activeSessionsList]);
+    }, [trainer?.sessionsCount, trainer?.activeSessionsList, activeSessionsList]);
 
 
+    if (!trainer) return null;
 
     return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none">
         <motion.div
@@ -151,11 +162,11 @@ export default function Show_Trainer_Details(
 
                     <div>
                         <h3 className="font-bold text-lg">
-                            {trainer.firstName} {trainer.lastName}
+                            {trainer?.firstName} {trainer?.lastName}
                         </h3>
                         <p>
                             <span>رقم المتدرب : </span>
-                            <span className=" underline font-bold">{trainer.trainerId}</span>
+                            <span className=" underline font-bold">{trainer?.trainerId}</span>
                         </p>
                     </div>
                 </div>

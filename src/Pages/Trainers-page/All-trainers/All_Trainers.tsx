@@ -1,24 +1,26 @@
-import { All_Trainers_Props, trainer } from "@/Pages/Trainers-page/trainersTypes";
+import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
+import { All_Trainers_Props } from "@/Pages/Trainers-page/trainersTypes";
 import { getTrainerById } from "@/db/trainerDb";
 import { stateIsActive, stateIsFinished, stateIsPending, styleDate } from "@/lib/customs";
 import { format } from "date-fns";
+import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 // ========================================================== //
 export default function All_Trainers(
     {
         trainersList,
-        onGetTrainerDetails,
         setIsShowTrainerDetails,
     }: All_Trainers_Props
 ) {
     const [allPrice, setAllPrice] = useState(0);
+    const setTrainerDetailsAtom = useAtom(trainerDetails_Atom)[1];
 
 
     async function showDetailsTrainer(id: number) {
         const trainerInof = await getTrainerById(id);
 
         setIsShowTrainerDetails(true);
-        onGetTrainerDetails(trainerInof as trainer);
+        setTrainerDetailsAtom(trainerInof);
     }
 
 
