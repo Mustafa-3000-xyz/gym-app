@@ -34,8 +34,12 @@ export interface Date_Info_Props {
     onGetSubscriptionEnd: (x: Date) => void,
 }
 
+export interface Start_Date_Picker_Props {
+    getDate: (x: Date | null) => void
+}
+
 export interface End_Date_Picker_Props {
-    subscriptionStart: Date,
+    dateStart: Date,
     getDate: (x: Date | null) => void
 }
 

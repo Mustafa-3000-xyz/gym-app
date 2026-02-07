@@ -55,7 +55,7 @@ export default function Date_Info_Form(
             <h4>تاريخ نهاية الاشتراك</h4>
 
             <End_Date_Picker
-                subscriptionStart={subscriptionStart as Date}
+                dateStart={subscriptionStart as Date}
                 getDate={(date) => setSubscriptionEnd(date as Date)}
             />
         </div>

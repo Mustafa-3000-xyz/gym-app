@@ -10,10 +10,14 @@ import Discription from "@/Components/Description/Discription";
 import Swal from "sweetalert2";
 import { stateIsActive } from "@/lib/customs";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
+import { useAtom } from "jotai";
+import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 // ========================================================== //
 export default function Add_Trainer(
     { onIsShowAddTrainer, getAllTrainers }: Add_Trainer_Props
 ) {
+    const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
+
     // Get trainer info
     const [getFirstName, setGetFirstName] = useState("");
     const [getLastName, setGetLastName] = useState("");
@@ -71,19 +75,28 @@ export default function Add_Trainer(
     }
 
 
-    // This for get random id, and save trainer info when click on enter
+    // This for send false to isShowTrainerDetails_Atom
+    useEffect(function () {
+        setIsShowTrainerDetailsAtom(false);
+    }, []);
+
+    // This for get random id
     useEffect(function () {
         const id = Array.from({ length: 4 }, function () {
             return Math.trunc(Math.random() * 10)
         }).join("");
 
         setTrainerId(id);
+    }, []);
 
+    // This for save trainer info when click on enter
+    useEffect(function () {
         function event(e: KeyboardEvent) {
             if (e.key == "Enter") {
                 saveTrainerInfo();
             }
         }
+
 
         window.addEventListener("keydown", event);
         () => window.removeEventListener("keydown", event);

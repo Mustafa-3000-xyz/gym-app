@@ -10,36 +10,48 @@ import {
 } from "@/Components/Shadcn/popover"
 import { End_Date_Picker_Props } from "@/Pages/Trainers-page/trainersTypes";
 import { styleDate } from "@/lib/customs";
+import { useAtomValue } from "jotai";
+import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
+import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
 // ========================================================== //
 export function End_Date_Picker(
-    { subscriptionStart, getDate }: End_Date_Picker_Props
+    { dateStart, getDate }: End_Date_Picker_Props
 ) {
+    const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
+    const trainer = useAtomValue(trainerDetails_Atom);
+
     const [selectDate, setSelectDate] = React.useState<Date | null>(null);
-    const [formatDate, setFormatDate] = React.useState<string | null>(null);
     const [openMenu, setOpenMenu] = React.useState(false);
 
 
+    React.useEffect(function () {
+        if (isShowTrainerDetailsAtom) {
+            setSelectDate(new Date(trainer?.subscriptionEnd as string));
+        } else {
+            setSelectDate(null);
+        }
+    }, [isShowTrainerDetailsAtom]);
 
-    // When the date end small than date start, so return the selectDate and formatDate to default value
+
     React.useEffect(function () {
         if (!selectDate) return;
 
-        if (subscriptionStart >= selectDate) {
+        if (dateStart >= selectDate) {
             setSelectDate(null);
-            setFormatDate(null);
             getDate(null);
-        } else {
-            const result = format(selectDate, styleDate);
-
-            setFormatDate(result);
-            getDate(selectDate);
         }
-    }, [subscriptionStart, selectDate]);
+    }, [dateStart, selectDate]);
+
+
+    React.useEffect(function () {
+        getDate(selectDate);
+    }, [selectDate]);
+
 
 
     return <Field className="w-full">
         <Popover
-            open={!subscriptionStart ? false : openMenu}
+            open={!dateStart ? false : openMenu}
             onOpenChange={(open) => setOpenMenu(open)}
         >
             <PopoverTrigger asChild>
@@ -48,15 +60,14 @@ export function End_Date_Picker(
                     id="date"
                     className={`
                         justify-start border-slate-200
-                        ${!subscriptionStart ? "opacity-60 cursor-not-allowed"
+                        ${!dateStart ? "opacity-60 cursor-not-allowed"
                             : "opacity-100  cursor-pointer"}
                     `}
                 >
                     {
-                        !subscriptionStart ?
-                            "قم اولا بختيار تاريخ بداية الاشتراك"
-                            :
-                            formatDate ? formatDate : "اليوم / الشهر / السنه"
+                        !dateStart ? "قم اولا بختيار تاريخ بداية الاشتراك"
+                            : selectDate ? format(selectDate as Date, styleDate)
+                                : "اليوم / الشهر / السنه"
                     }
                 </Button>
             </PopoverTrigger>
@@ -67,7 +78,7 @@ export function End_Date_Picker(
                     mode="single"
                     captionLayout="dropdown"
                     selected={selectDate as Date}
-                    disabled={(date) => date <= subscriptionStart}
+                    disabled={(date) => date <= dateStart}
                     onSelect={(date) => {
                         setSelectDate(date as Date);
                         setOpenMenu(false);

@@ -12,8 +12,10 @@ import Swal from "sweetalert2";
 import "swiper/css/navigation";
 import "swiper/css";
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/lib/customs";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
+import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
+import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 // ========================================================== //
 export default function Show_Trainer_Details(
     {
@@ -22,6 +24,8 @@ export default function Show_Trainer_Details(
     }: Show_Traine_Details_Props
 ) {
     const trainer = useAtomValue(trainerDetails_Atom);
+    const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
+
 
     const containerRef = useRef<HTMLDivElement | null>(null)
     const [hasOverflow, setHasOverflow] = useState(false);
@@ -100,7 +104,7 @@ export default function Show_Trainer_Details(
                 });
 
                 setSubscriptionState(stateIsFinished);
-                await updateTrainerProperty(trainer?.trainerId as number, 
+                await updateTrainerProperty(trainer?.trainerId as number,
                     "subscriptionState", stateIsFinished);
                 getAllTrainers();
                 closeThisWinow();
@@ -111,15 +115,19 @@ export default function Show_Trainer_Details(
     async function checkInActiveSessionsList() {
         if (activeSessionsList.length == trainer?.sessionsCount) {
             setSubscriptionState(stateIsFinished);
-            await updateTrainerProperty(trainer?.trainerId as number, 
+            await updateTrainerProperty(trainer?.trainerId as number,
                 "subscriptionState", stateIsFinished);
             getAllTrainers();
         }
 
-        await updateTrainerProperty(trainer?.trainerId as number, 
+        await updateTrainerProperty(trainer?.trainerId as number,
             "activeSessionsList", activeSessionsList);
     }
 
+    // This for send true to isShowTrainerDetails_Atom
+    useEffect(function () {
+        setIsShowTrainerDetailsAtom(true);
+    }, []);
 
     useEffect(() => {
         const el = containerRef.current;
@@ -278,131 +286,15 @@ export default function Show_Trainer_Details(
                 >
                     {/* Trainer info */}
                     <SwiperSlide>
-                        <div className="grid grid-cols-2 gap-3 mb-2">
-                            <div className="mb-2">
-                                <h3 className=" font-bold mb-1">الاسم الاول</h3>
-                                <input
-                                    defaultValue={trainer.firstName}
-                                    type="text"
-                                    className="bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0 w-full"
-                                />
-                            </div>
 
-                            <div className="mb-2">
-                                <h3 className=" font-bold mb-1">الاسم الثاني</h3>
-                                <input
-                                    defaultValue={trainer.lastName}
-                                    type="text"
-                                    className="bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0 w-full"
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="mb-2">
-                                <h3 className=" font-bold mb-1">العنوان</h3>
-                                <input
-                                    defaultValue={trainer.address}
-                                    type="text"
-                                    className="bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0 w-full"
-                                />
-                            </div>
-
-                            <div className="mb-2">
-                                <h3 className=" font-bold mb-1">رقم الموبايل</h3>
-                                <div className="bg-slate-100 border border-slate-200 rounded-lg relative">
-                                    <input
-                                        defaultValue={trainer.phone}
-                                        type="number"
-                                        className={`
-                                    p-2 w-[80%] focus:outline-0
-                                    appearance-none
-                                    [&::-webkit-inner-spin-button]:appearance-none
-                                    [&::-webkit-outer-spin-button]:appearance-none"
-                                `}
-                                    />
-
-                                    <span className="absolute top-2 left-3">
-                                        20+
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
                     </SwiperSlide>
 
                     {/* Subscription info */}
                     <SwiperSlide>
-                        <div className="grid grid-cols-3 gap-3 mb-3">
-                            <div>
-                                <h4>اسم الاشتراك</h4>
-                                <input
-                                    defaultValue={trainer.subscriptionName}
-                                    type="text"
-                                    className="w-full bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0"
-                                />
-                            </div>
-
-                            <div>
-                                <h4>عدد الحصص</h4>
-                                <input
-                                    defaultValue={trainer.sessionsCount}
-                                    type="number"
-                                    className={`
-                                        w-full bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0
-                                        appearance-none
-                                        [&::-webkit-inner-spin-button]:appearance-none
-                                        [&::-webkit-outer-spin-button]:appearance-none"
-                                    `}
-                                />
-                            </div>
-
-                            <div>
-                                <h4>السعر</h4>
-                                <input
-                                    defaultValue={trainer.price}
-                                    type="number"
-                                    className={`
-                                        w-full bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0
-                                        appearance-none
-                                        [&::-webkit-inner-spin-button]:appearance-none
-                                        [&::-webkit-outer-spin-button]:appearance-none"
-                                    `}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="flex gap-3">
-                            {/* Start subscription */}
-                            <div className=" w-3/6">
-                                <h4>تاريخ بدأ الاشتراك</h4>
-
-                                <p className="w-full bg-slate-100 border border-slate-200 p-2 rounded-lg opacity-70 cursor-not-allowed">
-                                    {trainer.subscriptionStart}
-                                </p>
-                            </div>
-
-                            {/* Days */}
-                            <div className="mt-5 px-3 flex gap-1">
-                                <span className="leading-7">
-                                    000
-                                </span>
-
-                                <span>
-                                    يوم
-                                </span>
-                            </div>
-
-                            {/* End subscription */}
-                            <div className=" w-3/6">
-                                <h4>تاريخ نهاية الاشتراك</h4>
-
-                                {/* <End_Date_Picker
-                                    subscriptionStart={trainer.subscriptionStart}
-                                    subscriptionEnd={trainer.subscriptionEnd}
-                                    setSubscriptionEnd={() => null}
-                                /> */}
-                            </div>
-                        </div>
+                        <Date_Info_Form 
+                            onGetSubscriptionStart={()=> null}
+                            onGetSubscriptionEnd={()=> null}
+                        />
                     </SwiperSlide>
                 </Swiper>
             </div>

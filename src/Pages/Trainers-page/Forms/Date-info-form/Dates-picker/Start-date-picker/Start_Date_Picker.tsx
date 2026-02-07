@@ -1,34 +1,43 @@
 import { Button } from "@/Components/Shadcn/button"
 import { Calendar } from "@/Components/Shadcn/calendar"
 import { Field } from "@/Components/Shadcn/field"
+import { useEffect, useState } from "react";
+import { format } from "date-fns";
+import { styleDate } from "@/lib/customs";
+import { Start_Date_Picker_Props } from "@/Pages/Trainers-page/trainersTypes";
+import { useAtomValue } from "jotai";
+import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/Components/Shadcn/popover";
-import { useEffect, useState } from "react";
-import { format } from "date-fns";
-import { styleDate } from "@/lib/customs";
+import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
 // ========================================================== //
 export default function Start_Date_Picker(
-    {getDate}: {getDate: (x: Date) => void}
+    { getDate }: Start_Date_Picker_Props
 ) {
+    const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
+    const trainer = useAtomValue(trainerDetails_Atom);
+
     const [selectDate, setSelectDate] = useState<Date | null>(null);
-    const [formatDate, setFormatDate] = useState<string | null>(null);
     const [openMenu, setOpenMenu] = useState(false);
     const dateNow = new Date();
     dateNow.setHours(0, 0, 0, 0);
 
+    // Check if the isShowTrainerDetailsAtom is true, so the manager he want see trainer details
+    useEffect(function () {
+        if (isShowTrainerDetailsAtom) {
+            setSelectDate(new Date(trainer?.subscriptionStart as string));
+        } else {
+            setSelectDate(null);
+        }
+    }, [isShowTrainerDetailsAtom]);
+
 
     useEffect(function () {
-        if (!selectDate) return;
-        const result = format(selectDate, styleDate);
-
-        getDate(selectDate as Date);
-        setFormatDate(result);
+        getDate(selectDate);
     }, [selectDate]);
-
-
 
     return <Field className="w-full">
         <Popover open={openMenu} onOpenChange={(open) => setOpenMenu(open)}>
@@ -39,7 +48,9 @@ export default function Start_Date_Picker(
                     className="justify-start cursor-pointer border-slate-200"
                 >
                     {
-                        formatDate ? formatDate : "اليوم / الشهر / السنه"
+                        isShowTrainerDetailsAtom ? format(selectDate as Date, styleDate)
+                            : selectDate ? format(selectDate as Date, styleDate)
+                                : "اليوم / الشهر / السنه"
                     }
                 </Button>
             </PopoverTrigger>
@@ -49,8 +60,8 @@ export default function Start_Date_Picker(
                     className="w-full"
                     mode="single"
                     captionLayout="dropdown"
-                    selected={selectDate as Date}
                     disabled={(date) => date < dateNow}
+                    selected={selectDate as Date}
                     onSelect={(date) => {
                         setSelectDate(date as Date);
                         setOpenMenu(false);
