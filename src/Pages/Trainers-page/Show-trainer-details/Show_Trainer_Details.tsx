@@ -16,6 +16,8 @@ import { useAtom, useAtomValue } from "jotai";
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
 import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
+import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
+import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 // ========================================================== //
 export default function Show_Trainer_Details(
     {
@@ -26,9 +28,9 @@ export default function Show_Trainer_Details(
     const trainer = useAtomValue(trainerDetails_Atom);
     const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
 
+
     const containerRef = useRef<HTMLDivElement | null>(null)
     const [hasOverflow, setHasOverflow] = useState(false);
-
     const [subscriptionState, setSubscriptionState] = useState(trainer?.subscriptionState);
     const [activeSessionsList, setActiveSessionsList] = useState(
         JSON.parse(trainer?.activeSessionsList as any)
@@ -39,22 +41,23 @@ export default function Show_Trainer_Details(
     const [isEnd, setIsEnd] = useState(false);
 
 
+    // Trainer informations
+    const [getFirstName, setGetFirstName] = useState<string>("");
+    const [getLastName, setGetLastName] = useState<string>("");
+    const [getPhone, setGetPhone] = useState<number | string>("");
+    const [getAddress, setGetAddress] = useState<string>("");
+    const [getSubscriptionName, setGetSubscriptionName] = useState<string | string>("");
+    const [getSessionsCount, setGetSessionsCount] = useState<number | string>("");
+    const [getPrice, setGetPrice] = useState<number | string>("");
+    const [getSubscriptionStart, setGetSubscriptionStart] = useState<Date | null>(null);
+    const [getSubscriptionEnd, setGetSubscriptionEnd] = useState<Date | null>(null);
+
+    // This variable check is the info is updated 
+    const [isInfoChange, setIsInfoChange] = useState(false);
+
+
     function closeThisWinow() {
         onIsShowTrainerDetails(false);
-    }
-
-    async function clickOnSession(numCircle: number) {
-        const arr = [...activeSessionsList];
-
-        if (!activeSessionsList.includes(numCircle)) {
-            arr.push(numCircle);
-            setActiveSessionsList(arr);
-        }
-        // This for return about active session
-        else {
-            const result = arr.filter(num => num != numCircle);
-            setActiveSessionsList(result);
-        }
     }
 
     function deleteTrainer() {
@@ -123,17 +126,50 @@ export default function Show_Trainer_Details(
             "activeSessionsList", activeSessionsList);
     }
 
+    async function clickOnSession(numCircle: number) {
+        const arr = [...activeSessionsList];
+
+        if (!activeSessionsList.includes(numCircle)) {
+            arr.push(numCircle);
+            setActiveSessionsList(arr);
+        }
+        // This for return about active session
+        else {
+            const result = arr.filter(num => num != numCircle);
+            setActiveSessionsList(result);
+        }
+    }
+
+    async function updateInfo() {
+        console.log("Update is done");
+    }
+
+
+
     // This for send true to isShowTrainerDetails_Atom
     useEffect(function () {
         setIsShowTrainerDetailsAtom(true);
     }, []);
 
+
+    // Check the hight for container sessions and run the checkInActiveSessionsList
     useEffect(() => {
         const el = containerRef.current;
 
         setHasOverflow(el!.clientHeight > 100);
         checkInActiveSessionsList();
     }, [trainer?.sessionsCount, trainer?.activeSessionsList, activeSessionsList]);
+
+
+
+    // Check the any info is change
+    useEffect(function () {
+
+    }, [getFirstName, getLastName, getPhone, getAddress,
+        getSubscriptionName, getSessionsCount,
+        getPrice, getSubscriptionStart, getSubscriptionEnd]);
+
+
 
 
     if (!trainer) return null;
@@ -285,14 +321,24 @@ export default function Show_Trainer_Details(
                 >
                     {/* Trainer info */}
                     <SwiperSlide>
-
+                        <Trainer_Info_Form
+                            onGetFirstName={setGetFirstName}
+                            onGetLastName={setGetLastName}
+                            onGetPhone={setGetPhone}
+                            onGetAddress={setGetAddress}
+                        />
                     </SwiperSlide>
 
                     {/* Subscription info */}
                     <SwiperSlide>
-                        <Date_Info_Form 
-                            onGetSubscriptionStart={()=> null}
-                            onGetSubscriptionEnd={()=> null}
+                        <Subscription_Info_Form
+                            onGetSubscriptionName={setGetSubscriptionName}
+                            onGetSessionsCount={setGetSessionsCount}
+                            onGetPrice={setGetPrice}
+                        />
+                        <Date_Info_Form
+                            onGetSubscriptionStart={setGetSubscriptionStart}
+                            onGetSubscriptionEnd={setGetSubscriptionEnd}
                         />
                     </SwiperSlide>
                 </Swiper>
@@ -355,11 +401,14 @@ export default function Show_Trainer_Details(
             {/* Btn change and cancel */}
             <div className="bg-black/5 p-5 border-t border-t-slate-300 flex gap-3">
                 <button
-                    disabled={true}
+                    disabled={isInfoChange ? false : true}
+                    onClick={updateInfo}
                     className={`
                         transition duration-300 
                         bg-[#385E97] text-white px-5  py-2 rounded-lg
-                        opacity-50 cursor-not-allowed hover:bg-[#285E97]
+                        hover:bg-[#285E97]
+                        ${isInfoChange ? "opacity-100 cursor-pointer"
+                            : "opacity-50 cursor-not-allowed"}
                     `}
                 >
                     حفظ التغيرات

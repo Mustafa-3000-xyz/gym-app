@@ -26,8 +26,8 @@ export default function Add_Trainer(
 
     // Get subscription info
     const [getSubscriptionName, setGetSubscriptionName] = useState("");
-    const [getSessionsCount, setGetSessionsCount] = useState<number | null>(null);
-    const [getPrice, setGetPrice] = useState<number | null>(null);
+    const [getSessionsCount, setGetSessionsCount] = useState<number | string>("");
+    const [getPrice, setGetPrice] = useState<number | string>("");
 
     // Get date info
     const [getSubscriptionStart, setGetSubscriptionStart] = useState<Date | null>(null);
@@ -106,7 +106,7 @@ export default function Add_Trainer(
     useEffect(() => {
         if (
             (
-                getPhone == 0 || new String(getPhone).match(regexPhone)
+                +getPhone == 0 || new String(getPhone).match(regexPhone)
             ) &&
             getFirstName &&
             getLastName &&

@@ -25,8 +25,8 @@ export interface Add_Trainer_Props {
 
 export interface Subscription_Info_Form_Props {
     onGetSubscriptionName: (x: string) => void,
-    onGetSessionsCount: (x: number) => void,
-    onGetPrice: (x: number) => void,
+    onGetSessionsCount: (x: number | string) => void,
+    onGetPrice: (x: number | string) => void,
 }
 
 export interface Date_Info_Props {
@@ -46,7 +46,7 @@ export interface End_Date_Picker_Props {
 export interface Trainer_Info_Form_Props {
     onGetFirstName: (x: string) => void,
     onGetLastName: (x: string) => void,
-    onGetPhone: (x: number) => void,
+    onGetPhone: (x: string) => void,
     onGetAddress: (x: string) => void,
 }
 

@@ -1,6 +1,9 @@
+import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
+import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
 import { Trainer_Info_Form_Props } from "@/Pages/Trainers-page/trainersTypes";
 import { regexPhone, regexTranierName } from "@/lib/REGEX";
-import { useState } from "react";
+import { useAtomValue } from "jotai";
+import { useEffect, useState } from "react";
 // ========================================================== //
 export default function Trainer_Info_Form(
     {
@@ -10,6 +13,14 @@ export default function Trainer_Info_Form(
         onGetAddress
     }: Trainer_Info_Form_Props
 ) {
+    const trainer = useAtomValue(trainerDetails_Atom);
+    const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
+
+
+    const [firstName, setFirstName] = useState<string>("");
+    const [lastName, setLastName] = useState<string>("");
+    const [phone, setPhone] = useState<string>("");
+    const [address, setAddress] = useState<string>("");
     const [messageError, setMessageError] = useState({
         firstName: "",
         lastName: "",
@@ -18,42 +29,20 @@ export default function Trainer_Info_Form(
 
 
     function checkInpName(input: HTMLInputElement) {
-        const getAttrInInp = input.getAttribute("inp-type");
+        const getAttr = input.getAttribute("inp-type");
+        let valueInp = "";
 
-        if (input.value.match(regexTranierName) && getAttrInInp == "firstName") {
-            setMessageError(prev => ({
-                ...prev,
-                firstName: "لا تضع المسافات"
-            }));
-
-            input.classList.add("!bg-red-600");
-        }
-        else if (!input.value.match(regexTranierName) && getAttrInInp == "firstName") {
-            setMessageError(prev => ({
-                ...prev,
-                firstName: ""
-            }));
-
-            onGetFirstName(input.value);
-            input.classList.remove("!bg-red-600");
+        if (input.value.match(regexTranierName)) {
+            valueInp += input.value.replace(/\s/g, "");
+        } else {
+            valueInp += input.value
         }
 
-        if (input.value.match(regexTranierName) && getAttrInInp == "lastName") {
-            setMessageError(prev => ({
-                ...prev,
-                lastName: "لا تضع المسافات"
-            }));
 
-            input.classList.add("!bg-red-600");
-        }
-        else if (!input.value.match(regexTranierName) && getAttrInInp == "lastName") {
-            setMessageError(prev => ({
-                ...prev,
-                lastName: ""
-            }));
-
-            onGetLastName(input.value);
-            input.classList.remove("!bg-red-600");
+        if (getAttr == "firstName") {
+            setFirstName(valueInp);
+        } else {
+            setLastName(valueInp);
         }
     }
 
@@ -67,6 +56,7 @@ export default function Trainer_Info_Form(
                 ...prev,
                 phone: ""
             }));
+
         } else {
             parent.classList.add("!bg-red-600");
 
@@ -76,48 +66,78 @@ export default function Trainer_Info_Form(
             }));
         }
 
-        onGetPhone(+input.value);
+        setPhone(input.value);
     }
+
+
+
+    useEffect(function () {
+        if (isShowTrainerDetailsAtom && trainer) {
+            setFirstName(trainer.firstName);
+            setLastName(trainer.lastName);
+            setPhone(trainer.phone);
+            setAddress(trainer.address);
+        } else {
+            setFirstName("");
+            setLastName("");
+            setPhone("");
+            setAddress("");
+        }
+    }, [isShowTrainerDetailsAtom, trainer]);
+
+
+    useEffect(function () {
+        onGetFirstName(firstName);
+        onGetLastName(lastName);
+        onGetPhone(phone);
+        onGetAddress(address);
+    }, [firstName, lastName, phone, address]);
 
 
     return <form className="px-3">
         {/* First name & Last name */}
         <div className="flex justify-center gap-3 mb-5">
-            <div className="flex flex-col">
+            <div className={`
+                    ${isShowTrainerDetailsAtom ? "w-3/5" : ""}
+                    flex flex-col
+                `}
+            >
                 <h4 className="font-bold">الاسم الاول</h4>
                 <input
+                    value={firstName}
                     onChange={(e) => checkInpName(e.target)}
                     inp-type="firstName"
                     type="text"
                     className="bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0"
                 />
-
-                <span className="text-red-600">
-                    {messageError.firstName}
-                </span>
             </div>
 
-            <div className="flex flex-col">
+            <div className={`
+                    ${isShowTrainerDetailsAtom ? "w-3/5" : ""}
+                    flex flex-col
+                `}
+            >
                 <h4 className="font-bold">الاسم الثاني</h4>
                 <input
+                    value={lastName}
                     onChange={(e) => checkInpName(e.target)}
-                    inp-type="lastName"
                     type="text"
                     className=" bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0"
                 />
-
-                <span className="text-red-600">
-                    {messageError.lastName}
-                </span>
             </div>
         </div>
 
         {/* Phone number & Adrees */}
         <div className="flex justify-center gap-3">
-            <div className="flex flex-col">
+            <div className={`
+                    ${isShowTrainerDetailsAtom ? "w-3/5" : ""}
+                    flex flex-col
+                `}
+            >
                 <h4 className="font-bold">رقم الموبايل (اختياري)</h4>
                 <div className="bg-slate-100 border border-slate-200 rounded-lg relative">
                     <input
+                        value={phone}
                         onChange={(e) => checkInpNumber(e.target)}
                         type="number"
                         className={`
@@ -138,10 +158,15 @@ export default function Trainer_Info_Form(
                 </span>
             </div>
 
-            <div>
+            <div className={`
+                    ${isShowTrainerDetailsAtom ? "w-3/5" : ""}
+                    flex flex-col
+                `}
+            >
                 <h4 className="font-bold">العنوان (اختياري)</h4>
                 <input
-                    onChange={(e) => onGetAddress(e.target.value)}
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
                     type="text"
                     className=" bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0"
                 />
