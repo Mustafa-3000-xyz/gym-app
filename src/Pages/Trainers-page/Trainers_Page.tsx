@@ -81,7 +81,7 @@ export default function Trainers_Page() {
             </button>
         </div>
 
-        {/* Table for show some trainers */}
+        {/* Table for show all trainers */}
         <All_Trainers
             trainersList={trainersList}
             setIsShowTrainerDetails={setIsShowTrainerDetails}
