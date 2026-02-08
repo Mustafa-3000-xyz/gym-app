@@ -62,7 +62,7 @@ export default function Subscription_Info_Form(
                 <h4>عدد الحصص</h4>
                 <input
                     value={sessions}
-                    onChange={(e) => setSessions(Number(e.target.value))}
+                    onChange={(e) => setSessions(e.target.value)}
                     type="number"
                     className="bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0
                         appearance-none

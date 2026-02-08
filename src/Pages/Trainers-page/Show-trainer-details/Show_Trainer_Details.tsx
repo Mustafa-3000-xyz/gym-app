@@ -53,7 +53,7 @@ export default function Show_Trainer_Details(
     const [getSubscriptionEnd, setGetSubscriptionEnd] = useState<Date | null>(null);
 
     // This variable check is the info is updated 
-    const [isInfoChange, setIsInfoChange] = useState(false);
+    const [isInfoChange, setIsInfoChange] = useState<boolean>(false);
 
 
     function closeThisWinow() {
@@ -142,6 +142,7 @@ export default function Show_Trainer_Details(
 
     async function updateInfo() {
         console.log("Update is done");
+        setIsInfoChange(true);
     }
 
 

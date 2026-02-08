@@ -33,13 +33,13 @@ export function End_Date_Picker(
     }, [isShowTrainerDetailsAtom]);
 
 
+
     React.useEffect(function () {
-        if (dateStart >= selectDate!) {
+        if (dateStart >= selectDate! && selectDate != null) {
             setSelectDate(null);
-            getDate(null);
-        } else {
-            getDate(selectDate);
         }
+
+        getDate(selectDate);
     }, [dateStart, selectDate]);
 
 
