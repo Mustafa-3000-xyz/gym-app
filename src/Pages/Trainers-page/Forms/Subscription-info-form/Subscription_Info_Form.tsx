@@ -52,10 +52,7 @@ export default function Subscription_Info_Form(
                 <h4>اسم الاشتراك</h4>
                 <input
                     value={subscriptionName}
-                    onChange={(e) => {
-                        setSubscriptionName(e.target.value);
-                        onGetSubscriptionName(e.target.value);
-                    }}
+                    onChange={(e) => setSubscriptionName(e.target.value)}
                     type="text"
                     className="bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0"
                 />
