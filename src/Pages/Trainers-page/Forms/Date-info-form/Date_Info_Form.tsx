@@ -29,8 +29,6 @@ export default function Date_Info_Form(
     return <form className="flex justify-center items-center gap-2 px-3" >
         {/* Start subscription */}
         <div className="w-3/4">
-            <h4>تاريخ بدأ الاشتراك</h4>
-
             <Start_Date_Picker
                 getDate={(date) => setSubscriptionStart(date as Date)}
             />
@@ -52,8 +50,6 @@ export default function Date_Info_Form(
 
         {/* End subscription */}
         <div className="w-3/4">
-            <h4>تاريخ نهاية الاشتراك</h4>
-
             <End_Date_Picker
                 dateStart={subscriptionStart as Date}
                 getDate={(date) => setSubscriptionEnd(date as Date)}

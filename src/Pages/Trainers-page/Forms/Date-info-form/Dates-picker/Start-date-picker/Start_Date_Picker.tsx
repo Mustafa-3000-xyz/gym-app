@@ -1,18 +1,9 @@
-import { Button } from "@/Components/Shadcn/button"
-import { Calendar } from "@/Components/Shadcn/calendar"
-import { Field } from "@/Components/Shadcn/field"
 import { useEffect, useState } from "react";
-import { format } from "date-fns";
-import { styleDate } from "@/lib/customs";
 import { Start_Date_Picker_Props } from "@/Pages/Trainers-page/trainersTypes";
 import { useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/Components/Shadcn/popover";
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
+import { Calendar } from 'primereact/calendar';
 // ========================================================== //
 export default function Start_Date_Picker(
     { getDate }: Start_Date_Picker_Props
@@ -21,9 +12,9 @@ export default function Start_Date_Picker(
     const trainer = useAtomValue(trainerDetails_Atom);
 
     const [selectDate, setSelectDate] = useState<Date | null>(null);
-    const [openMenu, setOpenMenu] = useState(false);
     const dateNow = new Date();
     dateNow.setHours(0, 0, 0, 0);
+
 
     // Check if the isShowTrainerDetailsAtom is true, so the manager he want see trainer details
     useEffect(function () {
@@ -39,37 +30,28 @@ export default function Start_Date_Picker(
         getDate(selectDate);
     }, [selectDate]);
 
-    return <Field className="w-full">
-        <Popover open={openMenu} onOpenChange={(open) => setOpenMenu(open)}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    id="date"
-                    className="justify-start cursor-pointer border-slate-200"
-                >
-                    {
-                        isShowTrainerDetailsAtom ? format(selectDate as Date, styleDate)
-                            : selectDate ? format(selectDate as Date, styleDate)
-                                : "اليوم / الشهر / السنه"
-                    }
-                </Button>
-            </PopoverTrigger>
 
-            <PopoverContent className="overflow-hidden bg-slate-100" align="end">
-                <Calendar
-                    className="w-full"
-                    mode="single"
-                    captionLayout="dropdown"
-                    disabled={(date) => date < dateNow}
-                    selected={selectDate as Date}
-                    onSelect={(date) => {
-                        setSelectDate(date as Date);
-                        setOpenMenu(false);
-                    }}
-                    fromYear={2026}
-                    toYear={2040}
-                />
-            </PopoverContent>
-        </Popover>
-    </Field>
+
+    return <div
+        dir="ltr"
+        className="mt-2"
+    >
+        <h4 className="font-bold mb-2 text-right">تاريخ بدا الاشتراك</h4>
+
+        <Calendar
+            showIcon
+            showButtonBar
+            readOnlyInput
+            value={selectDate}
+            minDate={dateNow}
+            showOtherMonths={false}
+            dateFormat="yy/mm/dd"
+            className="w-full select-none"
+            placeholder="اليوم / الشهر / السنه"
+            clearButtonClassName="clear-btn-in-calendar"
+            todayButtonClassName="today-btn-in-calendar"
+            inputClassName="text-right input-date-in-calendar"
+            onChange={(e) => setSelectDate(e.value as Date)}
+        />
+    </div>
 }

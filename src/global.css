@@ -1,5 +1,4 @@
 @import "tailwindcss";
-
 /* ====== */
 :root {
     --primary: #3b82f6;
@@ -29,4 +28,36 @@ body {
 /* hover on thumb */
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+
+/* These codes for calendar */
+.p-datepicker-buttonbar {
+    display: flex;
+    justify-content: end;
+}
+
+.clear-btn-in-calendar {
+    display: none;
+}
+
+.today-btn-in-calendar {
+    color: black;
+    content: "";
+}
+
+.input-date-in-calendar {
+    border: 1px solid #00000049;
+    box-shadow: none !important;
+}
+
+.p-datepicker-trigger {
+    background-color: black;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.p-disabled {
+    cursor: not-allowed !important;
+    pointer-events: all !important;
 }

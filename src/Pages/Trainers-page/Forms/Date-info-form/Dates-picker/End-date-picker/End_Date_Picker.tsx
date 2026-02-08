@@ -1,18 +1,9 @@
 import * as React from "react"
-import { Button } from "@/Components/Shadcn/button"
-import { Calendar } from "@/Components/Shadcn/calendar"
-import { Field } from "@/Components/Shadcn/field"
-import { format } from "date-fns";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/Components/Shadcn/popover"
 import { End_Date_Picker_Props } from "@/Pages/Trainers-page/trainersTypes";
-import { styleDate } from "@/lib/customs";
 import { useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
+import { Calendar } from 'primereact/calendar';
 // ========================================================== //
 export function End_Date_Picker(
     { dateStart, getDate }: End_Date_Picker_Props
@@ -21,7 +12,6 @@ export function End_Date_Picker(
     const trainer = useAtomValue(trainerDetails_Atom);
 
     const [selectDate, setSelectDate] = React.useState<Date | null>(null);
-    const [openMenu, setOpenMenu] = React.useState(false);
 
 
     React.useEffect(function () {
@@ -43,45 +33,35 @@ export function End_Date_Picker(
     }, [dateStart, selectDate]);
 
 
+    const minEndDate = React.useMemo(() => {
+        if (!dateStart) return;
 
-    return <Field className="w-full">
-        <Popover
-            open={!dateStart ? false : openMenu}
-            onOpenChange={(open) => setOpenMenu(open)}
-        >
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    id="date"
-                    className={`
-                        justify-start border-slate-200
-                        ${!dateStart ? "opacity-60 cursor-not-allowed"
-                            : "opacity-100  cursor-pointer"}
-                    `}
-                >
-                    {
-                        !dateStart ? "قم اولا بختيار تاريخ بداية الاشتراك"
-                            : selectDate ? format(selectDate as Date, styleDate)
-                                : "اليوم / الشهر / السنه"
-                    }
-                </Button>
-            </PopoverTrigger>
+        const d = new Date(dateStart);
+        d.setDate(d.getDate() + 1);
+        d.setHours(0, 0, 0, 0);
+        return d;
+    }, [dateStart]);
 
-            <PopoverContent className="overflow-hidden bg-slate-100" align="end">
-                <Calendar
-                    className="w-full"
-                    mode="single"
-                    captionLayout="dropdown"
-                    selected={selectDate as Date}
-                    disabled={(date) => date <= dateStart}
-                    onSelect={(date) => {
-                        setSelectDate(date as Date);
-                        setOpenMenu(false);
-                    }}
-                    fromYear={2026}
-                    toYear={2040}
-                />
-            </PopoverContent>
-        </Popover>
-    </Field>
+
+
+    return <div
+        dir="ltr"
+        className="mt-2"
+    >
+        <h4 className="font-bold mb-2 text-right">تاريخ نهاية الاشتراك</h4>
+
+        <Calendar
+            showIcon
+            readOnlyInput
+            value={selectDate}
+            minDate={minEndDate}
+            showOtherMonths={false}
+            disabled={dateStart ? false : true}
+            inputClassName="text-right input-date-in-calendar"
+            dateFormat="yy/mm/dd"
+            className={`w-full ${dateStart ? "opacity-100" : "opacity-55"}`}
+            placeholder={`${!dateStart ? "اختر تاريخ بداية الاشتراك اولا" : !selectDate ? "اليوم / الشهر / السنه" : selectDate}`}
+            onChange={(e) => setSelectDate(e.value as Date)}
+        />
+    </div>
 }
