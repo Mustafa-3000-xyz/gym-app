@@ -99,8 +99,8 @@ export default function Trainers_Page() {
         {
             isShowTrainerDetails ?
                 <Show_Trainer_Details
-                    onIsShowTrainerDetails={setIsShowTrainerDetails}
                     getAllTrainers={getAllTrainers}
+                    onIsShowTrainerDetails={setIsShowTrainerDetails}
                 />
                 : null
         }
