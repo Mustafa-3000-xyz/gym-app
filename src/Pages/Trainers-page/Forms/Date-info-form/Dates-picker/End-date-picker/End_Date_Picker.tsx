@@ -34,9 +34,7 @@ export function End_Date_Picker(
 
 
     React.useEffect(function () {
-        if (!selectDate) return;
-
-        if (dateStart >= selectDate) {
+        if (dateStart >= selectDate!) {
             setSelectDate(null);
             getDate(null);
         } else {
