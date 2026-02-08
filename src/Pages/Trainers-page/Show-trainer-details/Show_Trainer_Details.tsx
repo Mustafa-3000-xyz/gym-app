@@ -26,7 +26,6 @@ export default function Show_Trainer_Details(
     const trainer = useAtomValue(trainerDetails_Atom);
     const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
 
-
     const containerRef = useRef<HTMLDivElement | null>(null)
     const [hasOverflow, setHasOverflow] = useState(false);
 
