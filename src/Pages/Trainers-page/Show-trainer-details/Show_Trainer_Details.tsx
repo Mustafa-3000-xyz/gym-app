@@ -109,7 +109,6 @@ export default function Show_Trainer_Details(
                 await updateTrainerProperty(trainer?.trainerId as number,
                     "subscriptionState", stateIsFinished);
                 getAllTrainers();
-                closeThisWinow();
             }
         });
     }
