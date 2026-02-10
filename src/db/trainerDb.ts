@@ -1,19 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
+import { updateOneColumn, updateTrainerInfoPayload } from "./dbTypes";
 // ========================================================== //
-type TrainerColumn =
-    | "subscriptionState"
-    | "activeSessionsList"
-    | "firstName"
-    | "lastName"
-    | "phone"
-    | "address"
-    | "subscriptionName"
-    | "sessionsCount"
-    | "price"
-    | "subscriptionStart"
-    | "subscriptionEnd";
-
-
 async function getDb() {
     const db = await Database.load("sqlite:app-gym-db.db");
 
@@ -94,7 +81,7 @@ export async function deleteTrainerById(id: number) {
 
 export async function updateTrainerProperty(
     trainerId: number,
-    column: TrainerColumn,
+    column: updateOneColumn,
     value: string | number | boolean
 ) {
     const database = await getDb();
@@ -102,5 +89,24 @@ export async function updateTrainerProperty(
     await database.execute(
         `UPDATE trainers SET ${column} = ? WHERE trainerId = ?`,
         [value, trainerId]
+    );
+}
+
+export async function updateTrainerInfo(
+    trainerId: number,
+    data: updateTrainerInfoPayload
+) {
+    const database = await getDb();
+    const entries = Object.entries(data);
+
+
+    if (entries.length === 0) return;
+
+    const setClause = entries.map(([key]) => `${key} = ?`).join(", ");
+    const values = entries.map(([, value]) => value);
+
+    await database.execute(
+        `UPDATE trainers SET ${setClause} WHERE trainerId = ?`,
+        [...values, trainerId]
     );
 }

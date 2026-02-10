@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
-import { deleteTrainerById, updateTrainerProperty } from "@/db/trainerDb";
+import { deleteTrainerById, updateTrainerInfo, updateTrainerProperty } from "@/db/trainerDb";
 import Swal from "sweetalert2";
 
 import "swiper/css/navigation";
@@ -18,6 +18,7 @@ import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
+import { regexPhone } from "@/lib/REGEX";
 // ========================================================== //
 export default function Show_Trainer_Details(
     {
@@ -52,8 +53,14 @@ export default function Show_Trainer_Details(
     const [getSubscriptionStart, setGetSubscriptionStart] = useState<Date | null>(null);
     const [getSubscriptionEnd, setGetSubscriptionEnd] = useState<Date | null>(null);
 
-    // This variable check is the info is updated 
-    const [isInfoChange, setIsInfoChange] = useState<boolean>(false);
+    // Check the trainer info and subscription info are change
+    const [isTrainerInfoChange, setIsTrainerInfoChange] = useState(false);
+    const [isSubscriptionInfoChange, setIsSubscriptionInfoChange] = useState(false);
+
+    // Temps
+    const [tempNameAndAddress, setTempNameAndAddress] = useState(false);
+    const [tempPhone, setTempPhone] = useState<boolean | string>(false);
+
 
 
     function closeThisWinow() {
@@ -140,8 +147,38 @@ export default function Show_Trainer_Details(
     }
 
     async function updateInfo() {
-        console.log("Update is done");
-        setIsInfoChange(true);
+        Swal.fire({
+            title: "!! تحذير",
+            text: "هل انت متأكد من تعديل البيانات , في حالة تعديل عدد الحصص سوف يتم اعاده الحصص من الاول",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "نعم , انا متأكد",
+            cancelButtonText: "إلغاء",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "لقد تم التحديث بنجاح",
+                    text: `تم تحديث المتدرب رقم : ${trainer?.trainerId}`,
+                    icon: "success",
+                    confirmButtonText: "تمام"
+                });
+
+                if (isTrainerInfoChange) {
+                    const obj = {
+                        firstName: getFirstName,
+                        lastName: getLastName,
+                        address: getAddress,
+                        phone: getPhone
+                    };
+
+                    await updateTrainerInfo(trainer?.trainerId as any, obj as any);
+                    closeThisWinow();
+                    getAllTrainers();
+                }
+            }
+        });
     }
 
 
@@ -161,13 +198,70 @@ export default function Show_Trainer_Details(
     }, [trainer?.sessionsCount, trainer?.activeSessionsList, activeSessionsList]);
 
 
-
-    // Check the any info is change
+    // Check the trainer info are change
     useEffect(function () {
+        if (
+            (getFirstName && getFirstName != trainer?.firstName)
+            ||
+            (getLastName && getLastName != trainer?.lastName)
+            ||
+            (getAddress && getAddress != trainer?.address)
+        ) {
+            setTempNameAndAddress(true);
+        } else {
+            setTempNameAndAddress(false);
+        }
 
-    }, [getFirstName, getLastName, getPhone, getAddress,
-        getSubscriptionName, getSessionsCount,
+
+        if (
+            (getPhone == 0 && getPhone != trainer?.phone as any)
+            ||
+            (String(getPhone).match(regexPhone) && getPhone != trainer?.phone as any)
+        ) {
+            setTempPhone(true);
+        }
+        else if (!String(getPhone).match(regexPhone) && getPhone != 0) {
+            setTempPhone("write number");
+        }
+        else {
+            setTempPhone(false);
+        }
+    }, [getFirstName, getLastName, getPhone, getAddress]);
+
+
+    // Temps
+    useEffect(function () {
+        if (
+            (
+                (tempNameAndAddress && tempPhone)
+                ||
+                (tempNameAndAddress && !tempPhone)
+                ||
+                (!tempNameAndAddress && tempPhone)
+            )
+            &&
+            tempPhone != "write number"
+        ) {
+            setIsTrainerInfoChange(true);
+        }
+        else {
+            setIsTrainerInfoChange(false);
+        }
+    }, [tempNameAndAddress, tempPhone]);
+
+
+
+    // Check the subscription info are change
+    useEffect(function () {
+        /*
+            (new Date(trainer?.subscriptionStart as any).getTime() != new Date(getSubscriptionStart as any).getTime())
+            ||
+            (new Date(trainer?.subscriptionEnd as any).getTime() != new Date(getSubscriptionEnd as any).getTime())
+        */
+
+    }, [getSubscriptionName, getSessionsCount,
         getPrice, getSubscriptionStart, getSubscriptionEnd]);
+
 
 
 
@@ -401,14 +495,15 @@ export default function Show_Trainer_Details(
             {/* Btn change and cancel */}
             <div className="bg-black/5 p-5 border-t border-t-slate-300 flex gap-3">
                 <button
-                    disabled={isInfoChange ? false : true}
+                    disabled={isTrainerInfoChange || isSubscriptionInfoChange ?
+                        false : true}
                     onClick={updateInfo}
                     className={`
                         transition duration-300 
                         bg-[#385E97] text-white px-5  py-2 rounded-lg
                         hover:bg-[#285E97]
-                        ${isInfoChange ? "opacity-100 cursor-pointer"
-                            : "opacity-50 cursor-not-allowed"}
+                        ${isTrainerInfoChange || isSubscriptionInfoChange ?
+                            "opacity-100 cursor-pointer" : "opacity-50 cursor-not-allowed"}
                     `}
                 >
                     حفظ التغيرات
