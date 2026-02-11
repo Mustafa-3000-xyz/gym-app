@@ -1,4 +1,4 @@
-import { Show_Traine_Details_Props, trainer } from "@/Pages/Trainers-page/trainersTypes";
+import { Show_Traine_Details_Props } from "@/Pages/Trainers-page/trainersTypes";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, BanknoteX, CircleUserRound, Presentation, RefreshCcw, SquarePen, Trash, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -9,8 +9,6 @@ import { Navigation } from "swiper/modules";
 import { deleteTrainerById, updateAllPropertiesInTrainer, updateTrainerProperty } from "@/db/trainerDb";
 import Swal from "sweetalert2";
 
-import "swiper/css/navigation";
-import "swiper/css";
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/lib/customs";
 import { useAtom, useAtomValue } from "jotai";
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
@@ -474,25 +472,30 @@ export default function Show_Trainer_Details(
 
             {/* Btn change and cancel */}
             <div className="bg-black/5 p-5 border-t border-t-slate-300 flex gap-3">
-                <button
-                    disabled={isChangeInfo ?
-                        false : true}
-                    onClick={updateInfo}
-                    className={`
-                        transition duration-300 
-                        bg-[#385E97] text-white px-5  py-2 rounded-lg
-                        hover:bg-[#285E97]
-                        ${isChangeInfo ?
-                            "opacity-100 cursor-pointer" : "opacity-50 cursor-not-allowed"}
-                    `}
-                >
-                    حفظ التغيرات
-                </button>
+                {
+                    subscriptionState != stateIsFinished ?
+                        <button
+                            disabled={isChangeInfo ? false : true}
+                            onClick={updateInfo}
+                            className={`
+                            transition duration-300 
+                            bg-[#385E97] text-white px-5 py-2 rounded-lg
+                            hover:bg-[#285E97]
+                            ${isChangeInfo ?
+                                    "opacity-100 cursor-pointer" : "opacity-50 cursor-not-allowed"}
+                        `}
+                        >
+                            حفظ التغيرات
+                        </button>
+                        :
+                        null
+                }
+
 
                 <button
                     onClick={closeThisWinow}
                     className={`
-                        transition duration-300 hover:bg-red-600
+                        transition duration-300 hover:bg-red-600 py-2
                         bg-red-500 text-white px-5 cursor-pointer rounded-lg
                     `}
                 >
