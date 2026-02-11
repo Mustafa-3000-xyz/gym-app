@@ -93,7 +93,7 @@ export async function updateTrainerProperty(
     );
 }
 
-export async function updateAllPropertiesInTrainer(
+export async function updateSomePropertiesInTrainer(
     trainerId: number,
     data: Partial<trainer>
 ) {

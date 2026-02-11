@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
-import { deleteTrainerById, updateAllPropertiesInTrainer, updateTrainerProperty } from "@/db/trainerDb";
+import { deleteTrainerById, updateSomePropertiesInTrainer, updateTrainerProperty } from "@/db/trainerDb";
 import Swal from "sweetalert2";
 
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/lib/customs";
@@ -161,7 +161,6 @@ export default function Show_Trainer_Details(
                 });
                 if (isChangeInfo) {
                     const obj = {
-                        subscriptionState: trainer?.subscriptionState,
                         activeSessionsList: getSessionsCount != trainer?.sessionsCount ? [] : activeSessionsList,
                         firstName: getFirstName,
                         lastName: getLastName,
@@ -173,7 +172,7 @@ export default function Show_Trainer_Details(
                         subscriptionStart: getSubscriptionStart,
                         subscriptionEnd: getSubscriptionEnd
                     };
-                    await updateAllPropertiesInTrainer(trainer?.trainerId as any, obj as any);
+                    await updateSomePropertiesInTrainer(trainer?.trainerId as any, obj as any);
                     closeThisWinow();
                     getAllTrainers();
                 }
