@@ -10,11 +10,3 @@ export type updateOneColumn =
     | "price"
     | "subscriptionStart"
     | "subscriptionEnd";
-
-
-export type updateTrainerInfoPayload = Partial<{
-    firstName: string;
-    lastName: string;
-    address: string;
-    phone: string | number;
-}>;

@@ -1,4 +1,4 @@
-import { Show_Traine_Details_Props } from "@/Pages/Trainers-page/trainersTypes";
+import { Show_Traine_Details_Props, trainer } from "@/Pages/Trainers-page/trainersTypes";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, BanknoteX, CircleUserRound, Presentation, RefreshCcw, SquarePen, Trash, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
-import { deleteTrainerById, updateTrainerInfo, updateTrainerProperty } from "@/db/trainerDb";
+import { deleteTrainerById, updateAllPropertiesInTrainer, updateTrainerProperty } from "@/db/trainerDb";
 import Swal from "sweetalert2";
 
 import "swiper/css/navigation";
@@ -42,7 +42,7 @@ export default function Show_Trainer_Details(
     const [isEnd, setIsEnd] = useState(false);
 
 
-    // Trainer informations
+    // Trainer info & Subscription info & Date info
     const [getFirstName, setGetFirstName] = useState<string>("");
     const [getLastName, setGetLastName] = useState<string>("");
     const [getPhone, setGetPhone] = useState<number | string>("");
@@ -53,13 +53,10 @@ export default function Show_Trainer_Details(
     const [getSubscriptionStart, setGetSubscriptionStart] = useState<Date | null>(null);
     const [getSubscriptionEnd, setGetSubscriptionEnd] = useState<Date | null>(null);
 
-    // Check the trainer info and subscription info are change
-    const [isTrainerInfoChange, setIsTrainerInfoChange] = useState(false);
-    const [isSubscriptionInfoChange, setIsSubscriptionInfoChange] = useState(false);
 
-    // Temps
-    const [tempNameAndAddress, setTempNameAndAddress] = useState(false);
-    const [tempPhone, setTempPhone] = useState<boolean | string>(false);
+    // Check the [ trainer info ] or [ subscription info ] or [ date info ] are change
+    const [isChangeInfo, setIsChangeInfo] = useState(false);
+
 
 
 
@@ -164,16 +161,21 @@ export default function Show_Trainer_Details(
                     icon: "success",
                     confirmButtonText: "تمام"
                 });
-
-                if (isTrainerInfoChange) {
+                if (isChangeInfo) {
                     const obj = {
+                        subscriptionState: trainer?.subscriptionState,
+                        activeSessionsList: getSessionsCount != trainer?.sessionsCount ? [] : activeSessionsList,
                         firstName: getFirstName,
                         lastName: getLastName,
                         address: getAddress,
-                        phone: getPhone
+                        phone: getPhone,
+                        subscriptionName: getSubscriptionName,
+                        sessionsCount: getSessionsCount,
+                        price: getPrice,
+                        subscriptionStart: getSubscriptionStart,
+                        subscriptionEnd: getSubscriptionEnd
                     };
-
-                    await updateTrainerInfo(trainer?.trainerId as any, obj as any);
+                    await updateAllPropertiesInTrainer(trainer?.trainerId as any, obj as any);
                     closeThisWinow();
                     getAllTrainers();
                 }
@@ -198,71 +200,49 @@ export default function Show_Trainer_Details(
     }, [trainer?.sessionsCount, trainer?.activeSessionsList, activeSessionsList]);
 
 
-    // Check the trainer info are change
+    // This useEffect for check the any value in properties are change
     useEffect(function () {
         if (
-            (getFirstName && getFirstName != trainer?.firstName)
-            ||
-            (getLastName && getLastName != trainer?.lastName)
-            ||
-            (getAddress && getAddress != trainer?.address)
+            (!getFirstName) || (!getLastName) || (!getSubscriptionName) || (!getPrice) ||
+            (!getSessionsCount) || (getPhone != 0 && !String(getPhone).match(regexPhone))
         ) {
-            setTempNameAndAddress(true);
-        } else {
-            setTempNameAndAddress(false);
+            setIsChangeInfo(false);
+            return;
         }
 
 
         if (
-            (getPhone == 0 && getPhone != trainer?.phone as any)
+            (getFirstName != trainer?.firstName)
             ||
-            (String(getPhone).match(regexPhone) && getPhone != trainer?.phone as any)
-        ) {
-            setTempPhone(true);
-        }
-        else if (!String(getPhone).match(regexPhone) && getPhone != 0) {
-            setTempPhone("write number");
-        }
-        else {
-            setTempPhone(false);
-        }
-    }, [getFirstName, getLastName, getPhone, getAddress]);
-
-
-    // Temps
-    useEffect(function () {
-        if (
+            (getLastName != trainer?.lastName)
+            ||
+            (getAddress != trainer?.address)
+            ||
             (
-                (tempNameAndAddress && tempPhone)
-                ||
-                (tempNameAndAddress && !tempPhone)
-                ||
-                (!tempNameAndAddress && tempPhone)
+                (getPhone == 0 || String(getPhone).match(regexPhone))
+                && getPhone != trainer?.phone
             )
-            &&
-            tempPhone != "write number"
-        ) {
-            setIsTrainerInfoChange(true);
-        }
-        else {
-            setIsTrainerInfoChange(false);
-        }
-    }, [tempNameAndAddress, tempPhone]);
-
-
-
-    // Check the subscription info are change
-    useEffect(function () {
-        /*
-            (new Date(trainer?.subscriptionStart as any).getTime() != new Date(getSubscriptionStart as any).getTime())
             ||
-            (new Date(trainer?.subscriptionEnd as any).getTime() != new Date(getSubscriptionEnd as any).getTime())
-        */
+            (getSubscriptionName != trainer?.subscriptionName)
+            ||
+            (getSessionsCount != trainer?.sessionsCount)
+            ||
+            (getPrice != trainer?.price)
+            ||
+            (new Date(getSubscriptionStart as any).getTime() != new Date(trainer?.subscriptionStart as any).getTime())
+            ||
+            (new Date(getSubscriptionEnd as any).getTime() != new Date(trainer?.subscriptionEnd as any).getTime())
+        ) {
+            setIsChangeInfo(true);
+        } else {
+            setIsChangeInfo(false);
+        }
 
-    }, [getSubscriptionName, getSessionsCount,
-        getPrice, getSubscriptionStart, getSubscriptionEnd]);
 
-
+    }, [getFirstName, getLastName, getAddress, getPhone,
+        getSubscriptionName, getSessionsCount, getPrice,
+        getSubscriptionStart, getSubscriptionEnd
+    ]);
 
 
 
@@ -495,14 +475,14 @@ export default function Show_Trainer_Details(
             {/* Btn change and cancel */}
             <div className="bg-black/5 p-5 border-t border-t-slate-300 flex gap-3">
                 <button
-                    disabled={isTrainerInfoChange || isSubscriptionInfoChange ?
+                    disabled={isChangeInfo ?
                         false : true}
                     onClick={updateInfo}
                     className={`
                         transition duration-300 
                         bg-[#385E97] text-white px-5  py-2 rounded-lg
                         hover:bg-[#285E97]
-                        ${isTrainerInfoChange || isSubscriptionInfoChange ?
+                        ${isChangeInfo ?
                             "opacity-100 cursor-pointer" : "opacity-50 cursor-not-allowed"}
                     `}
                 >

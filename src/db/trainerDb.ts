@@ -1,5 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
-import { updateOneColumn, updateTrainerInfoPayload } from "./dbTypes";
+import { updateOneColumn } from "./dbTypes";
+import { trainer } from "@/Pages/Trainers-page/trainersTypes";
 // ========================================================== //
 async function getDb() {
     const db = await Database.load("sqlite:app-gym-db.db");
@@ -92,18 +93,18 @@ export async function updateTrainerProperty(
     );
 }
 
-export async function updateTrainerInfo(
+export async function updateAllPropertiesInTrainer(
     trainerId: number,
-    data: updateTrainerInfoPayload
+    data: Partial<trainer>
 ) {
     const database = await getDb();
-    const entries = Object.entries(data);
+    const keys = Object.keys(data);
 
 
-    if (entries.length === 0) return;
+    if (keys.length === 0) return;
 
-    const setClause = entries.map(([key]) => `${key} = ?`).join(", ");
-    const values = entries.map(([, value]) => value);
+    const setClause = keys.map(key => `${key} = ?`).join(", ");
+    const values = keys.map(key => (data as any)[key]);
 
     await database.execute(
         `UPDATE trainers SET ${setClause} WHERE trainerId = ?`,
