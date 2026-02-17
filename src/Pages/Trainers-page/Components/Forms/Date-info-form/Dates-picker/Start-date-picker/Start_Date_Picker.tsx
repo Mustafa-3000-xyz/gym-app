@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { Start_Date_Picker_Props } from "@/Pages/Trainers-page/trainersTypes";
 import { useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
 import { Calendar } from 'primereact/calendar';
 // ========================================================== //
 export default function Start_Date_Picker(
-    { getDate }: Start_Date_Picker_Props
+    { getDate } : {getDate: (x: any)=> void}
 ) {
     const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
     const trainer = useAtomValue(trainerDetails_Atom);

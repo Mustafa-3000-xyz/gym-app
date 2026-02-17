@@ -1,7 +1,7 @@
 import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
 import { Trainer_Info_Form_Props } from "@/Pages/Trainers-page/trainersTypes";
-import { regexPhone, regexTranierName } from "@/lib/REGEX";
+import { regexPhone, regexTranierName } from "@/Lib/REGEX";
 import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
 // ========================================================== //

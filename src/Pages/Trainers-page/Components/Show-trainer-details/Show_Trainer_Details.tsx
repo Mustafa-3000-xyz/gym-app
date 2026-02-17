@@ -6,17 +6,17 @@ import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
-import { deleteTrainerById, updateSomePropertiesInTrainer, updateTrainerProperty } from "@/db/trainerDb";
+import { deleteTrainerById, updateSomePropertiesInTrainer, updateTrainerProperty } from "@/Db/trainerDb";
 import Swal from "sweetalert2";
 
-import { stateIsActive, stateIsFinished, stateIsPending } from "@/lib/customs";
+import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/customs";
 import { useAtom, useAtomValue } from "jotai";
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
 import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
-import { regexPhone } from "@/lib/REGEX";
+import { regexPhone } from "@/Lib/REGEX";
 // ========================================================== //
 export default function Show_Trainer_Details(
     {

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { End_Date_Picker } from "./Dates-picker/End-date-picker/End_Date_Picker";
 import { format, differenceInDays } from "date-fns";
 import { Date_Info_Props } from "@/Pages/Trainers-page/trainersTypes";
-import { styleDate } from "@/lib/customs";
+import { styleDate } from "@/Lib/customs";
 import Start_Date_Picker from "./Dates-picker/Start-date-picker/Start_Date_Picker";
 // ========================================================== //
 export default function Date_Info_Form(

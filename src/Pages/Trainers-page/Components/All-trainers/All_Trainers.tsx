@@ -1,7 +1,7 @@
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
 import { All_Trainers_Props } from "@/Pages/Trainers-page/trainersTypes";
-import { getTrainerById } from "@/db/trainerDb";
-import { stateIsActive, stateIsFinished, stateIsPending, styleDate } from "@/lib/customs";
+import { getTrainerById } from "@/Db/trainerDb";
+import { stateIsActive, stateIsFinished, stateIsPending, styleDate } from "@/Lib/customs";
 import { format } from "date-fns";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";

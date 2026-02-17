@@ -1,23 +1,14 @@
-import Sidebar_Links from "@/Components/Sidebar/Sidebar-links/Sidebar_Links";
-import { BellRing, CircleDollarSign, House, Info, Settings, Users } from "lucide-react";
+import {CircleDollarSign, Info, Settings, Users } from "lucide-react";
 import { Link } from "react-router-dom";
+import Sidebar_Links from "./Sidebar-links/Sidebar_Links";
 // ========================================================== //
 export default function SideBar() {    
     return <nav className=" bg-white h-screen px-4 w-[450px] flex flex-col justify-between pt-4 border-e border-black/20">
-        <div className="mb-12 text-center" dir="ltr">
+        <div className="mb-5 text-center" dir="ltr">
             <h1 className="font-bold text-[#FB6543] select-none">GYM APP</h1>
         </div>
 
         <ul className="select-none h-full">
-            <Sidebar_Links
-                linkName="الصفحة الرئيسيه"
-                path="/"
-                icon={<House
-                    size={23}
-                    strokeWidth={1.75}
-                />}
-            />
-
             <Sidebar_Links
                 linkName="المتدربين"
                 path="/trainers-page"
@@ -27,14 +18,6 @@ export default function SideBar() {
                 />}
             />
 
-            <Sidebar_Links
-                linkName="الإشعارات"
-                path="/notifications-page"
-                icon={<BellRing
-                    size={23}
-                    strokeWidth={1.75}
-                />}
-            />
 
             <Sidebar_Links
                 linkName="الإعدادات"
@@ -53,7 +36,7 @@ export default function SideBar() {
                 <Link to={"/profits-page"} className="hover:underline">
                     <div className="flex items-center gap-2 mb-3">
                         <CircleDollarSign size={23} color="#000" strokeWidth={1.75} />
-                        <span>الارباح</span>
+                        <span>شرح البرنامج</span>
                     </div>
                 </Link>
 
@@ -61,7 +44,7 @@ export default function SideBar() {
                 <Link to={"/expenses-page"} className="hover:underline">
                     <div className="flex items-center gap-2">
                         <Info size={23} color="#000" strokeWidth={1.75} />
-                        <span>المصروفات</span>
+                        <span>التواصل عبر التلجرام</span>
                     </div>
                 </Link>
             </div>
