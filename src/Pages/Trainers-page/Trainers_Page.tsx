@@ -6,6 +6,11 @@ import Show_Trainer_Details from "./Components/Show-trainer-details/Show_Trainer
 import All_Trainers from "./Components/All-trainers/All_Trainers";
 import Add_Trainer from "./Components/Add-trainer/Add_Trainer";
 import Discription from "@/Global-components/Description/Discription";
+import Attendee from "./Components/Boxes/Attendee/Attendee";
+import Trainers_Total from "./Components/Boxes/Trainers-total/Trainers_Total";
+import Active_Subscriptions from "./Components/Boxes/Active-subscriptions/Active_Subscriptions";
+import Search_Trainer from "./Components/Search-trainer/Search_Trainer";
+import Btn_Filter from "./Components/Btn-filter/Btn_Filter";
 // ========================================================== //
 export default function Trainers_Page() {
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
@@ -30,55 +35,43 @@ export default function Trainers_Page() {
 
     return <section>
         {/* Title and discription and add new trainer */}
-        <div className="select-none flex mb-5 justify-between items-center w-full">
-            <div>
-                <h3 className="text-2xl font-bold">صفحة المتدربين</h3>
-                <Discription discription="اهلا بك يا كابتن , تلك الصفحه لمعرفة التفاصيل الخاصه بالمشتركين" />
-            </div>
-
-            <div className="flex items-center gap-3">
-                <button
-                    onClick={addTrianer}
-                    className={`
-                        transition duration-500 hover:bg-blue-600
-                        flex items-center gap-2 bg-[var(--primary)] cursor-pointer text-white py-2 px-5 rounded-sm
-                    `}
-                >
-                    <Plus strokeWidth={1.75} />
-
-                    <span>
-                        إضافة متدرب جديد
-                    </span>
-                </button>
-            </div>
+        <div className="select-none mb-7 w-full">
+            <h3 className="text-2xl font-bold">صفحة المتدربين</h3>
+            <Discription discription="اهلا بك يا كابتن , تلك الصفحه لمعرفة التفاصيل الخاصه بالمشتركين" />
         </div>
 
-        {/* Search and filter */}
-        <div className="flex items-center gap-4">
-            <div className="w-full flex relative">
-                <input
-                    type="text"
-                    placeholder="البحث عن المتدرب من خلال الاسم او ID"
-                    className={`
-                        transition duration-300 focus:outline-0 focus:shadow-2xl
-                        bg-slate-100 p-2 w-full rounded-lg border border-slate-300 ps-10 pt-2
-                    `}
-                />
 
-                <Search size={23} className="absolute top-2 ms-3 opacity-40" />
+        {/* Boxes */}
+        <div className="mb-7 grid grid-cols-3 gap-3">
+            <Trainers_Total trainersList={trainersList} />
+            <Attendee />
+            <Active_Subscriptions trainersList={trainersList as trainer[]} />
+        </div>
+
+
+        {/* Search & filter & add trainer */}
+        <div className="grid grid-cols-4 gap-2 mb-7">
+            <Search_Trainer trainersList={trainersList}/>
+
+            <div className="flex justify-end gap-1">
+                <Btn_Filter trainersList={trainersList}/>
+
+                <div className="flex items-center gap-3 w-full">
+                    <button
+                        onClick={addTrianer}
+                        className={`
+                            transition duration-500 hover:bg-blue-600 whitespace-nowrap w-full
+                            flex items-center justify-center gap-2 bg-[var(--primary)] cursor-pointer text-white py-3 px-5 rounded-sm
+                        `}
+                    >
+                        <Plus strokeWidth={1.75} />
+
+                        <span>
+                            إضافة متدرب جديد
+                        </span>
+                    </button>
+                </div>
             </div>
-
-            <button className={`
-                    transition duration-500 hover:bg-slate-200
-                    flex items-center gap-2 cursor-pointer bg-slate-100 p-3 px-4 border border-slate-300 rounded-lg
-                `}
-            >
-                <ListFilter size={23} />
-
-                <span className=" font-medium">
-                    فلتر
-                </span>
-            </button>
         </div>
 
         {/* Table for show all trainers */}

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Sidebar_Links from "./Sidebar-links/Sidebar_Links";
 // ========================================================== //
 export default function SideBar() {    
-    return <nav className=" bg-white h-screen px-4 w-[450px] flex flex-col justify-between pt-4 border-e border-black/20">
+    return <nav className="bg-white h-screen px-4 w-[450px] flex flex-col justify-between pt-4 border-e border-black/20">
         <div className="mb-5 text-center" dir="ltr">
             <h1 className="font-bold text-[#FB6543] select-none">GYM APP</h1>
         </div>

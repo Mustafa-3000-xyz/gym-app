@@ -130,7 +130,7 @@ export default function Add_Trainer(
     ]);
 
 
-    return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none">
+    return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none z-50">
         <motion.div
             className={`
                     absolute top-1/2 end-1/2 -translate-x-1/2 -translate-y-1/2

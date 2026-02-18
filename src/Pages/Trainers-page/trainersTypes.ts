@@ -50,3 +50,9 @@ export interface Show_Traine_Details_Props {
     onIsShowTrainerDetails: (x: boolean) => void,
     getAllTrainers: () => void
 }
+
+export interface Btn_Slide_Props {
+    index: number,
+    currentSlide: number,
+    onGetIndexBtn: (x: number) => void
+}

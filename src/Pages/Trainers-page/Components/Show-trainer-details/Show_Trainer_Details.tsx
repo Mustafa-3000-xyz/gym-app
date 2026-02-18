@@ -245,10 +245,10 @@ export default function Show_Trainer_Details(
 
     if (!trainer) return null;
 
-    return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none">
+    return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none z-50">
         <motion.div
             className={`
-                    absolute top-1/2 end-1/2 -translate-x-1/2 -translate-y-1/2 
+                    absolute top-1/2 end-1/2 -translate-x-1/2 -translate-y-1/2  
                     bg-slate-100 border border-slate-200 rounded-lg w-[60vw]
                 `}
             initial={{
