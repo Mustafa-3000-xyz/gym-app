@@ -1,8 +1,10 @@
+import { Not_Found_Props } from "../globalComponentsTypes";
+// ========================================================== //
 export default function Not_Found(
-    {srcImg, title}: {srcImg: string, title: string}
+    {srcImg, title, className = "w-96"}: Not_Found_Props
 ) {
     return <div className="flex flex-col justify-center items-center select-none">
-        <div className="w-96">
+        <div className={className}>
             <img
                 className="h-full w-full pointer-events-none"
                 src={srcImg}

@@ -1,4 +1,4 @@
-import { ListFilter, Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getTrainers } from "@/Db/trainerDb";
 import { trainer } from "./trainersTypes";
@@ -51,10 +51,13 @@ export default function Trainers_Page() {
 
         {/* Search & filter & add trainer */}
         <div className="grid grid-cols-4 gap-2 mb-7">
-            <Search_Trainer trainersList={trainersList}/>
+            <Search_Trainer 
+                trainersList={trainersList} 
+                onIsShowTrainerDetails={setIsShowTrainerDetails}
+            />
 
             <div className="flex justify-end gap-1">
-                <Btn_Filter trainersList={trainersList}/>
+                <Btn_Filter trainersList={trainersList} />
 
                 <div className="flex items-center gap-3 w-full">
                     <button

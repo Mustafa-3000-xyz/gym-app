@@ -56,3 +56,8 @@ export interface Btn_Slide_Props {
     currentSlide: number,
     onGetIndexBtn: (x: number) => void
 }
+
+export interface Search_Trainer_Props{
+    trainersList: trainer[],
+    onIsShowTrainerDetails: (x: boolean) => void
+}
