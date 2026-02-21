@@ -18,11 +18,6 @@ export interface All_Trainers_Props {
     setIsShowTrainerDetails: (x: boolean) => void,
 }
 
-export interface Add_Trainer_Props {
-    onIsShowAddTrainer: (x: boolean) => void,
-    getAllTrainers: () => void
-}
-
 export interface Subscription_Info_Form_Props {
     onGetSubscriptionName: (x: string) => void,
     onGetSessionsCount: (x: number | string) => void,
@@ -46,11 +41,6 @@ export interface Trainer_Info_Form_Props {
     onGetAddress: (x: string) => void,
 }
 
-export interface Show_Traine_Details_Props {
-    onIsShowTrainerDetails: (x: boolean) => void,
-    getAllTrainers: () => void
-}
-
 export interface Btn_Slide_Props {
     index: number,
     currentSlide: number,
@@ -60,4 +50,8 @@ export interface Btn_Slide_Props {
 export interface Search_Trainer_Props{
     trainersList: trainer[],
     onIsShowTrainerDetails: (x: boolean) => void
+}
+
+export interface Btn_Filter_Props{
+    onGetTrainerList: (x: trainer[]) => void,
 }

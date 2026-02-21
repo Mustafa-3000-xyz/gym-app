@@ -1,11 +1,10 @@
 import { motion } from "framer-motion";
 import { Presentation, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { addTrainer } from "@/Db/trainerDb";
+import { addTrainer, getTrainers } from "@/Db/trainerDb";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
-import { Add_Trainer_Props } from "@/Pages/Trainers-page/trainersTypes";
 import Swal from "sweetalert2";
 import { stateIsActive } from "@/Lib/customs";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
@@ -14,7 +13,7 @@ import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import Discription from "@/Global-components/Description/Discription";
 // ========================================================== //
 export default function Add_Trainer(
-    { onIsShowAddTrainer, getAllTrainers }: Add_Trainer_Props
+    { onIsShowAddTrainer }: {onIsShowAddTrainer: (x: boolean) => void}
 ) {
     const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
 
@@ -59,7 +58,7 @@ export default function Add_Trainer(
                 subscriptionEnd: getSubscriptionEnd,
             });
 
-            getAllTrainers();
+            getTrainers();
             closeThisWinow();
             showAlert();
         }

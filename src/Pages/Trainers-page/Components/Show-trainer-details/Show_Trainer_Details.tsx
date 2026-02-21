@@ -1,4 +1,3 @@
-import { Show_Traine_Details_Props } from "@/Pages/Trainers-page/trainersTypes";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, BanknoteX, CircleUserRound, Presentation, RefreshCcw, SquarePen, Trash, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -6,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
-import { deleteTrainerById, updateSomePropertiesInTrainer, updateTrainerProperty } from "@/Db/trainerDb";
+import { deleteTrainerById, getTrainers, updateSomePropertiesInTrainer, updateTrainerProperty } from "@/Db/trainerDb";
 import Swal from "sweetalert2";
 
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/customs";
@@ -19,10 +18,7 @@ import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
 // ========================================================== //
 export default function Show_Trainer_Details(
-    {
-        onIsShowTrainerDetails,
-        getAllTrainers
-    }: Show_Traine_Details_Props
+    {onIsShowTrainerDetails}: {onIsShowTrainerDetails: (x: boolean) => void} 
 ) {
     const trainer = useAtomValue(trainerDetails_Atom);
     const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
@@ -82,7 +78,7 @@ export default function Show_Trainer_Details(
                 });
 
                 await deleteTrainerById(trainer?.trainerId as number);
-                getAllTrainers();
+                getTrainers();
                 closeThisWinow();
             }
         });
@@ -110,7 +106,7 @@ export default function Show_Trainer_Details(
                 setSubscriptionState(stateIsFinished);
                 await updateTrainerProperty(trainer?.trainerId as number,
                     "subscriptionState", stateIsFinished);
-                getAllTrainers();
+                getTrainers();
             }
         });
     }
@@ -120,7 +116,7 @@ export default function Show_Trainer_Details(
             setSubscriptionState(stateIsFinished);
             await updateTrainerProperty(trainer?.trainerId as number,
                 "subscriptionState", stateIsFinished);
-            getAllTrainers();
+            getTrainers();
         }
 
         await updateTrainerProperty(trainer?.trainerId as number,
@@ -174,7 +170,7 @@ export default function Show_Trainer_Details(
                     };
                     await updateSomePropertiesInTrainer(trainer?.trainerId as any, obj as any);
                     closeThisWinow();
-                    getAllTrainers();
+                    getTrainers();
                 }
             }
         });

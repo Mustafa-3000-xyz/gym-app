@@ -1,6 +1,5 @@
 import { Plus } from "lucide-react";
-import { useEffect, useState } from "react";
-import { getTrainers } from "@/Db/trainerDb";
+import { useState } from "react";
 import { trainer } from "./trainersTypes";
 import Show_Trainer_Details from "./Components/Show-trainer-details/Show_Trainer_Details";
 import All_Trainers from "./Components/All-trainers/All_Trainers";
@@ -22,15 +21,6 @@ export default function Trainers_Page() {
         setIsShowAddTrainer(true);
     }
 
-    async function getAllTrainers() {
-        const data = await getTrainers();
-        setTrainersList(data as trainer[]);
-    }
-
-
-    useEffect(function () {
-        getAllTrainers();
-    }, []);
 
 
     return <section>
@@ -51,13 +41,13 @@ export default function Trainers_Page() {
 
         {/* Search & filter & add trainer */}
         <div className="grid grid-cols-4 gap-2 mb-7">
-            <Search_Trainer 
-                trainersList={trainersList} 
+            <Search_Trainer
+                trainersList={trainersList}
                 onIsShowTrainerDetails={setIsShowTrainerDetails}
             />
 
             <div className="flex justify-end gap-1">
-                <Btn_Filter trainersList={trainersList} />
+                <Btn_Filter onGetTrainerList={setTrainersList} />
 
                 <div className="flex items-center gap-3 w-full">
                     <button
@@ -86,7 +76,6 @@ export default function Trainers_Page() {
         {
             isShowAddTrainer ?
                 <Add_Trainer
-                    getAllTrainers={getAllTrainers}
                     onIsShowAddTrainer={setIsShowAddTrainer}
                 />
                 : null
@@ -95,7 +84,6 @@ export default function Trainers_Page() {
         {
             isShowTrainerDetails ?
                 <Show_Trainer_Details
-                    getAllTrainers={getAllTrainers}
                     onIsShowTrainerDetails={setIsShowTrainerDetails}
                 />
                 : null
