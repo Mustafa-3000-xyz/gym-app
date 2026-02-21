@@ -1,12 +1,6 @@
-import { ReactNode } from "react";
+import { Sidebar_Linsk_Props } from "@/Global-components/globalComponentsTypes";
 import { Link, useLocation } from "react-router-dom"
 // ========================================================== //
-interface Sidebar_Linsk_Props {
-    linkName: string,
-    path: string,
-    icon: ReactNode
-}
-
 export default function Sidebar_Links(
     { linkName, path, icon }: Sidebar_Linsk_Props
 ) {
