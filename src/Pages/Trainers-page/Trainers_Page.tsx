@@ -50,7 +50,6 @@ export default function Trainers_Page() {
             <Active_Subscriptions trainersList={trainersList as trainer[]} />
         </div>
 
-
         {/* Search & filter & add trainer */}
         <div className="grid grid-cols-4 gap-2 mb-7">
             <Search_Trainer

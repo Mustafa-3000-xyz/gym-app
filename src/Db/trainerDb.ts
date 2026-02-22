@@ -1,5 +1,5 @@
 import Database from "@tauri-apps/plugin-sql";
-import { updateOneColumn } from "./dbTypes";
+import { updateOneColumn } from "./types";
 import { trainer } from "@/Pages/Trainers-page/types";
 // ========================================================== //
 async function getDb() {

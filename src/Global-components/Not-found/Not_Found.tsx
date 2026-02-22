@@ -1,4 +1,4 @@
-import { Not_Found_Props } from "../globalComponentsTypes";
+import { Not_Found_Props } from "../types";
 // ========================================================== //
 export default function Not_Found(
     {srcImg, title, className = "w-96"}: Not_Found_Props

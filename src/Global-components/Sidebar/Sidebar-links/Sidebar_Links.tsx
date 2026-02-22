@@ -1,4 +1,4 @@
-import { Sidebar_Linsk_Props } from "@/Global-components/globalComponentsTypes";
+import { Sidebar_Linsk_Props } from "@/Global-components/types";
 import { Link, useLocation } from "react-router-dom"
 // ========================================================== //
 export default function Sidebar_Links(
