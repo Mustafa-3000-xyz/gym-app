@@ -1,4 +1,4 @@
-import { trainer } from "@/Pages/Trainers-page/trainersTypes";
+import { trainer } from "@/Pages/Trainers-page/types";
 import { BicepsFlexed } from "lucide-react";
 // ========================================================== //
 export default function Trainers_Total(

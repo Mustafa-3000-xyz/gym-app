@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
 import { Presentation, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { addTrainer, getTrainers } from "@/Db/trainerDb";
+import { addTrainer } from "@/Db/trainerDb";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
+import { Add_Trainer_Props } from "@/Pages/Trainers-page/types";
 import Swal from "sweetalert2";
 import { stateIsActive } from "@/Lib/customs";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
@@ -13,14 +14,14 @@ import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import Discription from "@/Global-components/Description/Discription";
 // ========================================================== //
 export default function Add_Trainer(
-    { onIsShowAddTrainer }: {onIsShowAddTrainer: (x: boolean) => void}
+    { onIsShowAddTrainer, getAllTrainers }: Add_Trainer_Props
 ) {
     const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
 
     // Get trainer info
     const [getFirstName, setGetFirstName] = useState("");
     const [getLastName, setGetLastName] = useState("");
-    const [getPhone, setGetPhone] = useState<string | number>(0);
+    const [getPhone, setGetPhone] = useState<string | number>("");
     const [getAddress, setGetAddress] = useState("");
 
     // Get subscription info
@@ -56,9 +57,10 @@ export default function Add_Trainer(
                 price: getPrice,
                 subscriptionStart: getSubscriptionStart,
                 subscriptionEnd: getSubscriptionEnd,
+                dateAdded: new Date()
             });
 
-            getTrainers();
+            getAllTrainers();
             closeThisWinow();
             showAlert();
         }

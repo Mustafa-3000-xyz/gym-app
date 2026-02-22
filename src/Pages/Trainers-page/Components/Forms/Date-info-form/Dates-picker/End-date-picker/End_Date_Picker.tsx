@@ -1,5 +1,5 @@
 import * as React from "react"
-import { End_Date_Picker_Props } from "@/Pages/Trainers-page/trainersTypes";
+import { End_Date_Picker_Props } from "@/Pages/Trainers-page/types";
 import { useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";

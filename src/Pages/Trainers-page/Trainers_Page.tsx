@@ -1,6 +1,7 @@
 import { Plus } from "lucide-react";
-import { useState } from "react";
-import { trainer } from "./trainersTypes";
+import { useEffect, useState } from "react";
+import { getTrainers } from "@/Db/trainerDb";
+import { trainer } from "./types";
 import Show_Trainer_Details from "./Components/Show-trainer-details/Show_Trainer_Details";
 import All_Trainers from "./Components/All-trainers/All_Trainers";
 import Add_Trainer from "./Components/Add-trainer/Add_Trainer";
@@ -12,14 +13,26 @@ import Search_Trainer from "./Components/Search-trainer/Search_Trainer";
 import Btn_Filter from "./Components/Btn-filter/Btn_Filter";
 // ========================================================== //
 export default function Trainers_Page() {
+    const [trainersList, setTrainersList] = useState<trainer[]>([]);
+    const [anotherTrainersList, setAnotherTrainersList] = useState<trainer[]>([]);
+
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
     const [isShowTrainerDetails, setIsShowTrainerDetails] = useState<boolean>(false);
-    const [trainersList, setTrainersList] = useState<trainer[]>([]);
 
 
-    function addTrianer() {
+    function btnAddTrianer() {
         setIsShowAddTrainer(true);
     }
+
+    async function getAllTrainers() {
+        const data = await getTrainers();
+        setTrainersList(data as trainer[]);
+    }
+
+
+    useEffect(function () {
+        getAllTrainers();
+    }, []);
 
 
 
@@ -29,7 +42,6 @@ export default function Trainers_Page() {
             <h3 className="text-2xl font-bold">صفحة المتدربين</h3>
             <Discription discription="اهلا بك يا كابتن , تلك الصفحه لمعرفة التفاصيل الخاصه بالمشتركين" />
         </div>
-
 
         {/* Boxes */}
         <div className="mb-7 grid grid-cols-3 gap-3">
@@ -47,11 +59,14 @@ export default function Trainers_Page() {
             />
 
             <div className="flex justify-end gap-1">
-                <Btn_Filter onGetTrainerList={setTrainersList} />
+                <Btn_Filter
+                    trainersList={trainersList}
+                    onGetTrainerList={setAnotherTrainersList}
+                />
 
                 <div className="flex items-center gap-3 w-full">
                     <button
-                        onClick={addTrianer}
+                        onClick={btnAddTrianer}
                         className={`
                             transition duration-500 hover:bg-blue-600 whitespace-nowrap w-full
                             flex items-center justify-center gap-2 bg-[var(--primary)] cursor-pointer text-white py-3 px-5 rounded-sm
@@ -69,13 +84,14 @@ export default function Trainers_Page() {
 
         {/* Table for show all trainers */}
         <All_Trainers
-            trainersList={trainersList}
+            trainersList={anotherTrainersList}
             setIsShowTrainerDetails={setIsShowTrainerDetails}
         />
 
         {
             isShowAddTrainer ?
                 <Add_Trainer
+                    getAllTrainers={getAllTrainers}
                     onIsShowAddTrainer={setIsShowAddTrainer}
                 />
                 : null
@@ -84,6 +100,7 @@ export default function Trainers_Page() {
         {
             isShowTrainerDetails ?
                 <Show_Trainer_Details
+                    getAllTrainers={getAllTrainers}
                     onIsShowTrainerDetails={setIsShowTrainerDetails}
                 />
                 : null

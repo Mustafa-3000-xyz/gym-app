@@ -1,5 +1,5 @@
 export interface trainer {
-    trainerId: number;
+    trainerId: string;
     subscriptionState: string;
     activeSessionsList: number[];
     firstName: string;
@@ -11,11 +11,17 @@ export interface trainer {
     price: number;
     subscriptionStart: string;
     subscriptionEnd: string;
+    dateAdded: Date;
 }
 
 export interface All_Trainers_Props {
     trainersList: trainer[],
     setIsShowTrainerDetails: (x: boolean) => void,
+}
+
+export interface Add_Trainer_Props {
+    onIsShowAddTrainer: (x: boolean) => void,
+    getAllTrainers: () => void
 }
 
 export interface Subscription_Info_Form_Props {
@@ -41,17 +47,35 @@ export interface Trainer_Info_Form_Props {
     onGetAddress: (x: string) => void,
 }
 
+export interface Show_Traine_Details_Props {
+    onIsShowTrainerDetails: (x: boolean) => void,
+    getAllTrainers: () => void
+}
+
 export interface Btn_Slide_Props {
     index: number,
     currentSlide: number,
     onGetIndexBtn: (x: number) => void
 }
 
-export interface Search_Trainer_Props{
+export interface Search_Trainer_Props {
     trainersList: trainer[],
     onIsShowTrainerDetails: (x: boolean) => void
 }
 
-export interface Btn_Filter_Props{
+export interface Btn_Filter_Props {
+    trainersList: trainer[],
     onGetTrainerList: (x: trainer[]) => void,
+}
+
+export interface Menu_Props{
+    btnFilterEle: HTMLButtonElement | null, 
+    filterObj: filter,
+    onIsShowMenu: (x:boolean) => void
+    onGetFilterResult: (x: filter) => void
+}
+
+export interface filter {
+    arrange: string,
+    subscriptionType: string,
 }

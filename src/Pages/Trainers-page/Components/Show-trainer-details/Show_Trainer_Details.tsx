@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
-import { deleteTrainerById, getTrainers, updateSomePropertiesInTrainer, updateTrainerProperty } from "@/Db/trainerDb";
+import { deleteTrainerById, updateSomePropertiesInTrainer, updateTrainerProperty } from "@/Db/trainerDb";
 import Swal from "sweetalert2";
 
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/customs";
@@ -16,9 +16,10 @@ import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
+import { Show_Traine_Details_Props } from "../../types";
 // ========================================================== //
 export default function Show_Trainer_Details(
-    {onIsShowTrainerDetails}: {onIsShowTrainerDetails: (x: boolean) => void} 
+    { getAllTrainers, onIsShowTrainerDetails }: Show_Traine_Details_Props
 ) {
     const trainer = useAtomValue(trainerDetails_Atom);
     const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
@@ -77,8 +78,8 @@ export default function Show_Trainer_Details(
                     confirmButtonText: "تمام"
                 });
 
-                await deleteTrainerById(trainer?.trainerId as number);
-                getTrainers();
+                await deleteTrainerById(trainer?.trainerId as any);
+                getAllTrainers();
                 closeThisWinow();
             }
         });
@@ -104,9 +105,9 @@ export default function Show_Trainer_Details(
                 });
 
                 setSubscriptionState(stateIsFinished);
-                await updateTrainerProperty(trainer?.trainerId as number,
+                await updateTrainerProperty(trainer?.trainerId as any,
                     "subscriptionState", stateIsFinished);
-                getTrainers();
+                getAllTrainers();
             }
         });
     }
@@ -114,13 +115,14 @@ export default function Show_Trainer_Details(
     async function checkInActiveSessionsList() {
         if (activeSessionsList.length == trainer?.sessionsCount) {
             setSubscriptionState(stateIsFinished);
-            await updateTrainerProperty(trainer?.trainerId as number,
+            await updateTrainerProperty(trainer?.trainerId as any,
                 "subscriptionState", stateIsFinished);
-            getTrainers();
         }
 
-        await updateTrainerProperty(trainer?.trainerId as number,
+        await updateTrainerProperty(trainer?.trainerId as any,
             "activeSessionsList", activeSessionsList);
+
+        getAllTrainers();
     }
 
     async function clickOnSession(numCircle: number) {
@@ -170,7 +172,7 @@ export default function Show_Trainer_Details(
                     };
                     await updateSomePropertiesInTrainer(trainer?.trainerId as any, obj as any);
                     closeThisWinow();
-                    getTrainers();
+                    getAllTrainers();
                 }
             }
         });

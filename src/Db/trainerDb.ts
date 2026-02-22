@@ -1,6 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
 import { updateOneColumn } from "./dbTypes";
-import { trainer } from "@/Pages/Trainers-page/trainersTypes";
+import { trainer } from "@/Pages/Trainers-page/types";
 // ========================================================== //
 async function getDb() {
     const db = await Database.load("sqlite:app-gym-db.db");
@@ -8,7 +8,7 @@ async function getDb() {
     try {
         await db.execute(`
             CREATE TABLE IF NOT EXISTS trainers (
-                trainerId INTEGER PRIMARY KEY, 
+                trainerId TEXT, 
                 subscriptionState TEXT,
                 activeSessionsList TEXT,
                 firstName TEXT,
@@ -19,7 +19,8 @@ async function getDb() {
                 sessionsCount INTEGER,
                 price INTEGER,
                 subscriptionStart TEXT,
-                subscriptionEnd TEXT
+                subscriptionEnd TEXT,
+                dateAdded TEXT
             )
         `);
     } catch (error) {
@@ -35,8 +36,8 @@ export async function addTrainer(data: any) {
     const query = `INSERT INTO trainers (
         trainerId, subscriptionState, activeSessionsList, firstName, lastName, 
         phone, address, subscriptionName, sessionsCount, 
-        price, subscriptionStart, subscriptionEnd
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        price, subscriptionStart, subscriptionEnd, dateAdded
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     const values = [
         data.trainerId,
@@ -50,7 +51,8 @@ export async function addTrainer(data: any) {
         data.sessionsCount,
         data.price,
         data.subscriptionStart,
-        data.subscriptionEnd
+        data.subscriptionEnd,
+        data.dateAdded
     ];
 
     return await database.execute(query, values);

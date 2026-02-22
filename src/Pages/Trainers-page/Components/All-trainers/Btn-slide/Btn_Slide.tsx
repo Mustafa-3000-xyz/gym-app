@@ -1,4 +1,4 @@
-import { Btn_Slide_Props } from "@/Pages/Trainers-page/trainersTypes";
+import { Btn_Slide_Props } from "@/Pages/Trainers-page/types";
 // ========================================================== //
 export default function Btn_Slide(
     { index, currentSlide, onGetIndexBtn }: Btn_Slide_Props

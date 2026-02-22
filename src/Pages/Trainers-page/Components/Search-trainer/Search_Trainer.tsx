@@ -1,6 +1,6 @@
 import { Search, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { Search_Trainer_Props, trainer } from '../../trainersTypes';
+import { Search_Trainer_Props, trainer } from '../../types';
 import { stateIsActive, stateIsFinished, stateIsPending } from '@/Lib/customs';
 import { useAtom } from 'jotai';
 import trainerDetails_Atom from '@/Atoms/trainerDetails_Atom';

@@ -1,6 +1,6 @@
 import { stateIsActive } from "@/Lib/customs";
-import { trainer } from "@/Pages/Trainers-page/trainersTypes";
-import { CalendarCheck2 } from "lucide-react";
+import { trainer } from "@/Pages/Trainers-page/types";
+import { CalendarCheck2, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 // ========================================================== //
 export default function Active_Subscriptions(
@@ -24,7 +24,7 @@ export default function Active_Subscriptions(
     return <div className={`bg-slate-100 rounded-lg h-40 p-5 select-none`}>
         <div>
             <div className="bg-emerald-100 p-3 rounded-lg text-emerald-500 w-fit mb-1">
-                <CalendarCheck2 size={30} />
+                <ShieldCheck size={30} />
             </div>
 
             <h3 className=" opacity-65 text-lg">مجموع الاشتراكات المفعله</h3>
