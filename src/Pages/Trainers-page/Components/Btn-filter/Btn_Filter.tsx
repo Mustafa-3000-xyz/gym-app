@@ -37,7 +37,6 @@ export default function Btn_Filter(
 
 
     useEffect(function () {
-        if (filterResuletList.length == 0) return;
         onGetTrainerList(filterResuletList as trainer[]);
     }, [filterResuletList]);
 
@@ -88,7 +87,6 @@ export default function Btn_Filter(
 
         setFilterResultList(arr as trainer[]);
     }, [filterObj, trainersList]);
-
 
 
 
