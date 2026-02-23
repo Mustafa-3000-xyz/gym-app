@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Presentation, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { addTrainer } from "@/Db/trainerDb";
@@ -12,6 +11,7 @@ import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import { useAtom } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import Discription from "@/Global-components/Description/Discription";
+import Animation from "@/Global-components/Animation/Animation";
 // ========================================================== //
 export default function Add_Trainer(
     { onIsShowAddTrainer, getAllTrainers }: Add_Trainer_Props
@@ -132,7 +132,7 @@ export default function Add_Trainer(
 
 
     return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none z-50">
-        <motion.div
+        <Animation
             className={`
                     absolute top-1/2 end-1/2 -translate-x-1/2 -translate-y-1/2
                     bg-slate-100 border border-slate-200 rounded-lg w-[60vw]
@@ -220,6 +220,6 @@ export default function Add_Trainer(
                     إلغاء
                 </button>
             </div>
-        </motion.div>
+        </Animation>
     </div>
 }

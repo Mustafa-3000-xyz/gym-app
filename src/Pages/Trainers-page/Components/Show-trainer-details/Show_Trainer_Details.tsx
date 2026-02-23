@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, BanknoteX, CircleUserRound, Presentation, RefreshCcw, SquarePen, Trash, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
@@ -17,6 +16,7 @@ import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
 import { Show_Traine_Details_Props } from "../../types";
+import Animation from "@/Global-components/Animation/Animation";
 // ========================================================== //
 export default function Show_Trainer_Details(
     { getAllTrainers, onIsShowTrainerDetails }: Show_Traine_Details_Props
@@ -244,11 +244,11 @@ export default function Show_Trainer_Details(
     if (!trainer) return null;
 
     return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none z-50">
-        <motion.div
+        <Animation
             className={`
-                    absolute top-1/2 end-1/2 -translate-x-1/2 -translate-y-1/2  
-                    bg-slate-100 border border-slate-200 rounded-lg w-[60vw]
-                `}
+                absolute top-1/2 end-1/2 -translate-x-1/2 -translate-y-1/2  
+                bg-slate-100 border border-slate-200 rounded-lg w-[60vw]
+            `}
             initial={{
                 scale: 0.5,
             }}
@@ -499,6 +499,6 @@ export default function Show_Trainer_Details(
                     إلغاء
                 </button>
             </div>
-        </motion.div>
+        </Animation>
     </div>
 }

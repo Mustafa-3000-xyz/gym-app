@@ -79,3 +79,12 @@ export interface filter {
     arrange: string,
     subscriptionType: string,
 }
+
+export interface Search_Result_Props{
+    isShowSearchResult: boolean,
+    searchResult: trainer[],
+    onIsShowTrainerDetails: (x: boolean) => void,
+    onIsShowSearchResult: (x: boolean) => void,
+    onGetSearchResult: (x: trainer[]) => void,
+    onGetSearchValue: (x: string) => void,
+}

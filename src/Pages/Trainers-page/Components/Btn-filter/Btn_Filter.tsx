@@ -92,9 +92,11 @@ export default function Btn_Filter(
 
     return <div className="relative flex justify-center">
         <button
+            disabled={trainersList.length <= 1 ? true : false}
             onClick={clickOnBtnFilter}
             ref={btnFilterRef}
             className={`
+                ${trainersList.length <= 1 ? "cursor-not-allowed opacity-40"  :  "cursor-pointer opacity-100"}
                 ${isShowMenu ? "bg-slate-200" : "hover:bg-slate-200"}
                 transition duration-500 
                 flex items-center gap-2 bg-slate-100 p-3 px-4 border border-slate-300 rounded-lg

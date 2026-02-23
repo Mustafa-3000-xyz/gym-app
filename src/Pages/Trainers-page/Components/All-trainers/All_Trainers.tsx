@@ -1,6 +1,6 @@
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
 import { All_Trainers_Props, trainer } from "@/Pages/Trainers-page/types";
-import { stateIsActive, stateIsFinished, stateIsPending, styleDate } from "@/Lib/customs";
+import { styleDate, styleForSubscriptionState } from "@/Lib/customs";
 import { format } from "date-fns";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
@@ -67,12 +67,12 @@ export default function All_Trainers(
 
 
     if (slides[currentSlide] == undefined) {
-        return <div className=" mt-20">
+        return <div className="mt-20">
             <Not_Found
                 srcImg="/not_found_in_table.svg"
                 title="لا يوجد متدربين الان"
             />
-        </div>;
+        </div>
     }
 
 
@@ -108,20 +108,10 @@ export default function All_Trainers(
                         <td className="p-2 py-4">
                             <span className={`
                                     px-3 py-1 rounded-full font-bold
-                                    ${ele.subscriptionState == stateIsActive ?
-                                    "bg-emerald-100 text-emerald-500"
-                                    : ele.subscriptionState == stateIsPending ?
-                                        "bg-amber-100 text-amber-500"
-                                        : ele.subscriptionState == stateIsFinished && "bg-red-100 text-red-500"
-                                }
+                                    ${styleForSubscriptionState(ele).style}
                                 `}
                             >
-                                {ele.subscriptionState == stateIsActive ?
-                                    "مفعل"
-                                    : ele.subscriptionState == stateIsPending ?
-                                        "معلق"
-                                        : ele.subscriptionState == stateIsFinished && "منتهي"
-                                }
+                                {styleForSubscriptionState(ele).title}
                             </span>
                         </td>
                     </tr>
