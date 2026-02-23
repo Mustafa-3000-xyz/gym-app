@@ -13,17 +13,23 @@ export default function Date_Info_Form(
     const [theDaysBetweenSubStartAndSubEnd, setTheDaysBetweenSubStartAndSubEnd] = useState(0);
 
 
+
     // This for get days between subscriptionStart and subscriptionEnd
     useEffect(function () {
         const startDate = format(subscriptionStart as Date, styleDate);
         const endDate = format(subscriptionEnd as Date, styleDate);
         const diff = differenceInDays(endDate, startDate);
 
+        if (subscriptionStart && subscriptionEnd) {
+            setTheDaysBetweenSubStartAndSubEnd(diff);
+        } else {
+            setTheDaysBetweenSubStartAndSubEnd(0);
+        }
 
         onGetSubscriptionStart(subscriptionStart as Date);
         onGetSubscriptionEnd(subscriptionEnd as Date);
-        setTheDaysBetweenSubStartAndSubEnd(diff);
     }, [subscriptionStart, subscriptionEnd]);
+
 
 
     return <form className="flex justify-center items-center gap-2 px-3" >

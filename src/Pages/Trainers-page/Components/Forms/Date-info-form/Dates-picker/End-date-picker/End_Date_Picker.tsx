@@ -4,6 +4,7 @@ import { useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
 import { Calendar } from 'primereact/calendar';
+import { stateIsFinished } from "@/Lib/customs";
 // ========================================================== //
 export function End_Date_Picker(
     { dateStart, getDate }: End_Date_Picker_Props
@@ -15,12 +16,12 @@ export function End_Date_Picker(
 
 
     React.useEffect(function () {
-        if (isShowTrainerDetailsAtom) {
+        if (isShowTrainerDetailsAtom && trainer?.subscriptionState != stateIsFinished) {
             setSelectDate(new Date(trainer?.subscriptionEnd as string));
         } else {
             setSelectDate(null);
         }
-    }, [isShowTrainerDetailsAtom]);
+    }, [isShowTrainerDetailsAtom, trainer]);
 
 
 
@@ -60,7 +61,10 @@ export function End_Date_Picker(
             inputClassName="text-right input-date-in-calendar"
             dateFormat="yy/mm/dd"
             className={`w-full ${dateStart ? "opacity-100" : "opacity-55"}`}
-            placeholder={`${!dateStart ? "اختر تاريخ بداية الاشتراك اولا" : !selectDate ? "اليوم / الشهر / السنه" : selectDate}`}
+            placeholder={!dateStart
+                ? "اختر تاريخ بداية الاشتراك اولا"
+                : "اليوم / الشهر / السنه"
+            }
             onChange={(e) => setSelectDate(e.value as Date)}
         />
     </div>

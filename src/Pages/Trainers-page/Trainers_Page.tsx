@@ -2,7 +2,7 @@ import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getTrainers } from "@/Db/trainerDb";
 import { trainer } from "./types";
-import Show_Trainer_Details from "./Components/Show-trainer-details/Show_Trainer_Details";
+import Trainer_Details from "./Components/Trainer-details/Trainer_Details";
 import All_Trainers from "./Components/All-trainers/All_Trainers";
 import Add_Trainer from "./Components/Add-trainer/Add_Trainer";
 import Discription from "@/Global-components/Description/Discription";
@@ -98,7 +98,7 @@ export default function Trainers_Page() {
 
         {
             isShowTrainerDetails ?
-                <Show_Trainer_Details
+                <Trainer_Details
                     getAllTrainers={getAllTrainers}
                     onIsShowTrainerDetails={setIsShowTrainerDetails}
                 />

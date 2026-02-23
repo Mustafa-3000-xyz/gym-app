@@ -3,6 +3,7 @@ import { useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
 import { Calendar } from 'primereact/calendar';
+import { stateIsFinished } from "@/Lib/customs";
 // ========================================================== //
 export default function Start_Date_Picker(
     { getDate } : {getDate: (x: any)=> void}
@@ -17,18 +18,17 @@ export default function Start_Date_Picker(
 
     // Check if the isShowTrainerDetailsAtom is true, so the manager he want see trainer details
     useEffect(function () {
-        if (isShowTrainerDetailsAtom) {
+        if (isShowTrainerDetailsAtom && trainer?.subscriptionState != stateIsFinished) {
             setSelectDate(new Date(trainer?.subscriptionStart as string));
         } else {
             setSelectDate(null);
         }
-    }, [isShowTrainerDetailsAtom]);
+    }, [isShowTrainerDetailsAtom, trainer]);
 
 
     useEffect(function () {
         getDate(selectDate);
     }, [selectDate]);
-
 
 
     return <div

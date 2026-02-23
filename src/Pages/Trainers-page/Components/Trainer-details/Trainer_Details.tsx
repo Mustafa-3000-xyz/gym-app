@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, BanknoteX, CircleUserRound, Presentation, RefreshCcw, SquarePen, Trash, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, CircleUserRound, Presentation, SquarePen, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -15,26 +15,37 @@ import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
-import { Show_Traine_Details_Props } from "../../types";
+import { Show_Traine_Details_Props, trainer } from "../../types";
 import Animation from "@/Global-components/Animation/Animation";
+import Btn_Finished_Subscription from "./Btns/Btn-finished-subscription/Btn_Finished_Subscription";
+import Btn_Delete_Trainer from "./Btns/Btn-delete-trainer/Btn_Delete_Trainer";
+import Btn_Subscription_Renewal from "./Btns/Subscription-renewal/Btn_Subscription_Renewal";
+import Btn_Save_Change from "./Btns/Btn-save-change/Btn_Save_Change";
+import Btn_Cancel from "./Btns/Btn-cancel/Btn_Cancel";
 // ========================================================== //
-export default function Show_Trainer_Details(
+export default function Trainer_Details(
     { getAllTrainers, onIsShowTrainerDetails }: Show_Traine_Details_Props
 ) {
     const trainer = useAtomValue(trainerDetails_Atom);
     const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
 
 
-    const containerRef = useRef<HTMLDivElement | null>(null)
     const [hasOverflow, setHasOverflow] = useState(false);
+    const containerRef = useRef<HTMLDivElement | null>(null)
     const [subscriptionState, setSubscriptionState] = useState(trainer?.subscriptionState);
     const [activeSessionsList, setActiveSessionsList] = useState(
         JSON.parse(trainer?.activeSessionsList as any)
     );
 
+
+
     // These for swiper
     const [isBeginning, setIsBeginning] = useState(true);
     const [isEnd, setIsEnd] = useState(false);
+
+    const [isActiveSubscriptionRenewal, setIsActiveSubscriptionRenewal] = useState(false);
+    // Check the [ trainer info ] or [ subscription info ] or [ date info ] are change
+    const [isChangeInfo, setIsChangeInfo] = useState(false);
 
 
     // Trainer info & Subscription info & Date info
@@ -49,14 +60,23 @@ export default function Show_Trainer_Details(
     const [getSubscriptionEnd, setGetSubscriptionEnd] = useState<Date | null>(null);
 
 
-    // Check the [ trainer info ] or [ subscription info ] or [ date info ] are change
-    const [isChangeInfo, setIsChangeInfo] = useState(false);
-
-
+    const trainerObj = {
+        activeSessionsList: getSessionsCount != trainer?.sessionsCount ? [] : activeSessionsList,
+        firstName: getFirstName,
+        lastName: getLastName,
+        address: getAddress,
+        phone: getPhone,
+        subscriptionName: getSubscriptionName,
+        sessionsCount: getSessionsCount,
+        price: getPrice,
+        subscriptionStart: getSubscriptionStart,
+        subscriptionEnd: getSubscriptionEnd
+    };
 
 
     function closeThisWinow() {
         onIsShowTrainerDetails(false);
+        getAllTrainers();
     }
 
     function deleteTrainer() {
@@ -85,7 +105,72 @@ export default function Show_Trainer_Details(
         });
     }
 
-    function finishedSubscription() {
+    function updateInfo() {
+        if (!isChangeInfo) return;
+
+        Swal.fire({
+            title: "!! تحذير",
+            text: "هل انت متأكد من تعديل البيانات , في حالة تعديل عدد الحصص سوف يتم اعاده الحصص من الاول",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "نعم , انا متأكد",
+            cancelButtonText: "إلغاء",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "لقد تم التحديث بنجاح",
+                    text: `تم تحديث المتدرب رقم : ${trainer?.trainerId}`,
+                    icon: "success",
+                    confirmButtonText: "تمام"
+                });
+
+                await updateSomePropertiesInTrainer(trainer?.trainerId as any,
+                    trainerObj as any);
+                closeThisWinow();
+            }
+        });
+    }
+
+    function subscriptionRenwal() {
+        if (!isActiveSubscriptionRenewal) return;
+
+        Swal.fire({
+            title: "لحظه واحده",
+            text: "هل تريد تجديد الاشتراك ؟؟",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "نعم , انا اريد",
+            cancelButtonText: "لا",
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: "لقد تم التجديد بنجاح",
+                    text: `تم تجديد اشتراك المتدرب رقم : ${trainer?.trainerId}`,
+                    icon: "success",
+                    confirmButtonText: "تمام"
+                });
+                const obj = {
+                    ...trainerObj as any,
+                    firstName: trainer?.firstName,
+                    lastName: trainer?.lastName,
+                    phone: trainer?.phone,
+                    address: trainer?.address,
+                    subscriptionState: stateIsActive,
+                    activeSessionsList: [],
+                } as trainer;
+
+                await updateSomePropertiesInTrainer(trainer?.trainerId as any,
+                    obj as any);
+                closeThisWinow();
+            }
+        });
+    }
+
+    function btnFinishedSubscription() {
         Swal.fire({
             title: "!! تحذير",
             text: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
@@ -104,80 +189,50 @@ export default function Show_Trainer_Details(
                     confirmButtonText: "تمام"
                 });
 
+                const obj = {
+                    ...trainerObj,
+                    subscriptionState: stateIsFinished,
+                    subscriptionStart: "",
+                    subscriptionEnd: ""
+                } as trainer;
+
+                await updateSomePropertiesInTrainer(trainer?.trainerId as any, obj as any);
                 setSubscriptionState(stateIsFinished);
-                await updateTrainerProperty(trainer?.trainerId as any,
-                    "subscriptionState", stateIsFinished);
-                getAllTrainers();
+                closeThisWinow();
             }
         });
-    }
-
-    async function checkInActiveSessionsList() {
-        if (activeSessionsList.length == trainer?.sessionsCount) {
-            setSubscriptionState(stateIsFinished);
-            await updateTrainerProperty(trainer?.trainerId as any,
-                "subscriptionState", stateIsFinished);
-        }
-
-        await updateTrainerProperty(trainer?.trainerId as any,
-            "activeSessionsList", activeSessionsList);
-
-        getAllTrainers();
     }
 
     async function clickOnSession(numCircle: number) {
-        const arr = [...activeSessionsList];
+        let arr = [...activeSessionsList];
 
         if (!activeSessionsList.includes(numCircle)) {
             arr.push(numCircle);
-            setActiveSessionsList(arr);
         }
-        // This for return about active session
         else {
             const result = arr.filter(num => num != numCircle);
-            setActiveSessionsList(result);
+            arr = result;
         }
-    }
 
-    async function updateInfo() {
-        Swal.fire({
-            title: "!! تحذير",
-            text: "هل انت متأكد من تعديل البيانات , في حالة تعديل عدد الحصص سوف يتم اعاده الحصص من الاول",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "نعم , انا متأكد",
-            cancelButtonText: "إلغاء",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: "لقد تم التحديث بنجاح",
-                    text: `تم تحديث المتدرب رقم : ${trainer?.trainerId}`,
-                    icon: "success",
-                    confirmButtonText: "تمام"
-                });
-                if (isChangeInfo) {
-                    const obj = {
-                        activeSessionsList: getSessionsCount != trainer?.sessionsCount ? [] : activeSessionsList,
-                        firstName: getFirstName,
-                        lastName: getLastName,
-                        address: getAddress,
-                        phone: getPhone,
-                        subscriptionName: getSubscriptionName,
-                        sessionsCount: getSessionsCount,
-                        price: getPrice,
-                        subscriptionStart: getSubscriptionStart,
-                        subscriptionEnd: getSubscriptionEnd
-                    };
-                    await updateSomePropertiesInTrainer(trainer?.trainerId as any, obj as any);
-                    closeThisWinow();
-                    getAllTrainers();
-                }
-            }
-        });
-    }
 
+        if (arr.length == trainer?.sessionsCount) {
+            const obj = {
+                ...trainerObj,
+                activeSessionsList: arr,
+                subscriptionState: stateIsFinished,
+                subscriptionStart: "",
+                subscriptionEnd: ""
+            } as trainer;
+
+            await updateSomePropertiesInTrainer(trainer?.trainerId as any, obj as any);
+            setSubscriptionState(stateIsFinished);
+            getAllTrainers();
+        }
+
+        setActiveSessionsList(arr);
+        await updateTrainerProperty(trainer?.trainerId as any,
+            "activeSessionsList", arr as any);
+    }
 
 
     // This for send true to isShowTrainerDetails_Atom
@@ -185,21 +240,26 @@ export default function Show_Trainer_Details(
         setIsShowTrainerDetailsAtom(true);
     }, []);
 
-
     // Check the hight for container sessions and run the checkInActiveSessionsList
     useEffect(() => {
         const el = containerRef.current;
 
         setHasOverflow(el!.clientHeight > 100);
-        checkInActiveSessionsList();
     }, [trainer?.sessionsCount, trainer?.activeSessionsList, activeSessionsList]);
-
 
     // This useEffect for check the any value in properties are change
     useEffect(function () {
+        if (!getSubscriptionName || !getPrice || !getSessionsCount ||
+            !getSubscriptionStart || !getSubscriptionEnd
+        ) {
+            setIsActiveSubscriptionRenewal(false);
+        } else {
+            setIsActiveSubscriptionRenewal(true);
+        }
+
         if (
-            (!getFirstName) || (!getLastName) || (!getSubscriptionName) || (!getPrice) ||
-            (!getSessionsCount) || (getPhone != 0 && !String(getPhone).match(regexPhone))
+            !getFirstName || !getLastName || !getSubscriptionName || !getPrice ||
+            !getSessionsCount || getPhone != 0 && !String(getPhone).match(regexPhone)
         ) {
             setIsChangeInfo(false);
             return;
@@ -343,7 +403,7 @@ export default function Show_Trainer_Details(
                 </div>
             </div>
 
-            {/* Trainer informations */}
+            {/* Trainer info & Subscription info & Date info */}
             <div className="px-5 mb-7">
                 <div className="mb-3">
                     <div className="flex items-center gap-2 text-(--primary)">
@@ -389,16 +449,21 @@ export default function Show_Trainer_Details(
                     }}
                 >
                     {/* Trainer info */}
-                    <SwiperSlide>
-                        <Trainer_Info_Form
-                            onGetFirstName={setGetFirstName}
-                            onGetLastName={setGetLastName}
-                            onGetPhone={setGetPhone}
-                            onGetAddress={setGetAddress}
-                        />
-                    </SwiperSlide>
+                    {
+                        subscriptionState != stateIsFinished ?
+                            <SwiperSlide>
+                                <Trainer_Info_Form
+                                    onGetFirstName={setGetFirstName}
+                                    onGetLastName={setGetLastName}
+                                    onGetPhone={setGetPhone}
+                                    onGetAddress={setGetAddress}
+                                />
+                            </SwiperSlide>
+                            :
+                            null
+                    }
 
-                    {/* Subscription info */}
+                    {/* Subscription info & Date info*/}
                     <SwiperSlide>
                         <Subscription_Info_Form
                             onGetSubscriptionName={setGetSubscriptionName}
@@ -422,47 +487,21 @@ export default function Show_Trainer_Details(
 
                     <div className=" flex  gap-2">
                         {
-                            subscriptionState == stateIsActive || subscriptionState == stateIsPending ?
-                                // Finshid subscription 
-                                <button
-                                    onClick={finishedSubscription}
-                                    className="flex items-center gap-2 font-bold px-6 py-3 cursor-pointer rounded-lg bg-amber-300/40 text-amber-700"
-                                >
-                                    <span>
-                                        <BanknoteX size={23} />
-                                    </span>
-
-                                    <span>
-                                        إنهاء الاشتراك
-                                    </span>
-                                </button>
+                            subscriptionState != stateIsFinished ?
+                                <Btn_Finished_Subscription
+                                    onFinishedSubscription={btnFinishedSubscription}
+                                />
                                 :
-                                <button
-                                    className="flex items-center gap-2 font-bold px-6 py-3 cursor-pointer rounded-lg bg-amber-300/40 text-amber-700"
-                                >
-                                    <span>
-                                        <RefreshCcw size={23} />
-                                    </span>
-
-                                    <span>
-                                        تجديد الاشتراك
-                                    </span>
-                                </button>
+                                <Btn_Subscription_Renewal
+                                    isInfoComplete={isActiveSubscriptionRenewal}
+                                    onSubscriptionRenwal={subscriptionRenwal}
+                                />
                         }
 
                         {/* Delete trainer */}
-                        <button
-                            onClick={deleteTrainer}
-                            className="flex items-center gap-2 font-bold px-6 py-3 cursor-pointer rounded-lg bg-red-300/40 text-amber-700"
-                        >
-                            <span>
-                                <Trash size={23} />
-                            </span>
-
-                            <span>
-                                حذف المتدرب
-                            </span>
-                        </button>
+                        <Btn_Delete_Trainer
+                            onDeleteTrainer={deleteTrainer}
+                        />
                     </div>
                 </div>
             </div>
@@ -471,33 +510,15 @@ export default function Show_Trainer_Details(
             <div className="bg-black/5 p-5 border-t border-t-slate-300 flex gap-3">
                 {
                     subscriptionState != stateIsFinished ?
-                        <button
-                            disabled={isChangeInfo ? false : true}
-                            onClick={updateInfo}
-                            className={`
-                            transition duration-300 
-                            bg-[#385E97] text-white px-5 py-2 rounded-lg
-                            hover:bg-[#285E97]
-                            ${isChangeInfo ?
-                                    "opacity-100 cursor-pointer" : "opacity-50 cursor-not-allowed"}
-                        `}
-                        >
-                            حفظ التغيرات
-                        </button>
+                        <Btn_Save_Change
+                            isChangeInfo={isChangeInfo}
+                            onUpdateInfo={updateInfo}
+                        />
                         :
                         null
                 }
 
-
-                <button
-                    onClick={closeThisWinow}
-                    className={`
-                        transition duration-300 hover:bg-red-600 py-2
-                        bg-red-500 text-white px-5 cursor-pointer rounded-lg
-                    `}
-                >
-                    إلغاء
-                </button>
+                <Btn_Cancel onCloseThisWinow={closeThisWinow} />
             </div>
         </Animation>
     </div>

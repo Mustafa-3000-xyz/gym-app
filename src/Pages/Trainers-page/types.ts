@@ -68,10 +68,10 @@ export interface Btn_Filter_Props {
     onGetFilterResult: (x: trainer[]) => void,
 }
 
-export interface Menu_Props{
-    btnFilterEle: HTMLButtonElement | null, 
+export interface Menu_Props {
+    btnFilterEle: HTMLButtonElement | null,
     filterObj: filter,
-    onIsShowMenu: (x:boolean) => void
+    onIsShowMenu: (x: boolean) => void
     onGetFilterResult: (x: filter) => void
 }
 
@@ -80,11 +80,21 @@ export interface filter {
     subscriptionType: string,
 }
 
-export interface Search_Result_Props{
+export interface Search_Result_Props {
     isShowSearchResult: boolean,
     searchResult: trainer[],
     onIsShowTrainerDetails: (x: boolean) => void,
     onIsShowSearchResult: (x: boolean) => void,
     onGetSearchResult: (x: trainer[]) => void,
     onGetSearchValue: (x: string) => void,
+}
+
+export interface Btn_Save_Change_Props {
+    isChangeInfo: boolean,
+    onUpdateInfo: () => void
+}
+
+export interface Btn_Subscription_Renewal_Props {
+    isInfoComplete: boolean, 
+    onSubscriptionRenwal: () => void
 }
