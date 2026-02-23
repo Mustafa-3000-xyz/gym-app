@@ -61,6 +61,7 @@ export default function Trainer_Details(
 
 
     const trainerObj = {
+        // I want when change the sessions count and click on btn save change, so reset the activeSessionsList
         activeSessionsList: getSessionsCount != trainer?.sessionsCount ? [] : activeSessionsList,
         firstName: getFirstName,
         lastName: getLastName,
