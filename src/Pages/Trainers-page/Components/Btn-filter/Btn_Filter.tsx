@@ -5,7 +5,7 @@ import Menu from "./Menu/Menu";
 import { activeSubscriptions, allSubscriptions, finishedSubscriptions, fromOldToNew, pendingSubscriptions, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/customs";
 // ========================================================== //
 export default function Btn_Filter(
-    { trainersList, onGetTrainerList }: Btn_Filter_Props
+    { trainersList, onGetFilterResult }: Btn_Filter_Props
 ) {
     const getFilter = JSON.parse(localStorage.getItem("filter") as any) as filter;
 
@@ -37,7 +37,7 @@ export default function Btn_Filter(
 
 
     useEffect(function () {
-        onGetTrainerList(filterResuletList as trainer[]);
+        onGetFilterResult(filterResuletList as trainer[]);
     }, [filterResuletList]);
 
 

@@ -60,7 +60,7 @@ export default function Trainers_Page() {
             <div className="flex justify-end gap-1">
                 <Btn_Filter
                     trainersList={trainersList}
-                    onGetTrainerList={setAnotherTrainersList}
+                    onGetFilterResult={setAnotherTrainersList}
                 />
 
                 <div className="flex items-center gap-3 w-full">

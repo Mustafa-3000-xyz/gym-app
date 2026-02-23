@@ -65,7 +65,7 @@ export interface Search_Trainer_Props {
 
 export interface Btn_Filter_Props {
     trainersList: trainer[],
-    onGetTrainerList: (x: trainer[]) => void,
+    onGetFilterResult: (x: trainer[]) => void,
 }
 
 export interface Menu_Props{
