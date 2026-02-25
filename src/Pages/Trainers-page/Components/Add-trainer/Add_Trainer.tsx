@@ -5,8 +5,7 @@ import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
 import { Add_Trainer_Props } from "@/Pages/Trainers-page/types";
-import Swal from "sweetalert2";
-import { stateIsActive, stateIsPending } from "@/Lib/customs";
+import { alertSuccess, stateIsActive, stateIsPending } from "@/Lib/customs";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import { useAtom } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
@@ -42,13 +41,10 @@ export default function Add_Trainer(
         onIsShowAddTrainer(false);
     }
 
-
     function showAlert() {
-        Swal.fire({
-            title: "تم إضافة المتدرب بنجاح",
-            text: `الرقم الخاص بالمتدرب هو : ${trainerId}`,
-            icon: "success",
-            confirmButtonText: "تمام"
+        alertSuccess({
+            mainTitle: "تم إضافة المتدرب بنجاح",
+            text: `الرقم الخاص بالمتدرب هو : ${trainerId}`
         });
     }
 
@@ -78,6 +74,7 @@ export default function Add_Trainer(
             showAlert();
         }
     }
+
 
 
     // This for send false to isShowTrainerDetails_Atom

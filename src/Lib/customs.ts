@@ -1,6 +1,6 @@
 import { trainer } from "@/Pages/Trainers-page/types";
 import Swal from "sweetalert2";
-import { alertType } from "./types";
+import { alertSuccessType, alertType } from "./types";
 // ========================================================== //
 
 // This for style date
@@ -49,6 +49,17 @@ export function styleForSubscriptionState(trainer: trainer) {
 }
 
 
+export function alertSuccess({
+    mainTitle, text
+}: alertSuccessType) {
+    Swal.fire({
+        title: mainTitle,
+        text: text,
+        icon: "success",
+        confirmButtonText: "تمام"
+    });
+}
+
 export function alert({
     titleBeforeClickOnOk,
     titleAfterClickOnOk,
@@ -67,11 +78,9 @@ export function alert({
     }).then((result) => {
         if (result.isConfirmed) {
             if (showMessageAfterClickOnOk) {
-                Swal.fire({
-                    title: "تمت العمليه",
-                    text: titleAfterClickOnOk,
-                    icon: "success",
-                    confirmButtonText: "تمام"
+                alertSuccess({
+                    mainTitle: "تمت العمليه",
+                    text: titleAfterClickOnOk as string,
                 });
             }
 
