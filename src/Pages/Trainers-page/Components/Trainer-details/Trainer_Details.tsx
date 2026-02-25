@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
-import { deleteTrainerById, updateTrainer } from "@/Db/trainerTable";
+import { deleteTrainerById, updatePropertyInTrainer, updateTrainer } from "@/Db/trainerTable";
 
 import { alert, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/customs";
 import { useAtom } from "jotai";
@@ -63,7 +63,9 @@ export default function Trainer_Details(
 
     const trainerObj = {
         // I want when change the sessions count and click on btn save change, so reset the activeSessionsList
-        activeSessionsList: getSessionsCount != trainer?.sessionsCount ? [] : activeSessionsList,
+        activeSessionsList: getSessionsCount != trainer?.sessionsCount ? "[]" : JSON.stringify(activeSessionsList),
+        subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() ?
+            stateIsPending : stateIsActive,
         firstName: getFirstName,
         lastName: getLastName,
         address: getAddress,
@@ -71,14 +73,16 @@ export default function Trainer_Details(
         subscriptionName: getSubscriptionName,
         sessionsCount: getSessionsCount,
         price: getPrice,
-        subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() ?
-            stateIsPending : stateIsActive,
         subscriptionStart: getSubscriptionStart,
-        subscriptionEnd: getSubscriptionEnd
+        subscriptionEnd: getSubscriptionEnd,
     };
 
     const trainerObjAfterFinishedSubscription = {
         ...trainerObj,
+        firstName: trainer?.firstName,
+        lastName: trainer?.lastName,
+        address: trainer?.address,
+        phone: trainer?.phone,
         subscriptionState: stateIsFinished,
     };
 
@@ -143,15 +147,15 @@ export default function Trainer_Details(
                 await updateTrainer(trainer?.trainerId as any,
                     trainerObjAfterFinishedSubscription as any);
 
+                await updatePropertyInTrainer(trainer?.trainerId as any,
+                    "activeSessionsList", arr as any);
+
+                setTrainer(trainerObjAfterFinishedSubscription as any);
                 setSubscriptionState(stateIsFinished);
                 setActiveSessionsList(arr);
                 getAllTrainers();
-                setTrainer({
-                    ...trainer,
-                    subscriptionState: stateIsFinished
-                } as trainer);
             }
-        })
+        });
     }
 
     function finishedSubscriptionUsingBtn() {
@@ -162,14 +166,11 @@ export default function Trainer_Details(
                 await updateTrainer(trainer?.trainerId as any,
                     trainerObjAfterFinishedSubscription as any);
 
+                setTrainer(trainerObjAfterFinishedSubscription as any);
                 setSubscriptionState(stateIsFinished);
                 getAllTrainers();
-                setTrainer({
-                    ...trainer,
-                    subscriptionState: stateIsFinished
-                } as trainer);
             }
-        })
+        });
     }
 
     async function clickOnSession(numCircle: number) {
@@ -196,6 +197,7 @@ export default function Trainer_Details(
     }
 
 
+
     // This for send true to isShowTrainerDetails_Atom
     useEffect(function () {
         setIsShowTrainerDetailsAtom(true);
@@ -203,7 +205,8 @@ export default function Trainer_Details(
 
     useEffect(function () {
         async function fun() {
-            await updateTrainer(trainer?.trainerId as any, trainerObj as any);
+            await updatePropertyInTrainer(trainer?.trainerId as any,
+                "activeSessionsList", activeSessionsList as any);
         }
 
         fun();

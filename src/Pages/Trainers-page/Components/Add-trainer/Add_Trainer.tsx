@@ -39,6 +39,7 @@ export default function Add_Trainer(
 
     function closeThisWinow() {
         onIsShowAddTrainer(false);
+        getAllTrainers();
     }
 
     function showAlert() {
@@ -69,7 +70,6 @@ export default function Add_Trainer(
                 dateAdded: todayDate
             });
 
-            getAllTrainers();
             closeThisWinow();
             showAlert();
         }

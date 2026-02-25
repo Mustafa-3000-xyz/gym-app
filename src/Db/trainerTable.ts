@@ -1,4 +1,5 @@
 import Database from "@tauri-apps/plugin-sql";
+import { updateOneColumn } from "./types";
 import { trainer } from "@/Pages/Trainers-page/types";
 // ========================================================== //
 async function getTable() {
@@ -97,5 +98,18 @@ export async function updateTrainer(
     await database.execute(
         `UPDATE trainers SET ${setClause} WHERE trainerId = ?`,
         [...values, trainerId]
+    );
+}
+
+export async function updatePropertyInTrainer(
+    trainerId: number,
+    column: updateOneColumn,
+    value: string | number | boolean
+) {
+    const database = await getTable();
+
+    await database.execute(
+        `UPDATE trainers SET ${column} = ? WHERE trainerId = ?`,
+        [value, trainerId]
     );
 }
