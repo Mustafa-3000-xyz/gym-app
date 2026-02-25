@@ -1,4 +1,6 @@
 import { trainer } from "@/Pages/Trainers-page/types";
+import Swal from "sweetalert2";
+import { alertType } from "./types";
 // ========================================================== //
 
 // This for style date
@@ -44,4 +46,36 @@ export function styleForSubscriptionState(trainer: trainer) {
 
 
     return styleObj;
+}
+
+
+export function alert({
+    titleBeforeClickOnOk,
+    titleAfterClickOnOk,
+    funRunWhenClickOnOk,
+    showMessageAfterClickOnOk = true
+}: alertType): void {
+    Swal.fire({
+        title: "!! تحذير",
+        text: titleBeforeClickOnOk,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "نعم , انا متأكد",
+        cancelButtonText: "إلغاء",
+    }).then((result) => {
+        if (result.isConfirmed) {
+            if (showMessageAfterClickOnOk) {
+                Swal.fire({
+                    title: "تمت العمليه",
+                    text: titleAfterClickOnOk,
+                    icon: "success",
+                    confirmButtonText: "تمام"
+                });
+            }
+
+            funRunWhenClickOnOk();
+        }
+    });
 }

@@ -5,10 +5,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
 import { deleteTrainerById, updateSomePropertiesInTrainer, updateTrainerProperty } from "@/Db/trainerDb";
-import Swal from "sweetalert2";
 
-import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/customs";
-import { useAtom, useAtomValue } from "jotai";
+import { alert, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/customs";
+import { useAtom } from "jotai";
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
 import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
@@ -26,7 +25,7 @@ import Btn_Cancel from "./Btns/Btn-cancel/Btn_Cancel";
 export default function Trainer_Details(
     { getAllTrainers, onIsShowTrainerDetails }: Show_Traine_Details_Props
 ) {
-    const trainer = useAtomValue(trainerDetails_Atom);
+    const [trainer, setTrainer] = useAtom(trainerDetails_Atom);
     const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
 
 
@@ -74,6 +73,11 @@ export default function Trainer_Details(
         subscriptionEnd: getSubscriptionEnd
     };
 
+    const trainerObjAfterFinishedSubscription = {
+        ...trainerObj,
+        subscriptionState: stateIsFinished,
+    };
+
 
     function closeThisWinow() {
         onIsShowTrainerDetails(false);
@@ -81,26 +85,11 @@ export default function Trainer_Details(
     }
 
     function deleteTrainer() {
-        Swal.fire({
-            title: "!! تحذير",
-            text: "هل تريد حقا حذف ذلك المتدرب ؟",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "نعم , انا متأكد",
-            cancelButtonText: "إلغاء",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: "لقد تم حذف المتدرب بنجاح",
-                    text: "ذلك المتدرب لم يعد موجود في الجدول",
-                    icon: "success",
-                    confirmButtonText: "تمام"
-                });
-
+        alert({
+            titleBeforeClickOnOk: "هل تريد حقا حذف ذلك المتدرب ؟",
+            titleAfterClickOnOk: "ذلك المتدرب لم يعد موجود في الجدول",
+            funRunWhenClickOnOk: async function () {
                 await deleteTrainerById(trainer?.trainerId as any);
-                getAllTrainers();
                 closeThisWinow();
             }
         });
@@ -109,24 +98,10 @@ export default function Trainer_Details(
     function updateInfo() {
         if (!isChangeInfo) return;
 
-        Swal.fire({
-            title: "!! تحذير",
-            text: "هل انت متأكد من تعديل البيانات , في حالة تعديل عدد الحصص سوف يتم اعاده الحصص من الاول",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "نعم , انا متأكد",
-            cancelButtonText: "إلغاء",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: "لقد تم التحديث بنجاح",
-                    text: `تم تحديث المتدرب رقم : ${trainer?.trainerId}`,
-                    icon: "success",
-                    confirmButtonText: "تمام"
-                });
-
+        alert({
+            titleBeforeClickOnOk: "هل انت متأكد من تعديل البيانات , في حالة تعديل عدد الحصص سوف يتم اعاده الحصص من الاول",
+            titleAfterClickOnOk: `تم تحديث المتدرب رقم : ${trainer?.trainerId}`,
+            funRunWhenClickOnOk: async function () {
                 await updateSomePropertiesInTrainer(trainer?.trainerId as any,
                     trainerObj as any);
                 closeThisWinow();
@@ -134,26 +109,13 @@ export default function Trainer_Details(
         });
     }
 
-    function subscriptionRenwal() {
+    function subscriptionRenewal() {
         if (!isActiveSubscriptionRenewal) return;
 
-        Swal.fire({
-            title: "لحظه واحده",
-            text: "هل تريد تجديد الاشتراك ؟؟",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "نعم , انا اريد",
-            cancelButtonText: "لا",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: "لقد تم التجديد بنجاح",
-                    text: `تم تجديد اشتراك المتدرب رقم : ${trainer?.trainerId}`,
-                    icon: "success",
-                    confirmButtonText: "تمام"
-                });
+        alert({
+            titleBeforeClickOnOk: "هل تريد تجديد الاشتراك ؟؟",
+            titleAfterClickOnOk: `تم تجديد الاشتراك للمتدرب رقم : ${trainer?.trainerId}`,
+            funRunWhenClickOnOk: async function () {
                 const obj = {
                     ...trainerObj as any,
                     firstName: trainer?.firstName,
@@ -166,47 +128,56 @@ export default function Trainer_Details(
 
                 await updateSomePropertiesInTrainer(trainer?.trainerId as any,
                     obj as any);
+                setSubscriptionState(stateIsActive);
                 closeThisWinow();
             }
         });
     }
 
-    function btnFinishedSubscription() {
-        Swal.fire({
-            title: "!! تحذير",
-            text: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#d33",
-            cancelButtonColor: "#3085d6",
-            confirmButtonText: "نعم , انا متأكد",
-            cancelButtonText: "إلغاء",
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: "تمت العمليه",
-                    text: "تم إنتهاء الاشتراك",
-                    icon: "success",
-                    confirmButtonText: "تمام"
-                });
+    function finishedSubscriptionUsingSessions(arr: number[]) {
+        alert({
+            titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
+            showMessageAfterClickOnOk: false,
+            funRunWhenClickOnOk: async function () {
+                await updateSomePropertiesInTrainer(trainer?.trainerId as any,
+                    trainerObjAfterFinishedSubscription as any);
 
-                const obj = {
-                    ...trainerObj,
-                    subscriptionState: stateIsFinished,
-                    subscriptionStart: "",
-                    subscriptionEnd: ""
-                } as trainer;
-
-                await updateSomePropertiesInTrainer(trainer?.trainerId as any, obj as any);
                 setSubscriptionState(stateIsFinished);
-                closeThisWinow();
+                setActiveSessionsList(arr);
+                getAllTrainers();
+                setTrainer({
+                    ...trainer,
+                    subscriptionState: stateIsFinished
+                } as trainer);
             }
-        });
+        })
+    }
+
+    function finishedSubscriptionUsingBtn() {
+        alert({
+            titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
+            showMessageAfterClickOnOk: false,
+            funRunWhenClickOnOk: async function () {
+                await updateSomePropertiesInTrainer(trainer?.trainerId as any,
+                    trainerObjAfterFinishedSubscription as any);
+
+                setSubscriptionState(stateIsFinished);
+                getAllTrainers();
+                setTrainer({
+                    ...trainer,
+                    subscriptionState: stateIsFinished
+                } as trainer);
+            }
+        })
     }
 
     async function clickOnSession(numCircle: number) {
         let arr = [...activeSessionsList];
 
+        /*
+            If the num not in activeSessionsList so put in activeSessionsList,
+            else remove in activeSessionsList
+        */
         if (!activeSessionsList.includes(numCircle)) {
             arr.push(numCircle);
         }
@@ -217,22 +188,10 @@ export default function Trainer_Details(
 
 
         if (arr.length == trainer?.sessionsCount) {
-            const obj = {
-                ...trainerObj,
-                activeSessionsList: arr,
-                subscriptionState: stateIsFinished,
-                subscriptionStart: "",
-                subscriptionEnd: ""
-            } as trainer;
-
-            await updateSomePropertiesInTrainer(trainer?.trainerId as any, obj as any);
-            setSubscriptionState(stateIsFinished);
-            getAllTrainers();
+            finishedSubscriptionUsingSessions(arr);
+        } else {
+            setActiveSessionsList(arr);
         }
-
-        setActiveSessionsList(arr);
-        await updateTrainerProperty(trainer?.trainerId as any,
-            "activeSessionsList", arr as any);
     }
 
 
@@ -240,6 +199,15 @@ export default function Trainer_Details(
     useEffect(function () {
         setIsShowTrainerDetailsAtom(true);
     }, []);
+
+    useEffect(function () {
+        async function fun() {
+            await updateTrainerProperty(trainer?.trainerId as any,
+                "activeSessionsList", activeSessionsList as any);
+        }
+
+        fun();
+    }, [activeSessionsList]);
 
     // Check the hight for container sessions and run the checkInActiveSessionsList
     useEffect(() => {
@@ -250,6 +218,7 @@ export default function Trainer_Details(
 
     // This useEffect for check the any value in properties are change
     useEffect(function () {
+        // This conditional for subscription renewal
         if (!getSubscriptionName || !getPrice || !getSessionsCount ||
             !getSubscriptionStart || !getSubscriptionEnd
         ) {
@@ -299,6 +268,7 @@ export default function Trainer_Details(
         getSubscriptionName, getSessionsCount, getPrice,
         getSubscriptionStart, getSubscriptionEnd
     ]);
+
 
 
 
@@ -385,7 +355,7 @@ export default function Trainer_Details(
                     `}
                 >
                     {Array.from({ length: trainer.sessionsCount }).map((_, i) => {
-                        const temp = activeSessionsList.includes(i);
+                        const temp = activeSessionsList?.includes(i);
 
                         return <div
                             key={i}
@@ -490,12 +460,12 @@ export default function Trainer_Details(
                         {
                             subscriptionState != stateIsFinished ?
                                 <Btn_Finished_Subscription
-                                    onFinishedSubscription={btnFinishedSubscription}
+                                    onFinishedSubscription={finishedSubscriptionUsingBtn}
                                 />
                                 :
                                 <Btn_Subscription_Renewal
                                     isInfoComplete={isActiveSubscriptionRenewal}
-                                    onSubscriptionRenwal={subscriptionRenwal}
+                                    onSubscriptionRenewal={subscriptionRenewal}
                                 />
                         }
 

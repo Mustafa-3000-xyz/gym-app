@@ -96,5 +96,5 @@ export interface Btn_Save_Change_Props {
 
 export interface Btn_Subscription_Renewal_Props {
     isInfoComplete: boolean, 
-    onSubscriptionRenwal: () => void
+    onSubscriptionRenewal: () => void
 }
