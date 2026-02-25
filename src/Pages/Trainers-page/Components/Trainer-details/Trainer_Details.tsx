@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
-import { deleteTrainerById, updateSomePropertiesInTrainer, updateTrainerProperty } from "@/Db/trainerDb";
+import { deleteTrainerById, updateSomePropertiesInTrainer, updateTrainerProperty } from "@/Db/trainerTable";
 
 import { alert, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/customs";
 import { useAtom } from "jotai";
@@ -59,6 +59,8 @@ export default function Trainer_Details(
     const [getSubscriptionEnd, setGetSubscriptionEnd] = useState<Date | null>(null);
 
 
+    const todayDate = new Date();
+
     const trainerObj = {
         // I want when change the sessions count and click on btn save change, so reset the activeSessionsList
         activeSessionsList: getSessionsCount != trainer?.sessionsCount ? [] : activeSessionsList,
@@ -69,6 +71,8 @@ export default function Trainer_Details(
         subscriptionName: getSubscriptionName,
         sessionsCount: getSessionsCount,
         price: getPrice,
+        subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() ?
+            stateIsPending : stateIsActive,
         subscriptionStart: getSubscriptionStart,
         subscriptionEnd: getSubscriptionEnd
     };
@@ -122,7 +126,6 @@ export default function Trainer_Details(
                     lastName: trainer?.lastName,
                     phone: trainer?.phone,
                     address: trainer?.address,
-                    subscriptionState: stateIsActive,
                     activeSessionsList: [],
                 } as trainer;
 
@@ -229,7 +232,7 @@ export default function Trainer_Details(
 
         if (
             !getFirstName || !getLastName || !getSubscriptionName || !getPrice ||
-            !getSessionsCount || getPhone != 0 && !String(getPhone).match(regexPhone)
+            !getSessionsCount || !getSubscriptionEnd || getPhone != 0 && !String(getPhone).match(regexPhone)
         ) {
             setIsChangeInfo(false);
             return;

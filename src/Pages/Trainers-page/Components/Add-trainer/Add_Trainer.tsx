@@ -1,12 +1,12 @@
 import { Presentation, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { addTrainer } from "@/Db/trainerDb";
+import { addTrainer } from "@/Db/trainerTable";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
 import { Add_Trainer_Props } from "@/Pages/Trainers-page/types";
 import Swal from "sweetalert2";
-import { stateIsActive } from "@/Lib/customs";
+import { stateIsActive, stateIsPending } from "@/Lib/customs";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import { useAtom } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
@@ -42,11 +42,24 @@ export default function Add_Trainer(
         onIsShowAddTrainer(false);
     }
 
+
+    function showAlert() {
+        Swal.fire({
+            title: "تم إضافة المتدرب بنجاح",
+            text: `الرقم الخاص بالمتدرب هو : ${trainerId}`,
+            icon: "success",
+            confirmButtonText: "تمام"
+        });
+    }
+
     async function saveTrainerInfo() {
         if (isAllInfoComplete) {
+            const todayDate = new Date();
+
             await addTrainer({
                 trainerId,
-                subscriptionState: stateIsActive,
+                subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() as any ?
+                    stateIsPending : stateIsActive,
                 activeSessionsList: [],
                 firstName: getFirstName,
                 lastName: getLastName,
@@ -57,22 +70,13 @@ export default function Add_Trainer(
                 price: getPrice,
                 subscriptionStart: getSubscriptionStart,
                 subscriptionEnd: getSubscriptionEnd,
-                dateAdded: new Date()
+                dateAdded: todayDate
             });
 
             getAllTrainers();
             closeThisWinow();
             showAlert();
         }
-    }
-
-    function showAlert() {
-        Swal.fire({
-            title: "تم إضافة المتدرب بنجاح",
-            text: `الرقم الخاص بالمتدرب هو : ${trainerId}`,
-            icon: "success",
-            confirmButtonText: "تمام"
-        });
     }
 
 

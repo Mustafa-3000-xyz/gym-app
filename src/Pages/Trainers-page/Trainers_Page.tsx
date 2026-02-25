@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getTrainers } from "@/Db/trainerDb";
+import { getTrainers } from "@/Db/trainerTable";
 import { trainer } from "./types";
 import Trainer_Details from "./Components/Trainer-details/Trainer_Details";
 import All_Trainers from "./Components/All-trainers/All_Trainers";
