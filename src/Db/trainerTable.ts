@@ -1,5 +1,5 @@
 import Database from "@tauri-apps/plugin-sql";
-import { updateOneColumn } from "./types";
+import { updateOneColumnInTrainer } from "./types";
 import { trainer } from "@/Pages/Trainers-page/types";
 // ========================================================== //
 async function getTable() {
@@ -103,7 +103,7 @@ export async function updateTrainer(
 
 export async function updatePropertyInTrainer(
     trainerId: number,
-    column: updateOneColumn,
+    column: updateOneColumnInTrainer,
     value: string | number | boolean
 ) {
     const database = await getTable();

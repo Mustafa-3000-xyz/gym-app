@@ -1,5 +1,6 @@
 import { theDay } from "@/Pages/Trainers-page/types";
 import Database from "@tauri-apps/plugin-sql";
+import { updateOneColumnInDays } from "./types";
 // ========================================================== //
 async function getTable() {
     const db = await Database.load("sqlite:app-gym-db.db");
@@ -9,7 +10,7 @@ async function getTable() {
             CREATE TABLE IF NOT EXISTS days (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 theDay: TEXT,
-                trainersList: TEXT,
+                attendance: TEXT,
             )
         `);
     } catch (error) {
@@ -25,7 +26,7 @@ export async function addDay(data: any) {
     const query = `INSERT INTO days (theDay) VALUES (?)`;
     const values = [
         data.theDay,
-        data.trainersList
+        data.attendance
     ];
 
     return await database.execute(query, values);
@@ -70,5 +71,18 @@ export async function updateDay(
     await database.execute(
         `UPDATE days SET ${setClause} WHERE id = ?`,
         [...values, id]
+    );
+}
+
+export async function updatePropertyInTrainer(
+    id: number,
+    column: updateOneColumnInDays,
+    value: string | number
+) {
+    const database = await getTable();
+
+    await database.execute(
+        `UPDATE days SET ${column} = ? WHERE id = ?`,
+        [value, id]
     );
 }

@@ -1,4 +1,4 @@
-export type updateOneColumn =
+export type updateOneColumnInTrainer =
     | "subscriptionState"
     | "activeSessionsList"
     | "firstName"
@@ -10,3 +10,7 @@ export type updateOneColumn =
     | "price"
     | "subscriptionStart"
     | "subscriptionEnd";
+
+export type updateOneColumnInDays =
+    | "theDay"
+    | "attendance"

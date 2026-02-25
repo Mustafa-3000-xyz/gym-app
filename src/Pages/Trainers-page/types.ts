@@ -16,7 +16,7 @@ export interface trainer {
 
 export interface theDay {
     theDay: Date,
-    trainersList: trainer[]
+    attendance: trainer[]
 }
 
 export interface All_Trainers_Props {
