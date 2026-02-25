@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
-import { deleteTrainerById, updateSomePropertiesInTrainer, updateTrainerProperty } from "@/Db/trainerTable";
+import { deleteTrainerById, updateTrainer } from "@/Db/trainerTable";
 
 import { alert, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/customs";
 import { useAtom } from "jotai";
@@ -106,8 +106,7 @@ export default function Trainer_Details(
             titleBeforeClickOnOk: "هل انت متأكد من تعديل البيانات , في حالة تعديل عدد الحصص سوف يتم اعاده الحصص من الاول",
             titleAfterClickOnOk: `تم تحديث المتدرب رقم : ${trainer?.trainerId}`,
             funRunWhenClickOnOk: async function () {
-                await updateSomePropertiesInTrainer(trainer?.trainerId as any,
-                    trainerObj as any);
+                await updateTrainer(trainer?.trainerId as any, trainerObj as any);
                 closeThisWinow();
             }
         });
@@ -129,8 +128,7 @@ export default function Trainer_Details(
                     activeSessionsList: [],
                 } as trainer;
 
-                await updateSomePropertiesInTrainer(trainer?.trainerId as any,
-                    obj as any);
+                await updateTrainer(trainer?.trainerId as any, obj as any);
                 setSubscriptionState(stateIsActive);
                 closeThisWinow();
             }
@@ -142,7 +140,7 @@ export default function Trainer_Details(
             titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
             showMessageAfterClickOnOk: false,
             funRunWhenClickOnOk: async function () {
-                await updateSomePropertiesInTrainer(trainer?.trainerId as any,
+                await updateTrainer(trainer?.trainerId as any,
                     trainerObjAfterFinishedSubscription as any);
 
                 setSubscriptionState(stateIsFinished);
@@ -161,7 +159,7 @@ export default function Trainer_Details(
             titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
             showMessageAfterClickOnOk: false,
             funRunWhenClickOnOk: async function () {
-                await updateSomePropertiesInTrainer(trainer?.trainerId as any,
+                await updateTrainer(trainer?.trainerId as any,
                     trainerObjAfterFinishedSubscription as any);
 
                 setSubscriptionState(stateIsFinished);
@@ -205,8 +203,7 @@ export default function Trainer_Details(
 
     useEffect(function () {
         async function fun() {
-            await updateTrainerProperty(trainer?.trainerId as any,
-                "activeSessionsList", activeSessionsList as any);
+            await updateTrainer(trainer?.trainerId as any, trainerObj as any);
         }
 
         fun();

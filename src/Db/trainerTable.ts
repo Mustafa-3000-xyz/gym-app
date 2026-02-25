@@ -1,8 +1,7 @@
 import Database from "@tauri-apps/plugin-sql";
-import { updateOneColumn } from "./types";
 import { trainer } from "@/Pages/Trainers-page/types";
 // ========================================================== //
-async function getDb() {
+async function getTable() {
     const db = await Database.load("sqlite:app-gym-db.db");
 
     try {
@@ -32,7 +31,7 @@ async function getDb() {
 }
 
 export async function addTrainer(data: any) {
-    const database = await getDb();
+    const database = await getTable();
     const query = `INSERT INTO trainers (
         trainerId, subscriptionState, activeSessionsList, firstName, lastName, 
         phone, address, subscriptionName, sessionsCount, 
@@ -59,12 +58,12 @@ export async function addTrainer(data: any) {
 }
 
 export async function getTrainers() {
-    const database = await getDb();
+    const database = await getTable();
     return await database.select("SELECT * FROM trainers");
 }
 
 export async function getTrainerById(id: number) {
-    const database = await getDb();
+    const database = await getTable();
     const result = await database.select<any[]>(
         "SELECT * FROM trainers WHERE trainerId = ?",
         [id]
@@ -74,7 +73,7 @@ export async function getTrainerById(id: number) {
 }
 
 export async function deleteTrainerById(id: number) {
-    const database = await getDb();
+    const database = await getTable();
 
     await database.execute(
         "DELETE FROM trainers WHERE trainerId = ?",
@@ -82,24 +81,11 @@ export async function deleteTrainerById(id: number) {
     );
 }
 
-export async function updateTrainerProperty(
-    trainerId: number,
-    column: updateOneColumn,
-    value: string | number | boolean
-) {
-    const database = await getDb();
-
-    await database.execute(
-        `UPDATE trainers SET ${column} = ? WHERE trainerId = ?`,
-        [value, trainerId]
-    );
-}
-
-export async function updateSomePropertiesInTrainer(
+export async function updateTrainer(
     trainerId: number,
     data: Partial<trainer>
 ) {
-    const database = await getDb();
+    const database = await getTable();
     const keys = Object.keys(data);
 
 
