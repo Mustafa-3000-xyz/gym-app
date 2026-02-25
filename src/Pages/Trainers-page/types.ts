@@ -14,6 +14,11 @@ export interface trainer {
     dateAdded: Date;
 }
 
+export interface theDay {
+    theDay: Date,
+    trainersList: trainer[]
+}
+
 export interface All_Trainers_Props {
     trainersList: trainer[],
     setIsShowTrainerDetails: (x: boolean) => void,
