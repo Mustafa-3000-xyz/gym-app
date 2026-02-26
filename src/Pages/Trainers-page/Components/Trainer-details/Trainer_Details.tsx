@@ -62,6 +62,7 @@ export default function Trainer_Details(
     const todayDate = new Date();
 
     const trainerObj = {
+        trainerId: trainer?.trainerId,
         // I want when change the sessions count and click on btn save change, so reset the activeSessionsList
         activeSessionsList: getSessionsCount != trainer?.sessionsCount ? "[]" : JSON.stringify(activeSessionsList),
         subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() ?
@@ -364,11 +365,15 @@ export default function Trainer_Details(
                             key={i}
                             onClick={() => clickOnSession(i)}
                             className={`
-                                cursor-pointer rounded-full h-12 w-12 flex items-center justify-center
-                                ${temp ? "bg-[var(--primary)] text-white" :
-                                    "bg-slate-200 text-black"}
-                                ${subscriptionState == stateIsActive ? "pointer-events-auto cursor-pointer" :
-                                    "pointer-events-none cursor-not-allowed opacity-45"}
+                                rounded-full h-12 w-12 flex items-center justify-center
+                                ${subscriptionState == stateIsActive ?
+                                    `cursor-pointer ${temp ? "bg-(--primary) text-white" : "bg-slate-200 text-black"}`
+                                    :
+                                    subscriptionState == stateIsPending ? 
+                                    `opacity-45 pointer-events-none bg-amber-500 text-amber-100 ${temp && "!bg-(--primary) text-white"}`
+                                    :
+                                    "opacity-45 pointer-events-none bg-red-500 text-red-100"
+                                }
                             `}
                         >
                             {i + 1}
@@ -494,6 +499,6 @@ export default function Trainer_Details(
 
                 <Btn_Cancel onCloseThisWinow={closeThisWinow} />
             </div>
-        </Animation>
-    </div>
+        </Animation >
+    </div >
 }
