@@ -14,12 +14,15 @@ export interface trainer {
     dateAdded: Date;
 }
 
-export interface theDay {
+
+export interface attendanceToday {
     theDay: Date,
-    attendance: {
-        capten: number,
-        list: trainer[]
-    }
+    attendanceAndCaptainsList: attendanceAndCaptain[]
+}
+
+export interface attendanceAndCaptain {
+    captainId: string,
+    attendanceList: number | string[]
 }
 
 export interface All_Trainers_Props {
@@ -103,6 +106,6 @@ export interface Btn_Save_Change_Props {
 }
 
 export interface Btn_Subscription_Renewal_Props {
-    isInfoComplete: boolean, 
+    isInfoComplete: boolean,
     onSubscriptionRenewal: () => void
 }

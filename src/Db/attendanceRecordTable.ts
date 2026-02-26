@@ -1,4 +1,4 @@
-import { theDay } from "@/Pages/Trainers-page/types";
+import { attendanceToday } from "@/Pages/Trainers-page/types";
 import Database from "@tauri-apps/plugin-sql";
 import { updateOneColumnInDays } from "./types";
 // ========================================================== //
@@ -9,8 +9,8 @@ async function getTable() {
         await db.execute(`
             CREATE TABLE IF NOT EXISTS days (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                theDay: TEXT,
-                attendance: TEXT,
+                theDay TEXT,
+                attendanceAndCaptainsList JSON
             )
         `);
     } catch (error) {
@@ -21,12 +21,14 @@ async function getTable() {
     return db;
 }
 
-export async function addDay(data: any) {
+export async function addTheDay(data: any) {
     const database = await getTable();
-    const query = `INSERT INTO days (theDay) VALUES (?)`;
+    const query = `INSERT INTO days (
+        theDay, attendanceAndCaptainsList
+    ) VALUES (?, ?)`;
     const values = [
         data.theDay,
-        data.attendance
+        data.attendanceAndCaptainsList
     ];
 
     return await database.execute(query, values);
@@ -37,7 +39,7 @@ export async function getDays() {
     return await database.select("SELECT * FROM days");
 }
 
-export async function getDayById(id: number) {
+export async function getTheDayById(id: number) {
     const database = await getTable();
     const result = await database.select<any[]>(
         "SELECT * FROM days WHERE id = ?",
@@ -47,7 +49,7 @@ export async function getDayById(id: number) {
     return result[0];
 }
 
-export async function deleteDayById(id: number) {
+export async function deleteTheDayById(id: number) {
     const database = await getTable();
 
     await database.execute(
@@ -56,9 +58,9 @@ export async function deleteDayById(id: number) {
     );
 }
 
-export async function updateDay(
+export async function updateTheDay(
     id: number,
-    data: Partial<theDay>
+    data: Partial<attendanceToday>
 ) {
     const database = await getTable();
     const keys = Object.keys(data);
@@ -74,7 +76,7 @@ export async function updateDay(
     );
 }
 
-export async function updatePropertyInTrainer(
+export async function updatePropertyInTheDay(
     id: number,
     column: updateOneColumnInDays,
     value: string | number

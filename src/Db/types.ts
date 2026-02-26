@@ -13,4 +13,4 @@ export type updateOneColumnInTrainer =
 
 export type updateOneColumnInDays =
     | "theDay"
-    | "attendance"
+    | "attendanceAndCaptainsList"
