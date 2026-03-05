@@ -194,6 +194,9 @@ export default function Trainer_Details(
             finishedSubscriptionUsingSessions(arr);
         } else {
             setActiveSessionsList(arr);
+
+            await updatePropertyInTrainer(trainer?.trainerId as any,
+                "activeSessionsList", arr as any);
         }
     }
 
@@ -203,15 +206,6 @@ export default function Trainer_Details(
     useEffect(function () {
         setIsShowTrainerDetailsAtom(true);
     }, []);
-
-    useEffect(function () {
-        async function fun() {
-            await updatePropertyInTrainer(trainer?.trainerId as any,
-                "activeSessionsList", activeSessionsList as any);
-        }
-
-        fun();
-    }, [activeSessionsList]);
 
     // Check the hight for container sessions and run the checkInActiveSessionsList
     useEffect(() => {
@@ -369,10 +363,10 @@ export default function Trainer_Details(
                                 ${subscriptionState == stateIsActive ?
                                     `cursor-pointer ${temp ? "bg-(--primary) text-white" : "bg-slate-200 text-black"}`
                                     :
-                                    subscriptionState == stateIsPending ? 
-                                    `opacity-45 pointer-events-none bg-amber-500 text-amber-100 ${temp && "!bg-(--primary) text-white"}`
-                                    :
-                                    "opacity-45 pointer-events-none bg-red-500 text-red-100"
+                                    subscriptionState == stateIsPending ?
+                                        `opacity-45 pointer-events-none bg-amber-500 text-amber-100 ${temp && "!bg-(--primary) text-white"}`
+                                        :
+                                        "opacity-45 pointer-events-none bg-red-500 text-red-100"
                                 }
                             `}
                         >
