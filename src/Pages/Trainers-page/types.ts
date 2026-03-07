@@ -10,8 +10,8 @@ export interface trainer {
     sessionsCount: number;
     price: number;
     subscriptionStart: string;
-    subscriptionEnd: string;
-    dateAdded: Date;
+    subscriptionEnd: string; 
+    dateAdded: string;  
 }
 
 
@@ -22,17 +22,12 @@ export interface attendanceToday {
 
 export interface attendanceAndCaptain {
     captainId: string,
-    attendanceList: number | string[]
+    attendanceList: number[] | string[]
 }
 
 export interface All_Trainers_Props {
     trainersList: trainer[],
     setIsShowTrainerDetails: (x: boolean) => void,
-}
-
-export interface Add_Trainer_Props {
-    onIsShowAddTrainer: (x: boolean) => void,
-    getAllTrainers: () => void
 }
 
 export interface Subscription_Info_Form_Props {

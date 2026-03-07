@@ -1,6 +1,6 @@
 import { stateIsActive } from "@/Lib/customs";
 import { trainer } from "@/Pages/Trainers-page/types";
-import { CalendarCheck2, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
 // ========================================================== //
 export default function Active_Subscriptions(

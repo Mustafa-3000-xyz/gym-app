@@ -1,20 +1,22 @@
 import { Presentation, UserRound, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { addTrainer } from "@/Db/trainerTable";
+import { addTrainer } from "@/Rtk/Slices/trainersSlice";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
-import { Add_Trainer_Props } from "@/Pages/Trainers-page/types";
 import { alertSuccess, stateIsActive, stateIsPending } from "@/Lib/customs";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import { useAtom } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
 import Discription from "@/Global-components/Description/Discription";
 import Animation from "@/Global-components/Animation/Animation";
+import { useDispatch } from "react-redux";
+import { trainer } from "../../types";
 // ========================================================== //
 export default function Add_Trainer(
-    { onIsShowAddTrainer, getAllTrainers }: Add_Trainer_Props
+    { onIsShowAddTrainer }: {onIsShowAddTrainer: (x: boolean) => void}
 ) {
+    const dispatch = useDispatch();
     const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
 
     // Get trainer info
@@ -37,9 +39,10 @@ export default function Add_Trainer(
     const [isAllInfoComplete, setIsAllInfoComplete] = useState(false);
 
 
+
+
     function closeThisWinow() {
         onIsShowAddTrainer(false);
-        getAllTrainers();
     }
 
     function showAlert() {
@@ -53,22 +56,24 @@ export default function Add_Trainer(
         if (isAllInfoComplete) {
             const todayDate = new Date();
 
-            await addTrainer({
-                trainerId,
-                subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() as any ?
-                    stateIsPending : stateIsActive,
-                activeSessionsList: [],
-                firstName: getFirstName,
-                lastName: getLastName,
-                phone: getPhone,
-                address: getAddress,
-                subscriptionName: getSubscriptionName,
-                sessionsCount: getSessionsCount,
-                price: getPrice,
-                subscriptionStart: getSubscriptionStart,
-                subscriptionEnd: getSubscriptionEnd,
-                dateAdded: todayDate
-            });
+            dispatch(
+                addTrainer({
+                    trainerId,
+                    subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() as any ? stateIsPending : stateIsActive,
+                    activeSessionsList: [],
+                    firstName: getFirstName,
+                    lastName: getLastName,
+                    phone: String(getPhone),
+                    address: getAddress,
+                    subscriptionName: getSubscriptionName,
+                    sessionsCount: Number(getSessionsCount),
+                    price: Number(getPrice),
+                    subscriptionStart: getSubscriptionStart?.toISOString(),
+                    subscriptionEnd: getSubscriptionEnd?.toISOString(),
+                    dateAdded: todayDate.toISOString()
+                } as trainer) as any
+            );
+
 
             closeThisWinow();
             showAlert();

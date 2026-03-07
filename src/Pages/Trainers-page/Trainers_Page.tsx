@@ -1,6 +1,5 @@
 import { Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getTrainers } from "@/Db/trainerTable";
 import { trainer } from "./types";
 import Trainer_Details from "./Components/Trainer-details/Trainer_Details";
 import All_Trainers from "./Components/All-trainers/All_Trainers";
@@ -11,8 +10,14 @@ import Trainers_Total from "./Components/Boxes/Trainers-total/Trainers_Total";
 import Active_Subscriptions from "./Components/Boxes/Active-subscriptions/Active_Subscriptions";
 import Search_Trainer from "./Components/Search-trainer/Search_Trainer";
 import Btn_Filter from "./Components/Btn-filter/Btn_Filter";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllTrainers } from "@/Rtk/Slices/trainersSlice";
+import { store_Type } from "@/Rtk/types";
 // ========================================================== //
 export default function Trainers_Page() {
+    const dispatch = useDispatch();
+    const state = useSelector(state => state as store_Type);
+
     const [trainersList, setTrainersList] = useState<trainer[]>([]);
     const [anotherTrainersList, setAnotherTrainersList] = useState<trainer[]>([]);
 
@@ -24,15 +29,15 @@ export default function Trainers_Page() {
         setIsShowAddTrainer(true);
     }
 
-    async function getAllTrainers() {
-        const data = await getTrainers();
-        setTrainersList(data as trainer[]);
-    }
 
 
     useEffect(function () {
-        getAllTrainers();
+        dispatch(getAllTrainers() as any);
     }, []);
+
+    useEffect(function () {
+        setTrainersList(state.trainers);
+    }, [state.trainers]);
 
 
 
@@ -89,10 +94,7 @@ export default function Trainers_Page() {
 
         {
             isShowAddTrainer ?
-                <Add_Trainer
-                    getAllTrainers={getAllTrainers}
-                    onIsShowAddTrainer={setIsShowAddTrainer}
-                />
+                <Add_Trainer onIsShowAddTrainer={setIsShowAddTrainer} />
                 : null
         }
 

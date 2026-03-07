@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 
-import { deleteTrainerById, updatePropertyInTrainer, updateTrainer } from "@/Db/trainerTable";
+import { deleteTrainerById, updatePropertyInTrainer, updateSomePropertiesInTrainer } from "@/Rtk/Slices/trainersSlice";
 
 import { alert, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/customs";
 import { useAtom } from "jotai";
@@ -14,17 +14,19 @@ import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
-import { Show_Traine_Details_Props, trainer } from "../../types";
+import { Show_Traine_Details_Props } from "../../types";
 import Animation from "@/Global-components/Animation/Animation";
 import Btn_Finished_Subscription from "./Btns/Btn-finished-subscription/Btn_Finished_Subscription";
 import Btn_Delete_Trainer from "./Btns/Btn-delete-trainer/Btn_Delete_Trainer";
 import Btn_Subscription_Renewal from "./Btns/Subscription-renewal/Btn_Subscription_Renewal";
 import Btn_Save_Change from "./Btns/Btn-save-change/Btn_Save_Change";
 import Btn_Cancel from "./Btns/Btn-cancel/Btn_Cancel";
+import { useDispatch } from "react-redux";
 // ========================================================== //
 export default function Trainer_Details(
     { getAllTrainers, onIsShowTrainerDetails }: Show_Traine_Details_Props
 ) {
+    const dispatch = useDispatch();
     const [trainer, setTrainer] = useAtom(trainerDetails_Atom);
     const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
 
@@ -35,7 +37,6 @@ export default function Trainer_Details(
     const [activeSessionsList, setActiveSessionsList] = useState(
         JSON.parse(trainer?.activeSessionsList as any)
     );
-
 
 
     // These for swiper
@@ -61,10 +62,11 @@ export default function Trainer_Details(
 
     const todayDate = new Date();
 
-    const trainerObj = {
-        trainerId: trainer?.trainerId,
+    const trainerUpdateOrRenewalObj = {
+        ...trainer,
         // I want when change the sessions count and click on btn save change, so reset the activeSessionsList
-        activeSessionsList: getSessionsCount != trainer?.sessionsCount ? "[]" : JSON.stringify(activeSessionsList),
+        activeSessionsList: getSessionsCount != trainer?.sessionsCount ? "[]" :
+            JSON.stringify(activeSessionsList),
         subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() ?
             stateIsPending : stateIsActive,
         firstName: getFirstName,
@@ -74,18 +76,20 @@ export default function Trainer_Details(
         subscriptionName: getSubscriptionName,
         sessionsCount: getSessionsCount,
         price: getPrice,
-        subscriptionStart: getSubscriptionStart,
-        subscriptionEnd: getSubscriptionEnd,
+        subscriptionStart: getSubscriptionStart?.toISOString(),
+        subscriptionEnd: getSubscriptionEnd?.toISOString(),
     };
 
-    const trainerObjAfterFinishedSubscription = {
-        ...trainerObj,
+    const trainerFinishedSubscriptionObj = {
+        ...trainerUpdateOrRenewalObj,
         firstName: trainer?.firstName,
         lastName: trainer?.lastName,
         address: trainer?.address,
         phone: trainer?.phone,
+        activeSessionsList: JSON.stringify([]),
         subscriptionState: stateIsFinished,
     };
+
 
 
     function closeThisWinow() {
@@ -97,8 +101,8 @@ export default function Trainer_Details(
         alert({
             titleBeforeClickOnOk: "هل تريد حقا حذف ذلك المتدرب ؟",
             titleAfterClickOnOk: "ذلك المتدرب لم يعد موجود في الجدول",
-            funRunWhenClickOnOk: async function () {
-                await deleteTrainerById(trainer?.trainerId as any);
+            funRunWhenClickOnOk: function () {
+                dispatch(deleteTrainerById(trainer?.trainerId as any) as any)
                 closeThisWinow();
             }
         });
@@ -110,8 +114,12 @@ export default function Trainer_Details(
         alert({
             titleBeforeClickOnOk: "هل انت متأكد من تعديل البيانات , في حالة تعديل عدد الحصص سوف يتم اعاده الحصص من الاول",
             titleAfterClickOnOk: `تم تحديث المتدرب رقم : ${trainer?.trainerId}`,
-            funRunWhenClickOnOk: async function () {
-                await updateTrainer(trainer?.trainerId as any, trainerObj as any);
+            funRunWhenClickOnOk: function () {
+                dispatch(updateSomePropertiesInTrainer({
+                    trainerId: trainer?.trainerId as any,
+                    trainer: trainerUpdateOrRenewalObj as any
+                }) as any);
+
                 closeThisWinow();
             }
         });
@@ -123,17 +131,21 @@ export default function Trainer_Details(
         alert({
             titleBeforeClickOnOk: "هل تريد تجديد الاشتراك ؟؟",
             titleAfterClickOnOk: `تم تجديد الاشتراك للمتدرب رقم : ${trainer?.trainerId}`,
-            funRunWhenClickOnOk: async function () {
+            funRunWhenClickOnOk: function () {
                 const obj = {
-                    ...trainerObj as any,
+                    ...trainerUpdateOrRenewalObj as any,
                     firstName: trainer?.firstName,
                     lastName: trainer?.lastName,
                     phone: trainer?.phone,
                     address: trainer?.address,
-                    activeSessionsList: [],
-                } as trainer;
+                    activeSessionsList: JSON.stringify([]),
+                };
 
-                await updateTrainer(trainer?.trainerId as any, obj as any);
+                dispatch(updateSomePropertiesInTrainer({
+                    trainerId: trainer?.trainerId as any,
+                    trainer: obj as any
+                }) as any);
+
                 setSubscriptionState(stateIsActive);
                 closeThisWinow();
             }
@@ -144,17 +156,21 @@ export default function Trainer_Details(
         alert({
             titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
             showMessageAfterClickOnOk: false,
-            funRunWhenClickOnOk: async function () {
-                await updateTrainer(trainer?.trainerId as any,
-                    trainerObjAfterFinishedSubscription as any);
+            funRunWhenClickOnOk: function () {
+                dispatch(updateSomePropertiesInTrainer({
+                    trainerId: trainer?.trainerId as any,
+                    trainer: trainerFinishedSubscriptionObj as any
+                }) as any);
 
-                await updatePropertyInTrainer(trainer?.trainerId as any,
-                    "activeSessionsList", arr as any);
+                dispatch(updatePropertyInTrainer({
+                    trainerId: trainer?.trainerId as any,
+                    column: "activeSessionsList",
+                    value: arr as any,
+                }) as any);
 
-                setTrainer(trainerObjAfterFinishedSubscription as any);
+                setTrainer(trainerFinishedSubscriptionObj as any);
                 setSubscriptionState(stateIsFinished);
                 setActiveSessionsList(arr);
-                getAllTrainers();
             }
         });
     }
@@ -163,25 +179,28 @@ export default function Trainer_Details(
         alert({
             titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
             showMessageAfterClickOnOk: false,
-            funRunWhenClickOnOk: async function () {
-                await updateTrainer(trainer?.trainerId as any,
-                    trainerObjAfterFinishedSubscription as any);
+            funRunWhenClickOnOk: function () {
+                dispatch(updateSomePropertiesInTrainer({
+                    trainerId: trainer?.trainerId as any,
+                    trainer: trainerFinishedSubscriptionObj as any
+                }) as any);
 
-                setTrainer(trainerObjAfterFinishedSubscription as any);
+
                 setSubscriptionState(stateIsFinished);
-                getAllTrainers();
+                setTrainer(trainerFinishedSubscriptionObj as any);
             }
         });
     }
 
-    async function clickOnSession(numCircle: number) {
+    function clickOnSession(numCircle: number) {
         let arr = [...activeSessionsList];
+
 
         /*
             If the num not in activeSessionsList so put in activeSessionsList,
             else remove in activeSessionsList
         */
-        if (!activeSessionsList.includes(numCircle)) {
+        if (!arr.includes(numCircle)) {
             arr.push(numCircle);
         }
         else {
@@ -195,8 +214,11 @@ export default function Trainer_Details(
         } else {
             setActiveSessionsList(arr);
 
-            await updatePropertyInTrainer(trainer?.trainerId as any,
-                "activeSessionsList", arr as any);
+            dispatch(updatePropertyInTrainer({
+                trainerId: trainer?.trainerId as any,
+                column: "activeSessionsList",
+                value: arr as any,
+            }) as any);
         }
     }
 
@@ -207,12 +229,14 @@ export default function Trainer_Details(
         setIsShowTrainerDetailsAtom(true);
     }, []);
 
+
     // Check the hight for container sessions and run the checkInActiveSessionsList
     useEffect(() => {
         const el = containerRef.current;
 
         setHasOverflow(el!.clientHeight > 100);
     }, [trainer?.sessionsCount, trainer?.activeSessionsList, activeSessionsList]);
+
 
     // This useEffect for check the any value in properties are change
     useEffect(function () {
@@ -266,7 +290,6 @@ export default function Trainer_Details(
         getSubscriptionName, getSessionsCount, getPrice,
         getSubscriptionStart, getSubscriptionEnd
     ]);
-
 
 
 
@@ -333,7 +356,7 @@ export default function Trainer_Details(
                                 <p>
                                     <span> تم إكمال </span>
                                     <span className="font-bold me-1">
-                                        {activeSessionsList.length}
+                                        {activeSessionsList?.length}
                                     </span>
                                     <span>
                                         من اصل
