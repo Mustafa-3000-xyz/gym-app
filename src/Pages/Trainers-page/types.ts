@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface trainer {
     trainerId: string;
     subscriptionState: string;
@@ -87,7 +89,7 @@ export interface filter {
 }
 
 export interface Search_Result_Props {
-    isShowSearchResult: boolean,
+    searchInpRef: React.RefObject<HTMLInputElement | null>,
     searchResult: trainer[],
     onIsShowTrainerDetails: (x: boolean) => void,
     onIsShowSearchResult: (x: boolean) => void,

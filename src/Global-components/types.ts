@@ -16,6 +16,7 @@ export interface Sidebar_Linsk_Props {
 export interface Popup_Animation_Props {
     children: ReactNode;
     className?: string;
+    ref?: any;
     initial?: TargetAndTransition;
     animate?: TargetAndTransition;
 }

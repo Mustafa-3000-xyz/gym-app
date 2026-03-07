@@ -4,10 +4,12 @@ import Not_Found from "@/Global-components/Not-found/Not_Found";
 import { Search_Result_Props, trainer } from "@/Pages/Trainers-page/types";
 import { useAtom } from "jotai";
 import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
+import Animation from "@/Global-components/Animation/Animation";
+import { useEffect, useRef } from "react";
 // ========================================================== //
 export default function Search_Result(
     {
-        isShowSearchResult,
+        searchInpRef,
         searchResult,
         onIsShowTrainerDetails,
         onIsShowSearchResult,
@@ -16,6 +18,8 @@ export default function Search_Result(
     }: Search_Result_Props
 ) {
     const [, setTrainerDetailsAtom] = useAtom(trainerDetails_Atom);
+    const searchResultRef = useRef<HTMLDivElement>(null);
+
 
 
     function close() {
@@ -34,13 +38,40 @@ export default function Search_Result(
     }
 
 
+    useEffect(() => {
+        function handleClickOutside(e: MouseEvent) {
+            if (
+                (!searchInpRef.current?.contains(e.target as any))
+                &&
+                (searchResultRef.current != e.target &&
+                    !searchResultRef.current?.contains(e.target as any))
+            ) {
+                close();
+            }
+        }
 
-    return <div className={`
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [searchInpRef, searchResultRef]);
+
+
+
+    return <Animation
+        ref={searchResultRef}
+        className={`
+            h-52 w-full
+            translate-y-10  shadow-2xl
             transform overflow-auto  z-10 flex flex-col gap-2
             absolute border border-black/15 bg-slate-100 p-3
-            ${isShowSearchResult ? " transition-all duration-500 translate-y-12 h-52 w-full shadow-2xl"
-            : "translate-y-0 h-0 rounded-t-lg w-72"} 
         `}
+
+        initial={{
+            y: -30
+        }}
+
+        animate={{
+            y: 10
+        }}
     >
         <div className='flex justify-end my-2'>
             <X
@@ -94,5 +125,5 @@ export default function Search_Result(
                     ))
             }
         </div>
-    </div>
+    </Animation>
 }

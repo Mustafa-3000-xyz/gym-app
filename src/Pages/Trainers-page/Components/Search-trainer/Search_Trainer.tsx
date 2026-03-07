@@ -1,5 +1,5 @@
 import { Search } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Search_Trainer_Props, trainer } from '../../types';
 import Search_Result from './Search-result/Search_Result';
 // ========================================================== //
@@ -10,6 +10,7 @@ export default function Search_Trainer(
     const [searchResult, setSearchResult] = useState<trainer[]>([]);
     const [searchValue, setSearchValue] = useState("");
 
+    const searchInpRef = useRef<HTMLInputElement>(null);
 
 
     function clickOnEnter(e: React.KeyboardEvent) {
@@ -24,7 +25,6 @@ export default function Search_Trainer(
             setSearchResult(result);
         }
     }
-
 
 
     useEffect(function () {
@@ -43,6 +43,7 @@ export default function Search_Trainer(
         {/* Inp search */}
         <div className='w-full h-full'>
             <input
+                ref={searchInpRef}
                 onChange={(e) => setSearchValue(e.target.value)}
                 disabled={trainersList.length <= 1 ? true : false}
                 value={searchValue}
@@ -61,17 +62,17 @@ export default function Search_Trainer(
         </div>
 
         {
-            trainersList.length <= 1 ?
-                null
-                :
+            isShowSearchResult ?
                 <Search_Result
-                    isShowSearchResult={isShowSearchResult}
+                    searchInpRef={searchInpRef}
                     searchResult={searchResult}
                     onIsShowTrainerDetails={onIsShowTrainerDetails}
                     onIsShowSearchResult={setIsShowSearchResult}
                     onGetSearchResult={setSearchResult}
                     onGetSearchValue={setSearchValue}
                 />
+                :
+                null
         }
     </div>
 }

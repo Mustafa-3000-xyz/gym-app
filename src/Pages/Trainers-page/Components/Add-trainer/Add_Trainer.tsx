@@ -52,7 +52,7 @@ export default function Add_Trainer(
         });
     }
 
-    async function saveTrainerInfo() {
+    function saveTrainerInfo() {
         if (isAllInfoComplete) {
             const todayDate = new Date();
 
