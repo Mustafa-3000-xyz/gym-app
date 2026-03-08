@@ -14,17 +14,16 @@ import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
-import { Show_Traine_Details_Props } from "../../types";
 import Animation from "@/Global-components/Animation/Animation";
-import Btn_Finished_Subscription from "./Btns/Btn-finished-subscription/Btn_Finished_Subscription";
-import Btn_Delete_Trainer from "./Btns/Btn-delete-trainer/Btn_Delete_Trainer";
-import Btn_Subscription_Renewal from "./Btns/Subscription-renewal/Btn_Subscription_Renewal";
-import Btn_Save_Change from "./Btns/Btn-save-change/Btn_Save_Change";
-import Btn_Cancel from "./Btns/Btn-cancel/Btn_Cancel";
+import Btn_Finished_Subscription from "./Btns/Btn_Finished_Subscription";
+import Btn_Delete_Trainer from "./Btns/Btn_Delete_Trainer";
+import Btn_Subscription_Renewal from "./Btns/Btn_Subscription_Renewal";
+import Btn_Save_Change from "./Btns/Btn_Save_Change";
+import Btn_Cancel from "./Btns/Btn_Cancel";
 import { useDispatch } from "react-redux";
 // ========================================================== //
 export default function Trainer_Details(
-    { getAllTrainers, onIsShowTrainerDetails }: Show_Traine_Details_Props
+    { onIsShowTrainerDetails }: {onIsShowTrainerDetails: (x: boolean) => void}
 ) {
     const dispatch = useDispatch();
     const [trainer, setTrainer] = useAtom(trainerDetails_Atom);
@@ -94,7 +93,6 @@ export default function Trainer_Details(
 
     function closeThisWinow() {
         onIsShowTrainerDetails(false);
-        getAllTrainers();
     }
 
     function deleteTrainer() {

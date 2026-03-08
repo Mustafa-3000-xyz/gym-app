@@ -1,4 +1,4 @@
-import { CircleDollarSign, Info, Settings, Users } from "lucide-react";
+import { Archive, BookUser, CircleDollarSign, Info, Settings, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import Sidebar_Links from "./Sidebar-links/Sidebar_Links";
 // ========================================================== //
@@ -17,6 +17,24 @@ export default function SideBar() {
                 linkName="المتدربين"
                 path="/trainers-page"
                 icon={<Users
+                    size={23}
+                    strokeWidth={1.75}
+                />}
+            />
+
+            <Sidebar_Links
+                linkName="سجل الحضور"
+                path="/attendance-recorde-page"
+                icon={<Archive
+                    size={23}
+                    strokeWidth={1.75}
+                />}
+            />
+
+            <Sidebar_Links
+                linkName="الكباتن"
+                path="/captains-page"
+                icon={<BookUser
                     size={23}
                     strokeWidth={1.75}
                 />}

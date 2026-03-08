@@ -55,11 +55,6 @@ export interface Trainer_Info_Form_Props {
     onGetAddress: (x: string) => void,
 }
 
-export interface Show_Traine_Details_Props {
-    onIsShowTrainerDetails: (x: boolean) => void,
-    getAllTrainers: () => void
-}
-
 export interface Btn_Slide_Props {
     index: number,
     currentSlide: number,

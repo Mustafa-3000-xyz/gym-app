@@ -1,13 +1,21 @@
+import trainersList_Atom from '@/Atoms/trainersList_Atom';
 import Animation from '@/Global-components/Animation/Animation';
-import { activeSubscriptions, allSubscriptions, finishedSubscriptions, fromNewToOld, fromOldToNew, pendingSubscriptions } from '@/Lib/customs';
+import { activeSubscriptions, allSubscriptions, finishedSubscriptions, fromNewToOld, fromOldToNew, pendingSubscriptions, stateIsActive, stateIsFinished, stateIsPending } from '@/Lib/customs';
 import { filter, Menu_Props } from '@/Pages/Trainers-page/types';
+import { useAtomValue } from 'jotai';
 import { ArrowDown, ArrowUp, ShieldCheck, ShieldOff, ShieldQuestionMark, Users } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 // ========================================================== //
 export default function Menu(
     { btnFilterEle, filterObj, onIsShowMenu, onGetFilterResult }: Menu_Props
 ) {
+    const trainersListAtom = useAtomValue(trainersList_Atom);
+
     const listRef = useRef<HTMLUListElement>(null);
+    const [allSubscriptionActive, setAllSubscriptionActive] = useState(0);
+    const [allSubscriptionPending, setAllSubscriptionPending] = useState(0);
+    const [allSubscriptionFinished, setAllSubscriptionFinished] = useState(0);
+
 
 
     function clickOnArrange(type: string) {
@@ -19,7 +27,6 @@ export default function Menu(
         onGetFilterResult(obj);
     }
 
-
     function clickOnSubscription(type: string) {
         const obj = {
             ...filterObj,
@@ -29,6 +36,17 @@ export default function Menu(
         onGetFilterResult(obj);
     }
 
+
+    useEffect(function () {
+        const result1 = trainersListAtom.filter(ele => ele.subscriptionState == stateIsActive);
+        const result2 = trainersListAtom.filter(ele => ele.subscriptionState == stateIsPending);
+        const result3 = trainersListAtom.filter(ele => ele.subscriptionState == stateIsFinished);
+
+
+        setAllSubscriptionActive(result1.length);
+        setAllSubscriptionPending(result2.length);
+        setAllSubscriptionFinished(result3.length);
+    }, [trainersListAtom]);
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
@@ -44,6 +62,8 @@ export default function Menu(
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [btnFilterEle, listRef]);
+
+
 
 
     return <Animation
@@ -65,8 +85,9 @@ export default function Menu(
                 onClick={() => clickOnArrange(fromOldToNew)}
                 className={`
                     ${filterObj.arrange == fromOldToNew ? "bg-blue-500 text-white" : "hover:bg-blue-500 hover:text-white"}
+                    p-3
                     flex gap-1 items-center
-                    transition duration-300 font-bold p-2 pb-3 ps-3 rounded-md mb-2 cursor-pointer 
+                    transition duration-300 font-bold rounded-md mb-2 cursor-pointer 
                 `}
             >
                 <ArrowDown size={23} className=' mt-1' />
@@ -80,8 +101,9 @@ export default function Menu(
                 onClick={() => clickOnArrange(fromNewToOld)}
                 className={`
                     ${filterObj.arrange == fromNewToOld ? "bg-blue-500 text-white" : "hover:bg-blue-500 hover:text-white"}
+                    p-3
                     flex gap-1 items-center
-                    transition duration-300 font-bold p-2 pb-3 ps-3 rounded-md mb-2 cursor-pointer 
+                    transition duration-300 font-bold rounded-md mb-2 cursor-pointer 
                 `}
             >
                 <ArrowUp size={23} className=' mt-1' />
@@ -97,60 +119,80 @@ export default function Menu(
                 onClick={() => clickOnSubscription(allSubscriptions)}
                 className={`
                     ${filterObj.subscriptionType == allSubscriptions ? "bg-blue-500 text-white" : "hover:bg-blue-500 hover:text-white"}
-                    flex gap-1 items-center
-                    transition duration-300 font-bold p-2 pb-3 ps-3 my-2 rounded-md cursor-pointer
+                    p-3
+                    flex items-center justify-between
+                    transition duration-300 font-bold my-2 rounded-md cursor-pointer
                 `}
             >
-                <Users size={23} />
+                <div className='  flex gap-1 items-center'>
+                    <Users size={23} />
 
-                <p>
-                    كل المتدربين
-                </p>
+                    <p>
+                        كل المتدربين
+                    </p>
+                </div>
+
+                <p>( {trainersListAtom.length} )</p>
             </li>
 
             <li
                 onClick={() => clickOnSubscription(activeSubscriptions)}
                 className={`
                     ${filterObj.subscriptionType == activeSubscriptions ? "bg-blue-500 text-white" : "hover:bg-blue-500 hover:text-white"}
-                    flex gap-1 items-center
-                    transition duration-300 font-bold p-2 pb-3 ps-3 my-2 rounded-md cursor-pointer
+                    p-3
+                    flex items-center justify-between
+                    transition duration-300 font-bold my-2 rounded-md cursor-pointer
                 `}
             >
-                <ShieldCheck size={23} />
+                <div className='flex gap-1 items-center'>
+                    <ShieldCheck size={23} />
 
-                <p>
-                    الاشتراكات المُفعله
-                </p>
+                    <p>
+                        الاشتراكات المُفعله
+                    </p>
+                </div>
+
+                <p>( {allSubscriptionActive} )</p>
             </li>
 
             <li
                 onClick={() => clickOnSubscription(pendingSubscriptions)}
                 className={`
                     ${filterObj.subscriptionType == pendingSubscriptions ? "bg-blue-500 text-white" : "hover:bg-blue-500 hover:text-white"}
-                    flex gap-1 items-center
-                    transition duration-300 font-bold p-2 pb-3 ps-3 rounded-md mb-2 cursor-pointer 
+                    p-3
+                    flex items-center justify-between
+                    transition duration-300 font-bold my-2 rounded-md cursor-pointer
                 `}
             >
-                <ShieldQuestionMark size={23} />
+                <div className='flex gap-1 items-center'>
+                    <ShieldQuestionMark size={23} />
 
-                <p>
-                    الاشتراكات المُعلقه
-                </p>
+                    <p>
+                        الاشتراكات المُعلقه
+                    </p>
+                </div>
+
+                <p>( {allSubscriptionPending} )</p>
             </li>
 
             <li
                 onClick={() => clickOnSubscription(finishedSubscriptions)}
                 className={`
                     ${filterObj.subscriptionType == finishedSubscriptions ? "bg-blue-500 text-white" : "hover:bg-blue-500 hover:text-white"}
-                    flex gap-1 items-center
-                    transition duration-300 font-bold p-2 pb-3 ps-3 rounded-md cursor-pointer 
+                    p-3
+                    flex items-center justify-between
+                    transition duration-300 font-bold my-2 rounded-md cursor-pointer
                 `}
             >
-                <ShieldOff size={23} />
+                <div className='flex gap-1 items-center'>
+                    <ShieldOff size={23} />
 
-                <p>
-                    الاشتراكات المنتهيه
-                </p>
+                    <p>
+                        الاشتراكات المنتهيه
+                    </p>
+                </div>
+
+                <p>( {allSubscriptionFinished} )</p>
             </li>
         </ul>
     </Animation>

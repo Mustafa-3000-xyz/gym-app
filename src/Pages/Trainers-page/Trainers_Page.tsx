@@ -13,14 +13,16 @@ import Btn_Filter from "./Components/Btn-filter/Btn_Filter";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllTrainers } from "@/Rtk/Slices/trainersSlice";
 import { store_Type } from "@/Rtk/types";
+import { useAtom } from "jotai";
+import trainersList_Atom from "@/Atoms/trainersList_Atom";
 // ========================================================== //
 export default function Trainers_Page() {
+    const [trainersListAtom, setTrainersListAtom] = useAtom(trainersList_Atom);
+
     const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
 
-    const [trainersList, setTrainersList] = useState<trainer[]>([]);
     const [anotherTrainersList, setAnotherTrainersList] = useState<trainer[]>([]);
-
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
     const [isShowTrainerDetails, setIsShowTrainerDetails] = useState<boolean>(false);
 
@@ -36,7 +38,7 @@ export default function Trainers_Page() {
     }, []);
 
     useEffect(function () {
-        setTrainersList(state.trainers);
+        setTrainersListAtom(state.trainers);
     }, [state.trainers]);
 
 
@@ -50,21 +52,21 @@ export default function Trainers_Page() {
 
         {/* Boxes */}
         <div className="mb-7 grid grid-cols-3 gap-3">
-            <Trainers_Total trainersList={trainersList} />
+            <Trainers_Total trainersList={trainersListAtom} />
             <Attendee />
-            <Active_Subscriptions trainersList={trainersList as trainer[]} />
+            <Active_Subscriptions trainersList={trainersListAtom as trainer[]} />
         </div>
 
         {/* Search & filter & add trainer */}
         <div className="grid grid-cols-4 gap-2 mb-7">
             <Search_Trainer
-                trainersList={trainersList}
+                trainersList={trainersListAtom}
                 onIsShowTrainerDetails={setIsShowTrainerDetails}
             />
 
             <div className="flex justify-end gap-1">
                 <Btn_Filter
-                    trainersList={trainersList}
+                    trainersList={trainersListAtom}
                     onGetFilterResult={setAnotherTrainersList}
                 />
 
@@ -100,10 +102,7 @@ export default function Trainers_Page() {
 
         {
             isShowTrainerDetails ?
-                <Trainer_Details
-                    getAllTrainers={getAllTrainers}
-                    onIsShowTrainerDetails={setIsShowTrainerDetails}
-                />
+                <Trainer_Details onIsShowTrainerDetails={setIsShowTrainerDetails} />
                 : null
         }
     </section>
