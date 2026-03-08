@@ -60,7 +60,7 @@ export default function Add_Trainer(
                 addTrainer({
                     trainerId,
                     subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() as any ? stateIsPending : stateIsActive,
-                    activeSessionsList: [],
+                    activeSessionsList: JSON.stringify([]) as any,
                     firstName: getFirstName,
                     lastName: getLastName,
                     phone: String(getPhone),
