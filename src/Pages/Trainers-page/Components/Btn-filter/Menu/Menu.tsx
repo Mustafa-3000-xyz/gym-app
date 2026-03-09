@@ -7,7 +7,12 @@ import { ArrowDown, ArrowUp, ShieldCheck, ShieldOff, ShieldQuestionMark, Users }
 import { useEffect, useRef, useState } from 'react';
 // ========================================================== //
 export default function Menu(
-    { btnFilterEle, filterObj, onIsShowMenu, onGetFilterResult }: Menu_Props
+    {
+        btnFilterEle,
+        filterObj,
+        onIsShowMenu,
+        onGetFilterResult
+    }: Menu_Props
 ) {
     const trainersListAtom = useAtomValue(trainersList_Atom);
 
