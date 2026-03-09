@@ -1,3 +1,4 @@
+import { accounte } from "@/Pages/Captains-page/types";
 import { trainer } from "@/Pages/Trainers-page/types";
 // ========================================================== //
 type updateOneColumnInTrainer =
@@ -13,13 +14,15 @@ type updateOneColumnInTrainer =
     | "subscriptionStart"
     | "subscriptionEnd";
 
-// type updateOneColumnInDays =
-//     | "theDay"
-//     | "attendanceAndCaptainsList"
+type updateOneColumnInAccount =
+    | "type"
+    | "permissions"
+    | "attendanceList"
 
 
-export interface store_Type{
-    trainers: trainer[]
+export interface store_Type {
+    trainers: trainer[],
+    accountes: accounte[]
 }
 
 export interface updatePropertyInTrainer_Type {
@@ -31,4 +34,15 @@ export interface updatePropertyInTrainer_Type {
 export interface updateSomePropertiesInTrainer_Type {
     trainerId: number,
     trainer: trainer
+}
+
+export interface updatePropertyInAccount_Type {
+    id: string | number,
+    column: updateOneColumnInAccount,
+    value: any
+}
+
+export interface updateSomePropertiesInAccount_Type {
+    id: number,
+    accounte: accounte
 }

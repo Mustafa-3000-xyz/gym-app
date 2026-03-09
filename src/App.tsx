@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import Trainers_Page from "./Pages/Trainers-page/Trainers_Page";
 import Settings_Page from "./Pages/Settings-page/Settings_Page";
 import SideBar from "./Global-components/Sidebar/SideBar";
-import Attendance_Recorde_Page from "./Pages/Attendance_Recorde_Page/Attendance_Recorde_Page";
+import Attendance_Recorde_Page from "./Pages/Attendance-recorde-page/Attendance_Recorde_Page";
 import Captains_Page from "./Pages/Captains-page/Captains_Page";
 // ========================================================== //
 function App() {

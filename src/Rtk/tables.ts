@@ -29,16 +29,16 @@ export async function trainerTable() {
     return db;
 }
 
-
-export async function attendanceTable() {
+export async function accountsTable() {
     const db = await Database.load("sqlite:app-gym-db.db");
 
     try {
         await db.execute(`
-                CREATE TABLE IF NOT EXISTS attendance (
+                CREATE TABLE IF NOT EXISTS accountes (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    theDay TEXT,
-                    attendanceAndCaptainsList JSON
+                    type TEXT,
+                    permissions JSON,
+                    attendanceList JSON
                 )
             `);
     } catch (error) {

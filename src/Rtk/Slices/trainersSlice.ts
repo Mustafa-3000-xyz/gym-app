@@ -111,21 +111,18 @@ const trainersSlice = createSlice({
         });
 
         builde.addCase(deleteTrainerById.fulfilled as any, (state: trainer[], action): any => {
-            const allTrainersAfterRemove =
-                state.filter(ele => ele.trainerId != action.payload);
-            return allTrainersAfterRemove;
-        });
-
-        builde.addCase(updateSomePropertiesInTrainer.fulfilled as any, (state: trainer[], action): any => {
-            const allTrainersAfterUpdate =
-                state.filter(ele => ele.trainerId != action.payload.trainerId);
-            return [...allTrainersAfterUpdate, action.payload];
+            const result = state.filter(ele => ele.trainerId != action.payload);
+            return result;
         });
 
         builde.addCase(updatePropertyInTrainer.fulfilled as any, (state: trainer[], action): any => {
-            const allTrainersAfterUpdate =
-                state.filter(ele => ele.trainerId != action.payload.trainerId);
-            return [...allTrainersAfterUpdate, action.payload];
+            const result = state.filter(ele => ele.trainerId != action.payload.trainerId);
+            return [...result, action.payload];
+        });
+
+        builde.addCase(updateSomePropertiesInTrainer.fulfilled as any, (state: trainer[], action): any => {
+            const result = state.filter(ele => ele.trainerId != action.payload.trainerId);
+            return [...result, action.payload];
         });
     }
 });
