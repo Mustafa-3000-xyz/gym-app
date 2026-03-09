@@ -38,7 +38,7 @@ export default function Btn_Filter(
     // Make filter and send to show in [All_Ttrainers] file
     useEffect(function () {
         let arr: trainer[] = [];
-        arr = [];
+
 
         // clone the list before sorting to avoid mutating props or frozen data
         const resultArrange = [...trainersList].sort(function (a, b) {
@@ -82,12 +82,12 @@ export default function Btn_Filter(
 
 
 
-        setFilterResultList(arr as trainer[]);
+        setFilterResultList(arr);
     }, [filterObj, trainersList]);
 
 
     useEffect(function () {
-        onGetFilterResult(filterResuletList as trainer[]);
+        onGetFilterResult(filterResuletList);
     }, [filterResuletList]);
 
 
