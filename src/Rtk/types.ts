@@ -1,4 +1,4 @@
-import { accounte } from "@/Pages/Captains-page/types";
+import { accounte } from "@/Pages/Accountes-page/types";
 import { trainer } from "@/Pages/Trainers-page/types";
 // ========================================================== //
 type updateOneColumnInTrainer =
