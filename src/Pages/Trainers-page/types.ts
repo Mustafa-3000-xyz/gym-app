@@ -10,8 +10,8 @@ export interface trainer {
     sessionsCount: number;
     price: number;
     subscriptionStart: string;
-    subscriptionEnd: string; 
-    dateAdded: string;  
+    subscriptionEnd: string;
+    dateAdded: string;
 }
 
 
@@ -91,11 +91,28 @@ export interface Search_Result_Props {
 }
 
 export interface Btn_Save_Change_Props {
+    id: string | number,
+    trainerState: any,
     isChangeInfo: boolean,
-    onUpdateInfo: () => void
+    closeWindow: () => void
 }
 
 export interface Btn_Subscription_Renewal_Props {
+    trainer: trainer,
+    trainerState: any,
     isInfoComplete: boolean,
-    onSubscriptionRenewal: () => void
+    onGetSubscriptionState: (x: string) => void,
+    closeWindow: () => void
+}
+
+export interface Btn_Delete_Trainer_Props {
+    trainer: trainer,
+    closeWindow: () => void
+}
+
+export interface Btn_Finished_Subscription_Props {
+    id: string | number,
+    trainerState: any,
+    onGetTrainer: (x: trainer) => void
+    onGetSubscriptionState: (x: string) => void,
 }
