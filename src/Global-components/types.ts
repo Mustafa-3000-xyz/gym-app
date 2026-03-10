@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
-import { TargetAndTransition } from "framer-motion";
+import { TargetAndTransition, Transition } from "framer-motion";
 // ========================================================== //
-export interface Not_Found_Props{
+export interface Not_Found_Props {
     srcImg: string,
     title: string,
     className?: string,
@@ -19,4 +19,5 @@ export interface Popup_Animation_Props {
     ref?: any;
     initial?: TargetAndTransition;
     animate?: TargetAndTransition;
+    transition?: Transition;
 }

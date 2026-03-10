@@ -7,7 +7,8 @@ export default function Animation(
         className,
         ref,
         initial,
-        animate
+        animate,
+        transition,
     }: Popup_Animation_Props
 ) {
     return <motion.div
@@ -15,6 +16,7 @@ export default function Animation(
         className={className}
         initial={initial}
         animate={animate}
+        transition={transition}
     >
         {children}
     </motion.div>

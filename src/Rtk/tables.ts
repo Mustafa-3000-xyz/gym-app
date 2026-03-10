@@ -36,6 +36,9 @@ export async function accountsTable() {
         await db.execute(`
                 CREATE TABLE IF NOT EXISTS accountes (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT,
+                    age TEXT,
+                    password TEXT,
                     type TEXT,
                     permissions JSON,
                     attendanceList JSON

@@ -11,10 +11,13 @@ export const getAllAccountes = createAsyncThunk("accountsSlice/getAllAccountes",
 export const addAccount = createAsyncThunk("accountsSlice/addAccount", async function (data: accounte) {
     const database = await accountsTable();
     const query = `INSERT INTO accountes (
-        type, permissions, attendanceList
-    ) VALUES (?, ?, ?)`;
+        name, age, password, type, permissions, attendanceList
+    ) VALUES (?, ?, ?, ?, ?, ?)`;
 
     const values = [
+        data.name,
+        data.age,
+        data.password,
         data.type,
         data.permissions,
         data.attendanceList
@@ -92,8 +95,8 @@ const accountsSlice = createSlice({
     reducers: {},
 
     extraReducers: function (builde) {
-        builde.addCase(getAllAccountes.fulfilled as any, (_, action) => {
-            return action.payload
+        builde.addCase(getAllAccountes.fulfilled as any, (_, action) => {            
+            return action.payload;
         });
 
         builde.addCase(addAccount.fulfilled as any, (state, action): any => {
