@@ -40,8 +40,8 @@ export async function accountsTable() {
                     age TEXT,
                     password TEXT,
                     type TEXT,
-                    permissions JSON,
-                    attendanceList JSON
+                    img TEXT,
+                    permissions JSON
                 )
             `);
     } catch (error) {

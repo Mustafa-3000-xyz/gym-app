@@ -3,7 +3,7 @@ import { styleForSubscriptionState } from '@/Lib/customs';
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 import { Search_Result_Props, trainer } from "@/Pages/Trainers-page/types";
 import { useAtom } from "jotai";
-import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
+import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import Animation from "@/Global-components/Animation/Animation";
 import { useEffect, useRef } from "react";
 // ========================================================== //

@@ -7,13 +7,13 @@ import { getAllAccountes } from "@/Rtk/Slices/accountsSlice";
 // ========================================================== //
 export default function Authentication_Page() {
     const dispatch = useDispatch();
-    const getAccountes = useSelector(state => state as store_Type);
+    const state = useSelector(state => state as store_Type);
 
 
 
     useEffect(function () {
         dispatch(getAllAccountes() as any);
-        localStorage.setItem("accountId", "null");
+        localStorage.setItem("theAccount", "null");
     }, []);
 
 
@@ -23,7 +23,7 @@ export default function Authentication_Page() {
         className="px-10 h-screen flex justify-center items-center"
     >
         {
-            getAccountes.accountes.length == 0 ?
+            state.accountes.length == 0 ?
                 <Sing_Up_Page />
                 :
                 <Login_Page />

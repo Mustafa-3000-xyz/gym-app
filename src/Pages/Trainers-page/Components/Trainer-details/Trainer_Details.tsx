@@ -1,36 +1,31 @@
-import { ArrowLeft, ArrowRight, CircleUserRound, Presentation, SquarePen, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, Presentation, SquarePen} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-
 import { updatePropertyInTrainer, updateSomePropertiesInTrainer } from "@/Rtk/Slices/trainersSlice";
-
 import { alert, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/customs";
 import { useAtom } from "jotai";
-import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
-import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
+import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
+import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
-import Animation from "@/Global-components/Animation/Animation";
 import Btn_Finished_Subscription from "./Btns/Btn_Finished_Subscription";
 import Btn_Delete_Trainer from "./Btns/Btn_Delete_Trainer";
 import Btn_Subscription_Renewal from "./Btns/Btn_Subscription_Renewal";
-import Btn_Save_Change from "./Btns/Btn_Save_Change";
-import Btn_Cancel from "./Btns/Btn_Cancel";
 import { useDispatch } from "react-redux";
+import Popup from "@/Global-components/Popup/Popup";
 // ========================================================== //
 export default function Trainer_Details(
     { onIsShowTrainerDetails }: { onIsShowTrainerDetails: (x: boolean) => void }
 ) {
     const dispatch = useDispatch();
-    const [trainerDetailsAtom, setTrainerDetailsAtom] = useAtom(trainerDetails_Atom);
     const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
+    const [trainerDetailsAtom, setTrainerDetailsAtom] = useAtom(trainerDetails_Atom);
 
 
-    const [hasOverflow, setHasOverflow] = useState(false);
     const containerRef = useRef<HTMLDivElement | null>(null)
     const [subscriptionState, setSubscriptionState] = useState(trainerDetailsAtom?.subscriptionState);
     const [activeSessionsList, setActiveSessionsList] = useState(
@@ -91,8 +86,26 @@ export default function Trainer_Details(
 
 
 
+
     function closeThisWinow() {
         onIsShowTrainerDetails(false);
+    }
+
+    function updateInfo() {
+        if (!isChangeInfo) return;
+
+        alert({
+            titleBeforeClickOnOk: "هل انت متأكد من تعديل البيانات , في حالة تعديل عدد الحصص سوف يتم اعاده الحصص من الاول",
+            titleAfterClickOnOk: `تم تحديث المتدرب رقم : ${trainerDetailsAtom?.trainerId}`,
+            funRunWhenClickOnOk: function () {
+                dispatch(updateSomePropertiesInTrainer({
+                    trainerId: trainerDetailsAtom?.trainerId as any,
+                    trainer: trainerUpdateOrRenewalObj as any
+                }) as any);
+
+                closeThisWinow();
+            }
+        });
     }
 
     function finishedSubscriptionUsingSessions(arr: number[]) {
@@ -150,18 +163,9 @@ export default function Trainer_Details(
 
 
 
-    // This for send true to isShowTrainerDetails_Atom
     useEffect(function () {
         setIsShowTrainerDetailsAtom(true);
     }, []);
-
-
-    // Check the hight for container sessions and run the checkInActiveSessionsList
-    useEffect(() => {
-        const el = containerRef.current;
-
-        setHasOverflow(el!.clientHeight > 100);
-    }, [trainerDetailsAtom?.sessionsCount, trainerDetailsAtom?.activeSessionsList, activeSessionsList]);
 
 
     // This useEffect for check the any value in properties are change
@@ -219,129 +223,87 @@ export default function Trainer_Details(
 
 
 
+
     if (!trainerDetailsAtom) return null;
 
-    return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none z-50">
-        <Animation
-            className={`
-                absolute top-1/2 end-1/2 -translate-x-1/2 -translate-y-1/2  
-                bg-slate-100 border border-slate-200 rounded-lg w-[60vw]
-            `}
-            initial={{
-                scale: 0.5,
-            }}
-            animate={{
-                scale: 1,
-            }}
-        >
-            {/* Title & x & icon */}
-            <div className="p-5 flex justify-between items-center mb-7 bg-black/5 border-b border-b-slate-300">
-                <div className=" flex items-center gap-4">
-                    <div className={`
-                            p-3 rounded-full
-                            ${subscriptionState == stateIsActive ?
-                            "bg-emerald-100 text-emerald-500"
-                            : subscriptionState == stateIsPending ?
-                                "bg-amber-100 text-amber-500"
-                                : subscriptionState == stateIsFinished && "bg-red-100 text-red-500"
-                        }
-                        `}
-                    >
-                        <CircleUserRound strokeWidth={1.75} size={33} />
-                    </div>
-
-                    <div>
-                        <h3 className="font-bold text-lg">
-                            {trainerDetailsAtom?.firstName} {trainerDetailsAtom?.lastName}
-                        </h3>
-                        <p>
-                            <span>رقم المتدرب : </span>
-                            <span className=" underline font-bold">{trainerDetailsAtom?.trainerId}</span>
-                        </p>
-                    </div>
-                </div>
-
-                <X size={23} onClick={closeThisWinow} className="cursor-pointer text-red-500" />
+    return <Popup
+        titel="تفاصيل المتدرب"
+        discription="تلك التفاصيل الخاصه بالمتدرب"
+        styleBtn={isChangeInfo ? "opacity-100 cursor-pointer" : "opacity-50 cursor-not-allowed"}
+        isSaveData={false}
+        isShowBtn={subscriptionState == stateIsFinished ? false : true}
+        clickOnCancel={closeThisWinow}
+        clickOnSaveChangeBtn={updateInfo}
+    >
+        <div className="px-5 mb-1">
+            <div className="flex items-center gap-2 text-(--primary)">
+                <Presentation strokeWidth={1.75} size={23} />
+                <h3 className="font-bold mb-1">الحصص</h3>
             </div>
 
-            {/* Sessions */}
-            <div className="px-5 mb-7">
-                <div className="mb-1">
-                    <div className="flex items-center gap-2 text-(--primary)">
-                        <Presentation strokeWidth={1.75} size={23} />
-                        <h3 className="font-bold mb-1">الحصص</h3>
-                    </div>
+            <div className="opacity-60 mb-4">
+                <p>
+                    <span> تم إكمال </span>
+                    <span className="font-bold me-1">
+                        {activeSessionsList?.length}
+                    </span>
+                    <span>  من اصل </span>
+                    <span className="font-bold">
+                        {trainerDetailsAtom.sessionsCount}
+                    </span>
+                </p>
+            </div>
+        </div>
 
-                    <div className="opacity-60 mb-4">
-                        {
-                            subscriptionState == stateIsFinished ?
-                                <p>
-                                    تم إكمال الحصص
-                                </p>
-                                :
-                                <p>
-                                    <span> تم إكمال </span>
-                                    <span className="font-bold me-1">
-                                        {activeSessionsList?.length}
-                                    </span>
-                                    <span>
-                                        من اصل
-                                    </span>
-                                    <span className="font-bold"> {trainerDetailsAtom.sessionsCount} </span>
-                                </p>
-                        }
-                    </div>
-                </div>
+        {/* Sessions */}
+        <div
+            ref={containerRef}
+            className={`
+                ${containerRef.current?.clientHeight as any > 100 ? "h-[120px]" : "h-auto"}
+                transition duration-500 mb-7 px-5 
+                flex gap-2 flex-wrap overflow-auto
+            `}
+        >
+            {Array.from({ length: trainerDetailsAtom.sessionsCount }).map((_, i) => {
+                const temp = activeSessionsList?.includes(i);
 
-                <div
-                    ref={containerRef}
+                return <div
+                    key={i}
+                    onClick={() => clickOnSession(i)}
                     className={`
-                        transition duration-500
-                        flex gap-2 flex-wrap overflow-auto
-                        ${hasOverflow ? "h-[120px]" : "h-auto"}
+                            rounded-full h-12 w-12 flex items-center justify-center
+                            ${subscriptionState == stateIsActive ?
+                            `cursor-pointer ${temp ? "bg-(--primary) text-white" : "bg-slate-200 text-black"}`
+                            :
+                            subscriptionState == stateIsPending ?
+                                `opacity-45 pointer-events-none bg-amber-500 text-amber-100 ${temp && "!bg-(--primary) text-white"}`
+                                :
+                                "opacity-45 pointer-events-none bg-red-500 text-red-100"
+                        }
                     `}
                 >
-                    {Array.from({ length: trainerDetailsAtom.sessionsCount }).map((_, i) => {
-                        const temp = activeSessionsList?.includes(i);
-
-                        return <div
-                            key={i}
-                            onClick={() => clickOnSession(i)}
-                            className={`
-                                rounded-full h-12 w-12 flex items-center justify-center
-                                ${subscriptionState == stateIsActive ?
-                                    `cursor-pointer ${temp ? "bg-(--primary) text-white" : "bg-slate-200 text-black"}`
-                                    :
-                                    subscriptionState == stateIsPending ?
-                                        `opacity-45 pointer-events-none bg-amber-500 text-amber-100 ${temp && "!bg-(--primary) text-white"}`
-                                        :
-                                        "opacity-45 pointer-events-none bg-red-500 text-red-100"
-                                }
-                            `}
-                        >
-                            {i + 1}
-                        </div>
-                    })}
+                    {i + 1}
                 </div>
+            })}
+        </div>
+
+        {/* Title & arrowes */}
+        <div className="px-5 mb-3">
+            <div className="flex items-center gap-2 text-(--primary)">
+                <SquarePen size={23} />
+                <h3 className="font-bold">
+                    تفاصيل المتدرب
+                </h3>
             </div>
 
-            {/* Trainer info & Subscription info & Date info */}
-            <div className="px-5 mb-7">
-                <div className="mb-3">
-                    <div className="flex items-center gap-2 text-(--primary)">
-                        <SquarePen size={23} />
-                        <h3 className="font-bold">
-                            تفاصيل المتدرب
-                        </h3>
-                    </div>
-
-                    <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2">
+                {
+                    subscriptionState != stateIsFinished && <>
                         <ArrowRight
                             size={18}
                             className={`
                                 swiper-prev
-                                ${isBeginning ? "cursor-not-allowed opacity-35"
-                                    : "cursor-pointer"}
+                                ${isBeginning ? "cursor-not-allowed opacity-35" : "cursor-pointer"}
                             `}
                         />
 
@@ -349,108 +311,88 @@ export default function Trainer_Details(
                             size={18}
                             className={`
                                 swiper-next
-                                ${isEnd ? "cursor-not-allowed opacity-35"
-                                    : "cursor-pointer"}
+                                ${isEnd ? "cursor-not-allowed opacity-35" : "cursor-pointer"}
                             `}
                         />
-                    </div>
-                </div>
+                    </>
+                }
+            </div>
+        </div>
 
-
-                <Swiper
-                    modules={[Navigation]}
-                    allowTouchMove={false}
-                    spaceBetween={50}
-                    navigation={{
-                        prevEl: ".swiper-prev",
-                        nextEl: ".swiper-next",
-                    }}
-                    onSlideChange={(swiper) => {
-                        setIsBeginning(swiper.isBeginning)
-                        setIsEnd(swiper.isEnd)
-                    }}
-                >
-                    {/* Trainer info */}
-                    {
-                        subscriptionState != stateIsFinished ?
-                            <SwiperSlide>
-                                <Trainer_Info_Form
-                                    onGetFirstName={setGetFirstName}
-                                    onGetLastName={setGetLastName}
-                                    onGetPhone={setGetPhone}
-                                    onGetAddress={setGetAddress}
-                                />
-                            </SwiperSlide>
-                            :
-                            null
-                    }
-
-                    {/* Subscription info & Date info*/}
-                    <SwiperSlide>
-                        <Subscription_Info_Form
-                            onGetSubscriptionName={setGetSubscriptionName}
-                            onGetSessionsCount={setGetSessionsCount}
-                            onGetPrice={setGetPrice}
-                        />
-                        <Date_Info_Form
-                            onGetSubscriptionStart={setGetSubscriptionStart}
-                            onGetSubscriptionEnd={setGetSubscriptionEnd}
+        {/* Trainer info & Subscription info & Date info */}
+        <div className="px-5 mb-7">
+            <Swiper
+                modules={[Navigation]}
+                allowTouchMove={false}
+                spaceBetween={50}
+                navigation={{
+                    prevEl: ".swiper-prev",
+                    nextEl: ".swiper-next",
+                }}
+                onSlideChange={(swiper) => {
+                    setIsBeginning(swiper.isBeginning)
+                    setIsEnd(swiper.isEnd)
+                }}
+            >
+                {
+                    subscriptionState != stateIsFinished && <SwiperSlide>
+                        <Trainer_Info_Form
+                            onGetFirstName={setGetFirstName}
+                            onGetLastName={setGetLastName}
+                            onGetPhone={setGetPhone}
+                            onGetAddress={setGetAddress}
                         />
                     </SwiperSlide>
-                </Swiper>
-            </div>
-
-            {/* Warning zone */}
-            <div className="px-5 mb-6">
-                <div className="bg-red-100/50 p-3 rounded-lg border border-red-300">
-                    <h3 className=" text-red-500 font-bold mb-3">
-                        منطقة الإجراءات
-                    </h3>
-
-                    <div className=" flex  gap-2">
-                        {
-                            subscriptionState != stateIsFinished ?
-                                <Btn_Finished_Subscription
-                                    id={trainerDetailsAtom.trainerId}
-                                    trainerState={trainerFinishedSubscriptionObj}
-                                    onGetSubscriptionState={setSubscriptionState}
-                                    onGetTrainer={setTrainerDetailsAtom}
-                                />
-                                :
-                                <Btn_Subscription_Renewal
-                                    trainer={trainerDetailsAtom}
-                                    trainerState={trainerUpdateOrRenewalObj}
-                                    isInfoComplete={isActiveSubscriptionRenewal}
-                                    closeWindow={closeThisWinow}
-                                    onGetSubscriptionState={setSubscriptionState}
-                                />
-                        }
-
-                        {/* Delete trainerDetailsAtom */}
-                        <Btn_Delete_Trainer
-                            closeWindow={closeThisWinow}
-                            trainer={trainerDetailsAtom}
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Btn change and cancel */}
-            <div className="bg-black/5 p-5 border-t border-t-slate-300 flex gap-3">
-                {
-                    subscriptionState != stateIsFinished ?
-                        <Btn_Save_Change
-                            id={trainerDetailsAtom.trainerId}
-                            trainerState={trainerUpdateOrRenewalObj}
-                            isChangeInfo={isChangeInfo}
-                            closeWindow={closeThisWinow}
-                        />
-                        :
-                        null
                 }
 
-                <Btn_Cancel onCloseThisWinow={closeThisWinow} />
+                {/* Subscription info & Date info*/}
+                <SwiperSlide>
+                    <Subscription_Info_Form
+                        onGetSubscriptionName={setGetSubscriptionName}
+                        onGetSessionsCount={setGetSessionsCount}
+                        onGetPrice={setGetPrice}
+                    />
+
+                    <Date_Info_Form
+                        onGetSubscriptionStart={setGetSubscriptionStart}
+                        onGetSubscriptionEnd={setGetSubscriptionEnd}
+                    />
+                </SwiperSlide>
+            </Swiper>
+        </div>
+
+        {/* Warning zone */}
+        <div className="px-5 mb-6">
+            <div className="bg-red-100/50 p-3 rounded-lg border border-red-300">
+                <h3 className=" text-red-500 font-bold mb-3">
+                    منطقة الإجراءات
+                </h3>
+
+                <div className="flex gap-2">
+                    {
+                        subscriptionState != stateIsFinished ?
+                            <Btn_Finished_Subscription
+                                id={trainerDetailsAtom.trainerId}
+                                trainerState={trainerFinishedSubscriptionObj}
+                                onGetSubscriptionState={setSubscriptionState}
+                                onGetTrainer={setTrainerDetailsAtom}
+                            />
+                            :
+                            <Btn_Subscription_Renewal
+                                trainer={trainerDetailsAtom}
+                                trainerState={trainerUpdateOrRenewalObj}
+                                isInfoComplete={isActiveSubscriptionRenewal}
+                                closeWindow={closeThisWinow}
+                                onGetSubscriptionState={setSubscriptionState}
+                            />
+                    }
+
+                    <Btn_Delete_Trainer
+                        closeWindow={closeThisWinow}
+                        trainer={trainerDetailsAtom}
+                    />
+                </div>
             </div>
-        </Animation >
-    </div >
+        </div>
+    </Popup>
 }

@@ -1,4 +1,4 @@
-import { Presentation, UserRound, X } from "lucide-react";
+import { Presentation, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { addTrainer } from "@/Rtk/Slices/trainersSlice";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
@@ -7,14 +7,13 @@ import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription
 import { alertSuccess, stateIsActive, stateIsPending } from "@/Lib/customs";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import { useAtom } from "jotai";
-import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
-import Discription from "@/Global-components/Description/Discription";
-import Animation from "@/Global-components/Animation/Animation";
+import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import { useDispatch } from "react-redux";
 import { trainer } from "../../types";
+import Popup from "@/Global-components/Popup/Popup";
 // ========================================================== //
 export default function Add_Trainer(
-    { onIsShowAddTrainer }: {onIsShowAddTrainer: (x: boolean) => void}
+    { onIsShowAddTrainer }: { onIsShowAddTrainer: (x: boolean) => void }
 ) {
     const dispatch = useDispatch();
     const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
@@ -45,75 +44,56 @@ export default function Add_Trainer(
         onIsShowAddTrainer(false);
     }
 
-    function showAlert() {
+    function saveTrainerInfo() {
+        if (!isAllInfoComplete) return
+
+        const todayDate = new Date();
+
+        dispatch(
+            addTrainer({
+                trainerId,
+                subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() as any ? stateIsPending : stateIsActive,
+                activeSessionsList: JSON.stringify([]) as any,
+                firstName: getFirstName,
+                lastName: getLastName,
+                phone: String(getPhone),
+                address: getAddress,
+                subscriptionName: getSubscriptionName,
+                sessionsCount: Number(getSessionsCount),
+                price: Number(getPrice),
+                subscriptionStart: getSubscriptionStart?.toISOString(),
+                subscriptionEnd: getSubscriptionEnd?.toISOString(),
+                dateAdded: todayDate.toISOString()
+            } as trainer) as any
+        );
+
+        closeThisWinow();
         alertSuccess({
             mainTitle: "تم إضافة المتدرب بنجاح",
             text: `الرقم الخاص بالمتدرب هو : ${trainerId}`
         });
     }
 
-    function saveTrainerInfo() {
-        if (isAllInfoComplete) {
-            const todayDate = new Date();
-
-            dispatch(
-                addTrainer({
-                    trainerId,
-                    subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() as any ? stateIsPending : stateIsActive,
-                    activeSessionsList: JSON.stringify([]) as any,
-                    firstName: getFirstName,
-                    lastName: getLastName,
-                    phone: String(getPhone),
-                    address: getAddress,
-                    subscriptionName: getSubscriptionName,
-                    sessionsCount: Number(getSessionsCount),
-                    price: Number(getPrice),
-                    subscriptionStart: getSubscriptionStart?.toISOString(),
-                    subscriptionEnd: getSubscriptionEnd?.toISOString(),
-                    dateAdded: todayDate.toISOString()
-                } as trainer) as any
-            );
-
-
-            closeThisWinow();
-            showAlert();
-        }
-    }
-
-
-
-    // This for send false to isShowTrainerDetails_Atom
-    useEffect(function () {
-        setIsShowTrainerDetailsAtom(false);
-    }, []);
-
-    // This for get random id
-    useEffect(function () {
+    function generateId() {
         const id = Array.from({ length: 4 }, function () {
             return Math.trunc(Math.random() * 10)
         }).join("");
 
         setTrainerId(id);
-    }, []);
+    }
 
-    // This for save trainer info when click on enter
+
+
     useEffect(function () {
-        function event(e: KeyboardEvent) {
-            if (e.key == "Enter") {
-                saveTrainerInfo();
-            }
-        }
-
-
-        window.addEventListener("keydown", event);
-        () => window.removeEventListener("keydown", event);
+        setIsShowTrainerDetailsAtom(false);
+        generateId();
     }, []);
 
     // This check the trainer info is compolete or no
     useEffect(() => {
         if (
             (
-                +getPhone == 0 || new String(getPhone).match(regexPhone)
+                getPhone == 0 || new String(getPhone).match(regexPhone)
             ) &&
             getFirstName &&
             getLastName &&
@@ -137,95 +117,48 @@ export default function Add_Trainer(
     ]);
 
 
-    return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none z-50">
-        <Animation
-            className={`
-                    absolute top-1/2 end-1/2 -translate-x-1/2 -translate-y-1/2
-                    bg-slate-100 border border-slate-200 rounded-lg w-[60vw]
-                `}
-            initial={{
-                scale: 0.5,
-            }}
-            animate={{
-                scale: 1,
-            }}
-        >
-            {/* Title & x */}
-            <div className="px-5 flex justify-between items-center mb-3 bg-black/5 p-5 border-b border-b-slate-300">
-                <div>
-                    <h3 className=" font-bold text-lg">
-                        إضافة متدرب جديد
-                    </h3>
-                    <Discription discription="يمكنك الان إضافة اي متدرب انت تريده" />
-                </div>
-
-                <X size={23} onClick={closeThisWinow} className="cursor-pointer text-red-500" />
+    return <Popup
+        titel="إضافة متدرب"
+        discription="الان, يمكنك إضافة متدرب جديد"
+        styleBtn={isAllInfoComplete ? "opacity-100 cursor-pointer" : "opacity-50 cursor-not-allowed"}
+        clickOnCancel={closeThisWinow}
+        clickOnSaveDataBtn={saveTrainerInfo}
+    >
+        {/* Trainer info */}
+        <div className="my-6">
+            <div className="flex items-center gap-2 text-(--primary) font-bold mb-5 px-3">
+                <UserRound size={23} />
+                <p className="leading-none pt-0.5">المعلومات الشخصيه</p>
             </div>
 
-            {/* Trainer info */}
-            <div className="my-6">
-                <div className="flex items-center gap-2 text-(--primary) font-bold mb-5 px-3">
-                    <UserRound size={23} />
-                    <p className="leading-none pt-0.5">المعلومات الشخصيه</p>
-                </div>
+            <Trainer_Info_Form
+                onGetFirstName={setGetFirstName}
+                onGetLastName={setGetLastName}
+                onGetPhone={setGetPhone}
+                onGetAddress={setGetAddress}
+            />
+        </div>
 
-                <Trainer_Info_Form
-                    onGetFirstName={setGetFirstName}
-                    onGetLastName={setGetLastName}
-                    onGetPhone={setGetPhone}
-                    onGetAddress={setGetAddress}
-                />
+        {/* Subscription info */}
+        <div className="mb-5">
+            <div className="flex items-center gap-2 text-(--primary) font-bold mb-5 px-3">
+                <Presentation size={23} />
+                <p className="leading-none pt-0.5">تفاصيل الاشتراك</p>
             </div>
 
-            {/* Subscription info */}
-            <div className="mb-5">
-                <div className="flex items-center gap-2 text-(--primary) font-bold mb-5 px-3">
-                    <Presentation size={23} />
-                    <p className="leading-none pt-0.5">تفاصيل الاشتراك</p>
-                </div>
+            <Subscription_Info_Form
+                onGetSubscriptionName={setGetSubscriptionName}
+                onGetSessionsCount={setGetSessionsCount}
+                onGetPrice={setGetPrice}
+            />
+        </div>
 
-                <Subscription_Info_Form
-                    onGetSubscriptionName={setGetSubscriptionName}
-                    onGetSessionsCount={setGetSessionsCount}
-                    onGetPrice={setGetPrice}
-                />
-            </div>
-
-            {/* Date info */}
-            <div className="mb-5">
-                <Date_Info_Form
-                    onGetSubscriptionStart={setGetSubscriptionStart}
-                    onGetSubscriptionEnd={setGetSubscriptionEnd}
-                />
-            </div>
-
-            {/* Btn save and cancel */}
-            <div className="bg-black/5 p-5 border-t border-t-slate-300 flex gap-3">
-                <button
-                    onClick={saveTrainerInfo}
-                    className={`
-                        transition duration-300 
-                        bg-[#385E97] text-white px-5  py-2 rounded-lg
-                        ${isAllInfoComplete ?
-                            "opacity-100 cursor-pointer hover:bg-[#285E97]"
-                            :
-                            "opacity-50 cursor-not-allowed"
-                        }
-                    `}
-                >
-                    حفظ البيانات
-                </button>
-
-                <button
-                    onClick={closeThisWinow}
-                    className={`
-                        transition duration-300 hover:bg-red-600
-                        bg-red-500 text-white px-5 cursor-pointer rounded-lg
-                    `}
-                >
-                    إلغاء
-                </button>
-            </div>
-        </Animation>
-    </div>
+        {/* Date info */}
+        <div className="mb-5">
+            <Date_Info_Form
+                onGetSubscriptionStart={setGetSubscriptionStart}
+                onGetSubscriptionEnd={setGetSubscriptionEnd}
+            />
+        </div>
+    </Popup>
 }

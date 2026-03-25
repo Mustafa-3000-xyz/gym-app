@@ -1,8 +1,8 @@
 import * as React from "react"
 import { End_Date_Picker_Props } from "@/Pages/Trainers-page/types";
 import { useAtomValue } from "jotai";
-import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
-import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
+import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
+import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import { Calendar } from 'primereact/calendar';
 import { stateIsFinished } from "@/Lib/customs";
 // ========================================================== //

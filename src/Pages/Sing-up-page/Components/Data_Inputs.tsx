@@ -53,7 +53,8 @@ export default function Data_Inputs(
             </div>
 
             <input
-                type="text"
+                dir={password ? "ltr" : "rtl"}
+                type="password"
                 className="border p-2 w-2xs rounded-lg"
                 placeholder="الرقم السري الخاص بالحساب"
                 value={password}

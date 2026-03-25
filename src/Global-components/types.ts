@@ -21,3 +21,22 @@ export interface Popup_Animation_Props {
     animate?: TargetAndTransition;
     transition?: Transition;
 }
+
+export interface Box_Props {
+    icon: any,
+    styleIcon: string,
+    title: string,
+    total: number,
+}
+
+export interface Popup_Props {
+    titel: string,
+    discription: string,
+    styleBtn: string,
+    children: ReactNode,
+    isSaveData?: boolean,
+    isShowBtn?: boolean,
+    clickOnCancel: () => void,
+    clickOnSaveDataBtn?: () => void,
+    clickOnSaveChangeBtn?: () => void,
+}

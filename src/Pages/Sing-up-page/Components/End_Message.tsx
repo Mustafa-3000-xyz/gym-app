@@ -1,17 +1,12 @@
-import isLogin_Atom from "@/Atoms/isLogin_Atom";
 import Animation from "@/Global-components/Animation/Animation";
 import { accounte } from "@/Pages/Accountes-page/types";
 import { addAccount } from "@/Rtk/Slices/accountsSlice";
-import { store_Type } from "@/Rtk/types";
-import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 // ========================================================== //
 export default function End_Message(
     { managerInfo }: { managerInfo: accounte }
 ) {
-    const state = useSelector(state => state as store_Type);
-    const setIsLoginAtom = useAtom(isLogin_Atom)[1];
     const dispatch = useDispatch();
 
 
@@ -30,16 +25,13 @@ export default function End_Message(
 
             if (count >= texts.length) {
                 clearInterval(interval);
-                setIsLoginAtom(true);
                 dispatch(addAccount({
                     ...managerInfo,
                     type: "manager",
+                    img: "",
                     permissions: "fullAccess",
-                    attendanceList: []
                 }) as any)
 
-                
-                localStorage.setItem("accountId", JSON.stringify("manager"));
                 return;
             }
 

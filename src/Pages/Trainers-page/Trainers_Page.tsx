@@ -1,30 +1,27 @@
-import { Plus } from "lucide-react";
+import { BicepsFlexed, Plus, ShieldCheck, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { trainer } from "./types";
 import Trainer_Details from "./Components/Trainer-details/Trainer_Details";
 import All_Trainers from "./Components/All-trainers/All_Trainers";
 import Add_Trainer from "./Components/Add-trainer/Add_Trainer";
 import Discription from "@/Global-components/Description/Discription";
-import Attendee from "./Components/Boxes/Attendee/Attendee";
-import Trainers_Total from "./Components/Boxes/Trainers-total/Trainers_Total";
-import Active_Subscriptions from "./Components/Boxes/Active-subscriptions/Active_Subscriptions";
 import Search_Trainer from "./Components/Search-trainer/Search_Trainer";
 import Btn_Filter from "./Components/Btn-filter/Btn_Filter";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllTrainers } from "@/Rtk/Slices/trainersSlice";
 import { store_Type } from "@/Rtk/types";
-import { useAtom } from "jotai";
-import trainersList_Atom from "@/Atoms/trainersList_Atom";
+import Box from "@/Global-components/Box/Box";
+import { stateIsActive } from "@/Lib/customs";
 // ========================================================== //
 export default function Trainers_Page() {
-    const [trainersListAtom, setTrainersListAtom] = useAtom(trainersList_Atom);
-
     const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
 
     const [anotherTrainersList, setAnotherTrainersList] = useState<trainer[]>([]);
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
     const [isShowTrainerDetails, setIsShowTrainerDetails] = useState<boolean>(false);
+    const [activeSubscriptionsTotle, setActiveSubscriptionsTotle] = useState(0);
+
 
 
     function btnAddTrianer() {
@@ -37,9 +34,17 @@ export default function Trainers_Page() {
         dispatch(getAllTrainers() as any);
     }, []);
 
+
     useEffect(function () {
-        setTrainersListAtom(state.trainers);
+        setActiveSubscriptionsTotle(0);
+
+        state.trainers.forEach(ele => {
+            if (ele.subscriptionState == stateIsActive) {
+                setActiveSubscriptionsTotle(prev => prev + 1);
+            }
+        });
     }, [state.trainers]);
+
 
 
 
@@ -52,21 +57,38 @@ export default function Trainers_Page() {
 
         {/* Boxes */}
         <div className="mb-7 grid grid-cols-3 gap-3">
-            <Trainers_Total trainersList={trainersListAtom} />
-            <Attendee />
-            <Active_Subscriptions trainersList={trainersListAtom as trainer[]} />
+            <Box
+                icon={<BicepsFlexed size={30} />}
+                styleIcon="bg-blue-100 text-blue-500"
+                title="مجموع المتدربين"
+                total={state.trainers.length}
+            />
+
+            <Box
+                icon={<Users size={30} />}
+                styleIcon="bg-neutral-200 text-neutral-500"
+                title="حضور اليوم"
+                total={232344324}
+            />
+
+            <Box
+                icon={<ShieldCheck size={30} />}
+                styleIcon="bg-emerald-100 text-emerald-500"
+                title="مجموع الاشتراكات المفعله"
+                total={activeSubscriptionsTotle}
+            />
         </div>
 
         {/* Search & filter & add trainer */}
         <div className="grid grid-cols-4 gap-2 mb-7">
             <Search_Trainer
-                trainersList={trainersListAtom}
+                trainersList={state.trainers}
                 onIsShowTrainerDetails={setIsShowTrainerDetails}
             />
 
             <div className="flex justify-end gap-1">
                 <Btn_Filter
-                    trainersList={trainersListAtom}
+                    trainersList={state.trainers}
                     onGetFilterResult={setAnotherTrainersList}
                 />
 

@@ -6,19 +6,44 @@ import Attendance_Recorde_Page from "./Pages/Attendance-recorde-page/Attendance_
 import Profits_And_Expenses_Page from "./Pages/Profits-and-expenses-page/Profits_And_Expenses_Page";
 import Accountes_Page from "./Pages/Accountes-page/Accountes_Page";
 import Authentication_Page from "./Pages/Authentication-page/Authentication_Page";
-import { useAtomValue } from "jotai";
-import isLogin_Atom from "./Atoms/isLogin_Atom";
+import { useAtom } from "jotai";
+import isLogin_Atom from "./Atoms/Is/isLogin_Atom";
+import { useEffect } from "react";
 // ========================================================== //
 function App() {
-  const isLoginAtom = useAtomValue(isLogin_Atom)
-  const getaccountId = JSON.parse(localStorage.getItem("accountId") as any);
+  const [isLoginAtom, setIsLoginAtom] = useAtom(isLogin_Atom);
 
 
-  return isLoginAtom || getaccountId ?
-    <main
-      dir="rtl"
-      className="flex"
-    >
+  // This for when close the window, reset the log in
+  useEffect(() => {
+    let unlisten: any;
+
+    const setup = async () => {
+      const { getCurrentWindow } = await import('@tauri-apps/api/window');
+      const appWindow = getCurrentWindow();
+
+      unlisten = await appWindow.listen('tauri://close-requested', async () => {
+        setIsLoginAtom(null);
+        await appWindow.destroy();
+      });
+    };
+    setup();
+
+    return () => {
+      if (unlisten) unlisten();
+    };
+  }, []);
+
+
+  useEffect(function () {
+    localStorage.setItem("theAccount", JSON.stringify(isLoginAtom));
+  }, [isLoginAtom]);
+
+
+
+
+  return isLoginAtom ?
+    <main dir="rtl" className="flex">
       <SideBar />
 
       <div className="mt-7 w-full px-10">

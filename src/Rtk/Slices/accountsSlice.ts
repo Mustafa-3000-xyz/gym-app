@@ -11,7 +11,7 @@ export const getAllAccountes = createAsyncThunk("accountsSlice/getAllAccountes",
 export const addAccount = createAsyncThunk("accountsSlice/addAccount", async function (data: accounte) {
     const database = await accountsTable();
     const query = `INSERT INTO accountes (
-        name, age, password, type, permissions, attendanceList
+        name, age, password, type, img, permissions
     ) VALUES (?, ?, ?, ?, ?, ?)`;
 
     const values = [
@@ -19,8 +19,8 @@ export const addAccount = createAsyncThunk("accountsSlice/addAccount", async fun
         data.age,
         data.password,
         data.type,
+        data.img,
         data.permissions,
-        data.attendanceList
     ];
     const getId = await database.execute(query, values);
 
@@ -95,7 +95,7 @@ const accountsSlice = createSlice({
     reducers: {},
 
     extraReducers: function (builde) {
-        builde.addCase(getAllAccountes.fulfilled as any, (_, action) => {            
+        builde.addCase(getAllAccountes.fulfilled as any, (_, action) => {
             return action.payload;
         });
 

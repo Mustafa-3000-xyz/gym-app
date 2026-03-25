@@ -4,12 +4,6 @@ export interface accounte {
     age: number,
     password: string | number,
     type: "manager" | "captain",
+    img: string,
     permissions?: [] | "fullAccess",
-    attendanceList?: attendanceList_Type[] | [],
-}
-
-export interface attendanceList_Type {
-    trainerId: string | number,
-    date: Date | string,
-    sessions: number[],
 }

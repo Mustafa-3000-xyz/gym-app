@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAtomValue } from "jotai";
-import isShowTrainerDetails_Atom from "@/Atoms/isShowTrainerDetails_Atom";
-import trainerDetails_Atom from "@/Atoms/trainerDetails_Atom";
+import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
+import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import { Calendar } from 'primereact/calendar';
 import { stateIsFinished } from "@/Lib/customs";
 // ========================================================== //

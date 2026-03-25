@@ -8,6 +8,7 @@
     "sql:allow-load",
     "sql:allow-execute",
     "sql:allow-select",
-    "opener:default"
+    "opener:default",
+    "core:window:allow-destroy"
   ]
 }

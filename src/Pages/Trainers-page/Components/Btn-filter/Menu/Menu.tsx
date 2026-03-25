@@ -1,10 +1,10 @@
-import trainersList_Atom from '@/Atoms/trainersList_Atom';
 import Animation from '@/Global-components/Animation/Animation';
 import { activeSubscriptions, allSubscriptions, finishedSubscriptions, fromNewToOld, fromOldToNew, pendingSubscriptions, stateIsActive, stateIsFinished, stateIsPending } from '@/Lib/customs';
 import { filter, Menu_Props } from '@/Pages/Trainers-page/types';
-import { useAtomValue } from 'jotai';
+import { store_Type } from '@/Rtk/types';
 import { ArrowDown, ArrowUp, ShieldCheck, ShieldOff, ShieldQuestionMark, Users } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
 // ========================================================== //
 export default function Menu(
     {
@@ -14,7 +14,8 @@ export default function Menu(
         onGetFilterResult
     }: Menu_Props
 ) {
-    const trainersListAtom = useAtomValue(trainersList_Atom);
+    const state = useSelector(state => state as store_Type);
+
 
     const listRef = useRef<HTMLUListElement>(null);
     const [allSubscriptionActive, setAllSubscriptionActive] = useState(0);
@@ -43,15 +44,15 @@ export default function Menu(
 
 
     useEffect(function () {
-        const result1 = trainersListAtom.filter(ele => ele.subscriptionState == stateIsActive);
-        const result2 = trainersListAtom.filter(ele => ele.subscriptionState == stateIsPending);
-        const result3 = trainersListAtom.filter(ele => ele.subscriptionState == stateIsFinished);
+        const result1 = state.trainers.filter(ele => ele.subscriptionState == stateIsActive);
+        const result2 = state.trainers.filter(ele => ele.subscriptionState == stateIsPending);
+        const result3 = state.trainers.filter(ele => ele.subscriptionState == stateIsFinished);
 
 
         setAllSubscriptionActive(result1.length);
         setAllSubscriptionPending(result2.length);
         setAllSubscriptionFinished(result3.length);
-    }, [trainersListAtom]);
+    }, [state.trainers]);
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
@@ -137,7 +138,7 @@ export default function Menu(
                     </p>
                 </div>
 
-                <p>( {trainersListAtom.length} )</p>
+                <p>( {state.trainers.length} )</p>
             </li>
 
             <li
