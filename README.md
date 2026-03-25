@@ -21,3 +21,7 @@ cargo tauri build --target x86_64-pc-windows-gnu
 
 <!-- This command for run virtual box -->
 sudo modprobe -r kvm_intel
+
+
+
+test
