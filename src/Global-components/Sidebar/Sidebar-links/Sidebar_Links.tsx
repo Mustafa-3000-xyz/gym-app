@@ -4,13 +4,16 @@ import { Link, useLocation } from "react-router-dom"
 export default function Sidebar_Links(
     { linkName, path, icon }: Sidebar_Linsk_Props
 ) {
-    const {pathname} = useLocation();
+    const { pathname } = useLocation();
 
 
     return <li className={`
-            mb-3 transition duration-300 p-2 rounded-sm 
-            ${pathname == path ? "bg-(--primary)/10 text-(--primary)" 
-                : "hover:bg-(--primary)/10 hover:text-(--primary)"}
+            transition-all duration-300 p-2 rounded-sm
+            ${pathname == path ?
+                "bg-(--primary)/10 text-(--primary)"
+                :
+                "hover:bg-(--primary)/10 hover:text-(--primary)"
+            }
         `}
     >
         <Link to={path} className="flex items-center gap-2">
@@ -18,7 +21,14 @@ export default function Sidebar_Links(
                 {icon}
             </div>
 
-            <span className="text-lg">{linkName}</span>
+            <span className={`
+                text-lg
+                transition-all duration-300
+                hidden group-hover:block
+            `}
+            >
+                {linkName}
+            </span>
         </Link>
     </li>
 }

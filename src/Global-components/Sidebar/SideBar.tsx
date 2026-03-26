@@ -4,21 +4,23 @@ import Sidebar_Links from "./Sidebar-links/Sidebar_Links";
 // ========================================================== //
 export default function SideBar() {
     return <nav className={`
+            transition-all duration-500
             sticky top-0 h-screen p-4 pb-0
             flex flex-col justify-between
-            bg-white w-[450px] border-e border-black/20
+            bg-white border-e border-black/20
+            w-[75px] hover:w-[450px] group overflow-hidden
         `}
     >
         <div className="mb-5 text-center" dir="ltr">
             <h1 className="font-bold text-[#FB6543] select-none">GYM APP</h1>
         </div>
 
-        <ul className="select-none h-full">
+        <ul className="flex flex-col gap-2 select-none h-full">
             <Sidebar_Links
                 linkName="المتدربين"
                 path="/trainers-page"
                 icon={<Users
-                    size={23}
+                    size={25}
                     strokeWidth={1.75}
                 />}
             />
@@ -27,7 +29,7 @@ export default function SideBar() {
                 linkName="الحسابات"
                 path="/accountes-page"
                 icon={<IdCardLanyard
-                    size={23}
+                    size={25}
                     strokeWidth={1.75}
                 />}
             />
@@ -36,7 +38,7 @@ export default function SideBar() {
                 linkName="سجل الحضور"
                 path="/attendance-recorde-page"
                 icon={<Archive
-                    size={23}
+                    size={25}
                     strokeWidth={1.75}
                 />}
             />
@@ -45,13 +47,19 @@ export default function SideBar() {
                 linkName="الارباح والمصروفات"
                 path="/profits-and-expenses-page"
                 icon={<WalletMinimal
-                    size={23}
+                    size={25}
                     strokeWidth={1.75}
                 />}
             />
         </ul>
 
-        <div className="select-none bg-black/5 mb-4 rounded-lg p-3">
+        <div className={`
+            select-none bg-black/5 mb-4 rounded-lg p-3
+            transition-all duration-300 ease-initial
+            opacity-0 scale-z-0 pointer-events-none
+            group-hover:opacity-100 group-hover:scale-z-100 group-hover:pointer-events-auto
+        `}
+        >
             <h3 className="mb-2 font-bold">
                 المزيد :
             </h3>
