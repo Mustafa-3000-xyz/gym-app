@@ -17,13 +17,11 @@ export default function All_Accountes() {
     const [errorMessage, setErrorMessage] = useState("");
 
 
-    function clickOnBtnUsing(account: accounte) {
+    function clickOnLogInBtn(account: accounte) {
         if (account.password == passwordInp) {
-            const getAccount = state.accountes.find(ele => ele.id == account.id);
-
             setIsLoginAtom({
-                id: getAccount?.id as any,
-                type: getAccount?.type as any
+                id: account?.id as any,
+                type: account?.type as any
             });
         } else {
             setPasswordInp("");
@@ -36,6 +34,7 @@ export default function All_Accountes() {
     useEffect(function () {
         dispatch(getAllAccountes() as any);
     }, []);
+
 
 
     return <div className="flex justify-center items-center gap-3 flex-wrap">
@@ -80,7 +79,7 @@ export default function All_Accountes() {
                 </div>
 
 
-                {/* Set password */}
+                {/* Password inp & Log in btn*/}
                 <div className="flex items-center gap-2">
                     <input
                         dir={passwordInp ? "ltr" : "rtl"}
@@ -103,7 +102,7 @@ export default function All_Accountes() {
                             ${passwordInp.length == 0 ? "opacity-45 cursor-not-allowed" : "opacity-100 cursor-pointer"}
                         `}
                         disabled={passwordInp.length == 0 ? true : false}
-                        onClick={() => clickOnBtnUsing(ele as accounte)}
+                        onClick={() => clickOnLogInBtn(ele as accounte)}
                     >
                         تسجيل الدخول
                     </button>
