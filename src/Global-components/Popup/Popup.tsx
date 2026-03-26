@@ -7,13 +7,12 @@ export default function Popup(
     {
         titel,
         discription,
-        styleBtn,
         children,
-        isSaveData = true,
+        isSave = false,
         isShowBtn = true,
+        typeBtn = "save data",
         clickOnCancel,
-        clickOnSaveDataBtn,
-        clickOnSaveChangeBtn,
+        clickOnSaveBtn,
     }: Popup_Props
 ) {
     return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none z-50">
@@ -48,14 +47,14 @@ export default function Popup(
                 {
                     isShowBtn != false &&
                     <button
-                        onClick={isSaveData ? clickOnSaveDataBtn : clickOnSaveChangeBtn}
+                        onClick={isSave ? clickOnSaveBtn : () => null}
                         className={`
                             transition duration-300 
-                            ${styleBtn}
+                            ${!isSave ? "opacity-55 cursor-not-allowed" : "opacity-100 cursor-pointer"}
                             bg-[#385E97] text-white px-5 py-2 rounded-lg
                         `}
                     >
-                        {isSaveData ? " حفظ البيانات" : "حفظ التغيرات"}
+                        {typeBtn == "save data" ? " حفظ البيانات" : "حفظ التغيرات"}
                     </button>
                 }
 

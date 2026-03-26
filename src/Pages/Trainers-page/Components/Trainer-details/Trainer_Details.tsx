@@ -229,11 +229,10 @@ export default function Trainer_Details(
     return <Popup
         titel="تفاصيل المتدرب"
         discription="تلك التفاصيل الخاصه بالمتدرب"
-        styleBtn={isChangeInfo ? "opacity-100 cursor-pointer" : "opacity-50 cursor-not-allowed"}
-        isSaveData={false}
+        isSave={isChangeInfo}
         isShowBtn={subscriptionState == stateIsFinished ? false : true}
         clickOnCancel={closeThisWinow}
-        clickOnSaveChangeBtn={updateInfo}
+        clickOnSaveBtn={updateInfo}
     >
         <div className="px-5 mb-1">
             <div className="flex items-center gap-2 text-(--primary)">

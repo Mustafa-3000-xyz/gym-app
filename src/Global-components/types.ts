@@ -32,11 +32,17 @@ export interface Box_Props {
 export interface Popup_Props {
     titel: string,
     discription: string,
-    styleBtn: string,
     children: ReactNode,
-    isSaveData?: boolean,
+    isSave?: boolean,
     isShowBtn?: boolean,
+    typeBtn?: "save data" | "save change",
     clickOnCancel: () => void,
-    clickOnSaveDataBtn?: () => void,
-    clickOnSaveChangeBtn?: () => void,
+    clickOnSaveBtn: () => void,
+}
+
+export interface Account_Img_Props{
+    idAccount: number,
+    img: string,
+    accountType: "manager" | "captain"
+    isShowCamera: boolean,
 }

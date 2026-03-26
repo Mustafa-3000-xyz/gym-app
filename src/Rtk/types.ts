@@ -15,9 +15,12 @@ type updateOneColumnInTrainer =
     | "subscriptionEnd";
 
 type updateOneColumnInAccount =
+    | "name"
+    | "age"
+    | "password"
     | "type"
     | "permissions"
-    | "attendanceList"
+    | "img"
 
 
 export interface store_Type {

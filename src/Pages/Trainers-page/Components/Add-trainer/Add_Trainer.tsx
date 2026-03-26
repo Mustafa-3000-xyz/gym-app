@@ -120,9 +120,9 @@ export default function Add_Trainer(
     return <Popup
         titel="إضافة متدرب"
         discription="الان, يمكنك إضافة متدرب جديد"
-        styleBtn={isAllInfoComplete ? "opacity-100 cursor-pointer" : "opacity-50 cursor-not-allowed"}
+        isSave={isAllInfoComplete}
         clickOnCancel={closeThisWinow}
-        clickOnSaveDataBtn={saveTrainerInfo}
+        clickOnSaveBtn={saveTrainerInfo}
     >
         {/* Trainer info */}
         <div className="my-6">
