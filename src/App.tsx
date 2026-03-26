@@ -6,12 +6,12 @@ import Attendance_Recorde_Page from "./Pages/Attendance-recorde-page/Attendance_
 import Profits_And_Expenses_Page from "./Pages/Profits-and-expenses-page/Profits_And_Expenses_Page";
 import Accountes_Page from "./Pages/Accountes-page/Accountes_Page";
 import Authentication_Page from "./Pages/Authentication-page/Authentication_Page";
-import { useAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import isLogin_Atom from "./Atoms/Is/isLogin_Atom";
 import { useEffect } from "react";
 // ========================================================== //
 function App() {
-  const [isLoginAtom, setIsLoginAtom] = useAtom(isLogin_Atom);
+  const isLoginAtom = useAtomValue(isLogin_Atom);
 
 
   // This for when close the window, reset the log in
@@ -23,7 +23,7 @@ function App() {
       const appWindow = getCurrentWindow();
 
       unlisten = await appWindow.listen('tauri://close-requested', async () => {
-        setIsLoginAtom(null);
+        localStorage.setItem("theAccount", JSON.stringify(null));
         await appWindow.destroy();
       });
     };
