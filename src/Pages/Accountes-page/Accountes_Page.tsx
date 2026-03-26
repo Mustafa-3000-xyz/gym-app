@@ -1,6 +1,6 @@
 import All_Accountes from "@/Global-components/All-accountes/All_Accountes";
 import Discription from "@/Global-components/Description/Discription";
-import { IdCardLanyard, Plus } from "lucide-react";
+import { IdCardLanyard, Plus, Shell } from "lucide-react";
 import { useState } from "react";
 import Add_Account from "./Components/Add-account/Add_Account";
 import Box from "@/Global-components/Box/Box";
@@ -34,7 +34,7 @@ export default function Accountes_Page() {
             />
 
             <Box
-                icon={<IdCardLanyard size={25} />}
+                icon={<Shell size={25} />}
                 title="مجموع الحصص المفعله"
                 styleIcon="bg-neutral-200 text-neutral-500"
                 total={3342345}
