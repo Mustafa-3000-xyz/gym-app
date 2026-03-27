@@ -53,5 +53,4 @@ export interface Add_Btn_Props {
     title: string,
     icon: any,
     onClick: () => void,
-
 }
