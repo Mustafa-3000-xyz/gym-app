@@ -1,5 +1,5 @@
 import { alert, stateIsFinished } from "@/Lib/customs";
-import { Btn_Finished_Subscription_Props } from "@/Pages/Trainers-page/types";
+import { Btn_Finished_Subscription_Props } from "@/Pages/types";
 import { updateSomePropertiesInTrainer } from "@/Rtk/Slices/trainersSlice";
 import { BanknoteX } from "lucide-react";
 import { useDispatch } from "react-redux";

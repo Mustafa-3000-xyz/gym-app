@@ -1,5 +1,5 @@
 import { ListFilter } from "lucide-react";
-import { Btn_Filter_Props, filter, trainer } from "../../types";
+import { Btn_Filter_Props, filter, trainer } from "@/Pages/types";
 import { useEffect, useRef, useState } from "react";
 import Menu from "./Menu/Menu";
 import { activeSubscriptions, allSubscriptions, finishedSubscriptions, fromOldToNew, pendingSubscriptions, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/customs";

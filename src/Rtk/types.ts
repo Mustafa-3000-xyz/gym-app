@@ -1,5 +1,4 @@
-import { accounte } from "@/Pages/Accountes-page/types";
-import { trainer } from "@/Pages/Trainers-page/types";
+import { accounte, trainer } from "@/Pages/types";
 // ========================================================== //
 type updateOneColumnInTrainer =
     | "subscriptionState"

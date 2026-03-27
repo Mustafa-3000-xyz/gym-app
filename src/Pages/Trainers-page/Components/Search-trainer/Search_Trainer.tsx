@@ -1,6 +1,6 @@
 import { Search } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { Search_Trainer_Props, trainer } from '../../types';
+import { Search_Trainer_Props, trainer } from "@/Pages/types";
 import Search_Result from './Search-result/Search_Result';
 // ========================================================== //
 export default function Search_Trainer(

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getAllAccountes } from "@/Rtk/Slices/accountsSlice";
 import { store_Type } from "@/Rtk/types";
-import { accounte } from "@/Pages/Accountes-page/types";
+import { accounte } from "@/Pages/types";
 import { alert } from "@/Lib/customs";
 // ========================================================== //
 export default function SideBar() {

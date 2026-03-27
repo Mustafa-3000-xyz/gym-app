@@ -1,6 +1,6 @@
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { alert } from "@/Lib/customs";
-import { accounte } from "@/Pages/Accountes-page/types";
+import { accounte } from "@/Pages/types";
 import { getAllAccountes } from "@/Rtk/Slices/accountsSlice";
 import { store_Type } from "@/Rtk/types";
 import { useAtom } from "jotai";

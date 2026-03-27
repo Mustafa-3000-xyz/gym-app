@@ -1,5 +1,5 @@
 import Animation from "@/Global-components/Animation/Animation";
-import { accounte } from "@/Pages/Accountes-page/types";
+import { accounte } from "@/Pages/types";
 import { addAccount } from "@/Rtk/Slices/accountsSlice";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";

@@ -1,4 +1,4 @@
-import { trainer } from "@/Pages/Trainers-page/types";
+import { trainer } from "@/Pages/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { updatePropertyInTrainer_Type, updateSomePropertiesInTrainer_Type } from "../types";
 import { trainerTable } from "@/Rtk/tables";

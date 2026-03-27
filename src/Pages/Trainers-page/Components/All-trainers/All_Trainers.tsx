@@ -1,5 +1,5 @@
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
-import { All_Trainers_Props, trainer } from "@/Pages/Trainers-page/types";
+import { All_Trainers_Props, trainer } from "@/Pages/types";
 import { stateIsFinished, styleDate, styleForSubscriptionState } from "@/Lib/customs";
 import { format } from "date-fns";
 import { useAtom } from "jotai";

@@ -1,4 +1,4 @@
-import { trainer } from "@/Pages/Trainers-page/types";
+import { trainer } from "@/Pages/types";
 import Swal from "sweetalert2";
 import { alertSuccessType, alertType, allPermissions_Type } from "./types";
 // ========================================================== //

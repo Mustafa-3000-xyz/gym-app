@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Popup from "@/Global-components/Popup/Popup";
-import { accounte } from "../../types";
+import { accounte } from "@/Pages/types";
 import { useDispatch } from "react-redux";
 import { addAccount } from "@/Rtk/Slices/accountsSlice";
 import { KeyRound } from "lucide-react";

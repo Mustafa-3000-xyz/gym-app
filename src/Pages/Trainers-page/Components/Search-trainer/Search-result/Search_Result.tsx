@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { styleForSubscriptionState } from '@/Lib/customs';
 import Not_Found from "@/Global-components/Not-found/Not_Found";
-import { Search_Result_Props, trainer } from "@/Pages/Trainers-page/types";
+import { Search_Result_Props, trainer } from "@/Pages/types";
 import { useAtom } from "jotai";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import Animation from "@/Global-components/Animation/Animation";

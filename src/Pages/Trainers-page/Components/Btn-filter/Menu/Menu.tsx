@@ -1,6 +1,6 @@
 import Animation from '@/Global-components/Animation/Animation';
 import { activeSubscriptions, allSubscriptions, finishedSubscriptions, fromNewToOld, fromOldToNew, pendingSubscriptions, stateIsActive, stateIsFinished, stateIsPending } from '@/Lib/customs';
-import { filter, Menu_Props } from '@/Pages/Trainers-page/types';
+import { filter, Menu_Props } from "@/Pages/types";
 import { store_Type } from '@/Rtk/types';
 import { ArrowDown, ArrowUp, ShieldCheck, ShieldOff, ShieldQuestionMark, Users } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';

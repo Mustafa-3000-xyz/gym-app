@@ -1,5 +1,5 @@
 import { alert } from '@/Lib/customs';
-import { Btn_Delete_Trainer_Props } from '@/Pages/Trainers-page/types';
+import { Btn_Delete_Trainer_Props } from "@/Pages/types";
 import { deleteTrainerById } from '@/Rtk/Slices/trainersSlice';
 import { Trash } from 'lucide-react'
 import { useDispatch } from 'react-redux';

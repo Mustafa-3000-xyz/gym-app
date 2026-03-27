@@ -1,7 +1,7 @@
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import Subscriptions_Menu from "@/Pages/Trainers-page/Components/Subscriptions-menu/Subscriptions_Menu";
-import { Subscription_Info_Form_Props } from "@/Pages/Trainers-page/types";
+import { Subscription_Info_Form_Props } from "@/Pages/types";
 import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
 // ========================================================== //

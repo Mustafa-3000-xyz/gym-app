@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Animation from "@/Global-components/Animation/Animation";
-import { Data_Inputs_Props } from "@/Pages/Sing-up-page/types";
+import { Data_Inputs_Props } from "@/Pages/types";
 // ========================================================== //
 export default function Data_Inputs(
     { onIsShowEndMessage, onGetManagerInfo }: Data_Inputs_Props

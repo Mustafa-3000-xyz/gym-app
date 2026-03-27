@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { accountsTable } from "../tables";
-import { accounte } from "@/Pages/Accountes-page/types";
+import { accounte } from "@/Pages/types";
 import { updatePropertyInAccount_Type, updateSomePropertiesInAccount_Type } from "../types";
 // ======================================= //
 export const getAllAccountes = createAsyncThunk("accountsSlice/getAllAccountes", async function () {

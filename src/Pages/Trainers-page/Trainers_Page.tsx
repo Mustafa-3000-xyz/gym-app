@@ -1,6 +1,6 @@
 import { BicepsFlexed, Plus, ShieldCheck, Users } from "lucide-react";
 import { useEffect, useState } from "react";
-import { trainer } from "./types";
+import { trainer } from "@/Pages/types";
 import Trainer_Details from "./Components/Trainer-details/Trainer_Details";
 import All_Trainers from "./Components/All-trainers/All_Trainers";
 import Add_Trainer from "./Components/Add-trainer/Add_Trainer";

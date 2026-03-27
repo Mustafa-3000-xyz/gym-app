@@ -9,7 +9,7 @@ import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import { useAtom } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import { useDispatch } from "react-redux";
-import { trainer } from "../../types";
+import { trainer } from "@/Pages/types";
 import Popup from "@/Global-components/Popup/Popup";
 // ========================================================== //
 export default function Add_Trainer(

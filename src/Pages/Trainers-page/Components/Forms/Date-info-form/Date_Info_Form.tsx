@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { End_Date_Picker } from "./Dates-picker/End_Date_Picker";
 import { format, differenceInDays } from "date-fns";
-import { Date_Info_Props } from "@/Pages/Trainers-page/types";
+import { Date_Info_Props } from "@/Pages/types";
 import { styleDate } from "@/Lib/customs";
 import Start_Date_Picker from "./Dates-picker/Start_Date_Picker";
 // ========================================================== //

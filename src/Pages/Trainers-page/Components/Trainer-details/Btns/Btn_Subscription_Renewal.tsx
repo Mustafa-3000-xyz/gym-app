@@ -1,5 +1,5 @@
 import { alert, stateIsActive } from '@/Lib/customs';
-import { Btn_Subscription_Renewal_Props } from '@/Pages/Trainers-page/types'
+import { Btn_Subscription_Renewal_Props } from "@/Pages/types";
 import { updateSomePropertiesInTrainer } from '@/Rtk/Slices/trainersSlice';
 import { RefreshCcw } from 'lucide-react'
 import { useDispatch } from 'react-redux';
