@@ -3,6 +3,8 @@ import Popup from "@/Global-components/Popup/Popup";
 import { accounte } from "../../types";
 import { useDispatch } from "react-redux";
 import { addAccount } from "@/Rtk/Slices/accountsSlice";
+import { KeyRound } from "lucide-react";
+import Permissions from "../Permissions/Permissions";
 // ========================================================== //
 export default function Add_Account(
     { onIsShowAddAccount }: { onIsShowAddAccount: (x: boolean) => void }
@@ -12,6 +14,7 @@ export default function Add_Account(
     const [name, setName] = useState("");
     const [age, setAge] = useState("");
     const [password, setPassword] = useState("");
+    const [permissionsList, setPermissionsList] = useState([]);
     const [isAllDataComplete, setIsAllDataComplete] = useState(false);
 
 
@@ -22,7 +25,7 @@ export default function Add_Account(
             password,
             img: "",
             type: "captain",
-            permissions: [],
+            permissions: permissionsList,
         };
 
         onIsShowAddAccount(false);
@@ -92,6 +95,22 @@ export default function Add_Account(
                         disabled
                     />
                 </div>
+            </div>
+
+
+            <div className="px-3">
+                <div className="flex gap-1 mb-2">
+                    <KeyRound 
+                        strokeWidth={2.5}
+                        className="text-amber-500"
+                    />
+                    
+                    <h3 className="font-bold ">
+                        الصلاحيات :
+                    </h3>
+                </div>
+
+                <Permissions onGetPermissionsList={setPermissionsList as any} />
             </div>
         </form>
     </Popup>

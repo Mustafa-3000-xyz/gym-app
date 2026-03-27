@@ -230,6 +230,7 @@ export default function Trainer_Details(
         titel="تفاصيل المتدرب"
         discription="تلك التفاصيل الخاصه بالمتدرب"
         isSave={isChangeInfo}
+        typeBtn="save change"
         isShowBtn={subscriptionState == stateIsFinished ? false : true}
         clickOnCancel={closeThisWinow}
         clickOnSaveBtn={updateInfo}

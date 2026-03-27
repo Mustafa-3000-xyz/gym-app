@@ -40,7 +40,6 @@ export default function Search_Trainer(
 
 
     return <div className="flex relative col-span-3 ">
-        {/* Inp search */}
         <div className='w-full h-full'>
             <input
                 ref={searchInpRef}

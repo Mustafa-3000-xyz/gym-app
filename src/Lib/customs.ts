@@ -1,9 +1,7 @@
 import { trainer } from "@/Pages/Trainers-page/types";
 import Swal from "sweetalert2";
-import { alertSuccessType, alertType } from "./types";
+import { alertSuccessType, alertType, allPermissions_Type } from "./types";
 // ========================================================== //
-
-// This for style date
 export const styleDate = "yyyy/MM/dd";
 
 // These for subscription state
@@ -18,6 +16,36 @@ export const allSubscriptions = "allSubscriptions";
 export const activeSubscriptions = "activeSubscriptions";
 export const pendingSubscriptions = "pendingSubscriptions";
 export const finishedSubscriptions = "finishedSubscriptions";
+
+
+export const allPermissions = [
+    {
+        title: "صفحة المتدربين",
+        path: "trainer-page"
+    },
+    {
+        title: "صفحة الحسابات",
+        path: "accountes-page"
+    },
+
+    {
+        title: "صفحة سجل الحضور",
+        path: "attendance-recorde-page"
+    },
+    {
+        title: "صفحة الارباح والمصروفات",
+        path: "profits-and-expenses-page"
+    },
+
+    {
+        title: "صفحة الاعدادات",
+        path: "settings-page"
+    },
+    {
+        title: "صفحة شرح البرنامج",
+        path: "explain-app-page"
+    }
+] as allPermissions_Type[];
 
 
 /*

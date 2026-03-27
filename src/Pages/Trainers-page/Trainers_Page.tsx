@@ -12,6 +12,7 @@ import { getAllTrainers } from "@/Rtk/Slices/trainersSlice";
 import { store_Type } from "@/Rtk/types";
 import Box from "@/Global-components/Box/Box";
 import { stateIsActive } from "@/Lib/customs";
+import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 // ========================================================== //
 export default function Trainers_Page() {
     const dispatch = useDispatch();
@@ -86,27 +87,19 @@ export default function Trainers_Page() {
                 onIsShowTrainerDetails={setIsShowTrainerDetails}
             />
 
-            <div className="flex justify-end gap-1">
+            <div className="flex justify-center gap-1">
                 <Btn_Filter
                     trainersList={state.trainers}
                     onGetFilterResult={setAnotherTrainersList}
                 />
 
-                <div className="flex items-center gap-3 w-full">
-                    <button
-                        onClick={btnAddTrianer}
-                        className={`
-                            transition duration-500 hover:bg-blue-600 whitespace-nowrap w-full
-                            flex items-center justify-center gap-2 bg-[var(--primary)] cursor-pointer text-white py-3 px-5 rounded-sm
-                        `}
-                    >
-                        <Plus strokeWidth={1.75} />
-
-                        <span>
-                            إضافة متدرب جديد
-                        </span>
-                    </button>
-                </div>
+                <Add_Btn
+                    styleTheBgAndBorderBtn="bg-blue-500 border-blue-600"
+                    thePaddingY="py-2"
+                    icon={<Plus size={20} strokeWidth={3} />}
+                    title="إنشاء متدرب جديد"
+                    onClick={btnAddTrianer}
+                />
             </div>
         </div>
 

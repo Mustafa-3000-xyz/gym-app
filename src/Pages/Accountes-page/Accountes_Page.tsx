@@ -6,6 +6,7 @@ import Add_Account from "./Components/Add-account/Add_Account";
 import Box from "@/Global-components/Box/Box";
 import { useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
+import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 // ========================================================== //
 export default function Accountes_Page() {
     const state = useSelector(state => state as store_Type);
@@ -41,18 +42,12 @@ export default function Accountes_Page() {
             />
         </div>
 
-        {/* Add new account btn */}
-        <div className="flex justify-center">
-            <button
-                onClick={clickOnAddAccount}
-                className="w-3/3 flex gap-3 justify-center items-center cursor-pointer transition-all bg-emerald-500 text-white px-6 py-6 rounded-lg border-emerald-600 border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]"
-            >
-                <h3 className="text-lg font-bold">إنشاء حساب جديد</h3>
-                <p>
-                    <Plus size={20} strokeWidth={3} />
-                </p>
-            </button>
-        </div>
+        <Add_Btn
+            styleTheBgAndBorderBtn="bg-emerald-500 border-emerald-600"
+            icon={<Plus size={20} strokeWidth={3} />}
+            title="إنشاء حساب جديد"
+            onClick={clickOnAddAccount}
+        />
 
         {/* All accountes */}
         <div className="mt-20">

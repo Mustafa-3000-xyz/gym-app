@@ -24,7 +24,7 @@ export default function Sidebar_Links(
             <span className={`
                 text-lg
                 transition-all duration-300
-                hidden group-hover:block
+                hidden group-hover:block whitespace-nowrap
             `}
             >
                 {linkName}

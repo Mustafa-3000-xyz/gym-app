@@ -1,8 +1,45 @@
-import { Archive, IdCardLanyard, Info, Settings, Users, WalletMinimal } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Archive, Book, IdCardLanyard, Info, LogOut, Settings, Users, WalletMinimal } from "lucide-react";
 import Sidebar_Links from "./Sidebar-links/Sidebar_Links";
+import { useAtom } from "jotai";
+import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { getAllAccountes } from "@/Rtk/Slices/accountsSlice";
+import { store_Type } from "@/Rtk/types";
+import { accounte } from "@/Pages/Accountes-page/types";
+import { alert } from "@/Lib/customs";
 // ========================================================== //
 export default function SideBar() {
+    const [isLoginAtom, setIsLoginAtom] = useAtom(isLogin_Atom);
+    const state = useSelector(state => state as store_Type);
+    const dispatch = useDispatch();
+
+    const [theAccount, setTheAccount] = useState<accounte | null>(null);
+
+
+
+    function clickOnLogOutBtn() {
+        alert({
+            titleBeforeClickOnOk: "هل انت متأكد من تسجيل الخروج لهذا الحساب ؟؟",
+            showMessageAfterClickOnOk: false,
+            funRunWhenClickOnOk: function () {
+                setIsLoginAtom(null);
+            }
+        });
+    }
+
+
+    useEffect(function () {
+        dispatch(getAllAccountes() as any);
+    }, []);
+
+    useEffect(function () {
+        const result = state.accountes.find(ele => ele.id == isLoginAtom?.id);
+        setTheAccount(result as accounte);
+    }, [state.accountes, isLoginAtom]);
+
+
+
     return <nav className={`
             transition-all duration-500
             sticky top-0 h-screen p-4 pb-0
@@ -11,10 +48,12 @@ export default function SideBar() {
             w-[75px] hover:w-[450px] group overflow-hidden
         `}
     >
+        {/* Title */}
         <div className="mb-5 text-center" dir="ltr">
             <h1 className="font-bold text-[#FB6543] select-none">GYM APP</h1>
         </div>
 
+        {/* Links */}
         <ul className="flex flex-col gap-2 select-none h-full">
             <Sidebar_Links
                 linkName="المتدربين"
@@ -51,41 +90,80 @@ export default function SideBar() {
                     strokeWidth={1.75}
                 />}
             />
+
+            <hr />
+
+            <ul className="flex flex-col gap-2">
+                <Sidebar_Links
+                    linkName="الاعدادات"
+                    path="/settings-page"
+                    icon={<Settings
+                        size={25}
+                        strokeWidth={1.75}
+                    />}
+                />
+
+                <Sidebar_Links
+                    linkName="شرح البرنامج"
+                    path="/explain-app-page"
+                    icon={<Book
+                        size={25}
+                        strokeWidth={1.75}
+                    />}
+                />
+            </ul>
         </ul>
 
+        {/* Account */}
         <div className={`
-            select-none bg-black/5 mb-4 rounded-lg p-3
-            transition-all duration-300 ease-initial
-            opacity-0 scale-z-0 pointer-events-none
-            group-hover:opacity-100 group-hover:scale-z-100 group-hover:pointer-events-auto
+            flex items-center justify-between mb-5 select-none rounded-lg
+            trainsition-all duration-300 group-hover:bg-(--primary)/10 group-hover:p-3
         `}
         >
-            <h3 className="mb-2 font-bold">
-                المزيد :
-            </h3>
+            {/* Img & name & type */}
+            <div className="flex items-center gap-3">
+                <div className="w-10 h-10">
+                    <img
+                        src={theAccount?.img ? theAccount?.img : "account.png"}
+                        alt="img account"
+                        className={`
+                            w-full h-full rounded-full object-cover border-2
+                            ${isLoginAtom.type == "manager" ? "border-amber-500" : "border-blue-500"}
+                        `}
+                    />
+                </div>
 
-            <div>
-                <Link to={"/settings-page"} className="hover:underline">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Settings
-                            size={23}
-                            strokeWidth={1.75}
-                        />
-                        <span>
-                            الإعدادات
-                        </span>
-                    </div>
-                </Link>
 
-                <Link to={"/profits-page"} className="hover:underline">
-                    <div className="flex items-center gap-2">
-                        <Info
-                            size={23}
-                            strokeWidth={1.75}
-                        />
-                        <span>شرح البرنامج</span>
-                    </div>
-                </Link>
+                <div className="mt-1">
+                    <h3 className="hidden group-hover:block font-bold leading-2 whitespace-nowrap">{theAccount?.name}</h3>
+                    <p className="hidden group-hover:block text-sm">
+                        {
+                            theAccount?.type == "manager" ? "المدير" : "الكابتن"
+                        }
+                    </p>
+                </div>
+            </div>
+
+
+            <div className="hidden group-hover:flex gap-1">
+                <Info
+                    size={33}
+                    strokeWidth={3}
+                    className={`
+                        cursor-pointer p-2 rounded-md bg-blue-500 text-white
+                        transition duration-300 hover:bg-blue-600
+                    `}
+                />
+
+                <LogOut
+                    size={33}
+                    strokeWidth={3}
+                    className={`
+                        cursor-pointer p-2 rounded-md bg-red-500 text-white
+                        transition duration-300 hover:bg-red-600
+                    `}
+                    onClick={clickOnLogOutBtn}
+                />
             </div>
         </div>
     </nav>

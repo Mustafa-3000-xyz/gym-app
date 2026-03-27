@@ -40,9 +40,18 @@ export interface Popup_Props {
     clickOnSaveBtn: () => void,
 }
 
-export interface Account_Img_Props{
+export interface Account_Img_Props {
     idAccount: number,
     img: string,
     accountType: "manager" | "captain"
     isShowCamera: boolean,
+}
+
+export interface Add_Btn_Props {
+    styleTheBgAndBorderBtn: string,
+    thePaddingY?: string,
+    title: string,
+    icon: any,
+    onClick: () => void,
+
 }

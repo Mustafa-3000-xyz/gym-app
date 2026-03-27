@@ -29,7 +29,7 @@ export default function Popup(
             }}
         >
             {/* Title & x */}
-            <div className="px-5 flex justify-between items-center mb-3 bg-black/5 p-5 border-b border-b-slate-300">
+            <div className="px-5 flex justify-between items-center mb-5 bg-black/5 p-5 border-b border-b-slate-300">
                 <div>
                     <h3 className=" font-bold text-lg">
                         {titel}
@@ -43,7 +43,7 @@ export default function Popup(
             {children}
 
             {/* Btn save and cancel */}
-            <div className="bg-black/5 p-5 border-t border-t-slate-300 flex gap-3">
+            <div className="bg-black/5 p-5 border-t border-t-slate-300 flex gap-3 mt-5">
                 {
                     isShowBtn != false &&
                     <button

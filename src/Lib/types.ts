@@ -9,3 +9,8 @@ export interface alertType {
     funRunWhenClickOnOk: Function,
     showMessageAfterClickOnOk?: boolean
 }
+
+export interface allPermissions_Type{
+    title: string,
+    path: string,
+}

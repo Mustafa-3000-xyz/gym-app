@@ -100,11 +100,11 @@ export default function All_Accountes() {
                         rounded-3xl shadow-xl p-8
                         flex flex-col justify-between items-center w-96 gap-10
                         ${isLoginAtom != null && isLoginAtom.id == ele.id && isLoginAtom.type == "manager" &&
-                        "hover:bg-amber-500 hover:m-6 hover:scale-110 cursor-pointer"
+                            "hover:bg-amber-500 hover:m-6 hover:scale-110 cursor-pointer"
                         }
 
                         ${isLoginAtom != null && isLoginAtom.id == ele.id && isLoginAtom.type == "captain" &&
-                        "hover:bg-blue-500 hover:text-white hover:m-6 text-gray-900 hover:scale-110 cursor-pointer"
+                            "hover:bg-blue-500 hover:text-white hover:m-6 text-gray-900 hover:scale-110 cursor-pointer"
                         }
                     `}
                 >
