@@ -41,10 +41,11 @@ export interface Popup_Props {
 }
 
 export interface Account_Img_Props {
-    idAccount: number,
     img: string,
-    accountType: "manager" | "captain"
     isShowCamera: boolean,
+    accountType: "manager" | "captain",
+    whenClickOnCameraCloseAccountDetails?: boolean,
+    onGetImg?: (x: string) => void
 }
 
 export interface Add_Btn_Props {

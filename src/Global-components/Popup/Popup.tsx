@@ -40,7 +40,9 @@ export default function Popup(
                 <X size={23} onClick={clickOnCancel} className="cursor-pointer text-red-500" />
             </div>
 
-            {children}
+            <div className="px-5">
+                {children}
+            </div>
 
             {/* Btn save and cancel */}
             <div className="bg-black/5 p-5 border-t border-t-slate-300 flex gap-3 mt-5">

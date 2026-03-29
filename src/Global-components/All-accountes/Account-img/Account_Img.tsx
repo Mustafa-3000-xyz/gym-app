@@ -1,28 +1,34 @@
+import isShowAccountDetails_Atom from "@/Atoms/Is/isShowAccountDetails_Atom";
 import { Account_Img_Props } from "@/Global-components/types";
-import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
+import { useSetAtom } from "jotai";
 import { Camera } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
 // ========================================================== //
 export default function Account_Img(
     {
-        idAccount,
         img,
         accountType,
-        isShowCamera
+        isShowCamera,
+        whenClickOnCameraCloseAccountDetails = true,
+        onGetImg
     }: Account_Img_Props
 ) {
-    const dispatch = useDispatch();
+    const setIsShowAccountDetailsAtom = useSetAtom(isShowAccountDetails_Atom);
 
 
-    const [theImage, setTheImage] = useState(img);
+    const [theImg, setTheImg] = useState<string>(img);
     const inpRef = useRef<HTMLInputElement>(null);
 
 
-    function clickOnCamera() {
-        inpRef.current?.click();
-    }
 
+    function clickOnCamera(e: React.MouseEvent<HTMLButtonElement>) {
+        e.stopPropagation();
+        inpRef.current?.click();
+
+        if (whenClickOnCameraCloseAccountDetails) {
+            setIsShowAccountDetailsAtom(false);
+        }
+    }
 
     function selectImg(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
@@ -34,20 +40,19 @@ export default function Account_Img(
         reader.readAsDataURL(file);
         reader.onloadend = () => {
             const base64 = reader.result as string;
-            setTheImage(base64);
+            setTheImg(base64);
         };
     }
 
 
+
+
     useEffect(function () {
-        if (theImage != img) {
-            dispatch(updatePropertyInAccount({
-                id: idAccount,
-                column: "img",
-                value: theImage
-            }) as any);
+        if (theImg != img) {
+            onGetImg?.(theImg);
         }
-    }, [theImage]);
+    }, [theImg]);
+
 
 
 
@@ -60,13 +65,13 @@ export default function Account_Img(
     >
         <img
             className={"w-full h-full object-cover rounded-full"}
-            src={theImage ? theImage : "account.png"}
+            src={theImg ? theImg : "account.png"}
             alt="account"
         />
 
         {
             isShowCamera &&
-            <div
+            <button
                 className={`
                     transition duration-300
                     hover:scale-110 active:scale-125
@@ -76,7 +81,7 @@ export default function Account_Img(
                 onClick={clickOnCamera}
             >
                 <Camera size={18} />
-            </div>
+            </button>
         }
 
 

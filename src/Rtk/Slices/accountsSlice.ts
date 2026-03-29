@@ -5,7 +5,9 @@ import { updatePropertyInAccount_Type, updateSomePropertiesInAccount_Type } from
 // ======================================= //
 export const getAllAccountes = createAsyncThunk("accountsSlice/getAllAccountes", async function () {
     const database = await accountsTable();
-    return await database.select("SELECT * FROM accountes");
+    const accountesList: accounte[] = await database.select("SELECT * FROM accountes");
+    const result = accountesList.sort((a, b) => a.id as any - (b.id as any));
+    return result
 });
 
 export const addAccount = createAsyncThunk("accountsSlice/addAccount", async function (data: accounte) {
@@ -85,7 +87,12 @@ export const updateSomePropertiesInAccount = createAsyncThunk(
             [...values, id]
         );
 
-        return accounte;
+        const result = await database.select(
+            `SELECT * FROM accountes WHERE id = ?`,
+            [id]
+        );
+
+        return (result as accounte[])[0];
 });
 
 
@@ -109,13 +116,15 @@ const accountsSlice = createSlice({
         });
 
         builde.addCase(updatePropertyInAccount.fulfilled as any, (state: accounte[], action): any => {
-            const result = state.filter(ele => ele.id != action.payload.id);
-            return [...result, action.payload];
+            const filter = state.filter(ele => ele.id != action.payload.id);
+            const result = [...filter, action.payload].sort((a, b) => a.id - b.id);
+            return result;
         });
 
         builde.addCase(updateSomePropertiesInAccount.fulfilled as any, (state: accounte[], action): any => {
-            const result = state.filter(ele => ele.id != action.payload.id);
-            return [...result, action.payload];
+            const filter = state.filter(ele => ele.id != action.payload.id);
+            const result = [...filter, action.payload].sort((a, b) => a.id - b.id);
+            return result;
         });
     }
 });

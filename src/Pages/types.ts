@@ -1,3 +1,5 @@
+import { allPermissions_Type } from "@/Lib/types";
+
 export interface trainer {
     trainerId: string;
     subscriptionState: string;
@@ -128,5 +130,12 @@ export interface accounte {
     password: string,
     type: "manager" | "captain",
     img: string,
-    permissions?: [] | "fullAccess",
+    permissions?: string[] | "fullAccess",
+}
+
+export interface Permissions_Props {
+    accountId?: number | string,
+    accountType?: "manager" | "captain",
+    permissions?: string[] | "fullAccess",
+    onGetPermissionsList?: (x: string[]) => void,
 }

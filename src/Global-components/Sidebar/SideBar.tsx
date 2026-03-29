@@ -1,6 +1,6 @@
 import { Archive, Book, IdCardLanyard, Info, LogOut, Settings, Users, WalletMinimal } from "lucide-react";
 import Sidebar_Links from "./Sidebar-links/Sidebar_Links";
-import { useAtom } from "jotai";
+import { useAtom, useSetAtom } from "jotai";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
@@ -8,9 +8,14 @@ import { getAllAccountes } from "@/Rtk/Slices/accountsSlice";
 import { store_Type } from "@/Rtk/types";
 import { accounte } from "@/Pages/types";
 import { alert } from "@/Lib/customs";
+import isShowAccountDetails_Atom from "@/Atoms/Is/isShowAccountDetails_Atom";
+import accountDetails_Atom from "@/Atoms/Details/accountDetails_Atom";
 // ========================================================== //
 export default function SideBar() {
     const [isLoginAtom, setIsLoginAtom] = useAtom(isLogin_Atom);
+    const setAccountDetailsAtom = useSetAtom(accountDetails_Atom);
+    const setIsShowAccountDetailsAtom = useSetAtom(isShowAccountDetails_Atom);
+
     const state = useSelector(state => state as store_Type);
     const dispatch = useDispatch();
 
@@ -26,6 +31,13 @@ export default function SideBar() {
                 setIsLoginAtom(null);
             }
         });
+    }
+
+    function clickOnInfoBtn() {
+        const getAccount = state.accountes.find(ele => ele.id == isLoginAtom.id);
+
+        setIsShowAccountDetailsAtom(true);
+        setAccountDetailsAtom(getAccount as accounte);
     }
 
 
@@ -153,6 +165,7 @@ export default function SideBar() {
                         cursor-pointer p-2 rounded-md bg-blue-500 text-white
                         transition duration-300 hover:bg-blue-600
                     `}
+                    onClick={clickOnInfoBtn}
                 />
 
                 <LogOut

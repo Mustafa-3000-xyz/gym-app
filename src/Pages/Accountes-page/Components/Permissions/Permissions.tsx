@@ -1,28 +1,97 @@
-import { allPermissions } from "@/Lib/customs";
-import { allPermissions_Type } from "@/Lib/types";
+import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
+import { Permissions_Props } from "@/Pages/types";
+import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
+import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 // ========================================================== //
 export default function Permissions(
-    { onGetPermissionsList }: { onGetPermissionsList: (x: string[]) => void }
+    {
+        permissions,
+        accountType,
+        accountId,
+        onGetPermissionsList
+    }: Permissions_Props
 ) {
-    const [permissionsList, setPermissionsList] = useState(["trainer-page"]);
+    const dispatch = useDispatch();
+
+    const isLogInAtom = useAtomValue(isLogin_Atom);
+    const [permissionsList, setPermissionsList] = useState(permissions as any);
+
+
+    const theConditional = (isLogInAtom.type == "manager" && accountType == "manager") || (isLogInAtom.type == "captain")
+    const allPermissions = [
+        {
+            title: "صفحة المتدربين",
+            path: "trainer-page"
+        },
+        {
+            title: "صفحة الحسابات",
+            path: "accountes-page"
+        },
+
+        {
+            title: "صفحة سجل الحضور",
+            path: "attendance-recorde-page"
+        },
+        {
+            title: "صفحة الارباح والمصروفات",
+            path: "profits-and-expenses-page"
+        },
+
+        {
+            title: "صفحة الاعدادات",
+            path: "settings-page"
+        },
+        {
+            title: "صفحة شرح البرنامج",
+            path: "explain-app-page"
+        }
+    ];
 
 
 
-    function clickOnButton(theLink: allPermissions_Type) {
-        if (!permissionsList.includes(theLink.path)) {
-            setPermissionsList(prev => [...prev, theLink.path]);
-            return
+    function clickOnButton(pathname: string) {
+        if (theConditional) return;
+        let arr = [...permissionsList];
+
+
+        // Add or remove the pathname
+        if (!arr.includes(pathname)) {
+            arr.push(pathname);
+        }
+        else {
+            const result = arr.filter(ele => ele != pathname);
+            arr = result;
         }
 
-        const arr = permissionsList.filter(ele => ele != theLink.path);
+
         setPermissionsList(arr);
+        onGetPermissionsList?.(arr);
     }
 
 
-    useEffect(function(){
-        onGetPermissionsList(permissionsList);
+    // This for manager account
+    useEffect(function () {
+        if (permissions == "fullAccess") {
+            const result = allPermissions.map(ele => ele.path);
+            setPermissionsList(result);
+        }
+    }, []);
+
+    // This for update permissions
+    useEffect(function () {
+        if (!accountId) return;
+
+        dispatch(updatePropertyInAccount({
+            id: accountId as any,
+            column: "permissions",
+            value: permissionsList
+        }) as any)
     }, [permissionsList]);
+
+
+
 
 
     return <div className="flex flex-wrap gap-2">
@@ -34,10 +103,11 @@ export default function Permissions(
                     key={i}
                     type="button"
                     className={`
-                        border border-slate-300 py-2 pb-3 px-5 rounded-full cursor-pointer flex gap-2 items-center
+                        border border-slate-300 py-2 pb-3 px-5 rounded-full flex gap-2 items-center
                         ${isInclude && "bg-amber-500"}
+                        ${theConditional ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                     `}
-                    onClick={() => clickOnButton(ele as any)}
+                    onClick={() => clickOnButton(ele.path as any)}
                 >
 
                     <h3 className="whitespace-nowrap font-bold"> {ele.title} </h3>

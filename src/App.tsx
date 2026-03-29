@@ -9,9 +9,13 @@ import Authentication_Page from "./Pages/Authentication-page/Authentication_Page
 import { useAtomValue } from "jotai";
 import isLogin_Atom from "./Atoms/Is/isLogin_Atom";
 import { useEffect } from "react";
+import isShowAccountDetails_Atom from "./Atoms/Is/isShowAccountDetails_Atom";
+import Account_Details from "./Pages/Accountes-page/Components/Account-details/Account_Details";
 // ========================================================== //
 function App() {
+  const isShowAccountDetailsAtom = useAtomValue(isShowAccountDetails_Atom);
   const isLoginAtom = useAtomValue(isLogin_Atom);
+
 
 
   // This for when close the window, reset the log in
@@ -41,7 +45,6 @@ function App() {
 
 
 
-
   return isLoginAtom ?
     <main dir="rtl" className="flex">
       <SideBar />
@@ -57,6 +60,11 @@ function App() {
           <Route path="/profits-and-expenses-page" element={<Profits_And_Expenses_Page />} />
         </Routes>
       </div>
+
+
+      {
+        isShowAccountDetailsAtom && <Account_Details/>
+      }
     </main>
     :
     <Authentication_Page />
