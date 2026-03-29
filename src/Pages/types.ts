@@ -1,5 +1,3 @@
-import { allPermissions_Type } from "@/Lib/types";
-
 export interface trainer {
     trainerId: string;
     subscriptionState: string;
