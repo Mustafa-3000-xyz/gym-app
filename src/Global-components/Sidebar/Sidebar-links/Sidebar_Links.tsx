@@ -1,4 +1,6 @@
+import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { Sidebar_Linsk_Props } from "@/Global-components/types";
+import { useAtomValue } from "jotai";
 import { Link, useLocation } from "react-router-dom"
 // ========================================================== //
 export default function Sidebar_Links(
@@ -9,16 +11,23 @@ export default function Sidebar_Links(
         isShowTheLink,
     }: Sidebar_Linsk_Props
 ) {
+    const isLoginAtom = useAtomValue(isLogin_Atom);
     const { pathname } = useLocation();
 
 
-    return isShowTheLink ?
+    return isShowTheLink &&
         <li className={`
             transition-all duration-300 p-2 rounded-sm
             ${pathname == path ?
-                "bg-(--primary)/10 text-(--primary)"
+                isLoginAtom.type == "captain" ?
+                    "bg-(--primary)/10 text-(--primary)"
+                    :
+                    "bg-amber-500/10 text-amber-500"
                 :
-                "hover:bg-(--primary)/10 hover:text-(--primary)"
+                isLoginAtom.type == "captain" ?
+                    "hover:bg-(--primary)/10 hover:text-(--primary)"
+                    :
+                    "hover:bg-amber-500/10 hover:text-amber-500"
             }
         `}
         >
@@ -28,15 +37,12 @@ export default function Sidebar_Links(
                 </div>
 
                 <span className={`
-                    text-lg
-                    transition-all duration-300
-                    hidden group-hover:block whitespace-nowrap
-                `}
+                        text-lg
+                        hidden group-hover:block whitespace-nowrap
+                    `}
                 >
                     {linkName}
                 </span>
             </Link>
         </li>
-        :
-        null
 }
