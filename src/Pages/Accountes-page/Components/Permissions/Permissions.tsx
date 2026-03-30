@@ -23,32 +23,31 @@ export default function Permissions(
     const allPermissions = [
         {
             title: "صفحة المتدربين",
-            path: "trainer-page"
+            path: "/trainers-page"
         },
         {
             title: "صفحة الحسابات",
-            path: "accountes-page"
+            path: "/accountes-page"
         },
 
         {
             title: "صفحة سجل الحضور",
-            path: "attendance-recorde-page"
+            path: "/attendance-recorde-page"
         },
         {
             title: "صفحة الارباح والمصروفات",
-            path: "profits-and-expenses-page"
+            path: "/profits-and-expenses-page"
         },
 
         {
             title: "صفحة الاعدادات",
-            path: "settings-page"
+            path: "/settings-page"
         },
         {
             title: "صفحة شرح البرنامج",
-            path: "explain-app-page"
+            path: "/explain-app-page"
         }
     ];
-
 
 
     function clickOnButton(pathname: string) {
@@ -71,13 +70,6 @@ export default function Permissions(
     }
 
 
-    // This for manager account
-    useEffect(function () {
-        if (permissions == "fullAccess") {
-            const result = allPermissions.map(ele => ele.path);
-            setPermissionsList(result);
-        }
-    }, []);
 
     // This for update permissions
     useEffect(function () {
@@ -104,7 +96,7 @@ export default function Permissions(
                     type="button"
                     className={`
                         border border-slate-300 py-2 pb-3 px-5 rounded-full flex gap-2 items-center
-                        ${isInclude && "bg-amber-500"}
+                        ${isInclude || permissions == "fullAccess" ? "bg-amber-500" : ""}
                         ${theConditional ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
                     `}
                     onClick={() => clickOnButton(ele.path as any)}

@@ -16,7 +16,7 @@ export default function Add_Account(
     const [age, setAge] = useState("");
     const [password, setPassword] = useState("");
     const [img, setImg] = useState("");
-    const [permissionsList, setPermissionsList] = useState(["trainer-page"]);
+    const [permissionsList, setPermissionsList] = useState(["/trainers-page"]);
     const [isAllDataComplete, setIsAllDataComplete] = useState(false);
 
 

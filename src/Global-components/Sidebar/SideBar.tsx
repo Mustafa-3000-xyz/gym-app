@@ -45,9 +45,21 @@ export default function SideBar() {
         dispatch(getAllAccountes() as any);
     }, []);
 
+    // This for return the permissions to array
     useEffect(function () {
         const result = state.accountes.find(ele => ele.id == isLoginAtom?.id);
-        setTheAccount(result as accounte);
+
+        if (!result) {
+            setTheAccount(null);
+            return;
+        }
+
+        const obj = {
+            ...result,
+            permissions: result.permissions == "fullAccess" ? "fullAccess" : JSON.parse(result.permissions as any)
+        } as accounte
+
+        setTheAccount(obj);
     }, [state.accountes, isLoginAtom]);
 
 
@@ -68,6 +80,7 @@ export default function SideBar() {
         {/* Links */}
         <ul className="flex flex-col gap-2 select-none h-full">
             <Sidebar_Links
+                isShowTheLink={theAccount?.permissions?.includes("/trainers-page") as boolean || theAccount?.permissions == "fullAccess"}
                 linkName="المتدربين"
                 path="/trainers-page"
                 icon={<Users
@@ -77,6 +90,7 @@ export default function SideBar() {
             />
 
             <Sidebar_Links
+                isShowTheLink={theAccount?.permissions?.includes("/accountes-page") as boolean || theAccount?.permissions == "fullAccess"}
                 linkName="الحسابات"
                 path="/accountes-page"
                 icon={<IdCardLanyard
@@ -86,6 +100,7 @@ export default function SideBar() {
             />
 
             <Sidebar_Links
+                isShowTheLink={theAccount?.permissions?.includes("/attendance-recorde-page") as boolean || theAccount?.permissions == "fullAccess"}
                 linkName="سجل الحضور"
                 path="/attendance-recorde-page"
                 icon={<Archive
@@ -95,6 +110,7 @@ export default function SideBar() {
             />
 
             <Sidebar_Links
+                isShowTheLink={theAccount?.permissions?.includes("/profits-and-expenses-page") as boolean || theAccount?.permissions == "fullAccess"}
                 linkName="الارباح والمصروفات"
                 path="/profits-and-expenses-page"
                 icon={<WalletMinimal
@@ -107,6 +123,7 @@ export default function SideBar() {
 
             <ul className="flex flex-col gap-2">
                 <Sidebar_Links
+                    isShowTheLink={theAccount?.permissions?.includes("/settings-page") as boolean || theAccount?.permissions == "fullAccess"}
                     linkName="الاعدادات"
                     path="/settings-page"
                     icon={<Settings
@@ -116,6 +133,7 @@ export default function SideBar() {
                 />
 
                 <Sidebar_Links
+                    isShowTheLink={theAccount?.permissions?.includes("/explain-app-page") as boolean || theAccount?.permissions == "fullAccess"}
                     linkName="شرح البرنامج"
                     path="/explain-app-page"
                     icon={<Book

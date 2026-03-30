@@ -10,7 +10,8 @@ export interface Not_Found_Props {
 export interface Sidebar_Linsk_Props {
     linkName: string,
     path: string,
-    icon: ReactNode
+    icon: ReactNode,
+    isShowTheLink: boolean,
 }
 
 export interface Popup_Animation_Props {
