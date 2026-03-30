@@ -274,7 +274,7 @@ export default function Trainer_Details(
                     className={`
                             rounded-full h-12 w-12 flex items-center justify-center
                             ${subscriptionState == stateIsActive ?
-                            `cursor-pointer ${temp ? "bg-(--primary) text-white" : "bg-slate-200 text-black"}`
+                            `cursor-pointer ${temp ? "bg-(--managerColor) text-white" : "bg-slate-200 text-black"}`
                             :
                             subscriptionState == stateIsPending ?
                                 `opacity-45 pointer-events-none bg-amber-500 text-amber-100 ${temp && "!bg-(--primary) text-white"}`

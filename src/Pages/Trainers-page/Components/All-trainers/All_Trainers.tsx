@@ -2,7 +2,7 @@ import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import { All_Trainers_Props, trainer } from "@/Pages/types";
 import { stateIsFinished, styleDate, styleForSubscriptionState } from "@/Lib/customs";
 import { format } from "date-fns";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 
@@ -10,6 +10,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Btn_Slide from "./Btn-slide/Btn_Slide";
+import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 // ========================================================== //
 export default function All_Trainers(
     {
@@ -17,7 +18,8 @@ export default function All_Trainers(
         setIsShowTrainerDetails,
     }: All_Trainers_Props
 ) {
-    const setTrainerDetailsAtom = useAtom(trainerDetails_Atom)[1];
+    const isLoginAtom = useAtomValue(isLogin_Atom);
+    const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
 
 
     const [isBeginning, setIsBeginning] = useState(true);
@@ -94,7 +96,10 @@ export default function All_Trainers(
                     <tr
                         key={ele.trainerId}
                         onClick={() => showDetailsTrainer(ele as trainer)}
-                        className="text-center bg-slate-100 cursor-pointer transition duration-100 hover:bg-[var(--primary)] hover:text-white"
+                        className={`
+                            text-center bg-slate-100 cursor-pointer transition duration-100
+                            hover:text-white ${isLoginAtom.type == "manager" ? "hover:bg-(--managerColor)" : "hover:bg-(--captainColor)"}
+                        `}
                     >
                         <td className="p-2 py-4">{ele.firstName} {ele.lastName}</td>
                         <td className="font-bold underline">{ele.trainerId}</td>

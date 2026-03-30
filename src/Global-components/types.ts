@@ -45,6 +45,7 @@ export interface Account_Img_Props {
     img: string,
     isShowCamera: boolean,
     accountType: "manager" | "captain",
+    widthAndHeight?: string,
     whenClickOnCameraCloseAccountDetails?: boolean,
     onGetImg?: (x: string) => void
 }

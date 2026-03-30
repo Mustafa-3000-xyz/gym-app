@@ -10,6 +10,7 @@ export default function Account_Img(
         accountType,
         isShowCamera,
         whenClickOnCameraCloseAccountDetails = true,
+        widthAndHeight = "w-28 h-28",
         onGetImg
     }: Account_Img_Props
 ) {
@@ -46,6 +47,9 @@ export default function Account_Img(
 
 
 
+    useEffect(function () {
+        setTheImg(img);
+    }, [img]);
 
     useEffect(function () {
         if (theImg != img) {
@@ -57,10 +61,10 @@ export default function Account_Img(
 
 
     return <div className={`
-            w-28 h-28 relative
-            border-4 rounded-full
+            ${widthAndHeight} relative
+            border-3 rounded-full
             flex items-center justify-center text-white
-            ${accountType == "manager" ? "border-amber-500" : "border-blue-500"}
+            ${accountType == "manager" ? "border-(--managerColor)" : "border-(--captainColor)"}
         `}
     >
         <img
@@ -76,7 +80,7 @@ export default function Account_Img(
                     transition duration-300
                     hover:scale-110 active:scale-125
                     absolute bottom-0 start-0 p-2 rounded-full  cursor-pointer
-                    ${accountType == "manager" ? "bg-amber-500 text-black" : "bg-blue-500 text-white"}
+                    bg-[#d3d0cb] text-black
                 `}
                 onClick={clickOnCamera}
             >

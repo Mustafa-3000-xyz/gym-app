@@ -10,6 +10,7 @@ import { accounte } from "@/Pages/types";
 import { alert } from "@/Lib/customs";
 import isShowAccountDetails_Atom from "@/Atoms/Is/isShowAccountDetails_Atom";
 import accountDetails_Atom from "@/Atoms/Details/accountDetails_Atom";
+import Account_Img from "../All-accountes/Account-img/Account_Img";
 // ========================================================== //
 export default function SideBar() {
     const [isLoginAtom, setIsLoginAtom] = useAtom(isLogin_Atom);
@@ -146,23 +147,19 @@ export default function SideBar() {
 
         {/* Account */}
         <div className={`
-            ${isLoginAtom.type == "captain" ? "group-hover:bg-(--primary)/10" : "group-hover:bg-amber-500/10"}
+            ${isLoginAtom.type == "captain" ? "group-hover:bg-(--captainColor)/15" : "group-hover:bg-(--managerColor) text-white"}
             flex items-center justify-between mb-5 select-none rounded-lg
-            trainsition-all duration-300  group-hover:p-3
+            trainsition-all duration-300  group-hover:p-3 
         `}
         >
             {/* Img & name & type */}
             <div className="flex items-center gap-3">
-                <div className="w-10 h-10">
-                    <img
-                        src={theAccount?.img ? theAccount?.img : "account.png"}
-                        alt="img account"
-                        className={`
-                            w-full h-full rounded-full object-cover border-2
-                            ${isLoginAtom.type == "manager" ? "border-amber-500" : "border-blue-500"}
-                        `}
-                    />
-                </div>
+                <Account_Img
+                    img={theAccount?.img as string}
+                    isShowCamera={false}
+                    accountType={theAccount?.type as any}
+                    widthAndHeight={"w-10 h-10"}
+                />
 
 
                 <div className="mt-1">
@@ -174,7 +171,6 @@ export default function SideBar() {
                     </p>
                 </div>
             </div>
-
 
             <div className="hidden group-hover:flex gap-1">
                 <Info

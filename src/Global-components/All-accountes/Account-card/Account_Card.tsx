@@ -103,16 +103,18 @@ export default function Account_Card(
         className={`
             transition-all duration-300
             rounded-3xl shadow-xl p-8
-            flex flex-col justify-between items-center w-96 gap-10
-            ${isLoginAtom != null && isLoginAtom.id == account.id && isLoginAtom.type == "manager" &&
-                "hover:bg-amber-500 hover:m-6 hover:scale-110 cursor-pointer"
+            flex flex-col justify-between items-center w-96 gap-10 text-gray-900
+            ${isLoginAtom != null && isLoginAtom.id == account.id && isLoginAtom.type == "manager" ?
+                "hover:bg-(--managerColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
+                :
+                ""
             }
 
             ${
                 (isLoginAtom != null && isLoginAtom.type == "manager" && account.type == "captain")
                 ||
                 (isLoginAtom != null && isLoginAtom.id == account.id && account.type == "captain") ?
-                "group hover:bg-blue-500 hover:text-white hover:m-6 text-gray-900 hover:scale-110 cursor-pointer"
+                "group hover:bg-(--captainColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
                 :
                 ""
             }
@@ -158,7 +160,7 @@ export default function Account_Card(
                         <input
                             type="password"
                             placeholder="الرقم السري"
-                            className="border p-2 rounded-lg px-3 group-hover:text-white"
+                            className="border p-2 rounded-lg px-3 focus:outline-0"
                             dir={password ? "ltr" : "rtl"}
                             value={password ?? ""}
                             onChange={writeInInp}
@@ -168,7 +170,7 @@ export default function Account_Card(
                         <button
                             className={`
                                 transition duration-300 whitespace-nowrap
-                                group-hover:bg-blue-600 bg-blue-500 text-white p-2 rounded-lg
+                                bg-neutral-500 text-white p-2 rounded-lg
                                 ${!password ?
                                     "opacity-45 cursor-not-allowed"
                                     :

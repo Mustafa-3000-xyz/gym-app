@@ -1,8 +1,8 @@
 @import "tailwindcss";
 /* ====== */
 :root {
-    --primary: #3b82f6;
-    --orange: #d7573b;
+    --managerColor: #0B0F19;
+    --captainColor: #3b82f6;
 }
 
 body {

@@ -210,7 +210,7 @@ export default function Account_Details() {
         {/* Delete account for account captain */}
         <div className="flex justify-center items-center">
             {
-                isLogInAtom?.type == "manager" &&
+                accountDetailsAtom?.type == "captain" && isLogInAtom.type == "manager" &&
                 <button
                     className="transition duration-300 hover:bg-red-600 bg-red-500 cursor-pointer py-2 w-3/4 text-white rounded-lg font-bold"
                     onClick={deleteAccount}

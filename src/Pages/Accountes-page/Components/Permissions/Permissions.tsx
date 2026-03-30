@@ -96,8 +96,8 @@ export default function Permissions(
                     type="button"
                     className={`
                         border border-slate-300 py-2 pb-3 px-5 rounded-full flex gap-2 items-center
-                        ${isInclude || permissions == "fullAccess" ? "bg-amber-500" : ""}
-                        ${theConditional ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
+                        ${isInclude || permissions == "fullAccess" ? "bg-(--managerColor) text-white" : ""}
+                        ${theConditional ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}
                     `}
                     onClick={() => clickOnButton(ele.path as any)}
                 >

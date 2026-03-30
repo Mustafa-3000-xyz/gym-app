@@ -20,14 +20,14 @@ export default function Sidebar_Links(
             transition-all duration-300 p-2 rounded-sm
             ${pathname == path ?
                 isLoginAtom.type == "captain" ?
-                    "bg-(--primary)/10 text-(--primary)"
+                    "bg-(--captainColor)/10 text-(--captainColor)"
                     :
-                    "bg-amber-500/10 text-amber-500"
+                    "bg-(--managerColor) text-white"
                 :
                 isLoginAtom.type == "captain" ?
-                    "hover:bg-(--primary)/10 hover:text-(--primary)"
+                    "hover:bg-(--captainColor)/10 hover:text-(--captainColor)"
                     :
-                    "hover:bg-amber-500/10 hover:text-amber-500"
+                    "hover:bg-(--managerColor) hover:text-white"
             }
         `}
         >
