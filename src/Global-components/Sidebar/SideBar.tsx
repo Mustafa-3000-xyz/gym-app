@@ -146,8 +146,9 @@ export default function SideBar() {
 
         {/* Account */}
         <div className={`
+            ${isLoginAtom.type == "captain" ? "group-hover:bg-(--primary)/10" : "group-hover:bg-amber-500/10"}
             flex items-center justify-between mb-5 select-none rounded-lg
-            trainsition-all duration-300 group-hover:bg-(--primary)/10 group-hover:p-3
+            trainsition-all duration-300  group-hover:p-3
         `}
         >
             {/* Img & name & type */}
