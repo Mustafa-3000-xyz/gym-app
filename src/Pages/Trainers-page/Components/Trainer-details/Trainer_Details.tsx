@@ -235,7 +235,8 @@ export default function Trainer_Details(
         clickOnCancel={closeThisWinow}
         clickOnSaveBtn={updateInfo}
     >
-        <div className="px-5 mb-1">
+        {/* Title for sessions */}
+        <div className="mb-1">
             <div className="flex items-center gap-2 text-(--primary)">
                 <Presentation strokeWidth={1.75} size={23} />
                 <h3 className="font-bold mb-1">الحصص</h3>
@@ -288,7 +289,7 @@ export default function Trainer_Details(
         </div>
 
         {/* Title & arrowes */}
-        <div className="px-5 mb-3">
+        <div className="mb-3">
             <div className="flex items-center gap-2 text-(--primary)">
                 <SquarePen size={23} />
                 <h3 className="font-bold">
@@ -320,7 +321,7 @@ export default function Trainer_Details(
         </div>
 
         {/* Trainer info & Subscription info & Date info */}
-        <div className="px-5 mb-7">
+        <div className="mb-7">
             <Swiper
                 modules={[Navigation]}
                 allowTouchMove={false}
@@ -362,7 +363,7 @@ export default function Trainer_Details(
         </div>
 
         {/* Warning zone */}
-        <div className="px-5 mb-6">
+        <div className="mb-6">
             <div className="bg-red-100/50 p-3 rounded-lg border border-red-300">
                 <h3 className=" text-red-500 font-bold mb-3">
                     منطقة الإجراءات
