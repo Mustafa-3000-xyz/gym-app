@@ -2,7 +2,7 @@ import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import { All_Trainers_Props, trainer } from "@/Pages/types";
 import { stateIsFinished, styleDate, styleForSubscriptionState } from "@/Lib/customs";
 import { format } from "date-fns";
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 
