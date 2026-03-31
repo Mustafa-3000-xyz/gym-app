@@ -69,7 +69,7 @@ export default function Add_Account(
             age={0}
             password={""}
             dontChangeValues={false}
-            accountType={"manager"}
+            accountType={"captain"}
             onGetName={setGetName}
             onGetAge={setGetAge as any}
             onGetPassword={setGetPassword}
