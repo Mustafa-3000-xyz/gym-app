@@ -49,6 +49,10 @@ export default function Sing_Up_Page() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1 }}
             >
+                <h1 className="text-center text-2xl font-bold mb-10">
+                    الان قم بملئ تلك البيانات
+                </h1>
+
                 <Account_Form
                     name={""}
                     age={0}
@@ -62,7 +66,7 @@ export default function Sing_Up_Page() {
 
                 <button
                     className={`
-                        w-full mt-10
+                        w-full mt-10 transition duration-300
                         bg-blue-500 text-white p-2 rounded-lg
                         ${doesGetAllData ? 'opacity-100 cursor-pointer' : 'opacity-45 cursor-not-allowed'}
                     `}

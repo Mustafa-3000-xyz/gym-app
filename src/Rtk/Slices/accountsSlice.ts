@@ -13,22 +13,23 @@ export const getAllAccountes = createAsyncThunk("accountsSlice/getAllAccountes",
 export const addAccount = createAsyncThunk("accountsSlice/addAccount", async function (data: accounte) {
     const database = await accountsTable();
     const query = `INSERT INTO accountes (
-        name, age, password, type, img, permissions
-    ) VALUES (?, ?, ?, ?, ?, ?)`;
+        img, name, age, password, type, totalForActiveSessions, permissions
+    ) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
     const values = [
+        data.img,
         data.name,
         data.age,
         data.password,
         data.type,
-        data.img,
-        data.permissions,
+        data.totalForActiveSessions,
+        data.permissions
     ];
     const getId = await database.execute(query, values);
 
     return {
-        ...data,
-        id: getId.lastInsertId
+        id: getId.lastInsertId,
+        ...data
     };
 });
 

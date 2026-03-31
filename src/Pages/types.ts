@@ -14,14 +14,15 @@ export interface trainer {
     dateAdded: string;
 }
 
-export interface attendanceToday {
-    theDay: Date,
-    attendanceAndCaptainsList: attendanceAndCaptain[]
-}
-
-export interface attendanceAndCaptain {
-    captainId: string,
-    attendanceList: number[] | string[]
+export interface accounte {
+    id?: number | string,
+    img: string,
+    name: string,
+    age: number | string,
+    password: string,
+    type: "manager" | "captain",
+    totalForActiveSessions: number,
+    permissions?: string[] | "fullAccess",
 }
 
 export interface All_Trainers_Props {
@@ -119,16 +120,6 @@ export interface Btn_Finished_Subscription_Props {
 export interface Data_Inputs_Props {
     onIsShowEndMessage: (x: boolean) => void,
     onGetManagerInfo: (x: any) => void,
-}
-
-export interface accounte {
-    id?: number | string,
-    name: string,
-    age: number | string,
-    password: string,
-    type: "manager" | "captain",
-    img: string,
-    permissions?: string[] | "fullAccess",
 }
 
 export interface Permissions_Props {

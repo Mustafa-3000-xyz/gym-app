@@ -27,6 +27,7 @@ export default function Add_Account(
             password: getPassword,
             img: img,
             type: "captain",
+            totalForActiveSessions: 0,
             permissions: JSON.stringify(permissionsList),
         } as accounte;
 

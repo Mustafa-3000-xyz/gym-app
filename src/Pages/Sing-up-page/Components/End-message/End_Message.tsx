@@ -27,8 +27,9 @@ export default function End_Message(
                 clearInterval(interval);
                 dispatch(addAccount({
                     ...managerInfo,
-                    type: "manager",
                     img: "",
+                    type: "manager",
+                    totalForActiveSessions: 0,
                     permissions: "fullAccess",
                 }) as any)
 
