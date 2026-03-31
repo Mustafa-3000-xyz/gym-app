@@ -60,7 +60,7 @@ export default function Trainers_Page() {
         <div className="mb-7 grid grid-cols-3 gap-3">
             <Box
                 icon={<BicepsFlexed size={30} />}
-                styleIcon="bg-blue-100 text-blue-500"
+                styleIcon="bg-indigo-100 text-indigo-500"
                 title="مجموع المتدربين"
                 total={state.trainers.length}
             />

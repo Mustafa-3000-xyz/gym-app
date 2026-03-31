@@ -43,13 +43,13 @@ export default function Subscription_Info_Form(
 
 
     return <form className="px-3 mb-5">
-        <div>
+        <div className="mb-5">
             <Subscriptions_Menu />
         </div>
 
         <div className="flex justify-center flex-wrap gap-2 ">
             <div>
-                <h4>اسم الاشتراك</h4>
+                <h4 className="font-bold">اسم الاشتراك</h4>
                 <input
                     value={subscriptionName}
                     onChange={(e) => setSubscriptionName(e.target.value)}
@@ -59,7 +59,7 @@ export default function Subscription_Info_Form(
             </div>
 
             <div>
-                <h4>عدد الحصص</h4>
+                <h4 className="font-bold">عدد الحصص</h4>
                 <input
                     value={sessions}
                     onChange={(e) => setSessions(e.target.value)}
@@ -72,7 +72,7 @@ export default function Subscription_Info_Form(
             </div>
 
             <div>
-                <h4>السعر</h4>
+                <h4 className="font-bold">السعر</h4>
                 <input
                     value={price}
                     onChange={(e) => setPrice(Number(e.target.value))}

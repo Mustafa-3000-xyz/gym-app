@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight, Presentation, SquarePen} from "lucide-react";
+import { ArrowLeft, ArrowRight, Presentation, SquarePen } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -237,22 +237,29 @@ export default function Trainer_Details(
     >
         {/* Title for sessions */}
         <div className="mb-1">
-            <div className="flex items-center gap-2 text-(--primary)">
+            <div className="flex items-center gap-2 text-indigo-500">
                 <Presentation strokeWidth={1.75} size={23} />
                 <h3 className="font-bold mb-1">الحصص</h3>
             </div>
 
             <div className="opacity-60 mb-4">
-                <p>
-                    <span> تم إكمال </span>
-                    <span className="font-bold me-1">
-                        {activeSessionsList?.length}
-                    </span>
-                    <span>  من اصل </span>
-                    <span className="font-bold">
-                        {trainerDetailsAtom.sessionsCount}
-                    </span>
-                </p>
+                {
+                    subscriptionState == stateIsFinished ?
+                        <p>
+                            تم إنتهاء الاشتراك
+                        </p>
+                        :
+                        <p>
+                            <span> تم إكمال </span>
+                            <span className="font-bold me-1">
+                                {activeSessionsList?.length}
+                            </span>
+                            <span>  من اصل </span>
+                            <span className="font-bold">
+                                {trainerDetailsAtom.sessionsCount}
+                            </span>
+                        </p>
+                }
             </div>
         </div>
 
@@ -261,7 +268,7 @@ export default function Trainer_Details(
             ref={containerRef}
             className={`
                 ${containerRef.current?.clientHeight as any > 100 ? "h-[120px]" : "h-auto"}
-                transition duration-500 mb-7 px-5 
+                transition duration-500 mb-7
                 flex gap-2 flex-wrap overflow-auto
             `}
         >
@@ -290,7 +297,7 @@ export default function Trainer_Details(
 
         {/* Title & arrowes */}
         <div className="mb-3">
-            <div className="flex items-center gap-2 text-(--primary)">
+            <div className="flex items-center gap-2 text-indigo-500">
                 <SquarePen size={23} />
                 <h3 className="font-bold">
                     تفاصيل المتدرب

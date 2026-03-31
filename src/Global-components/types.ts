@@ -57,3 +57,14 @@ export interface Add_Btn_Props {
     icon: any,
     onClick: () => void,
 }
+
+export interface Account_Form_Props{
+    name: string,
+    age: number,
+    password: string,
+    dontChangeValues: boolean,
+    accountType: "manager" | "captain"
+    onGetName: (x: string) => void;
+    onGetAge: (x: number) => void;
+    onGetPassword: (x: string) => void;
+}

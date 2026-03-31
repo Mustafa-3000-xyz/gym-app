@@ -3,18 +3,18 @@ import Popup from "@/Global-components/Popup/Popup";
 import { accounte } from "@/Pages/types";
 import { useDispatch } from "react-redux";
 import { addAccount } from "@/Rtk/Slices/accountsSlice";
-import { KeyRound } from "lucide-react";
 import Permissions from "../Permissions/Permissions";
 import Account_Img from "@/Global-components/All-accountes/Account-img/Account_Img";
+import Account_Form from "@/Global-components/Account-form/Account_Form";
 // ========================================================== //
 export default function Add_Account(
     { onIsShowAddAccount }: { onIsShowAddAccount: (x: boolean) => void }
 ) {
     const dispatch = useDispatch();
 
-    const [name, setName] = useState("");
-    const [age, setAge] = useState("");
-    const [password, setPassword] = useState("");
+    const [getName, setGetName] = useState("");
+    const [getAge, setGetAge] = useState("");
+    const [getPassword, setGetPassword] = useState("");
     const [img, setImg] = useState("");
     const [permissionsList, setPermissionsList] = useState(["/trainers-page"]);
     const [isAllDataComplete, setIsAllDataComplete] = useState(false);
@@ -22,9 +22,9 @@ export default function Add_Account(
 
     function saveData() {
         const data = {
-            name,
-            age: +age,
-            password,
+            name: getName,
+            age: +getAge,
+            password: getPassword,
             img: img,
             type: "captain",
             permissions: JSON.stringify(permissionsList),
@@ -37,13 +37,13 @@ export default function Add_Account(
 
 
     useEffect(function () {
-        if (name && age && password) {
-            setIsAllDataComplete(true);
+        if (!getName || !getAge || !getPassword) {
+            setIsAllDataComplete(false);
             return;
         }
 
-        setIsAllDataComplete(false);
-    }, [name, age, password]);
+        setIsAllDataComplete(true);
+    }, [getName, getAge, getPassword]);
 
 
 
@@ -54,7 +54,7 @@ export default function Add_Account(
         clickOnCancel={() => onIsShowAddAccount(false)}
         clickOnSaveBtn={saveData}
     >
-        <div className=" flex justify-center mb-7">
+        <div className="flex justify-center mb-7">
             <Account_Img
                 img=""
                 accountType="captain"
@@ -63,65 +63,19 @@ export default function Add_Account(
             />
         </div>
 
-        <form className="mb-5">
-            <div className="flex gap-2 justify-center mb-2">
-                <div>
-                    <h3 className="mb-1 font-bold">الاسم</h3>
-                    <input
-                        className="rounded-lg border border-black p-1 px-3 focus:outline-none"
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                    />
-                </div>
 
-                <div>
-                    <h3 className="mb-1 font-bold">العمر</h3>
-                    <input
-                        className="rounded-lg border border-black p-1 px-3 focus:outline-none"
-                        type="number"
-                        value={age}
-                        onChange={(e) => setAge(e.target.value)}
-                    />
-                </div>
-            </div>
+        <Account_Form
+            name={""}
+            age={0}
+            password={""}
+            dontChangeValues={false}
+            accountType={"manager"}
+            onGetName={setGetName}
+            onGetAge={setGetAge as any}
+            onGetPassword={setGetPassword}
+        />
 
-            <div className="flex gap-2 justify-center">
-                <div>
-                    <h3 className="mb-1 font-bold">كلمة السر</h3>
-                    <input
-                        value={password}
-                        dir="ltr"
-                        className="rounded-lg border border-black p-1 px-3 focus:outline-none"
-                        type="password"
-                        onChange={(e) => setPassword(e.target.value)}
-                    />
-                </div>
-
-                <div>
-                    <h3 className="mb-1 font-bold">نوع الحساب</h3>
-                    <input
-                        className="rounded-lg border border-black p-1 px-3 focus:outline-none opacity-55 cursor-not-allowed select-none"
-                        type="text"
-                        value={"كابتن"}
-                        disabled
-                    />
-                </div>
-            </div>
-        </form>
-
-        <div className="px-3">
-            <div className="flex gap-1 mb-2">
-                <KeyRound
-                    strokeWidth={2.5}
-                    className="text-amber-500"
-                />
-
-                <h3 className="font-bold ">
-                    الصلاحيات :
-                </h3>
-            </div>
-
+        <div className="mt-5">
             <Permissions
                 onGetPermissionsList={setPermissionsList as any}
                 accountType={"captain"}

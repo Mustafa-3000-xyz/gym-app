@@ -126,7 +126,7 @@ export default function Add_Trainer(
     >
         {/* Trainer info */}
         <div className="my-6">
-            <div className="flex items-center gap-2 text-(--primary) font-bold mb-5 px-3">
+            <div className="flex items-center gap-2 text-indigo-500 font-bold mb-5 px-3">
                 <UserRound size={23} />
                 <p className="leading-none pt-0.5">المعلومات الشخصيه</p>
             </div>
@@ -141,7 +141,7 @@ export default function Add_Trainer(
 
         {/* Subscription info */}
         <div className="mb-5">
-            <div className="flex items-center gap-2 text-(--primary) font-bold mb-5 px-3">
+            <div className="flex items-center gap-2 text-indigo-500 font-bold mb-5 px-3">
                 <Presentation size={23} />
                 <p className="leading-none pt-0.5">تفاصيل الاشتراك</p>
             </div>

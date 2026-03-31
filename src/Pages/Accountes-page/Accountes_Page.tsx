@@ -34,7 +34,7 @@ export default function Accountes_Page() {
             <Box
                 icon={<IdCardLanyard size={25} />}
                 title="مجموع الحسابات"
-                styleIcon="bg-blue-100 text-blue-500"
+                styleIcon="bg-indigo-100 text-indigo-500"
                 total={state.accountes.length}
             />
 

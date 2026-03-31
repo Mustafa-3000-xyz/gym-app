@@ -5,11 +5,11 @@ import Popup from "@/Global-components/Popup/Popup";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import Permissions from "../Permissions/Permissions";
-import { Eye, EyeClosed, KeyRound } from "lucide-react";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { deleteAccountById, updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
 import { useDispatch } from "react-redux";
 import { alert } from "@/Lib/customs";
+import Account_Form from "@/Global-components/Account-form/Account_Form";
 // ========================================================== //
 export default function Account_Details() {
     const dispatch = useDispatch();
@@ -19,26 +19,21 @@ export default function Account_Details() {
     const isLogInAtom = useAtomValue(isLogin_Atom);
 
 
-    const [isShowPassword, setIsShowPassword] = useState(false);
     const [isAnyValueChange, setIsAnyValueChange] = useState(false);
-
-    const [name, setName] = useState(accountDetailsAtom?.name);
-    const [age, setAge] = useState(Math.trunc(accountDetailsAtom?.age as any));
-    const [password, setPassword] = useState(accountDetailsAtom?.password);
+    const [getName, setGetName] = useState("");
+    const [getAge, setGetAge] = useState("");
+    const [getPassword, setGetPassword] = useState("");
     const [img, setImg] = useState(accountDetailsAtom?.img);
     const permissionsList = useState(accountDetailsAtom?.permissions == "fullAccess" ? "fullAccess" : JSON.parse(accountDetailsAtom?.permissions as any))[0];
-
-    const theConditional = isLogInAtom.id != accountDetailsAtom?.id;
 
 
 
     function clickOnSaveBtn() {
         const obj = {
-            name,
-            age,
-            password,
+            name: getName,
+            age: getAge,
+            password: getPassword,
             img,
-            permissions: permissionsList
         }
 
 
@@ -63,20 +58,10 @@ export default function Account_Details() {
         })
     }
 
-    function clickOnEye() {
-        if (isLogInAtom.id != accountDetailsAtom?.id) return;
-
-        if (isShowPassword) {
-            setIsShowPassword(false);
-        } else {
-            setIsShowPassword(true);
-        }
-    }
-
 
 
     useEffect(function () {
-        if (!name || !age || !password || !img) {
+        if (!getName || !getAge || !getPassword || !img) {
             setIsAnyValueChange(false);
             return;
         }
@@ -84,11 +69,11 @@ export default function Account_Details() {
 
 
         if (
-            (name != accountDetailsAtom?.name)
+            (getName != accountDetailsAtom?.name)
             ||
-            (age != accountDetailsAtom?.age)
+            (getAge != accountDetailsAtom?.age)
             ||
-            (password != accountDetailsAtom?.password)
+            (getPassword != accountDetailsAtom?.password)
             ||
             (img != accountDetailsAtom?.img)
         ) {
@@ -96,7 +81,8 @@ export default function Account_Details() {
         } else {
             setIsAnyValueChange(false);
         }
-    }, [name, age, password, img]);
+    }, [getName, getAge, getPassword, img]);
+
 
 
 
@@ -119,87 +105,19 @@ export default function Account_Details() {
             />
         </div>
 
-        <form className="mb-5">
-            {/* Name & age */}
-            <div className="flex gap-2 justify-center mb-2">
-                {/* Name */}
-                <div>
-                    <h3 className="mb-1 font-bold">الاسم</h3>
-                    <input
-                        className={`
-                            rounded-lg border border-black p-1 px-3 focus:outline-none
-                            ${theConditional && "opacity-45 cursor-not-allowed"}
-                        `}
-                        type="text"
-                        value={name}
-                        onChange={theConditional ? () => null : (e) => setName(e.target.value)}
-                    />
-                </div>
-
-                {/* Age */}
-                <div>
-                    <h3 className="mb-1 font-bold">العمر</h3>
-                    <input
-                        className={`
-                            rounded-lg border border-black p-1 px-3 focus:outline-none
-                            ${theConditional && "opacity-45 cursor-not-allowed"}
-                        `}
-                        type="number"
-                        value={age}
-                        onChange={theConditional ? () => null : (e) => setAge(+e.target.value)}
-                    />
-                </div>
-            </div>
-
-            {/* Password */}
-            <div className="flex gap-2 justify-center">
-                <div>
-                    <h3 className="mb-1 font-bold">كلمة السر</h3>
-                    <div className="relative">
-                        <input
-                            value={password}
-                            dir="ltr"
-                            className={`
-                                rounded-lg border border-black p-1 px-3 focus:outline-none 
-                                ${theConditional && "opacity-45 cursor-not-allowed"}
-                            `}
-                            type={isShowPassword ? "text" : "password"}
-                            onChange={theConditional ? () => null : (e) => setPassword(e.target.value)}
-                        />
-
-                        {
-                            isShowPassword ?
-                                <Eye
-                                    className="absolute top-1.5 right-1.5 cursor-pointer"
-                                    onClick={clickOnEye}
-                                />
-                                :
-                                <EyeClosed
-                                    className={`
-                                        absolute top-1.5 right-1.5
-                                        ${theConditional ? "opacity-45 cursor-not-allowed" : "cursor-pointer"}
-                                    `}
-                                    onClick={clickOnEye}
-                                />
-                        }
-                    </div>
-                </div>
-            </div>
-        </form>
+        <Account_Form
+            name={accountDetailsAtom?.name as string}
+            age={Math.trunc(accountDetailsAtom?.age as number)}
+            password={accountDetailsAtom?.password as string}
+            dontChangeValues={isLogInAtom.id != accountDetailsAtom?.id}
+            accountType={accountDetailsAtom?.type as any}
+            onGetName={setGetName}
+            onGetAge={setGetAge as any}
+            onGetPassword={setGetPassword}
+        />
 
         {/* Permissions */}
-        <div className="px-3 mb-5">
-            <div className="flex gap-1 mb-2">
-                <KeyRound
-                    strokeWidth={2.5}
-                    className="text-amber-500"
-                />
-
-                <h3 className="font-bold ">
-                    الصلاحيات :
-                </h3>
-            </div>
-
+        <div className="my-5">
             <Permissions
                 permissions={permissionsList}
                 accountId={accountDetailsAtom?.id as number}
@@ -208,11 +126,11 @@ export default function Account_Details() {
         </div>
 
         {/* Delete account for account captain */}
-        <div className="flex justify-center items-center">
+        <div className="flex justify-end items-center">
             {
                 accountDetailsAtom?.type == "captain" && isLogInAtom.type == "manager" &&
                 <button
-                    className="transition duration-300 hover:bg-red-600 bg-red-500 cursor-pointer py-2 w-3/4 text-white rounded-lg font-bold"
+                    className="transition duration-300 hover:bg-red-600 bg-red-500 cursor-pointer p-3 text-white rounded-lg font-bold"
                     onClick={deleteAccount}
                 >
                     حذف الحساب

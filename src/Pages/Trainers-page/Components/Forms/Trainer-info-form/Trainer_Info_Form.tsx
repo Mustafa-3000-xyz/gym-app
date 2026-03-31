@@ -70,7 +70,7 @@ export default function Trainer_Info_Form(
     }
 
 
-
+    // When open trainer details, i want show his values
     useEffect(function () {
         if (isShowTrainerDetailsAtom && trainer) {
             setFirstName(trainer.firstName);
@@ -98,8 +98,8 @@ export default function Trainer_Info_Form(
         {/* First name & Last name */}
         <div className="flex justify-center gap-3 mb-5">
             <div className={`
-                    ${isShowTrainerDetailsAtom ? "w-3/5" : ""}
                     flex flex-col
+                    ${isShowTrainerDetailsAtom ? "w-3/5" : ""}
                 `}
             >
                 <h4 className="font-bold">الاسم الاول</h4>

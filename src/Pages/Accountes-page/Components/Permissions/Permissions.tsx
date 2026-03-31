@@ -2,6 +2,7 @@ import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { Permissions_Props } from "@/Pages/types";
 import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
 import { useAtomValue } from "jotai";
+import { KeyRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 // ========================================================== //
@@ -86,25 +87,38 @@ export default function Permissions(
 
 
 
-    return <div className="flex flex-wrap gap-2">
-        {
-            allPermissions.map((ele, i) => {
-                const isInclude = permissionsList.includes(ele.path);
+    return <div className="flex flex-col gap-2">
+        <div className="flex gap-1 mb-2 text-amber-500">
+            <KeyRound
+                strokeWidth={2.5}
+                className=""
+            />
 
-                return <button
-                    key={i}
-                    type="button"
-                    className={`
-                        border border-slate-300 py-2 pb-3 px-5 rounded-full flex gap-2 items-center
-                        ${isInclude || permissions == "fullAccess" ? "bg-(--managerColor) text-white" : ""}
-                        ${theConditional ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}
-                    `}
-                    onClick={() => clickOnButton(ele.path as any)}
-                >
+            <h3 className="font-bold ">
+                الصلاحيات :
+            </h3>
+        </div>
 
-                    <h3 className="whitespace-nowrap font-bold"> {ele.title} </h3>
-                </button>
-            })
-        }
+        <div className="flex flex-wrap gap-2">
+            {
+                allPermissions.map((ele, i) => {
+                    const isInclude = permissionsList.includes(ele.path);
+
+                    return <button
+                        key={i}
+                        type="button"
+                        className={`
+                            border border-slate-300 py-2 pb-3 px-5 rounded-full flex gap-2 items-center
+                            ${isInclude || permissions == "fullAccess" ? "bg-(--managerColor) text-white" : ""}
+                            ${theConditional ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}
+                        `}
+                        onClick={() => clickOnButton(ele.path as any)}
+                    >
+
+                        <h3 className="whitespace-nowrap font-bold"> {ele.title} </h3>
+                    </button>
+                })
+            }
+        </div>
     </div>
 }
