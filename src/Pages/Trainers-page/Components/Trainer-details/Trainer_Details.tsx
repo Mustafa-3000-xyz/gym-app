@@ -112,7 +112,8 @@ export default function Trainer_Details() {
     function finishedSubscriptionUsingSessions(accountId: number) {
         alert({
             titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
-            showMessageAfterClickOnOk: false,
+            titleAfterClickOnOk: "تم إنهاء اشتراك المتدرب بنجاح",
+            showMessageAfterClickOnOk: true,
             funRunWhenClickOnOk: function () {
                 dispatch(updateSomePropertiesInTrainer({
                     trainerId: trainerDetailsAtom?.trainerId as any,

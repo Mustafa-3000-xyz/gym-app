@@ -37,17 +37,17 @@ export interface updatePropertyInTrainer_Type {
 export interface updateSomePropertiesInTrainer_Type {
     trainerId: number,
     values: {
-        firstName: string,
-        lastName: string,
-        phone: string,
-        address: string,
-        subscriptionName: string,
-        sessionsCount: number,
-        price: number,
-        subscriptionStart: string,
-        subscriptionEnd: string,
-        subscriptionState: string,
-        activeSessionsList: activeSessionsList_Type[],
+        firstName?: string,
+        lastName?: string,
+        phone?: string,
+        address?: string,
+        subscriptionName?: string,
+        sessionsCount?: number,
+        price?: number,
+        subscriptionStart?: string,
+        subscriptionEnd?: string,
+        subscriptionState?: string,
+        activeSessionsList?: activeSessionsList_Type[],
     }
 }
 
