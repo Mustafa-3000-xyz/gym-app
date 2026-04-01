@@ -5,7 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { updatePropertyInTrainer, updateSomePropertiesInTrainer } from "@/Rtk/Slices/trainersSlice";
 import { alert, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/customs";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
@@ -15,20 +15,24 @@ import { regexPhone } from "@/Lib/REGEX";
 import Btn_Finished_Subscription from "./Btns/Btn_Finished_Subscription";
 import Btn_Delete_Trainer from "./Btns/Btn_Delete_Trainer";
 import Btn_Subscription_Renewal from "./Btns/Btn_Subscription_Renewal";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Popup from "@/Global-components/Popup/Popup";
+import { activeSessionsList_Type } from "@/Pages/types";
+import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
+import { store_Type } from "@/Rtk/types";
 // ========================================================== //
-export default function Trainer_Details(
-    { onIsShowTrainerDetails }: { onIsShowTrainerDetails: (x: boolean) => void }
-) {
+export default function Trainer_Details() {
     const dispatch = useDispatch();
-    const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
+    const state = useSelector(state => state as store_Type);
+
+    const isLoginAtom = useAtomValue(isLogin_Atom);
+    const setIsShowTrainerDetailsAtom = useSetAtom(isShowTrainerDetails_Atom);
     const [trainerDetailsAtom, setTrainerDetailsAtom] = useAtom(trainerDetails_Atom);
 
 
     const containerRef = useRef<HTMLDivElement | null>(null)
     const [subscriptionState, setSubscriptionState] = useState(trainerDetailsAtom?.subscriptionState);
-    const [activeSessionsList, setActiveSessionsList] = useState(
+    const [activeSessionsList, setActiveSessionsList] = useState<activeSessionsList_Type[]>(
         JSON.parse(trainerDetailsAtom?.activeSessionsList as any)
     );
 
@@ -55,6 +59,8 @@ export default function Trainer_Details(
 
 
     const todayDate = new Date();
+    const totalActiveSessions = activeSessionsList.reduce((sum, ele) => sum + ele.sessions.length, 0);
+
 
     const trainerUpdateOrRenewalObj = {
         ...trainerDetailsAtom,
@@ -86,11 +92,6 @@ export default function Trainer_Details(
 
 
 
-
-    function closeThisWinow() {
-        onIsShowTrainerDetails(false);
-    }
-
     function updateInfo() {
         if (!isChangeInfo) return;
 
@@ -98,74 +99,104 @@ export default function Trainer_Details(
             titleBeforeClickOnOk: "هل انت متأكد من تعديل البيانات , في حالة تعديل عدد الحصص سوف يتم اعاده الحصص من الاول",
             titleAfterClickOnOk: `تم تحديث المتدرب رقم : ${trainerDetailsAtom?.trainerId}`,
             funRunWhenClickOnOk: function () {
+                setIsShowTrainerDetailsAtom(false);
                 dispatch(updateSomePropertiesInTrainer({
                     trainerId: trainerDetailsAtom?.trainerId as any,
                     trainer: trainerUpdateOrRenewalObj as any
                 }) as any);
-
-                closeThisWinow();
             }
         });
     }
 
-    function finishedSubscriptionUsingSessions(arr: number[]) {
+    function finishedSubscriptionUsingSessions() {
         alert({
             titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
             showMessageAfterClickOnOk: false,
             funRunWhenClickOnOk: function () {
-                dispatch(updateSomePropertiesInTrainer({
-                    trainerId: trainerDetailsAtom?.trainerId as any,
-                    trainer: trainerFinishedSubscriptionObj as any
-                }) as any);
-
+                setIsShowTrainerDetailsAtom(false);
                 dispatch(updatePropertyInTrainer({
                     trainerId: trainerDetailsAtom?.trainerId as any,
-                    column: "activeSessionsList",
-                    value: arr as any,
+                    column: "subscriptionState",
+                    value: stateIsFinished
                 }) as any);
-
-                setTrainerDetailsAtom(trainerFinishedSubscriptionObj as any);
-                setSubscriptionState(stateIsFinished);
-                setActiveSessionsList(arr);
             }
         });
     }
 
     function clickOnSession(numCircle: number) {
-        let arr = [...activeSessionsList];
+        if (subscriptionState == stateIsPending || subscriptionState == stateIsFinished) return;
 
+        const arr = [...activeSessionsList];
+        const getAccount = arr.find(ele => ele.accountId == isLoginAtom?.id);
+        const findTheSession = arr.find(ele => ele.sessions.includes(numCircle));
 
-        /*
-            If the num not in activeSessionsList so put in activeSessionsList,
-            else remove in activeSessionsList
-        */
-        if (!arr.includes(numCircle)) {
-            arr.push(numCircle);
+        if (
+            (trainerDetailsAtom?.sessionsCount == totalActiveSessions + 1)
+            &&
+            !findTheSession
+        ) {
+            finishedSubscriptionUsingSessions();
+            return;
         }
-        else {
-            const result = arr.filter(num => num != numCircle);
-            arr = result;
+
+        /* If the current account is not in activeSessionsList
+            and the session does not exist, create a new entry */
+        if (!findTheSession && !getAccount) {
+            const obj = {
+                accountId: isLoginAtom.id,
+                sessions: [numCircle]
+            } as activeSessionsList_Type
+
+            arr.push(obj);
+        }
+
+        // If the account exists but the session does not, append the session
+        else if (!findTheSession && getAccount) {
+            const obj = {
+                accountId: isLoginAtom.id,
+                sessions: [...getAccount.sessions, numCircle]
+            } as activeSessionsList_Type
+
+            const getIndex = arr.findIndex(ele => ele.accountId == obj.accountId);
+
+            // This for remove old obj
+            arr.splice(getIndex, 1);
+            arr.push(obj);
+        }
+
+        /* If the account and session exist, and either the session belongs to the account
+            or the account is a manager, remove the session */
+        else if (
+            (findTheSession?.accountId == isLoginAtom.id)
+            ||
+            (isLoginAtom.type == "manager")
+        ) {
+            const getIndex = arr.findIndex(ele => ele.accountId == findTheSession?.accountId);
+            const removeSession = findTheSession?.sessions.filter(ele => ele != numCircle);
+            const obj = {
+                accountId: findTheSession?.accountId,
+                sessions: removeSession
+            } as activeSessionsList_Type
+
+
+            // This for remove old obj
+            arr.splice(getIndex, 1);
+            arr.push(obj);
         }
 
 
-        if (arr.length == trainerDetailsAtom?.sessionsCount) {
-            finishedSubscriptionUsingSessions(arr);
-        } else {
-            setActiveSessionsList(arr);
-
-            dispatch(updatePropertyInTrainer({
-                trainerId: trainerDetailsAtom?.trainerId as any,
-                column: "activeSessionsList",
-                value: arr as any,
-            }) as any);
-        }
+        setActiveSessionsList(arr);
     }
 
 
 
     useEffect(function () {
-        setIsShowTrainerDetailsAtom(true);
-    }, []);
+        dispatch(updatePropertyInTrainer({
+            trainerId: trainerDetailsAtom?.trainerId as any,
+            column: "activeSessionsList",
+            value: JSON.stringify(activeSessionsList),
+        }) as any);
+    }, [activeSessionsList]);
 
 
     // This useEffect for check the any value in properties are change
@@ -223,7 +254,6 @@ export default function Trainer_Details(
 
 
 
-
     if (!trainerDetailsAtom) return null;
 
     return <Popup
@@ -232,7 +262,7 @@ export default function Trainer_Details(
         isSave={isChangeInfo}
         typeBtn="save change"
         isShowBtn={subscriptionState == stateIsFinished ? false : true}
-        clickOnCancel={closeThisWinow}
+        clickOnCancel={() => setIsShowTrainerDetailsAtom(false)}
         clickOnSaveBtn={updateInfo}
     >
         {/* Title for sessions */}
@@ -252,7 +282,7 @@ export default function Trainer_Details(
                         <p>
                             <span> تم إكمال </span>
                             <span className="font-bold me-1">
-                                {activeSessionsList?.length}
+                                {totalActiveSessions}
                             </span>
                             <span>  من اصل </span>
                             <span className="font-bold">
@@ -269,28 +299,49 @@ export default function Trainer_Details(
             className={`
                 ${containerRef.current?.clientHeight as any > 100 ? "h-[120px]" : "h-auto"}
                 transition duration-500 mb-7
-                flex gap-2 flex-wrap overflow-auto
+                flex gap-4 flex-wrap overflow-auto
             `}
         >
             {Array.from({ length: trainerDetailsAtom.sessionsCount }).map((_, i) => {
-                const temp = activeSessionsList?.includes(i);
+                const getAccountId = activeSessionsList.find(ele => ele.sessions.includes(i))?.accountId;
+                const getAccount = state.accountes.find(ele => ele.id == getAccountId);
 
-                return <div
-                    key={i}
-                    onClick={() => clickOnSession(i)}
-                    className={`
+
+                return <div className="flex flex-col gap-1 items-center" key={i}>
+                    {/* Session */}
+                    <div
+                        onClick={() => clickOnSession(i)}
+                        className={`
                             rounded-full h-12 w-12 flex items-center justify-center
-                            ${subscriptionState == stateIsActive ?
-                            `cursor-pointer ${temp ? "bg-(--managerColor) text-white" : "bg-slate-200 text-black"}`
-                            :
-                            subscriptionState == stateIsPending ?
-                                `opacity-45 pointer-events-none bg-amber-500 text-amber-100 ${temp && "!bg-(--primary) text-white"}`
+                            ${getAccount?.type == "manager" ?
+                                "bg-(--managerColor) text-white"
                                 :
-                                "opacity-45 pointer-events-none bg-red-500 text-red-100"
-                        }
-                    `}
-                >
-                    {i + 1}
+                                "bg-(--captainColor) text-white"
+                            }
+
+                            ${subscriptionState == stateIsActive && !getAccount ?
+                                "bg-neutral-400"
+                                :
+                                subscriptionState == stateIsPending ?
+                                    "!bg-amber-500"
+                                    :
+                                    subscriptionState == stateIsFinished && "!bg-red-500"
+                            }
+                        `}
+                    >
+                        {i + 1}
+                    </div>
+
+                    {
+                        subscriptionState != stateIsFinished &&
+                        <h3 className=" text-sm opacity-40">
+                            {getAccount?.name.includes(" ") ?
+                                getAccount?.name.split(" ")[0]
+                                :
+                                getAccount?.name
+                            }
+                        </h3>
+                    }
                 </div>
             })}
         </div>
@@ -390,13 +441,13 @@ export default function Trainer_Details(
                                 trainer={trainerDetailsAtom}
                                 trainerState={trainerUpdateOrRenewalObj}
                                 isInfoComplete={isActiveSubscriptionRenewal}
-                                closeWindow={closeThisWinow}
+                                closeWindow={() => setIsShowTrainerDetailsAtom(false)}
                                 onGetSubscriptionState={setSubscriptionState}
                             />
                     }
 
                     <Btn_Delete_Trainer
-                        closeWindow={closeThisWinow}
+                        closeWindow={() => setIsShowTrainerDetailsAtom(false)}
                         trainer={trainerDetailsAtom}
                     />
                 </div>

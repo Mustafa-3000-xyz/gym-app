@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
 import { alert } from "@/Lib/customs";
 import accountDetails_Atom from "@/Atoms/Details/accountDetails_Atom";
+import { Eye, EyeClosed } from "lucide-react";
 // ========================================================== //
 export default function Account_Card(
     { account }: { account: accounte }
@@ -19,6 +20,7 @@ export default function Account_Card(
     const [isLoginAtom, setIsLoginAtom] = useAtom(isLogin_Atom);
 
 
+    const [isShowPassword, setIsShowPassword] = useState(false);
     const [img, setImg] = useState<string | null>(null);
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -85,6 +87,17 @@ export default function Account_Card(
     }
 
 
+    function clickOnEye(e: any) {
+        e.stopPropagation()
+
+        if (isShowPassword) {
+            setIsShowPassword(false);
+        } else {
+            setIsShowPassword(true);
+        }
+    }
+
+
 
 
     useEffect(function () {
@@ -110,8 +123,7 @@ export default function Account_Card(
                 ""
             }
 
-            ${
-                (isLoginAtom != null && isLoginAtom.type == "manager" && account.type == "captain")
+            ${(isLoginAtom != null && isLoginAtom.type == "manager" && account.type == "captain")
                 ||
                 (isLoginAtom != null && isLoginAtom.id == account.id && account.type == "captain") ?
                 "group hover:bg-(--captainColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
@@ -157,15 +169,31 @@ export default function Account_Card(
                     </button>
                     :
                     <div className="flex gap-1">
-                        <input
-                            type="password"
-                            placeholder="الرقم السري"
-                            className="border p-2 rounded-lg px-3 focus:outline-0"
-                            dir={password ? "ltr" : "rtl"}
-                            value={password ?? ""}
-                            onChange={writeInInp}
-                            onClick={(e) => e.stopPropagation()}
-                        />
+                        <div className="relative">
+                            <input
+                                type={isShowPassword ? "text" : "password"}
+                                placeholder="الرقم السري"
+                                className="border p-2 pr-10 rounded-lg focus:outline-0 group-hover:placeholder:!text-white"
+                                dir={password ? "ltr" : "rtl"}
+                                value={password ?? ""}
+                                onChange={writeInInp}
+                                onClick={(e) => e.stopPropagation()}
+                            />
+
+                            {
+                                isShowPassword ?
+                                    <Eye
+                                        className="absolute top-2.5 right-2.5 cursor-pointer"
+                                        onClick={clickOnEye}
+                                    />
+                                    :
+                                    <EyeClosed
+                                        className="absolute top-2.5 right-2.5 cursor-pointer"
+                                        onClick={clickOnEye}
+                                    />
+                            }
+                        </div>
+
 
                         <button
                             className={`

@@ -2,22 +2,24 @@ import { X } from "lucide-react";
 import { styleForSubscriptionState } from '@/Lib/customs';
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 import { Search_Result_Props, trainer } from "@/Pages/types";
-import { useAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import Animation from "@/Global-components/Animation/Animation";
 import { useEffect, useRef } from "react";
+import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 // ========================================================== //
 export default function Search_Result(
     {
         searchInpRef,
         searchResult,
-        onIsShowTrainerDetails,
         onIsShowSearchResult,
         onGetSearchResult,
         onGetSearchValue,
     }: Search_Result_Props
 ) {
-    const [, setTrainerDetailsAtom] = useAtom(trainerDetails_Atom);
+    const setIsShowTrainerDetailsAtom = useSetAtom(isShowTrainerDetails_Atom);
+    const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
+    
     const searchResultRef = useRef<HTMLDivElement>(null);
 
 
@@ -32,7 +34,7 @@ export default function Search_Result(
     function showTrainer(trainer: trainer) {
         setTrainerDetailsAtom(trainer);
         onIsShowSearchResult(false);
-        onIsShowTrainerDetails(true);
+        setIsShowTrainerDetailsAtom(true);
         onGetSearchResult([]);
         onGetSearchValue("");
     }

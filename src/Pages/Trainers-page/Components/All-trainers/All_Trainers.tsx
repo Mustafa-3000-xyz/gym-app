@@ -1,5 +1,5 @@
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
-import { All_Trainers_Props, trainer } from "@/Pages/types";
+import { trainer } from "@/Pages/types";
 import { stateIsFinished, styleDate, styleForSubscriptionState } from "@/Lib/customs";
 import { format } from "date-fns";
 import { useAtomValue, useSetAtom } from "jotai";
@@ -11,15 +11,15 @@ import { Navigation } from "swiper/modules";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Btn_Slide from "./Btn-slide/Btn_Slide";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
+import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 // ========================================================== //
 export default function All_Trainers(
-    {
-        trainersList,
-        setIsShowTrainerDetails,
-    }: All_Trainers_Props
+    { trainersList }: { trainersList: trainer[] }
 ) {
     const isLoginAtom = useAtomValue(isLogin_Atom);
     const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
+    const setIsShowTrainerDetailsAtom = useSetAtom(isShowTrainerDetails_Atom);
+
 
 
     const [isBeginning, setIsBeginning] = useState(true);
@@ -31,7 +31,7 @@ export default function All_Trainers(
 
 
     async function showDetailsTrainer(trainer: trainer) {
-        setIsShowTrainerDetails(true);
+        setIsShowTrainerDetailsAtom(true);
         setTrainerDetailsAtom(trainer);
     }
 

@@ -1,10 +1,10 @@
 import { Search } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
-import { Search_Trainer_Props, trainer } from "@/Pages/types";
+import { trainer } from "@/Pages/types";
 import Search_Result from './Search-result/Search_Result';
 // ========================================================== //
 export default function Search_Trainer(
-    { trainersList, onIsShowTrainerDetails }: Search_Trainer_Props
+    { trainersList }: {trainersList: trainer[]}
 ) {
     const [isShowSearchResult, setIsShowSearchResult] = useState(false);
     const [searchResult, setSearchResult] = useState<trainer[]>([]);
@@ -65,7 +65,6 @@ export default function Search_Trainer(
                 <Search_Result
                     searchInpRef={searchInpRef}
                     searchResult={searchResult}
-                    onIsShowTrainerDetails={onIsShowTrainerDetails}
                     onIsShowSearchResult={setIsShowSearchResult}
                     onGetSearchResult={setSearchResult}
                     onGetSearchValue={setSearchValue}

@@ -1,7 +1,7 @@
 export interface trainer {
     trainerId: string;
     subscriptionState: string;
-    activeSessionsList: number[];
+    activeSessionsList: activeSessionsList_Type[] | [];
     firstName: string;
     lastName: string;
     phone: string;
@@ -25,9 +25,9 @@ export interface accounte {
     permissions?: string[] | "fullAccess",
 }
 
-export interface All_Trainers_Props {
-    trainersList: trainer[],
-    setIsShowTrainerDetails: (x: boolean) => void,
+export interface activeSessionsList_Type{
+    accountId: number,
+    sessions: number[]
 }
 
 export interface Subscription_Info_Form_Props {
@@ -59,11 +59,6 @@ export interface Btn_Slide_Props {
     onGetIndexBtn: (x: number) => void
 }
 
-export interface Search_Trainer_Props {
-    trainersList: trainer[],
-    onIsShowTrainerDetails: (x: boolean) => void
-}
-
 export interface Btn_Filter_Props {
     trainersList: trainer[],
     onGetFilterResult: (x: trainer[]) => void,
@@ -84,7 +79,6 @@ export interface filter {
 export interface Search_Result_Props {
     searchInpRef: React.RefObject<HTMLInputElement | null>,
     searchResult: trainer[],
-    onIsShowTrainerDetails: (x: boolean) => void,
     onIsShowSearchResult: (x: boolean) => void,
     onGetSearchResult: (x: trainer[]) => void,
     onGetSearchValue: (x: string) => void,

@@ -13,14 +13,17 @@ import { store_Type } from "@/Rtk/types";
 import Box from "@/Global-components/Box/Box";
 import { stateIsActive } from "@/Lib/customs";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
+import { useAtomValue } from "jotai";
+import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 // ========================================================== //
 export default function Trainers_Page() {
+    const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
+
     const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
 
     const [anotherTrainersList, setAnotherTrainersList] = useState<trainer[]>([]);
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
-    const [isShowTrainerDetails, setIsShowTrainerDetails] = useState<boolean>(false);
     const [activeSubscriptionsTotle, setActiveSubscriptionsTotle] = useState(0);
 
 
@@ -82,10 +85,7 @@ export default function Trainers_Page() {
 
         {/* Search & filter & add trainer */}
         <div className="grid grid-cols-4 gap-2 mb-7">
-            <Search_Trainer
-                trainersList={state.trainers}
-                onIsShowTrainerDetails={setIsShowTrainerDetails}
-            />
+            <Search_Trainer trainersList={state.trainers} />
 
             <div className="flex justify-center gap-1">
                 <Btn_Filter
@@ -104,10 +104,7 @@ export default function Trainers_Page() {
         </div>
 
         {/* Table for show all trainers */}
-        <All_Trainers
-            trainersList={anotherTrainersList}
-            setIsShowTrainerDetails={setIsShowTrainerDetails}
-        />
+        <All_Trainers trainersList={anotherTrainersList} />
 
         {
             isShowAddTrainer ?
@@ -116,8 +113,8 @@ export default function Trainers_Page() {
         }
 
         {
-            isShowTrainerDetails ?
-                <Trainer_Details onIsShowTrainerDetails={setIsShowTrainerDetails} />
+            isShowTrainerDetailsAtom ?
+                <Trainer_Details />
                 : null
         }
     </section>
