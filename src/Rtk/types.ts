@@ -1,4 +1,4 @@
-import { accounte, trainer } from "@/Pages/types";
+import { accounte, activeSessionsList_Type, trainer } from "@/Pages/types";
 // ========================================================== //
 type updateOneColumnInTrainer =
     | "subscriptionState"
@@ -11,7 +11,7 @@ type updateOneColumnInTrainer =
     | "sessionsCount"
     | "price"
     | "subscriptionStart"
-    | "subscriptionEnd";
+    | "subscriptionEnd"
 
 type updateOneColumnInAccount =
     | "name"
@@ -20,6 +20,7 @@ type updateOneColumnInAccount =
     | "type"
     | "permissions"
     | "img"
+    | "totalForActiveSessions"
 
 
 export interface store_Type {
@@ -35,7 +36,19 @@ export interface updatePropertyInTrainer_Type {
 
 export interface updateSomePropertiesInTrainer_Type {
     trainerId: number,
-    trainer: trainer
+    values: {
+        firstName: string,
+        lastName: string,
+        phone: string,
+        address: string,
+        subscriptionName: string,
+        sessionsCount: number,
+        price: number,
+        subscriptionStart: string,
+        subscriptionEnd: string,
+        subscriptionState: string,
+        activeSessionsList: activeSessionsList_Type[],
+    }
 }
 
 export interface updatePropertyInAccount_Type {

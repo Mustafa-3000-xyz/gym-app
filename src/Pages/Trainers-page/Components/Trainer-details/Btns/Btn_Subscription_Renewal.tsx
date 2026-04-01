@@ -1,18 +1,19 @@
+import isShowTrainerDetails_Atom from '@/Atoms/Is/isShowTrainerDetails_Atom';
 import { alert, stateIsActive } from '@/Lib/customs';
 import { Btn_Subscription_Renewal_Props } from "@/Pages/types";
 import { updateSomePropertiesInTrainer } from '@/Rtk/Slices/trainersSlice';
+import { useSetAtom } from 'jotai';
 import { RefreshCcw } from 'lucide-react'
 import { useDispatch } from 'react-redux';
 // ========================================================== //
 export default function Btn_Subscription_Renewal(
     {
         trainer,
-        trainerState,
         isInfoComplete,
-        closeWindow,
         onGetSubscriptionState
     }: Btn_Subscription_Renewal_Props
 ) {
+    const setIsShowTrainerDetailsAtom = useSetAtom(isShowTrainerDetails_Atom);
     const dispatch = useDispatch();
 
 
@@ -24,22 +25,15 @@ export default function Btn_Subscription_Renewal(
             titleBeforeClickOnOk: "هل تريد تجديد الاشتراك ؟؟",
             titleAfterClickOnOk: `تم تجديد الاشتراك للمتدرب رقم : ${trainer?.trainerId}`,
             funRunWhenClickOnOk: function () {
-                const obj = {
-                    ...trainerState as any,
-                    firstName: trainer?.firstName,
-                    lastName: trainer?.lastName,
-                    phone: trainer?.phone,
-                    address: trainer?.address,
-                    activeSessionsList: JSON.stringify([]),
-                };
-
                 dispatch(updateSomePropertiesInTrainer({
                     trainerId: trainer?.trainerId as any,
-                    trainer: obj as any
+                    values: {
+                        ...trainer
+                    }
                 }) as any);
 
+                setIsShowTrainerDetailsAtom(false);
                 onGetSubscriptionState(stateIsActive);
-                closeWindow();
             }
         });
     }

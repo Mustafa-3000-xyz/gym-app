@@ -1,17 +1,18 @@
+import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import { alert, stateIsFinished } from "@/Lib/customs";
 import { Btn_Finished_Subscription_Props } from "@/Pages/types";
 import { updateSomePropertiesInTrainer } from "@/Rtk/Slices/trainersSlice";
+import { useSetAtom } from "jotai";
 import { BanknoteX } from "lucide-react";
 import { useDispatch } from "react-redux";
 // ========================================================== //
 export default function Btn_Finished_Subscription(
     {
         id,
-        trainerState,
         onGetSubscriptionState,
-        onGetTrainer
     }: Btn_Finished_Subscription_Props
 ) {
+    const setIsShowTrainerDetailsAtom = useSetAtom(isShowTrainerDetails_Atom);
     const dispatch = useDispatch();
 
 
@@ -22,12 +23,14 @@ export default function Btn_Finished_Subscription(
             funRunWhenClickOnOk: function () {
                 dispatch(updateSomePropertiesInTrainer({
                     trainerId: id as any,
-                    trainer: trainerState as any
+                    values: {
+                        activeSessionsList: JSON.stringify([]),
+                        subscriptionState: stateIsFinished,
+                    } as any
                 }) as any);
 
-
+                setIsShowTrainerDetailsAtom(false);
                 onGetSubscriptionState(stateIsFinished);
-                onGetTrainer(trainerState as any);
             }
         });
     }

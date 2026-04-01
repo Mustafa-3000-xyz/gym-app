@@ -75,23 +75,28 @@ export const updatePropertyInTrainer = createAsyncThunk(
 export const updateSomePropertiesInTrainer = createAsyncThunk(
     "trainersSlice/updateSomePropertiesInTrainer",
     async function (
-        { trainerId, trainer }: updateSomePropertiesInTrainer_Type
+        { trainerId, values }: updateSomePropertiesInTrainer_Type
     ) {
         const database = await trainerTable();
-        const keys = Object.keys(trainer);
+        const keys = Object.keys(values);
 
 
         if (keys.length === 0) return;
 
         const setClause = keys.map(key => `${key} = ?`).join(", ");
-        const values = keys.map(key => (trainer as any)[key]);
+        const result = keys.map(key => (values as any)[key]);
 
         await database.execute(
             `UPDATE trainers SET ${setClause} WHERE trainerId = ?`,
-            [...values, trainerId]
+            [...result, trainerId]
         );
 
-        return trainer;
+        const updatedTrainer = await database.select(
+            `SELECT * FROM trainers WHERE trainerId = ?`,
+            [trainerId]
+        );
+
+        return (updatedTrainer as trainer[])[0];
 });
 
 

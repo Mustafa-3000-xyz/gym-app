@@ -42,7 +42,9 @@ export default function Accountes_Page() {
                 icon={<Shell size={25} />}
                 title="مجموع الحصص المفعله"
                 styleIcon="bg-neutral-200 text-neutral-500"
-                total={3342345}
+                total={
+                    Math.trunc(state.accountes.reduce((sum, ele) => sum + Number(ele.totalForActiveSessions), 0))
+                }
             />
         </div>
 
