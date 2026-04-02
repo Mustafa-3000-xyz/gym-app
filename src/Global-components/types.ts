@@ -27,7 +27,7 @@ export interface Box_Props {
     icon: any,
     styleIcon: string,
     title: string,
-    total: number,
+    total: string | number,
 }
 
 export interface Popup_Props {

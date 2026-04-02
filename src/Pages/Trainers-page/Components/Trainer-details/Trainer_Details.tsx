@@ -59,17 +59,17 @@ export default function Trainer_Details() {
     const [getSubscriptionEnd, setGetSubscriptionEnd] = useState<Date | null>(null);
 
 
-    const todayDate = new Date();
     const totalActiveSessions = activeSessionsList.reduce((sum, ele) => sum + ele.sessions.length, 0);
+    const todayDate = new Date();
     const updateTheTrainer = {
         ...trainerDetailsAtom,
         // I want when change the sessions count and click on btn save change, so reset the activeSessionsList
         activeSessionsList: getSessionsCount != trainerDetailsAtom?.sessionsCount ? "[]" : JSON.stringify(activeSessionsList),
         subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() ? stateIsPending : stateIsActive,
-        firstName: getFirstName,
-        lastName: getLastName,
-        address: getAddress,
-        phone: getPhone,
+        firstName: getFirstName != "" ? getFirstName : trainerDetailsAtom?.firstName,
+        lastName: getLastName != "" ? getLastName : trainerDetailsAtom?.lastName,
+        address: getAddress != "" ? getAddress : trainerDetailsAtom?.address,
+        phone: getPhone != "" ? getPhone : trainerDetailsAtom?.phone,
         subscriptionName: getSubscriptionName,
         sessionsCount: getSessionsCount,
         price: getPrice,
@@ -92,17 +92,7 @@ export default function Trainer_Details() {
                 dispatch(updateSomePropertiesInTrainer({
                     trainerId: trainerDetailsAtom?.trainerId as any,
                     values: {
-                        activeSessionsList: getSessionsCount != trainerDetailsAtom?.sessionsCount ? "[]" : JSON.stringify(activeSessionsList),
-                        subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() ? stateIsPending : stateIsActive,
-                        firstName: getFirstName,
-                        lastName: getLastName,
-                        address: getAddress,
-                        phone: getPhone,
-                        subscriptionName: getSubscriptionName,
-                        sessionsCount: getSessionsCount,
-                        price: getPrice,
-                        subscriptionStart: getSubscriptionStart?.toISOString(),
-                        subscriptionEnd: getSubscriptionEnd?.toISOString()
+                        ...updateTheTrainer
                     } as any
                 }) as any);
             }
@@ -331,9 +321,9 @@ export default function Trainer_Details() {
         <div
             ref={containerRef}
             className={`
-                ${containerRef.current?.clientHeight as any > 100 ? "h-[120px]" : "h-auto"}
                 transition duration-500 mb-7
                 flex gap-4 flex-wrap overflow-auto
+                ${containerRef.current?.clientHeight as any > 100 ? "h-[120px]" : "h-auto"}
             `}
         >
             {Array.from({ length: trainerDetailsAtom.sessionsCount }).map((_, i) => {
@@ -347,19 +337,17 @@ export default function Trainer_Details() {
                         onClick={() => clickOnSession(i)}
                         className={`
                             rounded-full h-12 w-12 flex items-center justify-center
+                            border-2 border-neutral-300
                             ${getAccount?.type == "manager" ?
-                                "bg-(--managerColor) text-white"
+                                "bg-(--managerColor) text-white !border-0 font-bold"
                                 :
-                                "bg-(--captainColor) text-white"
+                                getAccount?.type == "captain" && "bg-(--captainColor) text-white !border-0"
                             }
 
-                            ${subscriptionState == stateIsActive && !getAccount ?
-                                "bg-neutral-400"
+                            ${subscriptionState == stateIsPending ?
+                                "!bg-amber-500 !border-0"
                                 :
-                                subscriptionState == stateIsPending ?
-                                    "!bg-amber-500"
-                                    :
-                                    subscriptionState == stateIsFinished && "!bg-red-500"
+                                subscriptionState == stateIsFinished && "!bg-red-500 text-white !border-0"
                             }
                         `}
                     >
@@ -367,7 +355,7 @@ export default function Trainer_Details() {
                     </div>
 
                     {
-                        subscriptionState != stateIsFinished &&
+                        subscriptionState == stateIsActive &&
                         <h3 className=" text-sm opacity-40">
                             {getAccount?.name.includes(" ") ?
                                 getAccount?.name.split(" ")[0]
@@ -483,5 +471,5 @@ export default function Trainer_Details() {
                 </div>
             </div>
         </div>
-    </Popup>
+    </Popup >
 }

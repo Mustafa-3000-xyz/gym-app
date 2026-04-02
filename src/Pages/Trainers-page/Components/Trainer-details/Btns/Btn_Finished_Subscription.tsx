@@ -19,7 +19,8 @@ export default function Btn_Finished_Subscription(
     function finishedSubscriptionUsingBtn() {
         alert({
             titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
-            showMessageAfterClickOnOk: false,
+            titleAfterClickOnOk: "تم إنهاء اشتراك المتدرب بنجاح",
+            showMessageAfterClickOnOk: true,
             funRunWhenClickOnOk: function () {
                 dispatch(updateSomePropertiesInTrainer({
                     trainerId: id as any,

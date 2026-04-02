@@ -8,7 +8,7 @@ import { useDispatch } from "react-redux";
 import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
 import { alert } from "@/Lib/customs";
 import accountDetails_Atom from "@/Atoms/Details/accountDetails_Atom";
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, Shell } from "lucide-react";
 // ========================================================== //
 export default function Account_Card(
     { account }: { account: accounte }
@@ -28,8 +28,6 @@ export default function Account_Card(
 
 
     function writeInInp(e: React.ChangeEvent<HTMLInputElement>) {
-        e.target.classList.remove("bg-red-500");
-
         setPassword(e.target.value);
         setErrorMessage("");
     }
@@ -38,9 +36,6 @@ export default function Account_Card(
         e: React.MouseEvent<HTMLButtonElement>,
         account: accounte
     ) {
-        // Get input
-        const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-
         if (account.password == password) {
             setIsLoginAtom({
                 id: account.id as any,
@@ -50,7 +45,6 @@ export default function Account_Card(
             setErrorMessage("");
         }
         else {
-            input.classList.add("bg-red-500");
             setErrorMessage("كلمة المرور غير صحيحه");
         }
 
@@ -86,7 +80,6 @@ export default function Account_Card(
         }
     }
 
-
     function clickOnEye(e: any) {
         e.stopPropagation()
 
@@ -96,7 +89,6 @@ export default function Account_Card(
             setIsShowPassword(true);
         }
     }
-
 
 
 
@@ -115,7 +107,7 @@ export default function Account_Card(
     return <div
         className={`
             transition-all duration-300
-            rounded-3xl shadow-xl p-8
+            rounded-3xl shadow-xl p-8 relative
             flex flex-col justify-between items-center w-96 gap-10 text-gray-900
             ${isLoginAtom != null && isLoginAtom.id == account.id && isLoginAtom.type == "manager" ?
                 "hover:bg-(--managerColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
@@ -123,7 +115,8 @@ export default function Account_Card(
                 ""
             }
 
-            ${(isLoginAtom != null && isLoginAtom.type == "manager" && account.type == "captain")
+            ${
+                (isLoginAtom != null && isLoginAtom.type == "manager" && account.type == "captain")
                 ||
                 (isLoginAtom != null && isLoginAtom.id == account.id && account.type == "captain") ?
                 "group hover:bg-(--captainColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
@@ -133,6 +126,15 @@ export default function Account_Card(
         `}
         onClick={showAccountDetail}
     >
+        {/* Sessions */}
+        <div className="flex gap-2 absolute bg-neutral-200 text-neutral-500 top-0 left-0 p-3 rounded-br-2xl rounded-tl-3xl">
+            <Shell size={25} />
+            
+            <h3>
+                {Math.trunc(account.totalForActiveSessions)}
+            </h3>
+        </div>
+
         {/* Account image & Name & Tagline */}
         <div className="flex flex-col items-center gap-3 select-none">
             <Account_Img
@@ -173,7 +175,7 @@ export default function Account_Card(
                             <input
                                 type={isShowPassword ? "text" : "password"}
                                 placeholder="الرقم السري"
-                                className="border p-2 pr-10 rounded-lg focus:outline-0 group-hover:placeholder:!text-white"
+                                className="border p-2 pr-10 rounded-lg focus:outline-0 group-hover:placeholder:!text-white/50"
                                 dir={password ? "ltr" : "rtl"}
                                 value={password ?? ""}
                                 onChange={writeInInp}
@@ -208,7 +210,7 @@ export default function Account_Card(
                             disabled={!password}
                             onClick={(e) => clickOnLogInBtn(e as any, account as accounte)}
                         >
-                            تسجيل الدخول
+                            استخدام
                         </button>
                     </div>
             }

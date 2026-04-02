@@ -29,21 +29,29 @@ export default function Account_Details() {
 
 
     function clickOnSaveBtn() {
-        const obj = {
-            name: getName,
-            age: getAge,
-            password: getPassword,
-            img,
-        }
+        alert({
+            titleBeforeClickOnOk: "هل تريد بالفعل تحديث بيانات الحساب",
+            titleAfterClickOnOk: "تم التحديث بنجاح",
+            showMessageAfterClickOnOk: true,
+            funRunWhenClickOnOk: function () {
+                const obj = {
+                    name: getName,
+                    age: getAge,
+                    password: getPassword,
+                    img,
+                }
 
 
-        dispatch(updateSomePropertiesInAccount({
-            id: accountDetailsAtom?.id as any,
-            accounte: obj as any
-        }) as any);
+                dispatch(updateSomePropertiesInAccount({
+                    id: accountDetailsAtom?.id as any,
+                    values: obj as any
+                }) as any);
 
-        setIsShowAccountDetailsAtom(false);
-        setAccountDetailsAtom(null);
+                setIsShowAccountDetailsAtom(false);
+                setAccountDetailsAtom(null);
+            }
+        })
+
     }
 
     function deleteAccount() {

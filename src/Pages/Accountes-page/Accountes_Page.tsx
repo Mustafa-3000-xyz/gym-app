@@ -9,6 +9,7 @@ import { store_Type } from "@/Rtk/types";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import { useAtomValue } from "jotai";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
+import Swal from "sweetalert2";
 // ========================================================== //
 export default function Accountes_Page() {
     const isLoginAtom = useAtomValue(isLogin_Atom);
@@ -18,7 +19,17 @@ export default function Accountes_Page() {
 
 
     function clickOnAddAccount() {
-        setIsShowAddAccount(true);
+        if (state.accountes.length == 4) {
+            Swal.fire({
+                icon: "error",
+                title: "المعذره",
+                text: "لقد وصلت للحد الاقصى لإنشاء حساب جديد",
+                confirmButtonText: "تمام"
+            });
+        }
+        else {
+            setIsShowAddAccount(true);
+        }
     }
 
 
@@ -35,7 +46,9 @@ export default function Accountes_Page() {
                 icon={<IdCardLanyard size={25} />}
                 title="مجموع الحسابات"
                 styleIcon="bg-indigo-100 text-indigo-500"
-                total={state.accountes.length}
+                total={`
+                    ${state.accountes.length} من اصل 4
+                `}
             />
 
             <Box

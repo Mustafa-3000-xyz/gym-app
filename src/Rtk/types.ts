@@ -59,5 +59,13 @@ export interface updatePropertyInAccount_Type {
 
 export interface updateSomePropertiesInAccount_Type {
     id: number,
-    accounte: accounte
+    values: {
+        name?: string,
+        age?: string | number,
+        password?: string,
+        type?: "manager" | "captain",
+        permissions?: string[] | "fullAccess",
+        img?: string,
+        totalForActiveSessions?: number
+    }
 }

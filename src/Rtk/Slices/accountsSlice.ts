@@ -72,29 +72,29 @@ export const updatePropertyInAccount = createAsyncThunk(
 export const updateSomePropertiesInAccount = createAsyncThunk(
     "accountsSlice/updateSomePropertiesInAccount",
     async function (
-        { id, accounte }: updateSomePropertiesInAccount_Type
+        { id, values }: updateSomePropertiesInAccount_Type
     ) {
         const database = await accountsTable();
-        const keys = Object.keys(accounte);
+        const keys = Object.keys(values);
 
 
         if (keys.length === 0) return;
 
         const setClause = keys.map(key => `${key} = ?`).join(", ");
-        const values = keys.map(key => (accounte as any)[key]);
+        const result = keys.map(key => (values as any)[key]);
 
         await database.execute(
             `UPDATE accountes SET ${setClause} WHERE id = ?`,
-            [...values, id]
+            [...result, id]
         );
 
-        const result = await database.select(
+        const updatedTrainer = await database.select(
             `SELECT * FROM accountes WHERE id = ?`,
             [id]
         );
 
-        return (result as accounte[])[0];
-});
+        return (updatedTrainer as accounte[])[0];
+    });
 
 
 const accountsSlice = createSlice({
