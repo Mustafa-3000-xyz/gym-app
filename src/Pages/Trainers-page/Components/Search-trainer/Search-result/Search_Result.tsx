@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { styleForSubscriptionState } from '@/Lib/customs';
+import { styleForSubscriptionState } from '@/Lib/functions';
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 import { Search_Result_Props, trainer } from "@/Pages/types";
 import { useSetAtom } from "jotai";

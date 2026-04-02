@@ -11,6 +11,8 @@ import isLogin_Atom from "./Atoms/Is/isLogin_Atom";
 import { useEffect } from "react";
 import isShowAccountDetails_Atom from "./Atoms/Is/isShowAccountDetails_Atom";
 import Account_Details from "./Pages/Accountes-page/Components/Account-details/Account_Details";
+import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath } from "./Lib/constants";
+import Explain_App_Page from "./Pages/Explain-app-page/Explain_App_Page";
 // ========================================================== //
 function App() {
   const isShowAccountDetailsAtom = useAtomValue(isShowAccountDetails_Atom);
@@ -53,17 +55,18 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/trainers-page" replace />} />
 
-          <Route path="/trainers-page" element={<Trainers_Page />} />
-          <Route path="/settings-page" element={<Settings_Page />} />
-          <Route path="/accountes-page" element={<Accountes_Page />} />
-          <Route path="/attendance-recorde-page" element={<Attendance_Recorde_Page />} />
-          <Route path="/profits-and-expenses-page" element={<Profits_And_Expenses_Page />} />
+          <Route path={trainerPagePath} element={<Trainers_Page />} />
+          <Route path={accountesPagePath} element={<Accountes_Page />} />
+          <Route path={attendanceRecordePagePath} element={<Attendance_Recorde_Page />} />
+          <Route path={profitsAndExpensesPagePath} element={<Profits_And_Expenses_Page />} />
+          <Route path={settingsPagePath} element={<Settings_Page />} />
+          <Route path={expalinAppPagePath} element={<Explain_App_Page />} />
         </Routes>
       </div>
 
 
       {
-        isShowAccountDetailsAtom && <Account_Details/>
+        isShowAccountDetailsAtom && <Account_Details />
       }
     </main>
     :

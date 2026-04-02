@@ -6,6 +6,7 @@ import { addAccount } from "@/Rtk/Slices/accountsSlice";
 import Permissions from "../Permissions/Permissions";
 import Account_Img from "@/Global-components/All-accountes/Account-img/Account_Img";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
+import { trainerPagePath } from "@/Lib/constants";
 // ========================================================== //
 export default function Add_Account(
     { onIsShowAddAccount }: { onIsShowAddAccount: (x: boolean) => void }
@@ -16,8 +17,9 @@ export default function Add_Account(
     const [getAge, setGetAge] = useState("");
     const [getPassword, setGetPassword] = useState("");
     const [img, setImg] = useState("");
-    const [permissionsList, setPermissionsList] = useState(["/trainers-page"]);
+    const [permissionsList, setPermissionsList] = useState([trainerPagePath]);
     const [isAllDataComplete, setIsAllDataComplete] = useState(false);
+
 
 
     function saveData() {
@@ -35,6 +37,8 @@ export default function Add_Account(
         onIsShowAddAccount(false);
         dispatch(addAccount(data as accounte) as any);
     }
+
+
 
 
     useEffect(function () {
@@ -78,9 +82,9 @@ export default function Add_Account(
 
         <div className="mt-5">
             <Permissions
+                permissionsList={permissionsList}
+                changePermissions={true}
                 onGetPermissionsList={setPermissionsList as any}
-                accountType={"captain"}
-                permissions={permissionsList}
             />
         </div>
     </Popup>

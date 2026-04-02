@@ -2,7 +2,7 @@ import { ListFilter } from "lucide-react";
 import { Btn_Filter_Props, filter, trainer } from "@/Pages/types";
 import { useEffect, useRef, useState } from "react";
 import Menu from "./Menu/Menu";
-import { activeSubscriptions, allSubscriptions, finishedSubscriptions, fromOldToNew, pendingSubscriptions, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/customs";
+import { activeSubscriptions, allSubscriptions, finishedSubscriptions, fromOldToNew, pendingSubscriptions, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
 // ========================================================== //
 export default function Btn_Filter(
     { trainersList, onGetFilterResult }: Btn_Filter_Props

@@ -4,7 +4,7 @@ import { useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import { Calendar } from 'primereact/calendar';
-import { stateIsFinished } from "@/Lib/customs";
+import { stateIsFinished } from "@/Lib/constants";
 // ========================================================== //
 export function End_Date_Picker(
     { dateStart, getDate }: End_Date_Picker_Props

@@ -1,6 +1,7 @@
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import { trainer } from "@/Pages/types";
-import { stateIsFinished, styleDate, styleForSubscriptionState } from "@/Lib/customs";
+import { styleForSubscriptionState } from "@/Lib/functions";
+import { stateIsFinished, styleDate } from "@/Lib/constants";
 import { format } from "date-fns";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";

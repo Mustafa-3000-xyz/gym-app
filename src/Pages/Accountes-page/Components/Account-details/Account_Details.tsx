@@ -6,9 +6,9 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import Permissions from "../Permissions/Permissions";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
-import { deleteAccountById, updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
+import { deleteAccountById, updatePropertyInAccount, updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
 import { useDispatch } from "react-redux";
-import { alert } from "@/Lib/customs";
+import { alert } from "@/Lib/functions";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
 // ========================================================== //
 export default function Account_Details() {
@@ -24,7 +24,7 @@ export default function Account_Details() {
     const [getAge, setGetAge] = useState("");
     const [getPassword, setGetPassword] = useState("");
     const [img, setImg] = useState(accountDetailsAtom?.img);
-    const permissionsList = useState(accountDetailsAtom?.permissions == "fullAccess" ? "fullAccess" : JSON.parse(accountDetailsAtom?.permissions as any))[0];
+    const [permissionsList, setPermissionsList] = useState(accountDetailsAtom?.permissions == "fullAccess" ? "fullAccess" : JSON.parse(accountDetailsAtom?.permissions as any));
 
 
 
@@ -91,7 +91,14 @@ export default function Account_Details() {
         }
     }, [getName, getAge, getPassword, img]);
 
-
+    // This for update permissions
+    useEffect(function () {
+        dispatch(updatePropertyInAccount({
+            id: accountDetailsAtom?.id as any,
+            column: "permissions",
+            value: permissionsList
+        }) as any)
+    }, [permissionsList]);
 
 
     return <Popup
@@ -127,9 +134,9 @@ export default function Account_Details() {
         {/* Permissions */}
         <div className="my-5">
             <Permissions
-                permissions={permissionsList}
-                accountId={accountDetailsAtom?.id as number}
-                accountType={accountDetailsAtom?.type}
+                permissionsList={permissionsList}
+                changePermissions={accountDetailsAtom?.type == "captain" && isLogInAtom.type == "manager"}
+                onGetPermissionsList={setPermissionsList}
             />
         </div>
 

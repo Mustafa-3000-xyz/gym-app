@@ -1,13 +1,14 @@
-import { Archive, Book, IdCardLanyard, Info, LogOut, Settings, Users, WalletMinimal } from "lucide-react";
+import { Archive, Book, IdCardLanyard, LogOut, Settings, Users, WalletMinimal } from "lucide-react";
 import Sidebar_Links from "./Sidebar-links/Sidebar_Links";
 import { useAtom, useSetAtom } from "jotai";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import React, {useEffect, useState } from "react";
 import { getAllAccountes } from "@/Rtk/Slices/accountsSlice";
 import { store_Type } from "@/Rtk/types";
 import { accounte } from "@/Pages/types";
-import { alert } from "@/Lib/customs";
+import { alert } from "@/Lib/functions";
+import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath } from "@/Lib/constants";
 import isShowAccountDetails_Atom from "@/Atoms/Is/isShowAccountDetails_Atom";
 import accountDetails_Atom from "@/Atoms/Details/accountDetails_Atom";
 import Account_Img from "../All-accountes/Account-img/Account_Img";
@@ -24,7 +25,9 @@ export default function SideBar() {
 
 
 
-    function clickOnLogOutBtn() {
+    function clickOnLogOutBtn(e: React.MouseEvent) {
+        e.stopPropagation();
+
         alert({
             titleBeforeClickOnOk: "هل انت متأكد من تسجيل الخروج لهذا الحساب ؟؟",
             showMessageAfterClickOnOk: false,
@@ -81,9 +84,9 @@ export default function SideBar() {
         {/* Links */}
         <ul className="flex flex-col gap-2 select-none h-full">
             <Sidebar_Links
-                isShowTheLink={theAccount?.permissions?.includes("/trainers-page") as boolean || theAccount?.permissions == "fullAccess"}
+                isShowTheLink={theAccount?.permissions?.includes(trainerPagePath) as boolean || theAccount?.permissions == "fullAccess"}
                 linkName="المتدربين"
-                path="/trainers-page"
+                path={trainerPagePath}
                 icon={<Users
                     size={25}
                     strokeWidth={1.75}
@@ -91,9 +94,9 @@ export default function SideBar() {
             />
 
             <Sidebar_Links
-                isShowTheLink={theAccount?.permissions?.includes("/accountes-page") as boolean || theAccount?.permissions == "fullAccess"}
+                isShowTheLink={theAccount?.permissions?.includes(accountesPagePath) as boolean || theAccount?.permissions == "fullAccess"}
                 linkName="الحسابات"
-                path="/accountes-page"
+                path={accountesPagePath}
                 icon={<IdCardLanyard
                     size={25}
                     strokeWidth={1.75}
@@ -101,9 +104,9 @@ export default function SideBar() {
             />
 
             <Sidebar_Links
-                isShowTheLink={theAccount?.permissions?.includes("/attendance-recorde-page") as boolean || theAccount?.permissions == "fullAccess"}
+                isShowTheLink={theAccount?.permissions?.includes(attendanceRecordePagePath) as boolean || theAccount?.permissions == "fullAccess"}
                 linkName="سجل الحضور"
-                path="/attendance-recorde-page"
+                path={attendanceRecordePagePath}
                 icon={<Archive
                     size={25}
                     strokeWidth={1.75}
@@ -111,9 +114,9 @@ export default function SideBar() {
             />
 
             <Sidebar_Links
-                isShowTheLink={theAccount?.permissions?.includes("/profits-and-expenses-page") as boolean || theAccount?.permissions == "fullAccess"}
+                isShowTheLink={theAccount?.permissions?.includes(profitsAndExpensesPagePath) as boolean || theAccount?.permissions == "fullAccess"}
                 linkName="الارباح والمصروفات"
-                path="/profits-and-expenses-page"
+                path={profitsAndExpensesPagePath}
                 icon={<WalletMinimal
                     size={25}
                     strokeWidth={1.75}
@@ -124,9 +127,9 @@ export default function SideBar() {
 
             <ul className="flex flex-col gap-2">
                 <Sidebar_Links
-                    isShowTheLink={theAccount?.permissions?.includes("/settings-page") as boolean || theAccount?.permissions == "fullAccess"}
+                    isShowTheLink={theAccount?.permissions?.includes(settingsPagePath) as boolean || theAccount?.permissions == "fullAccess"}
                     linkName="الاعدادات"
-                    path="/settings-page"
+                    path={settingsPagePath}
                     icon={<Settings
                         size={25}
                         strokeWidth={1.75}
@@ -134,9 +137,9 @@ export default function SideBar() {
                 />
 
                 <Sidebar_Links
-                    isShowTheLink={theAccount?.permissions?.includes("/explain-app-page") as boolean || theAccount?.permissions == "fullAccess"}
+                    isShowTheLink={theAccount?.permissions?.includes(expalinAppPagePath) as boolean || theAccount?.permissions == "fullAccess"}
                     linkName="شرح البرنامج"
-                    path="/explain-app-page"
+                    path={expalinAppPagePath}
                     icon={<Book
                         size={25}
                         strokeWidth={1.75}
@@ -146,11 +149,13 @@ export default function SideBar() {
         </ul>
 
         {/* Account */}
-        <div className={`
-            ${isLoginAtom.type == "captain" ? "group-hover:bg-(--captainColor)/15" : "group-hover:bg-(--managerColor) text-white"}
-            flex items-center justify-between mb-5 select-none rounded-lg
-            trainsition-all duration-300  group-hover:p-3 
-        `}
+        <div 
+            className={`
+                ${isLoginAtom.type == "captain" ? "group-hover:bg-(--captainColor)/15" : "group-hover:bg-(--managerColor) text-white"}
+                flex items-center justify-between mb-5 select-none rounded-lg
+                trainsition-all duration-300  group-hover:p-3 cursor-pointer
+            `}
+            onClick={clickOnInfoBtn}
         >
             {/* Img & name & type */}
             <div className="flex items-center gap-3">
@@ -173,16 +178,6 @@ export default function SideBar() {
             </div>
 
             <div className="hidden group-hover:flex gap-1">
-                <Info
-                    size={33}
-                    strokeWidth={3}
-                    className={`
-                        cursor-pointer p-2 rounded-md bg-blue-500 text-white
-                        transition duration-300 hover:bg-blue-600
-                    `}
-                    onClick={clickOnInfoBtn}
-                />
-
                 <LogOut
                     size={33}
                     strokeWidth={3}

@@ -113,8 +113,7 @@ export interface Data_Inputs_Props {
 }
 
 export interface Permissions_Props {
-    accountId?: number | string,
-    accountType?: "manager" | "captain",
-    permissions?: string[] | "fullAccess",
-    onGetPermissionsList?: (x: string[]) => void,
+    permissionsList?: string[] | "fullAccess",
+    changePermissions: boolean,
+    onGetPermissionsList: (x: string[]) => void,
 }

@@ -10,6 +10,7 @@ import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import { useAtomValue } from "jotai";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import Swal from "sweetalert2";
+import { ADD_NEW_ACCOUNT } from "@/Lib/constants";
 // ========================================================== //
 export default function Accountes_Page() {
     const isLoginAtom = useAtomValue(isLogin_Atom);
@@ -17,8 +18,17 @@ export default function Accountes_Page() {
     const state = useSelector(state => state as store_Type);
     const [isShowAddAccount, setIsShowAddAccount] = useState<boolean>(false);
 
+    const currentAccount = state.accountes.find(ele => ele.id == isLoginAtom.id);
+    const theConditional = currentAccount?.type != "manager" && !currentAccount?.permissions?.includes(ADD_NEW_ACCOUNT);
+
+
 
     function clickOnAddAccount() {
+        if (theConditional) {
+            setIsShowAddAccount(false);
+            return;
+        }
+
         if (state.accountes.length == 4) {
             Swal.fire({
                 icon: "error",
@@ -26,11 +36,12 @@ export default function Accountes_Page() {
                 text: "لقد وصلت للحد الاقصى لإنشاء حساب جديد",
                 confirmButtonText: "تمام"
             });
-        }
-        else {
+        } else {
             setIsShowAddAccount(true);
         }
     }
+
+
 
 
     return <section className="mb-5">
@@ -64,10 +75,13 @@ export default function Accountes_Page() {
         {/* Create new account */}
         <div>
             <Add_Btn
-                styleTheBgAndBorderBtn={`${isLoginAtom.type != "manager" ? "cursor-not-allowed opacity-55" : "cursor-pointer"} bg-emerald-500 border-emerald-600`}
+                styleTheBgAndBorderBtn={`
+                    bg-emerald-500 border-emerald-600
+                    ${theConditional ? "cursor-not-allowed opacity-55" : "cursor-pointer"}
+                `}
                 icon={<Plus size={20} strokeWidth={3} />}
                 title="إنشاء حساب جديد"
-                onClick={isLoginAtom.type != "manager" ? () => null : clickOnAddAccount}
+                onClick={clickOnAddAccount}
             />
         </div>
 

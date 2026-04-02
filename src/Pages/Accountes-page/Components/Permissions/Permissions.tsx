@@ -1,89 +1,63 @@
-import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
+import { accountesPagePath, ADD_NEW_ACCOUNT, attendanceRecordePagePath, expalinAppPagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath } from "@/Lib/constants";
 import { Permissions_Props } from "@/Pages/types";
-import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
-import { useAtomValue } from "jotai";
 import { KeyRound } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 // ========================================================== //
 export default function Permissions(
     {
-        permissions,
-        accountType,
-        accountId,
+        permissionsList,
+        changePermissions,
         onGetPermissionsList
     }: Permissions_Props
 ) {
-    const dispatch = useDispatch();
-
-    const isLogInAtom = useAtomValue(isLogin_Atom);
-    const [permissionsList, setPermissionsList] = useState(permissions as any);
-
-
-    const theConditional = (isLogInAtom.type == "manager" && accountType == "manager") || (isLogInAtom.type == "captain")
     const allPermissions = [
         {
             title: "صفحة المتدربين",
-            path: "/trainers-page"
+            key: trainerPagePath
         },
         {
             title: "صفحة الحسابات",
-            path: "/accountes-page"
+            key: accountesPagePath
         },
-
         {
             title: "صفحة سجل الحضور",
-            path: "/attendance-recorde-page"
+            key: attendanceRecordePagePath
         },
         {
             title: "صفحة الارباح والمصروفات",
-            path: "/profits-and-expenses-page"
+            key: profitsAndExpensesPagePath
         },
-
         {
             title: "صفحة الاعدادات",
-            path: "/settings-page"
+            key: settingsPagePath
         },
         {
             title: "صفحة شرح البرنامج",
-            path: "/explain-app-page"
+            key: expalinAppPagePath
+        },
+        {
+            title: "إضافة حسابات جديده",
+            key: ADD_NEW_ACCOUNT
         }
     ];
 
 
-    function clickOnButton(pathname: string) {
-        if (theConditional) return;
-        let arr = [...permissionsList];
 
+    function clickOnButton(key: string) {
+        if (!changePermissions || permissionsList == "fullAccess") return;
+        let arr = [...permissionsList as string[]];
 
         // Add or remove the pathname
-        if (!arr.includes(pathname)) {
-            arr.push(pathname);
+        if (!arr.includes(key)) {
+            arr.push(key);
         }
         else {
-            const result = arr.filter(ele => ele != pathname);
+            const result = arr.filter(ele => ele != key);
             arr = result;
         }
 
 
-        setPermissionsList(arr);
-        onGetPermissionsList?.(arr);
+        onGetPermissionsList(arr);
     }
-
-
-
-    // This for update permissions
-    useEffect(function () {
-        if (!accountId) return;
-
-        dispatch(updatePropertyInAccount({
-            id: accountId as any,
-            column: "permissions",
-            value: permissionsList
-        }) as any)
-    }, [permissionsList]);
-
-
 
 
 
@@ -102,17 +76,17 @@ export default function Permissions(
         <div className="flex flex-wrap gap-2">
             {
                 allPermissions.map((ele, i) => {
-                    const isInclude = permissionsList.includes(ele.path);
+                    const isInclude = permissionsList?.includes(ele.key);
 
                     return <button
                         key={i}
                         type="button"
                         className={`
                             border border-slate-300 py-2 pb-3 px-5 rounded-full flex gap-2 items-center
-                            ${isInclude || permissions == "fullAccess" ? "bg-(--managerColor) text-white" : ""}
-                            ${theConditional ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}
+                            ${isInclude || permissionsList == "fullAccess" ? "bg-(--managerColor) text-white" : ""}
+                            ${!changePermissions ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}
                         `}
-                        onClick={() => clickOnButton(ele.path as any)}
+                        onClick={() => clickOnButton(ele.key as any)}
                     >
 
                         <h3 className="whitespace-nowrap font-bold"> {ele.title} </h3>

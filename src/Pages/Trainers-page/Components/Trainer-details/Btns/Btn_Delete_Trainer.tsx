@@ -1,4 +1,4 @@
-import { alert } from '@/Lib/customs';
+import { alert } from '@/Lib/functions';
 import { Btn_Delete_Trainer_Props } from "@/Pages/types";
 import { deleteTrainerById } from '@/Rtk/Slices/trainersSlice';
 import { Trash } from 'lucide-react'

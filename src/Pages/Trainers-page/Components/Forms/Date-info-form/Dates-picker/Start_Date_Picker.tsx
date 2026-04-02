@@ -3,7 +3,7 @@ import { useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import { Calendar } from 'primereact/calendar';
-import { stateIsFinished } from "@/Lib/customs";
+import { stateIsFinished } from "@/Lib/constants";
 // ========================================================== //
 export default function Start_Date_Picker(
     { getDate } : {getDate: (x: any)=> void}

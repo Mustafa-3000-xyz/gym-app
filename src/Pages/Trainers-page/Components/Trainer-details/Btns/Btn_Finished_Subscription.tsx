@@ -1,5 +1,6 @@
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
-import { alert, stateIsFinished } from "@/Lib/customs";
+import { alert } from "@/Lib/functions";
+import { stateIsFinished } from "@/Lib/constants";
 import { Btn_Finished_Subscription_Props } from "@/Pages/types";
 import { updateSomePropertiesInTrainer } from "@/Rtk/Slices/trainersSlice";
 import { useSetAtom } from "jotai";

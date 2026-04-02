@@ -6,7 +6,7 @@ import isShowAccountDetails_Atom from "@/Atoms/Is/isShowAccountDetails_Atom";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { useDispatch } from "react-redux";
 import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
-import { alert } from "@/Lib/customs";
+import { alert } from "@/Lib/functions";
 import accountDetails_Atom from "@/Atoms/Details/accountDetails_Atom";
 import { Eye, EyeClosed, Shell } from "lucide-react";
 // ========================================================== //

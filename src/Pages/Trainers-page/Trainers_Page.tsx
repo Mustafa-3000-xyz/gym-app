@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllTrainers } from "@/Rtk/Slices/trainersSlice";
 import { store_Type } from "@/Rtk/types";
 import Box from "@/Global-components/Box/Box";
-import { stateIsActive } from "@/Lib/customs";
+import { stateIsActive } from "@/Lib/constants";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import { useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
