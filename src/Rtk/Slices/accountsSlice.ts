@@ -94,7 +94,7 @@ export const updateSomePropertiesInAccount = createAsyncThunk(
         );
 
         return (updatedTrainer as accounte[])[0];
-    });
+});
 
 
 const accountsSlice = createSlice({

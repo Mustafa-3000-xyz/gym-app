@@ -97,7 +97,7 @@ export default function Trainers_Page() {
                     styleTheBgAndBorderBtn="bg-emerald-500 border-emerald-600 cursor-pointer"
                     thePaddingY="py-2"
                     icon={<Plus size={20} strokeWidth={3} />}
-                    title="إنشاء متدرب جديد"
+                    title="إضافة متدرب جديد"
                     onClick={btnAddTrianer}
                 />
             </div>

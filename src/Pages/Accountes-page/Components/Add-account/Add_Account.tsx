@@ -49,8 +49,8 @@ export default function Add_Account(
 
 
     return <Popup
-        titel={"حساب جديد"}
-        discription="يمكنك الان إضافة حساب جديد"
+        titel={"إنشاء حساب"}
+        discription="يمكنك الان إنشاء حساب جديد"
         isSave={isAllDataComplete}
         clickOnCancel={() => onIsShowAddAccount(false)}
         clickOnSaveBtn={saveData}

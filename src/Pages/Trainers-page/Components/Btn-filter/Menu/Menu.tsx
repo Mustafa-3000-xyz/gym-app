@@ -74,7 +74,6 @@ export default function Menu(
 
     return <Animation
         className='absolute top-full mt-2'
-
         initial={{
             y: -30
         }}
@@ -90,10 +89,10 @@ export default function Menu(
             <li
                 onClick={() => clickOnArrange(fromOldToNew)}
                 className={`
-                    ${filterObj.arrange == fromOldToNew ? "bg-blue-500 text-white" : "hover:bg-blue-500 hover:text-white"}
                     p-3
                     flex gap-1 items-center
                     transition duration-300 font-bold rounded-md mb-2 cursor-pointer 
+                    ${filterObj.arrange == fromOldToNew ? "bg-indigo-500 text-white" : "hover:bg-indigo-500 hover:text-white"}
                 `}
             >
                 <ArrowDown size={23} className=' mt-1' />
@@ -106,10 +105,10 @@ export default function Menu(
             <li
                 onClick={() => clickOnArrange(fromNewToOld)}
                 className={`
-                    ${filterObj.arrange == fromNewToOld ? "bg-blue-500 text-white" : "hover:bg-blue-500 hover:text-white"}
                     p-3
                     flex gap-1 items-center
                     transition duration-300 font-bold rounded-md mb-2 cursor-pointer 
+                    ${filterObj.arrange == fromNewToOld ? "bg-indigo-500 text-white" : "hover:bg-indigo-500 hover:text-white"}
                 `}
             >
                 <ArrowUp size={23} className=' mt-1' />
@@ -124,10 +123,10 @@ export default function Menu(
             <li
                 onClick={() => clickOnSubscription(allSubscriptions)}
                 className={`
-                    ${filterObj.subscriptionType == allSubscriptions ? "bg-blue-500 text-white" : "hover:bg-blue-500 hover:text-white"}
                     p-3
                     flex items-center justify-between
                     transition duration-300 font-bold my-2 rounded-md cursor-pointer
+                    ${filterObj.subscriptionType == allSubscriptions ? "bg-indigo-500 text-white" : "hover:bg-indigo-500 hover:text-white"}
                 `}
             >
                 <div className='  flex gap-1 items-center'>
@@ -144,10 +143,10 @@ export default function Menu(
             <li
                 onClick={() => clickOnSubscription(activeSubscriptions)}
                 className={`
-                    ${filterObj.subscriptionType == activeSubscriptions ? "bg-blue-500 text-white" : "hover:bg-blue-500 hover:text-white"}
                     p-3
                     flex items-center justify-between
                     transition duration-300 font-bold my-2 rounded-md cursor-pointer
+                    ${filterObj.subscriptionType == activeSubscriptions ? "bg-indigo-500 text-white" : "hover:bg-indigo-500 hover:text-white"}
                 `}
             >
                 <div className='flex gap-1 items-center'>
@@ -164,10 +163,10 @@ export default function Menu(
             <li
                 onClick={() => clickOnSubscription(pendingSubscriptions)}
                 className={`
-                    ${filterObj.subscriptionType == pendingSubscriptions ? "bg-blue-500 text-white" : "hover:bg-blue-500 hover:text-white"}
                     p-3
                     flex items-center justify-between
                     transition duration-300 font-bold my-2 rounded-md cursor-pointer
+                    ${filterObj.subscriptionType == pendingSubscriptions ? "bg-indigo-500 text-white" : "hover:bg-indigo-500 hover:text-white"}
                 `}
             >
                 <div className='flex gap-1 items-center'>
@@ -184,10 +183,10 @@ export default function Menu(
             <li
                 onClick={() => clickOnSubscription(finishedSubscriptions)}
                 className={`
-                    ${filterObj.subscriptionType == finishedSubscriptions ? "bg-blue-500 text-white" : "hover:bg-blue-500 hover:text-white"}
                     p-3
                     flex items-center justify-between
                     transition duration-300 font-bold my-2 rounded-md cursor-pointer
+                    ${filterObj.subscriptionType == finishedSubscriptions ? "bg-indigo-500 text-white" : "hover:bg-indigo-500 hover:text-white"}
                 `}
             >
                 <div className='flex gap-1 items-center'>
