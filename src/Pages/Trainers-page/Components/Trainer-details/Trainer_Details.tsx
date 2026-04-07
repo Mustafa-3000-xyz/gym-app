@@ -346,9 +346,14 @@ export default function Trainer_Details() {
                             }
 
                             ${subscriptionState == stateIsPending ?
-                                "!bg-amber-500 !border-0"
+                                "!bg-amber-500 !text-black !font-normal !border-0"
                                 :
                                 subscriptionState == stateIsFinished && "!bg-red-500 text-white !border-0"
+                            }
+
+                            ${getAccount?.id == isLoginAtom.id || isLoginAtom.type == "manager" || !getAccount ?
+                                "cursor-pointer opacity-100"
+                                : "cursor-not-allowed opacity-40"
                             }
                         `}
                     >

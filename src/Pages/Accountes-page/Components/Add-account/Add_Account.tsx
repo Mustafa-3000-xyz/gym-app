@@ -6,18 +6,21 @@ import { addAccount } from "@/Rtk/Slices/accountsSlice";
 import Permissions from "../Permissions/Permissions";
 import Account_Img from "@/Global-components/All-accountes/Account-img/Account_Img";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
-import { trainerPagePath } from "@/Lib/constants";
+import { expalinAppPagePath, trainerPagePath } from "@/Lib/constants";
+import { useAtomValue } from "jotai";
+import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 // ========================================================== //
 export default function Add_Account(
     { onIsShowAddAccount }: { onIsShowAddAccount: (x: boolean) => void }
 ) {
+    const isLoginAtom = useAtomValue(isLogin_Atom);
     const dispatch = useDispatch();
 
     const [getName, setGetName] = useState("");
     const [getAge, setGetAge] = useState("");
     const [getPassword, setGetPassword] = useState("");
     const [img, setImg] = useState("");
-    const [permissionsList, setPermissionsList] = useState([trainerPagePath]);
+    const [permissionsList, setPermissionsList] = useState([trainerPagePath, expalinAppPagePath]);
     const [isAllDataComplete, setIsAllDataComplete] = useState(false);
 
 
@@ -83,7 +86,7 @@ export default function Add_Account(
         <div className="mt-5">
             <Permissions
                 permissionsList={permissionsList}
-                changePermissions={true}
+                changePermissions={isLoginAtom.type == "manager"}
                 onGetPermissionsList={setPermissionsList as any}
             />
         </div>

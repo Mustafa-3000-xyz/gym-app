@@ -7,8 +7,8 @@ export default function Account_Form(
         name,
         age,
         password,
-        dontChangeValues,
         accountType,
+        dontChangeValues,
         onGetName,
         onGetAge,
         onGetPassword
@@ -33,7 +33,7 @@ export default function Account_Form(
 
 
 
-    useEffect(function(){
+    useEffect(function () {
         onGetName(theName);
         onGetAge(theAge);
         onGetPassword(thePassword);
@@ -54,7 +54,7 @@ export default function Account_Form(
                         rounded-lg border border-black p-1 px-3 focus:outline-none
                         ${dontChangeValues ? "cursor-not-allowed opacity-45" : ""}
                     `}
-                    onChange={(e)=> setTheName(e.target.value) as any}
+                    onChange={(e) => setTheName(e.target.value) as any}
                 />
             </div>
 
@@ -68,7 +68,7 @@ export default function Account_Form(
                         rounded-lg border border-black p-1 px-3 focus:outline-none
                         ${dontChangeValues ? "cursor-not-allowed opacity-45" : ""}
                     `}
-                    onChange={(e)=> setTheAge(+e.target.value as number) as any}
+                    onChange={(e) => setTheAge(+e.target.value as number) as any}
                 />
             </div>
         </div>
@@ -88,7 +88,7 @@ export default function Account_Form(
                             rounded-lg border border-black p-1 px-3 focus:outline-none 
                             ${dontChangeValues ? "cursor-not-allowed opacity-45" : ""}
                         `}
-                        onChange={(e)=> setThePassword(e.target.value) as any}
+                        onChange={(e) => setThePassword(e.target.value) as any}
                     />
 
                     {

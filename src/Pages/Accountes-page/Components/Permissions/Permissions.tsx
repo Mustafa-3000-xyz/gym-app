@@ -1,4 +1,4 @@
-import { accountesPagePath, ADD_NEW_ACCOUNT, attendanceRecordePagePath, expalinAppPagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath } from "@/Lib/constants";
+import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath } from "@/Lib/constants";
 import { Permissions_Props } from "@/Pages/types";
 import { KeyRound } from "lucide-react";
 // ========================================================== //
@@ -33,17 +33,19 @@ export default function Permissions(
         {
             title: "صفحة شرح البرنامج",
             key: expalinAppPagePath
-        },
-        {
-            title: "إضافة حسابات جديده",
-            key: ADD_NEW_ACCOUNT
         }
     ];
 
 
+    function clickOnPermission(key: string) {
+        if (
+            permissionsList == "fullAccess"
+            ||
+            changePermissions == false
+            ||
+            key == expalinAppPagePath
+        ) return;
 
-    function clickOnButton(key: string) {
-        if (!changePermissions || permissionsList == "fullAccess") return;
         let arr = [...permissionsList as string[]];
 
         // Add or remove the pathname
@@ -82,11 +84,11 @@ export default function Permissions(
                         key={i}
                         type="button"
                         className={`
-                            border border-slate-300 py-2 pb-3 px-5 rounded-full flex gap-2 items-center
-                            ${isInclude || permissionsList == "fullAccess" ? "bg-(--managerColor) text-white" : ""}
-                            ${!changePermissions ? "opacity-30 cursor-not-allowed" : "cursor-pointer"}
+                            border py-2 pb-3 px-5 rounded-full flex gap-2 items-center
+                            ${isInclude || permissionsList == "fullAccess" ? "bg-(--managerColor) text-white" : "border-slate-300"}
+                            ${!changePermissions || ele.key == expalinAppPagePath ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
                         `}
-                        onClick={() => clickOnButton(ele.key as any)}
+                        onClick={() => clickOnPermission(ele.key as any)}
                     >
 
                         <h3 className="whitespace-nowrap font-bold"> {ele.title} </h3>

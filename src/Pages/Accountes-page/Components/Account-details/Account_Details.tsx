@@ -56,7 +56,7 @@ export default function Account_Details() {
 
     function deleteAccount() {
         alert({
-            titleBeforeClickOnOk: "هل تريد بالفعل حذف ذلك الحساب",
+            titleBeforeClickOnOk: "هل تريد بالفعل حذف ذلك الحساب ؟؟",
             titleAfterClickOnOk: "تم حذف الحساب بنجاح",
             funRunWhenClickOnOk: function () {
                 dispatch(deleteAccountById(accountDetailsAtom?.id as any) as any);
@@ -69,11 +69,10 @@ export default function Account_Details() {
 
 
     useEffect(function () {
-        if (!getName || !getAge || !getPassword || !img) {
+        if (!getName || !getAge || !getPassword) {
             setIsAnyValueChange(false);
             return;
         }
-
 
 
         if (
@@ -101,6 +100,9 @@ export default function Account_Details() {
     }, [permissionsList]);
 
 
+
+
+
     return <Popup
         titel="تفاصيل الحساب"
         discription="تلك كل معلومات الخاصه بالحساب"
@@ -110,7 +112,7 @@ export default function Account_Details() {
         clickOnCancel={() => setIsShowAccountDetailsAtom(false)}
     >
         {/* Img */}
-        <div className=" flex justify-center mb-7">
+        <div className="flex justify-center mb-7">
             <Account_Img
                 img={accountDetailsAtom?.img as string}
                 accountType={accountDetailsAtom?.type as any}
@@ -124,8 +126,8 @@ export default function Account_Details() {
             name={accountDetailsAtom?.name as string}
             age={Math.trunc(accountDetailsAtom?.age as number)}
             password={accountDetailsAtom?.password as string}
-            dontChangeValues={isLogInAtom.id != accountDetailsAtom?.id}
             accountType={accountDetailsAtom?.type as any}
+            dontChangeValues={isLogInAtom.id != accountDetailsAtom?.id}
             onGetName={setGetName}
             onGetAge={setGetAge as any}
             onGetPassword={setGetPassword}
@@ -135,7 +137,7 @@ export default function Account_Details() {
         <div className="my-5">
             <Permissions
                 permissionsList={permissionsList}
-                changePermissions={accountDetailsAtom?.type == "captain" && isLogInAtom.type == "manager"}
+                changePermissions={isLogInAtom.type == "manager" && accountDetailsAtom?.type == "captain"}
                 onGetPermissionsList={setPermissionsList}
             />
         </div>
