@@ -14,7 +14,7 @@ import Btn_Slide from "./Btn-slide/Btn_Slide";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 // ========================================================== //
-export default function All_Trainers(
+export default function Table_For_Trainers(
     { trainersList }: { trainersList: trainer[] }
 ) {
     const isLoginAtom = useAtomValue(isLogin_Atom);
@@ -142,9 +142,9 @@ export default function All_Trainers(
                         <ArrowRight
                             size={18}
                             className={`
-                                    swiper-prev-x
-                                    ${isBeginning ? "cursor-not-allowed opacity-35" : "cursor-pointer"}
-                                `}
+                                swiper-prev-x
+                                ${isBeginning ? "cursor-not-allowed opacity-35" : "cursor-pointer"}
+                            `}
                         />
 
                         <Swiper
@@ -179,9 +179,9 @@ export default function All_Trainers(
                         <ArrowLeft
                             size={18}
                             className={`
-                                    swiper-next-x
-                                    ${isEnd ? "cursor-not-allowed opacity-35" : "cursor-pointer"}
-                                `}
+                                swiper-next-x
+                                ${isEnd ? "cursor-not-allowed opacity-35" : "cursor-pointer"}
+                            `}
                         />
                     </div>
                 </td>

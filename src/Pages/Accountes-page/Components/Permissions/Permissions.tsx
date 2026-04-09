@@ -64,7 +64,7 @@ export default function Permissions(
 
 
     return <div className="flex flex-col gap-2">
-        <div className="flex gap-1 mb-2 text-amber-500">
+        <div className="flex gap-1 mb-2 text-[#717c8e] ">
             <KeyRound
                 strokeWidth={2.5}
                 className=""

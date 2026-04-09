@@ -10,7 +10,7 @@ import { useAtomValue } from "jotai";
 import isLogin_Atom from "./Atoms/Is/isLogin_Atom";
 import { useEffect } from "react";
 import isShowAccountDetails_Atom from "./Atoms/Is/isShowAccountDetails_Atom";
-import Account_Details from "./Pages/Accountes-page/Components/Account-details/Account_Details";
+import Account_Details from "./Global-components/Account-details/Account_Details";
 import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath } from "./Lib/constants";
 import Explain_App_Page from "./Pages/Explain-app-page/Explain_App_Page";
 // ========================================================== //

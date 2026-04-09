@@ -11,6 +11,7 @@ import { useAtomValue } from "jotai";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import Swal from "sweetalert2";
 import { ADD_NEW_ACCOUNT } from "@/Lib/constants";
+import Title_And_Discription_For_Pages from "@/Global-components/Title-and-discription-for-page/Title_And_Discription_For_Pages";
 // ========================================================== //
 export default function Accountes_Page() {
     const isLoginAtom = useAtomValue(isLogin_Atom);
@@ -46,17 +47,17 @@ export default function Accountes_Page() {
 
     return <section className="mb-5">
         {/* Title & discription */}
-        <div className="select-none mb-7 w-full">
-            <h3 className="text-2xl font-bold">صفحة الحسابات</h3>
-            <Discription discription="في تلك الصفحه يمكنك معرفة كل الحسابات وإنشاء حسابات جديده" />
-        </div>
+        <Title_And_Discription_For_Pages 
+            title="صفحة الحسابات"
+            discription="في تلك الصفحه يمكنك معرفة كل الحسابات وإنشاء حسابات جديده"
+        />
 
         {/* Boxes */}
         <div className="grid grid-cols-2 gap-3 mb-5">
             <Box
                 icon={<IdCardLanyard size={25} />}
                 title="مجموع الحسابات"
-                styleIcon="bg-indigo-100 text-indigo-500"
+                styleIcon="bg-(--thirdColor)/10 text-(--thirdColor)"
                 total={`
                     ${state.accountes.length} من اصل 4
                 `}

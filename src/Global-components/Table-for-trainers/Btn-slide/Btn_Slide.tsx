@@ -7,7 +7,7 @@ export default function Btn_Slide(
         key={index}
         onClick={() => onGetIndexBtn(index)}
         className={`
-            ${index == currentSlide ? "bg-indigo-500 text-white" : "bg-slate-100"}
+            ${index == currentSlide ? "bg-(--thirdColor) text-white" : "bg-slate-100"}
             px-4 py-1 cursor-pointer rounded-md border border-slate-300
         `}
     >

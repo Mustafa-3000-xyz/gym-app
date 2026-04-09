@@ -4,7 +4,7 @@ import Account_Img from "@/Global-components/All-accountes/Account-img/Account_I
 import Popup from "@/Global-components/Popup/Popup";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
-import Permissions from "../Permissions/Permissions";
+import Permissions from "../../Pages/Accountes-page/Components/Permissions/Permissions";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { deleteAccountById, updatePropertyInAccount, updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
 import { useDispatch } from "react-redux";

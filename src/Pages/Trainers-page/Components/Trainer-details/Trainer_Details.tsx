@@ -292,18 +292,14 @@ export default function Trainer_Details() {
     >
         {/* Title for sessions */}
         <div className="mb-1">
-            <div className="flex items-center gap-2 text-indigo-500">
+            <div className="flex items-center gap-2 text-(--thirdColor)">
                 <Presentation strokeWidth={1.75} size={23} />
                 <h3 className="font-bold mb-1">الحصص</h3>
             </div>
 
             <div className="opacity-60 mb-4">
                 {
-                    subscriptionState == stateIsFinished ?
-                        <p>
-                            تم إنتهاء الاشتراك
-                        </p>
-                        :
+                    subscriptionState == stateIsActive ?
                         <p>
                             <span> تم إكمال </span>
                             <span className="font-bold me-1">
@@ -314,6 +310,15 @@ export default function Trainer_Details() {
                                 {trainerDetailsAtom.sessionsCount}
                             </span>
                         </p>
+                        :
+                        subscriptionState == stateIsPending ?
+                            <p>
+                                الاشتراك معلق
+                            </p>
+                            :
+                            <p>
+                                تم إنتهاء الاشتراك
+                            </p>
                 }
             </div>
         </div>
@@ -342,18 +347,19 @@ export default function Trainer_Details() {
                             ${getAccount?.type == "manager" ?
                                 "bg-(--managerColor) text-white !border-0 font-bold"
                                 :
-                                getAccount?.type == "captain" && "bg-(--captainColor) text-white !border-0"
-                            }
-
-                            ${subscriptionState == stateIsPending ?
-                                "!bg-amber-500 !text-black !font-normal !border-0"
-                                :
-                                subscriptionState == stateIsFinished && "!bg-red-500 text-white !border-0"
+                                getAccount?.type == "captain" &&
+                                "bg-(--captainColor) text-white !border-0"
                             }
 
                             ${getAccount?.id == isLoginAtom.id || isLoginAtom.type == "manager" || !getAccount ?
-                                "cursor-pointer opacity-100"
-                                : "cursor-not-allowed opacity-40"
+                                "cursor-pointer opacity-100" : "cursor-not-allowed opacity-40"
+                            }
+
+                            ${subscriptionState == stateIsPending ?
+                                "!bg-amber-500 !text-black !font-normal !border-0 !cursor-not-allowed"
+                                :
+                                subscriptionState == stateIsFinished &&
+                                "!bg-red-500 text-white !border-0 !cursor-not-allowed"
                             }
                         `}
                     >
@@ -376,7 +382,7 @@ export default function Trainer_Details() {
 
         {/* Title & arrowes */}
         <div className="mb-3">
-            <div className="flex items-center gap-2 text-indigo-500">
+            <div className="flex items-center gap-2 text-(--thirdColor)">
                 <SquarePen size={23} />
                 <h3 className="font-bold">
                     تفاصيل المتدرب

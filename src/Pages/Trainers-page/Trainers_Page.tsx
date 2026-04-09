@@ -2,9 +2,7 @@ import { BicepsFlexed, Plus, ShieldCheck, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { trainer } from "@/Pages/types";
 import Trainer_Details from "./Components/Trainer-details/Trainer_Details";
-import All_Trainers from "./Components/All-trainers/All_Trainers";
 import Add_Trainer from "./Components/Add-trainer/Add_Trainer";
-import Discription from "@/Global-components/Description/Discription";
 import Search_Trainer from "./Components/Search-trainer/Search_Trainer";
 import Btn_Filter from "./Components/Btn-filter/Btn_Filter";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,6 +13,8 @@ import { stateIsActive } from "@/Lib/constants";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import { useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
+import Title_And_Discription_For_Pages from "@/Global-components/Title-and-discription-for-page/Title_And_Discription_For_Pages";
+import Table_For_Trainers from "@/Global-components/Table-for-trainers/Table_For_Trainers";
 // ========================================================== //
 export default function Trainers_Page() {
     const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
@@ -53,17 +53,17 @@ export default function Trainers_Page() {
 
 
     return <section>
-        {/* Title and discription and add new trainer */}
-        <div className="select-none mb-7 w-full">
-            <h3 className="text-2xl font-bold">صفحة المتدربين</h3>
-            <Discription discription="اهلا بك يا كابتن , تلك الصفحه لمعرفة التفاصيل الخاصه بالمشتركين" />
-        </div>
+        {/* Title & discription */}
+        <Title_And_Discription_For_Pages
+            title="صفحة المتدربين"
+            discription="اهلا بك يا كابتن , تلك الصفحه لمعرفة التفاصيل الخاصه بالمشتركين"
+        />
 
         {/* Boxes */}
         <div className="mb-7 grid grid-cols-3 gap-3">
             <Box
                 icon={<BicepsFlexed size={30} />}
-                styleIcon="bg-indigo-100 text-indigo-500"
+                styleIcon="bg-(--thirdColor)/10 text-(--thirdColor)"
                 title="مجموع المتدربين"
                 total={state.trainers.length}
             />
@@ -104,7 +104,7 @@ export default function Trainers_Page() {
         </div>
 
         {/* Table for show all trainers */}
-        <All_Trainers trainersList={anotherTrainersList} />
+        <Table_For_Trainers trainersList={anotherTrainersList} />
 
         {
             isShowAddTrainer ?

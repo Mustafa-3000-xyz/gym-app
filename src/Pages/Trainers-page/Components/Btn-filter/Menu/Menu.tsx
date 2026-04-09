@@ -92,7 +92,7 @@ export default function Menu(
                     p-3
                     flex gap-1 items-center
                     transition duration-300 font-bold rounded-md mb-2 cursor-pointer 
-                    ${filterObj.arrange == fromOldToNew ? "bg-indigo-500 text-white" : "hover:bg-indigo-500 hover:text-white"}
+                    ${filterObj.arrange == fromOldToNew ? "bg-(--thirdColor) text-white" : "hover:bg-(--thirdColor) hover:text-white"}
                 `}
             >
                 <ArrowDown size={23} className=' mt-1' />
@@ -108,7 +108,7 @@ export default function Menu(
                     p-3
                     flex gap-1 items-center
                     transition duration-300 font-bold rounded-md mb-2 cursor-pointer 
-                    ${filterObj.arrange == fromNewToOld ? "bg-indigo-500 text-white" : "hover:bg-indigo-500 hover:text-white"}
+                    ${filterObj.arrange == fromNewToOld ? "bg-(--thirdColor) text-white" : "hover:bg-(--thirdColor) hover:text-white"}
                 `}
             >
                 <ArrowUp size={23} className=' mt-1' />
@@ -126,7 +126,7 @@ export default function Menu(
                     p-3
                     flex items-center justify-between
                     transition duration-300 font-bold my-2 rounded-md cursor-pointer
-                    ${filterObj.subscriptionType == allSubscriptions ? "bg-indigo-500 text-white" : "hover:bg-indigo-500 hover:text-white"}
+                    ${filterObj.subscriptionType == allSubscriptions ? "bg-(--thirdColor) text-white" : "hover:bg-(--thirdColor) hover:text-white"}
                 `}
             >
                 <div className='  flex gap-1 items-center'>
@@ -146,7 +146,7 @@ export default function Menu(
                     p-3
                     flex items-center justify-between
                     transition duration-300 font-bold my-2 rounded-md cursor-pointer
-                    ${filterObj.subscriptionType == activeSubscriptions ? "bg-indigo-500 text-white" : "hover:bg-indigo-500 hover:text-white"}
+                    ${filterObj.subscriptionType == activeSubscriptions ? "bg-(--thirdColor) text-white" : "hover:bg-(--thirdColor) hover:text-white"}
                 `}
             >
                 <div className='flex gap-1 items-center'>
@@ -166,7 +166,7 @@ export default function Menu(
                     p-3
                     flex items-center justify-between
                     transition duration-300 font-bold my-2 rounded-md cursor-pointer
-                    ${filterObj.subscriptionType == pendingSubscriptions ? "bg-indigo-500 text-white" : "hover:bg-indigo-500 hover:text-white"}
+                    ${filterObj.subscriptionType == pendingSubscriptions ? "bg-(--thirdColor) text-white" : "hover:bg-(--thirdColor) hover:text-white"}
                 `}
             >
                 <div className='flex gap-1 items-center'>
@@ -186,7 +186,7 @@ export default function Menu(
                     p-3
                     flex items-center justify-between
                     transition duration-300 font-bold my-2 rounded-md cursor-pointer
-                    ${filterObj.subscriptionType == finishedSubscriptions ? "bg-indigo-500 text-white" : "hover:bg-indigo-500 hover:text-white"}
+                    ${filterObj.subscriptionType == finishedSubscriptions ? "bg-(--thirdColor) text-white" : "hover:bg-(--thirdColor) hover:text-white"}
                 `}
             >
                 <div className='flex gap-1 items-center'>

@@ -9,7 +9,7 @@ export default function Box(
                 {icon}
             </div>
 
-            <h3 className=" opacity-65 text-lg">
+            <h3 className="opacity-65 text-lg">
                 {title}
             </h3>
         </div>

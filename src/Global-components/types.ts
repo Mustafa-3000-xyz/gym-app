@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { TargetAndTransition, Transition } from "framer-motion";
+import { exitCode } from "node:process";
 // ========================================================== //
 export interface Not_Found_Props {
     srcImg: string,
@@ -58,7 +59,7 @@ export interface Add_Btn_Props {
     onClick: () => void,
 }
 
-export interface Account_Form_Props{
+export interface Account_Form_Props {
     name: string,
     age: number,
     password: string,
@@ -67,4 +68,14 @@ export interface Account_Form_Props{
     onGetName: (x: string) => void;
     onGetAge: (x: number) => void;
     onGetPassword: (x: string) => void;
+}
+
+export interface Title_And_Discription_For_Pages_Props {
+    title: string,
+    discription: string,
+}
+
+export interface Input_Search_Props {
+    placeholder: string,
+    onGetValue: (x: string) => void
 }
