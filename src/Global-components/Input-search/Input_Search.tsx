@@ -2,14 +2,19 @@ import { Search } from "lucide-react";
 import { Input_Search_Props } from "../types";
 // ========================================================== //
 export default function Input_Search(
-    {placeholder, onGetValue}: Input_Search_Props
+    {
+        placeholder,
+        ref,
+        onGetValue 
+    }: Input_Search_Props
 ) {
     return <div className="w-full h-full flex relative">
         <input
+            ref={ref as any}
             className="pr-10 w-full h-full p-4 focus:outline-0 border border-slate-300 rounded-lg"
             type="text"
             placeholder={placeholder}
-            onChange={onGetValue as any}
+            onChange={(e)=> onGetValue(e.target.value) as any}
         />
 
         <Search

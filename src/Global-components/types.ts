@@ -76,5 +76,6 @@ export interface Title_And_Discription_For_Pages_Props {
 
 export interface Input_Search_Props {
     placeholder: string,
+    ref?: HTMLInputElement,
     onGetValue: (x: string) => void
 }

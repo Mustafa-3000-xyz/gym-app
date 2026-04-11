@@ -99,7 +99,7 @@ export default function Trainer_Info_Form(
         <div className="flex justify-center gap-3 mb-5">
             <div className={`
                     flex flex-col
-                    ${isShowTrainerDetailsAtom ? "w-3/5" : ""}
+                    w-4/12
                 `}
             >
                 <h4 className="font-bold">الاسم الاول</h4>
@@ -113,8 +113,8 @@ export default function Trainer_Info_Form(
             </div>
 
             <div className={`
-                    ${isShowTrainerDetailsAtom ? "w-3/5" : ""}
                     flex flex-col
+                    w-4/12
                 `}
             >
                 <h4 className="font-bold">الاسم الثاني</h4>
@@ -130,8 +130,8 @@ export default function Trainer_Info_Form(
         {/* Phone number & Adrees */}
         <div className="flex justify-center gap-3">
             <div className={`
-                    ${isShowTrainerDetailsAtom ? "w-3/5" : ""}
                     flex flex-col
+                    w-4/12
                 `}
             >
                 <h4 className="font-bold">رقم الموبايل (اختياري)</h4>
@@ -160,8 +160,8 @@ export default function Trainer_Info_Form(
             </div>
 
             <div className={`
-                    ${isShowTrainerDetailsAtom ? "w-3/5" : ""}
                     flex flex-col
+                    w-4/12
                 `}
             >
                 <h4 className="font-bold">العنوان (اختياري)</h4>

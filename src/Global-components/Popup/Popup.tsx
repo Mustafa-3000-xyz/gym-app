@@ -19,7 +19,7 @@ export default function Popup(
         <Animation
             className={`
                 absolute top-1/2 end-1/2 -translate-x-1/2 -translate-y-1/2
-                bg-slate-100 border border-slate-200 rounded-lg w-[60vw]
+                bg-slate-100 border border-slate-200 rounded-lg w-[80vw]
             `}
             initial={{
                 scale: 0.5,

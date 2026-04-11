@@ -14,6 +14,7 @@ export default function Add_Btn(
             onClick={onClick}
             className={`
                 ${styleTheBgAndBorderBtn} px-6 ${thePaddingY}
+                whitespace-nowrap
                 w-full flex gap-2 justify-center items-center transition-all  text-white rounded-lg border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]
             `}
         >

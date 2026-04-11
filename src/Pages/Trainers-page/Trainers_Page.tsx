@@ -84,10 +84,12 @@ export default function Trainers_Page() {
         </div>
 
         {/* Search & filter & add trainer */}
-        <div className="grid grid-cols-4 gap-2 mb-7">
-            <Search_Trainer trainersList={state.trainers} />
+        <div className="grid grid-cols-4 gap-2 mb-7 bg-slate-100 rounded-lg py-5 px-3">
+            <div className="col-span-3">
+                <Search_Trainer trainersList={state.trainers} />
+            </div>
 
-            <div className="flex justify-center gap-1">
+            <div className="flex justify-end gap-1 col-span-1">
                 <Btn_Filter
                     trainersList={state.trainers}
                     onGetFilterResult={setAnotherTrainersList}

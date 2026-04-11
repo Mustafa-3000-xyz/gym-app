@@ -1,7 +1,7 @@
-import { Search } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 import { trainer } from "@/Pages/types";
 import Search_Result from './Search-result/Search_Result';
+import Input_Search from '@/Global-components/Input-search/Input_Search';
 // ========================================================== //
 export default function Search_Trainer(
     { trainersList }: {trainersList: trainer[]}
@@ -40,25 +40,10 @@ export default function Search_Trainer(
 
 
     return <div className="flex relative col-span-3 ">
-        <div className='w-full h-full'>
-            <input
-                ref={searchInpRef}
-                onChange={(e) => setSearchValue(e.target.value)}
-                disabled={trainersList.length <= 1 ? true : false}
-                value={searchValue}
-                type="text"
-                placeholder="البحث عن المتدرب من خلال الاسم او من خلال رقم المتدرب"
-                className={`
-                    focus:outline-0
-                    h-full w-full z-20 relative
-                    bg-slate-100 border border-slate-300 ps-10 py-2
-                    ${isShowSearchResult ? "rounded-lg rounded-b-none" : ""}
-                    ${trainersList.length <= 1 ? "opacity-35 cursor-not-allowed" : "opacity-100"}
-                `}
+            <Input_Search 
+                onGetValue={setSearchValue}
+                placeholder='البحث عن متدرب من خلال الاسم او الرقم'
             />
-
-            <Search size={23} className="absolute z-20 top-3 ms-3 opacity-40" />
-        </div>
 
         {
             isShowSearchResult ?
