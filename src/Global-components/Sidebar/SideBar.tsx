@@ -3,7 +3,7 @@ import Sidebar_Links from "./Sidebar-links/Sidebar_Links";
 import { useAtom, useSetAtom } from "jotai";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { useDispatch, useSelector } from "react-redux";
-import React, {useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getAllAccountes } from "@/Rtk/Slices/accountsSlice";
 import { store_Type } from "@/Rtk/types";
 import { accounte } from "@/Pages/types";
@@ -78,7 +78,9 @@ export default function SideBar() {
     >
         {/* Title */}
         <div className="mb-5 text-center" dir="ltr">
-            <h1 className="font-bold text-[#FB6543] select-none">GYM APP</h1>
+            <h1 className="font-bold text-[#FB6543] select-none">
+                GYM APP
+            </h1>
         </div>
 
         {/* Links */}
@@ -149,11 +151,15 @@ export default function SideBar() {
         </ul>
 
         {/* Account */}
-        <div 
+        <div
             className={`
-                ${isLoginAtom.type == "captain" ? "group-hover:bg-(--captainColor)/15" : "group-hover:bg-(--managerColor) text-white"}
                 flex items-center justify-between mb-5 select-none rounded-lg
                 trainsition-all duration-300  group-hover:p-3 cursor-pointer
+                ${isLoginAtom.type == "manager" ?
+                    "group-hover:bg-(--managerColor) hover:bg-(--managerColor)/85 text-white"
+                    :
+                    "group-hover:bg-(--captainColor) hover:bg-(--captainColor)/85 text-white"
+                }
             `}
             onClick={clickOnInfoBtn}
         >

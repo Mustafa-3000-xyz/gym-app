@@ -40,7 +40,7 @@ export default function Popup(
                 <X size={23} onClick={clickOnCancel} className="cursor-pointer text-red-500" />
             </div>
 
-            <div className="px-5">
+            <div className="p-3">
                 {children}
             </div>
 
@@ -53,7 +53,7 @@ export default function Popup(
                         className={`
                             transition duration-300 
                             ${!isSave ? "opacity-55 cursor-not-allowed" : "opacity-100 cursor-pointer"}
-                            bg-[#385E97] text-white px-5 py-2 rounded-lg
+                            bg-(--thirdColor) text-white px-5 py-2 rounded-lg
                         `}
                     >
                         {typeBtn == "save data" ? " حفظ البيانات" : "حفظ التغيرات"}

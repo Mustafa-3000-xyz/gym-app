@@ -94,7 +94,7 @@ export default function Trainer_Info_Form(
     }, [firstName, lastName, phone, address]);
 
 
-    return <form className="px-3">
+    return <form>
         {/* First name & Last name */}
         <div className="flex justify-center gap-3 mb-5">
             <div className={`
@@ -108,7 +108,7 @@ export default function Trainer_Info_Form(
                     onChange={(e) => checkInpName(e.target)}
                     inp-type="firstName"
                     type="text"
-                    className="bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0"
+                    className="bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0"
                 />
             </div>
 
@@ -122,7 +122,7 @@ export default function Trainer_Info_Form(
                     value={lastName}
                     onChange={(e) => checkInpName(e.target)}
                     type="text"
-                    className=" bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0"
+                    className=" bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0"
                 />
             </div>
         </div>
@@ -135,11 +135,12 @@ export default function Trainer_Info_Form(
                 `}
             >
                 <h4 className="font-bold">رقم الموبايل (اختياري)</h4>
-                <div className="bg-slate-100 border border-slate-200 rounded-lg relative">
+                <div className="bg-slate-100 border border-slate-300 rounded-lg relative">
                     <input
                         value={phone}
                         onChange={(e) => checkInpNumber(e.target)}
                         type="number"
+                        placeholder="0000000000"
                         className={`
                             p-2 w-[80%] focus:outline-0
                             appearance-none
@@ -168,7 +169,7 @@ export default function Trainer_Info_Form(
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     type="text"
-                    className=" bg-slate-100 border border-slate-200 p-2 rounded-lg focus:outline-0"
+                    className=" bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0"
                 />
             </div>
         </div>

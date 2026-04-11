@@ -2,8 +2,11 @@ import styled from 'styled-components';
 // ========================================================== //
 export default function Subscriptions_Menu() {
     return <div className='flex justify-center mb-3'>
-        <StyledWrapper className=' w-3/4'>
-            <button className="btn-96 w-full font-bold">
+        <StyledWrapper className='w-full'>
+            <button 
+                type='button'
+                className="btn-96 w-full font-bold"
+            >
                 <span className='border border-slate-200'>
                     قائمة الإشتراكات 
                 </span>

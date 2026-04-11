@@ -19,15 +19,15 @@ export default function Sidebar_Links(
         <li className={`
             transition-all duration-300 p-2 rounded-sm
             ${pathname == path ?
-                isLoginAtom.type == "captain" ?
-                    "bg-(--captainColor)/10 text-(--captainColor)"
-                    :
+                isLoginAtom.type == "manager" ?
                     "bg-(--managerColor) text-white"
-                :
-                isLoginAtom.type == "captain" ?
-                    "hover:bg-(--captainColor)/10 hover:text-(--captainColor)"
                     :
-                    "hover:bg-(--managerColor) hover:text-white"
+                    "bg-(--captainColor) text-white"
+                :
+                isLoginAtom.type == "manager" ?
+                    "hover:bg-(--managerColor)/70 hover:text-white"
+                    :
+                    "hover:bg-(--captainColor)/70 hover:text-white"
             }
         `}
         >

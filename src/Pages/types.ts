@@ -25,15 +25,16 @@ export interface accounte {
     permissions?: string[] | "fullAccess",
 }
 
-export interface activeSessionsList_Type{
+export interface activeSessionsList_Type {
     accountId: number,
     sessions: number[]
 }
 
 export interface Subscription_Info_Form_Props {
     onGetSubscriptionName: (x: string) => void,
-    onGetSessionsCount: (x: number | string) => void,
-    onGetPrice: (x: number | string) => void,
+    onGetSessionsCount: (x: number) => void,
+    onGetPrice: (x: number) => void,
+    onGetActiveSomeSessions?: (x: number) => void
 }
 
 export interface Date_Info_Props {

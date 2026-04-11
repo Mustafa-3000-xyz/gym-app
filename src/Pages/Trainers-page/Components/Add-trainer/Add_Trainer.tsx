@@ -7,16 +7,18 @@ import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription
 import { alertSuccess } from "@/Lib/functions";
 import { stateIsActive, stateIsPending } from "@/Lib/constants";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
-import { useAtom } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import { useDispatch } from "react-redux";
-import { trainer } from "@/Pages/types";
+import { activeSessionsList_Type, trainer } from "@/Pages/types";
 import Popup from "@/Global-components/Popup/Popup";
+import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 // ========================================================== //
 export default function Add_Trainer(
     { onIsShowAddTrainer }: { onIsShowAddTrainer: (x: boolean) => void }
 ) {
     const dispatch = useDispatch();
+    const isLoginAtom = useAtomValue(isLogin_Atom);
     const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
 
     // Get trainer info
@@ -26,9 +28,10 @@ export default function Add_Trainer(
     const [getAddress, setGetAddress] = useState("");
 
     // Get subscription info
-    const [getSubscriptionName, setGetSubscriptionName] = useState("");
-    const [getSessionsCount, setGetSessionsCount] = useState<number | string>("");
-    const [getPrice, setGetPrice] = useState<number | string>("");
+    const [getSubscriptionName, setGetSubscriptionName] = useState<string>("");
+    const [getSessionsCount, setGetSessionsCount] = useState<number>(0);
+    const [getPrice, setGetPrice] = useState<number>(0);
+    const [getActiveSomeSessions, setGetActiveSomeSessions] = useState<number>(0);
 
     // Get date info
     const [getSubscriptionStart, setGetSubscriptionStart] = useState<Date | null>(null);
@@ -54,7 +57,7 @@ export default function Add_Trainer(
             addTrainer({
                 trainerId,
                 subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() as any ? stateIsPending : stateIsActive,
-                activeSessionsList: JSON.stringify([]) as any,
+                activeSessionsList: JSON.stringify(makeActiveSessionList()) as any,
                 firstName: getFirstName,
                 lastName: getLastName,
                 phone: String(getPhone),
@@ -81,6 +84,27 @@ export default function Add_Trainer(
         }).join("");
 
         setTrainerId(id);
+    }
+
+    function makeActiveSessionList(): activeSessionsList_Type[] | [] {
+        if (getActiveSomeSessions == 0) {
+            return [];
+        } 
+        else {
+            const arr: number[] = [];
+
+            for (let i = 0; i < getActiveSomeSessions; i++) {
+                arr.push(i);
+            }
+
+            const obj = {
+                accountId: isLoginAtom.id,
+                sessions: arr
+            } as activeSessionsList_Type
+
+
+            return [obj];
+        }
     }
 
 
@@ -118,6 +142,7 @@ export default function Add_Trainer(
     ]);
 
 
+
     return <Popup
         titel="إضافة متدرب"
         discription="الان, يمكنك إضافة متدرب جديد"
@@ -126,8 +151,8 @@ export default function Add_Trainer(
         clickOnSaveBtn={saveTrainerInfo}
     >
         {/* Trainer info */}
-        <div className="my-6">
-            <div className="flex items-center gap-2 text-(--thirdColor) font-bold mb-5 px-3">
+        <div className="mb-5">
+            <div className="flex items-center gap-2 text-(--thirdColor) font-bold mb-2">
                 <UserRound size={23} />
                 <p className="leading-none pt-0.5">المعلومات الشخصيه</p>
             </div>
@@ -142,7 +167,7 @@ export default function Add_Trainer(
 
         {/* Subscription info */}
         <div className="mb-5">
-            <div className="flex items-center gap-2 text-(--thirdColor) font-bold mb-5 px-3">
+            <div className="flex items-center gap-2 text-(--thirdColor) font-bold mb-5">
                 <Presentation size={23} />
                 <p className="leading-none pt-0.5">تفاصيل الاشتراك</p>
             </div>
@@ -151,11 +176,12 @@ export default function Add_Trainer(
                 onGetSubscriptionName={setGetSubscriptionName}
                 onGetSessionsCount={setGetSessionsCount}
                 onGetPrice={setGetPrice}
+                onGetActiveSomeSessions={setGetActiveSomeSessions}
             />
         </div>
 
         {/* Date info */}
-        <div className="mb-5">
+        <div>
             <Date_Info_Form
                 onGetSubscriptionStart={setGetSubscriptionStart}
                 onGetSubscriptionEnd={setGetSubscriptionEnd}

@@ -24,5 +24,4 @@ export const expalinAppPagePath = "/explain-app-page";
 
 
 // These permissions
-export const ADD_NEW_ACCOUNT = "ADD_NEW_ACCOUNT";
-export const REMOVE_TRAINER = "REMOVE_TRAINER";
+export const USING_ACTIVE_SOME_SESSIONS = "USING_ACTIVE_SOME_SESSIONS";

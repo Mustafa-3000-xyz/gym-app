@@ -1,4 +1,4 @@
-import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath } from "@/Lib/constants";
+import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath, USING_ACTIVE_SOME_SESSIONS } from "@/Lib/constants";
 import { Permissions_Props } from "@/Pages/types";
 import { KeyRound } from "lucide-react";
 // ========================================================== //
@@ -33,6 +33,10 @@ export default function Permissions(
         {
             title: "صفحة شرح البرنامج",
             key: expalinAppPagePath
+        },
+        {
+            title: "استخدام تفعيل بعض الحصص",
+            key: USING_ACTIVE_SOME_SESSIONS,
         }
     ];
 
@@ -85,7 +89,7 @@ export default function Permissions(
                         type="button"
                         className={`
                             border py-2 pb-3 px-5 rounded-full flex gap-2 items-center
-                            ${isInclude || permissionsList == "fullAccess" ? "bg-(--managerColor) text-white" : "border-slate-300"}
+                            ${isInclude || permissionsList == "fullAccess" ? "bg-(--thirdColor) text-white" : "border-slate-300"}
                             ${!changePermissions || ele.key == expalinAppPagePath ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
                         `}
                         onClick={() => clickOnPermission(ele.key as any)}

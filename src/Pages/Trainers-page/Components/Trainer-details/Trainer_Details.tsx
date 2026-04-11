@@ -381,7 +381,7 @@ export default function Trainer_Details() {
         </div>
 
         {/* Title & arrowes */}
-        <div className="mb-3">
+        <div className="mb-5 flex justify-between items-center">
             <div className="flex items-center gap-2 text-(--thirdColor)">
                 <SquarePen size={23} />
                 <h3 className="font-bold">
@@ -413,7 +413,7 @@ export default function Trainer_Details() {
         </div>
 
         {/* Trainer info & Subscription info & Date info */}
-        <div className="mb-7">
+        <div className="mb-16">
             <Swiper
                 modules={[Navigation]}
                 allowTouchMove={false}
@@ -455,7 +455,7 @@ export default function Trainer_Details() {
         </div>
 
         {/* Warning zone */}
-        <div className="mb-6">
+        <div>
             <div className="bg-red-100/50 p-3 rounded-lg border border-red-300">
                 <h3 className=" text-red-500 font-bold mb-3">
                     منطقة الإجراءات

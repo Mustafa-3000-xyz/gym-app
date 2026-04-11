@@ -12,8 +12,6 @@ export default function Start_Date_Picker(
     const trainer = useAtomValue(trainerDetails_Atom);
 
     const [selectDate, setSelectDate] = useState<Date | null>(null);
-    const dateNow = new Date();
-    dateNow.setHours(0, 0, 0, 0);
 
 
     // Check if the isShowTrainerDetailsAtom is true, so the manager he want see trainer details
@@ -42,7 +40,6 @@ export default function Start_Date_Picker(
             showButtonBar
             readOnlyInput
             value={selectDate}
-            minDate={dateNow}
             showOtherMonths={false}
             dateFormat="yy/mm/dd"
             className="w-full select-none"

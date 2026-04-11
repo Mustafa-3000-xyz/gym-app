@@ -32,7 +32,7 @@ export default function Date_Info_Form(
 
 
 
-    return <form className="flex justify-center items-center gap-2 px-3" >
+    return <form className="flex justify-center items-center gap-2">
         {/* Start subscription */}
         <div className="w-3/4">
             <Start_Date_Picker
