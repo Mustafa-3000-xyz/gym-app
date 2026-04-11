@@ -11,13 +11,12 @@ export const getAllTrainers = createAsyncThunk("trainersSlice/getAllTrainers", a
 export const addTrainer = createAsyncThunk("trainersSlice/addTrainer", async function (data: trainer) {
     const database = await trainerTable();
     const query = `INSERT INTO trainers (
-        trainerId, subscriptionState, activeSessionsList, firstName, lastName, 
+        subscriptionState, activeSessionsList, firstName, lastName, 
         phone, address, subscriptionName, sessionsCount, 
         price, subscriptionStart, subscriptionEnd, dateAdded
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     const values = [
-        data.trainerId,
         data.subscriptionState,
         data.activeSessionsList,
         data.firstName,
@@ -32,8 +31,12 @@ export const addTrainer = createAsyncThunk("trainersSlice/addTrainer", async fun
         data.dateAdded
     ];
 
-    await database.execute(query, values);
-    return data;
+    const getId = await database.execute(query, values);
+
+    return {
+        trainerId: getId.lastInsertId,
+        ...data
+    };
 });
 
 export const deleteTrainerById = createAsyncThunk(

@@ -32,7 +32,7 @@ export function styleForSubscriptionState(trainer: trainer) {
 }
 
 export function alertSuccess({
-    mainTitle, text
+    mainTitle, text = ""
 }: alertSuccessType) {
     Swal.fire({
         title: mainTitle,

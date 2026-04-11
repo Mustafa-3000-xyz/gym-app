@@ -1,5 +1,5 @@
 export interface trainer {
-    trainerId: string;
+    trainerId?: number;
     subscriptionState: string;
     activeSessionsList: activeSessionsList_Type[] | [];
     firstName: string;

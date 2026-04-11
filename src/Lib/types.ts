@@ -1,6 +1,6 @@
 export interface alertSuccessType{
     mainTitle: string,
-    text: string,
+    text?: string,
 }
 
 export interface alertType {

@@ -6,7 +6,7 @@ export async function trainerTable() {
     try {
         await db.execute(`
             CREATE TABLE IF NOT EXISTS trainers (
-                trainerId TEXT, 
+                trainerId INTEGER PRIMARY KEY AUTOINCREMENT, 
                 subscriptionState TEXT,
                 activeSessionsList TEXT,
                 firstName TEXT,

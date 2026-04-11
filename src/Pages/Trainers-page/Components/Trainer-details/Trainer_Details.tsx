@@ -465,7 +465,7 @@ export default function Trainer_Details() {
                     {
                         subscriptionState != stateIsFinished ?
                             <Btn_Finished_Subscription
-                                id={trainerDetailsAtom.trainerId}
+                                id={trainerDetailsAtom.trainerId as any}
                                 onGetSubscriptionState={setSubscriptionState}
                             />
                             :

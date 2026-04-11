@@ -38,7 +38,6 @@ export default function Add_Trainer(
     const [getSubscriptionEnd, setGetSubscriptionEnd] = useState<Date | null>(null);
 
     // These variables
-    const [trainerId, setTrainerId] = useState("");
     const [isAllInfoComplete, setIsAllInfoComplete] = useState(false);
 
 
@@ -55,7 +54,6 @@ export default function Add_Trainer(
 
         dispatch(
             addTrainer({
-                trainerId,
                 subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() as any ? stateIsPending : stateIsActive,
                 activeSessionsList: JSON.stringify(makeActiveSessionList()) as any,
                 firstName: getFirstName,
@@ -74,16 +72,7 @@ export default function Add_Trainer(
         closeThisWinow();
         alertSuccess({
             mainTitle: "تم إضافة المتدرب بنجاح",
-            text: `الرقم الخاص بالمتدرب هو : ${trainerId}`
         });
-    }
-
-    function generateId() {
-        const id = Array.from({ length: 4 }, function () {
-            return Math.trunc(Math.random() * 10)
-        }).join("");
-
-        setTrainerId(id);
     }
 
     function makeActiveSessionList(): activeSessionsList_Type[] | [] {
@@ -111,7 +100,6 @@ export default function Add_Trainer(
 
     useEffect(function () {
         setIsShowTrainerDetailsAtom(false);
-        generateId();
     }, []);
 
     // This check the trainer info is compolete or no
