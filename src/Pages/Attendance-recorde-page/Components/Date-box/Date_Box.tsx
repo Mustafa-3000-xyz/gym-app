@@ -1,9 +1,8 @@
 import { ArrowLeft, ArrowRight } from "lucide-react"
-import { useState } from "react"
 // ========================================================== //
 export default function Date_Box() {
-    const [position, setPosition] = useState(0);
-    const [currentDate, setCurrentDate] = useState("");
+    // const [position, setPosition] = useState(0);
+    // const [currentDate, setCurrentDate] = useState("");
 
 
 

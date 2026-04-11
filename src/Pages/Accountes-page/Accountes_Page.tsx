@@ -1,5 +1,4 @@
 import All_Accountes from "@/Global-components/All-accountes/All_Accountes";
-import Discription from "@/Global-components/Description/Discription";
 import { IdCardLanyard, Plus, Shell } from "lucide-react";
 import { useState } from "react";
 import Add_Account from "./Components/Add-account/Add_Account";
@@ -10,7 +9,6 @@ import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import { useAtomValue } from "jotai";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import Swal from "sweetalert2";
-import { ADD_NEW_ACCOUNT } from "@/Lib/constants";
 import Title_And_Discription_For_Pages from "@/Global-components/Title-and-discription-for-page/Title_And_Discription_For_Pages";
 // ========================================================== //
 export default function Accountes_Page() {
@@ -19,13 +17,12 @@ export default function Accountes_Page() {
     const state = useSelector(state => state as store_Type);
     const [isShowAddAccount, setIsShowAddAccount] = useState<boolean>(false);
 
-    const currentAccount = state.accountes.find(ele => ele.id == isLoginAtom.id);
-    const theConditional = currentAccount?.type != "manager" && !currentAccount?.permissions?.includes(ADD_NEW_ACCOUNT);
+    const theAccount = state.accountes.find(ele => ele.id == isLoginAtom.id);
 
 
 
     function clickOnAddAccount() {
-        if (theConditional) {
+        if (theAccount?.type != "manager") {
             setIsShowAddAccount(false);
             return;
         }
@@ -78,7 +75,7 @@ export default function Accountes_Page() {
             <Add_Btn
                 styleTheBgAndBorderBtn={`
                     bg-emerald-500 border-emerald-600
-                    ${theConditional ? "cursor-not-allowed opacity-55" : "cursor-pointer"}
+                    ${theAccount?.type != "manager" && "cursor-not-allowed opacity-55"}
                 `}
                 icon={<Plus size={20} strokeWidth={3} />}
                 title="إنشاء حساب جديد"

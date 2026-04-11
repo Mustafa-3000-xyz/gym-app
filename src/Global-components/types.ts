@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 import { TargetAndTransition, Transition } from "framer-motion";
-import { exitCode } from "node:process";
 // ========================================================== //
 export interface Not_Found_Props {
     srcImg: string,
