@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import { activeSessionsList_Type, trainer } from "@/Pages/types";
 import Popup from "@/Global-components/Popup/Popup";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
+import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
 // ========================================================== //
 export default function Add_Trainer(
     { onIsShowAddTrainer }: { onIsShowAddTrainer: (x: boolean) => void }
@@ -91,6 +92,11 @@ export default function Add_Trainer(
                 sessions: arr
             } as activeSessionsList_Type
 
+            dispatch(updatePropertyInAccount({
+                id: isLoginAtom.id as any,
+                column: "totalForActiveSessions",
+                value: getActiveSomeSessions
+            }) as any);
 
             return [obj];
         }

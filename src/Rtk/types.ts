@@ -19,7 +19,8 @@ type updateOneColumnInAccount =
     | "password"
     | "type"
     | "permissions"
-    | "img"
+    | "profileImg"
+    | "coverImg"
     | "totalForActiveSessions"
 
 
@@ -64,8 +65,10 @@ export interface updateSomePropertiesInAccount_Type {
         age?: string | number,
         password?: string,
         type?: "manager" | "captain",
+        profileImg?: string,
+        coverImg?: string,
+        workingHours?: number,
         permissions?: string[] | "fullAccess",
-        img?: string,
         totalForActiveSessions?: number
     }
 }

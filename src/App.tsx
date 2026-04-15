@@ -9,35 +9,28 @@ import Authentication_Page from "./Pages/Authentication-page/Authentication_Page
 import { useAtomValue } from "jotai";
 import isLogin_Atom from "./Atoms/Is/isLogin_Atom";
 import { useEffect } from "react";
-import isShowAccountDetails_Atom from "./Atoms/Is/isShowAccountDetails_Atom";
-import Account_Details from "./Global-components/Account-details/Account_Details";
-import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath } from "./Lib/constants";
+import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profilePagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath } from "./Lib/constants";
 import Explain_App_Page from "./Pages/Explain-app-page/Explain_App_Page";
+import Profile_Page from "./Pages/Profile-page/Profile_Page";
 // ========================================================== //
 function App() {
-  const isShowAccountDetailsAtom = useAtomValue(isShowAccountDetails_Atom);
   const isLoginAtom = useAtomValue(isLogin_Atom);
 
 
+  async function logOutWhenCloseApp() {
+    const { getCurrentWindow } = await import('@tauri-apps/api/window');
+    const appWindow = getCurrentWindow();
 
-  // This for when close the window, reset the log in
+    await appWindow.listen('tauri://close-requested', async () => {
+      localStorage.setItem("theAccount", JSON.stringify(null));
+      await appWindow.destroy();
+    });
+  }
+
+
+
   useEffect(() => {
-    let unlisten: any;
-
-    const setup = async () => {
-      const { getCurrentWindow } = await import('@tauri-apps/api/window');
-      const appWindow = getCurrentWindow();
-
-      unlisten = await appWindow.listen('tauri://close-requested', async () => {
-        localStorage.setItem("theAccount", JSON.stringify(null));
-        await appWindow.destroy();
-      });
-    };
-    setup();
-
-    return () => {
-      if (unlisten) unlisten();
-    };
+    logOutWhenCloseApp();
   }, []);
 
 
@@ -61,13 +54,9 @@ function App() {
           <Route path={profitsAndExpensesPagePath} element={<Profits_And_Expenses_Page />} />
           <Route path={settingsPagePath} element={<Settings_Page />} />
           <Route path={expalinAppPagePath} element={<Explain_App_Page />} />
+          <Route path={profilePagePath} element={<Profile_Page />} />
         </Routes>
       </div>
-
-
-      {
-        isShowAccountDetailsAtom && <Account_Details />
-      }
     </main>
     :
     <Authentication_Page />

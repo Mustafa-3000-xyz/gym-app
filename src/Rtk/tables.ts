@@ -34,17 +34,19 @@ export async function accountsTable() {
 
     try {
         await db.execute(`
-                CREATE TABLE IF NOT EXISTS accountes (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    img TEXT,
-                    name TEXT,
-                    age TEXT,
-                    password TEXT,
-                    type TEXT,
-                    totalForActiveSessions TEXT,
-                    permissions JSON
-                )
-            `);
+            CREATE TABLE IF NOT EXISTS accounts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT,
+                age INTEGER,
+                password TEXT,
+                type TEXT,
+                profileImg TEXT,
+                coverImg TEXT,
+                workingHours INTEGER,
+                totalForActiveSessions INTEGER,
+                permissions TEXT
+            )
+        `);
     } catch (error) {
         console.error("DB Error:", error);
         throw error;

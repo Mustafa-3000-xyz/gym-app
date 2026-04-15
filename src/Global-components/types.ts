@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import React, { ChangeEvent, ReactNode } from "react";
 import { TargetAndTransition, Transition } from "framer-motion";
 // ========================================================== //
 export interface Not_Found_Props {
@@ -12,6 +12,7 @@ export interface Sidebar_Linsk_Props {
     path: string,
     icon: ReactNode,
     isShowTheLink: boolean,
+    onClick?: (e: React.MouseEvent)=> void,
 }
 
 export interface Popup_Animation_Props {
@@ -42,12 +43,10 @@ export interface Popup_Props {
 }
 
 export interface Account_Img_Props {
+    accountId: number,
     img: string,
     isShowCamera: boolean,
     accountType: "manager" | "captain",
-    widthAndHeight?: string,
-    whenClickOnCameraCloseAccountDetails?: boolean,
-    onGetImg?: (x: string) => void
 }
 
 export interface Add_Btn_Props {
@@ -78,4 +77,10 @@ export interface Input_Search_Props {
     placeholder: string,
     ref?: HTMLInputElement,
     onGetValue: (x: string) => void
+}
+
+export interface Password_Inp_Props{
+    password?: string,
+    onWriteInInput?: (e: ChangeEvent<HTMLInputElement>) => void,
+    onGetPassword: (x: string) => void
 }

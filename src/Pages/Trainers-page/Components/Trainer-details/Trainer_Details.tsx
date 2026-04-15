@@ -148,7 +148,7 @@ export default function Trainer_Details() {
             incrementOrDecrementForTotalSession("increment", isLoginAtom.id);
         }
 
-        // If the account exists but the session does not, append the session
+        // If the account exists but the session does not here, append the session
         else if (!findTheSession && getAccount) {
             const obj = {
                 accountId: getAccount.accountId,
@@ -160,7 +160,7 @@ export default function Trainer_Details() {
             // This for remove old obj
             arr.splice(getIndex, 1);
             arr.push(obj);
-            incrementOrDecrementForTotalSession("increment", getAccount.accountId);
+            incrementOrDecrementForTotalSession("increment", getAccount.accountId as any);
         }
 
         /* If the account and session exist, and either the session belongs to the account
@@ -213,7 +213,38 @@ export default function Trainer_Details() {
         }
     }
 
+    // If the account is deleted, change id to removed
+    function isAccountDeleted() {
+        const accountesHere: activeSessionsList_Type[] = [];
+        const accountesNotHere: activeSessionsList_Type[] = [];
+        const result: activeSessionsList_Type[] = [];
 
+
+        activeSessionsList.map((ele) => {
+            const isHere = state.accountes.find((mainAcc) => mainAcc.id == ele.accountId);
+
+            if (isHere) {
+                accountesHere.push(ele);
+            } else {
+                accountesNotHere.push({ ...ele, accountId: "removed" });
+            }
+        });
+
+
+        if (accountesNotHere.length != 0) {
+            accountesHere.map(ele => result.push(ele));
+            accountesNotHere.map(ele => result.push(ele));
+
+            setActiveSessionsList(result);
+        }
+    }
+
+
+
+
+    useEffect(function () {
+        isAccountDeleted();
+    }, []);
 
     useEffect(function () {
         dispatch(updatePropertyInTrainer({
@@ -222,7 +253,6 @@ export default function Trainer_Details() {
             value: JSON.stringify(activeSessionsList),
         }) as any);
     }, [activeSessionsList]);
-
 
     // This useEffect for check the any value in properties are change
     useEffect(function () {
@@ -347,8 +377,8 @@ export default function Trainer_Details() {
                             ${getAccount?.type == "manager" ?
                                 "bg-(--managerColor) text-white !border-0 font-bold"
                                 :
-                                getAccount?.type == "captain" &&
-                                "bg-(--captainColor) text-white !border-0"
+                                getAccount?.type == "captain" || getAccountId == "removed" ?
+                                "bg-(--captainColor) text-white !border-0" : ""
                             }
 
                             ${getAccount?.id == isLoginAtom.id || isLoginAtom.type == "manager" || !getAccount ?
@@ -368,11 +398,18 @@ export default function Trainer_Details() {
 
                     {
                         subscriptionState == stateIsActive &&
-                        <h3 className=" text-sm opacity-40">
-                            {getAccount?.name.includes(" ") ?
-                                getAccount?.name.split(" ")[0]
-                                :
-                                getAccount?.name
+                        <h3 className="text-sm opacity-40">
+                            {
+                                getAccountId == "removed" ?
+                                    <span>
+                                        الحساب <br />
+                                        محذوف
+                                    </span>
+                                    :
+                                    getAccount?.name.includes(" ") ?
+                                        getAccount?.name.split(" ")[0]
+                                        :
+                                        getAccount?.name
                             }
                         </h3>
                     }

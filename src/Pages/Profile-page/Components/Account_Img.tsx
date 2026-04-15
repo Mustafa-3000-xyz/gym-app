@@ -1,23 +1,18 @@
-import isShowAccountDetails_Atom from "@/Atoms/Is/isShowAccountDetails_Atom";
 import { Account_Img_Props } from "@/Global-components/types";
-import { useSetAtom } from "jotai";
+import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
 import { Camera } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
+import { useDispatch } from "react-redux";
 // ========================================================== //
 export default function Account_Img(
     {
+        accountId,
         img,
         accountType,
         isShowCamera,
-        whenClickOnCameraCloseAccountDetails = true,
-        widthAndHeight = "w-28 h-28",
-        onGetImg
     }: Account_Img_Props
 ) {
-    const setIsShowAccountDetailsAtom = useSetAtom(isShowAccountDetails_Atom);
-
-
-    const [theImg, setTheImg] = useState<string>(img);
+    const dispatch = useDispatch();
     const inpRef = useRef<HTMLInputElement>(null);
 
 
@@ -25,10 +20,6 @@ export default function Account_Img(
     function clickOnCamera(e: React.MouseEvent<HTMLButtonElement>) {
         e.stopPropagation();
         inpRef.current?.click();
-
-        if (whenClickOnCameraCloseAccountDetails) {
-            setIsShowAccountDetailsAtom(false);
-        }
     }
 
     function selectImg(e: React.ChangeEvent<HTMLInputElement>) {
@@ -41,35 +32,29 @@ export default function Account_Img(
         reader.readAsDataURL(file);
         reader.onloadend = () => {
             const base64 = reader.result as string;
-            setTheImg(base64);
+
+
+            dispatch(updatePropertyInAccount({
+                id: accountId as any,
+                column: "profileImg",
+                value: base64
+            }) as any);
         };
     }
 
 
 
-    useEffect(function () {
-        setTheImg(img);
-    }, [img]);
-
-    useEffect(function () {
-        if (theImg != img) {
-            onGetImg?.(theImg);
-        }
-    }, [theImg]);
-
-
-
 
     return <div className={`
-            ${widthAndHeight} relative
-            border-3 rounded-full
+            w-28 h-28 relative
+            border-4 rounded-full
             flex items-center justify-center text-white
             ${accountType == "manager" ? "border-(--managerColor)" : "border-(--captainColor)"}
         `}
     >
         <img
-            className={"w-full h-full object-cover rounded-full"}
-            src={theImg ? theImg : "account.png"}
+            className="w-full h-full object-cover rounded-full"
+            src={img ? img : "account.png"}
             alt="account"
         />
 

@@ -16,15 +16,14 @@ export default function Welcome_Message(
         let count = 0;
 
         const interval = setInterval(() => {
-            setIndex(count);
-
-            if (count >= texts.length) {
+            if (count == texts.length - 1) {
                 clearInterval(interval);
                 onIsWelcomeMessegeFinished(true);
-                return;
+            } 
+            else {
+                count += 1;
+                setIndex(count);
             }
-
-            count += 1;
         }, 2500);
 
         return () => clearInterval(interval);

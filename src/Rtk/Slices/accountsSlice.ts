@@ -3,25 +3,27 @@ import { accountsTable } from "../tables";
 import { accounte } from "@/Pages/types";
 import { updatePropertyInAccount_Type, updateSomePropertiesInAccount_Type } from "../types";
 // ======================================= //
-export const getAllAccountes = createAsyncThunk("accountsSlice/getAllAccountes", async function () {
+export const getAllAccounts = createAsyncThunk("accountsSlice/getAllAccounts", async function () {
     const database = await accountsTable();
-    const accountesList: accounte[] = await database.select("SELECT * FROM accountes");
-    const result = accountesList.sort((a, b) => a.id as any - (b.id as any));
+    const accountsList: accounte[] = await database.select("SELECT * FROM accounts");
+    const result = accountsList.sort((a, b) => a.id as any - (b.id as any));
     return result
 });
 
 export const addAccount = createAsyncThunk("accountsSlice/addAccount", async function (data: accounte) {
     const database = await accountsTable();
-    const query = `INSERT INTO accountes (
-        img, name, age, password, type, totalForActiveSessions, permissions
-    ) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    const query = `INSERT INTO accounts (
+        name, age, password, type, profileImg, coverImg, workingHours, totalForActiveSessions, permissions
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     const values = [
-        data.img,
         data.name,
         data.age,
         data.password,
         data.type,
+        data.profileImg,
+        data.coverImg,
+        data.workingHours,
         data.totalForActiveSessions,
         data.permissions
     ];
@@ -39,7 +41,7 @@ export const deleteAccountById = createAsyncThunk(
         const database = await accountsTable();
 
         await database.execute(
-            "DELETE FROM accountes WHERE id = ?",
+            "DELETE FROM accounts WHERE id = ?",
             [id]
         );
 
@@ -56,12 +58,12 @@ export const updatePropertyInAccount = createAsyncThunk(
         const database = await accountsTable();
 
         await database.execute(
-            `UPDATE accountes SET ${column} = ? WHERE id = ?`,
+            `UPDATE accounts SET ${column} = ? WHERE id = ?`,
             [value, id]
         );
 
         const result = await database.select(
-            `SELECT * FROM accountes WHERE id = ?`,
+            `SELECT * FROM accounts WHERE id = ?`,
             [id]
         );
 
@@ -84,12 +86,12 @@ export const updateSomePropertiesInAccount = createAsyncThunk(
         const result = keys.map(key => (values as any)[key]);
 
         await database.execute(
-            `UPDATE accountes SET ${setClause} WHERE id = ?`,
+            `UPDATE accounts SET ${setClause} WHERE id = ?`,
             [...result, id]
         );
 
         const updatedTrainer = await database.select(
-            `SELECT * FROM accountes WHERE id = ?`,
+            `SELECT * FROM accounts WHERE id = ?`,
             [id]
         );
 
@@ -103,7 +105,7 @@ const accountsSlice = createSlice({
     reducers: {},
 
     extraReducers: function (builde) {
-        builde.addCase(getAllAccountes.fulfilled as any, (_, action) => {
+        builde.addCase(getAllAccounts.fulfilled as any, (_, action) => {
             return action.payload;
         });
 

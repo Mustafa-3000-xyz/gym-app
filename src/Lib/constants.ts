@@ -21,7 +21,41 @@ export const attendanceRecordePagePath = "/attendance-recorde-page";
 export const profitsAndExpensesPagePath = "/profits-and-expenses-page";
 export const settingsPagePath = "/settings-page";
 export const expalinAppPagePath = "/explain-app-page";
+export const profilePagePath = "/profile-page";
 
 
 // These permissions
 export const USING_ACTIVE_SOME_SESSIONS = "USING_ACTIVE_SOME_SESSIONS";
+
+
+// All permissions
+export const allPermissions = [
+    {
+        title: "صفحة المتدربين",
+        key: trainerPagePath
+    },
+    {
+        title: "صفحة الحسابات",
+        key: accountesPagePath
+    },
+    {
+        title: "صفحة سجل الحضور",
+        key: attendanceRecordePagePath
+    },
+    {
+        title: "صفحة الارباح والمصروفات",
+        key: profitsAndExpensesPagePath
+    },
+    {
+        title: "صفحة الاعدادات",
+        key: settingsPagePath
+    },
+    {
+        title: "صفحة شرح البرنامج",
+        key: expalinAppPagePath
+    },
+    {
+        title: "استخدام تفعيل بعض الحصص",
+        key: USING_ACTIVE_SOME_SESSIONS,
+    }
+];

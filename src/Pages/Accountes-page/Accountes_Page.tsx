@@ -1,7 +1,7 @@
 import All_Accountes from "@/Global-components/All-accountes/All_Accountes";
 import { IdCardLanyard, Plus, Shell } from "lucide-react";
 import { useState } from "react";
-import Add_Account from "./Components/Add-account/Add_Account";
+import Add_Account from "./Components/Add_Account";
 import Box from "@/Global-components/Box/Box";
 import { useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
@@ -18,7 +18,6 @@ export default function Accountes_Page() {
     const [isShowAddAccount, setIsShowAddAccount] = useState<boolean>(false);
 
     const theAccount = state.accountes.find(ele => ele.id == isLoginAtom.id);
-
 
 
     function clickOnAddAccount() {
@@ -44,7 +43,7 @@ export default function Accountes_Page() {
 
     return <section className="mb-5">
         {/* Title & discription */}
-        <Title_And_Discription_For_Pages 
+        <Title_And_Discription_For_Pages
             title="صفحة الحسابات"
             discription="في تلك الصفحه يمكنك معرفة كل الحسابات وإنشاء حسابات جديده"
         />
@@ -73,12 +72,12 @@ export default function Accountes_Page() {
         {/* Create new account */}
         <div>
             <Add_Btn
+                icon={<Plus size={20} strokeWidth={3} />}
+                title="إنشاء حساب جديد"
                 styleTheBgAndBorderBtn={`
                     bg-emerald-500 border-emerald-600
                     ${theAccount?.type != "manager" && "cursor-not-allowed opacity-55"}
                 `}
-                icon={<Plus size={20} strokeWidth={3} />}
-                title="إنشاء حساب جديد"
                 onClick={clickOnAddAccount}
             />
         </div>

@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Sing_Up_Page from "../Sing-up-page/Sing_Up_Page";
 import Login_Page from "../Login-page/Login_Page";
-import { getAllAccountes } from "@/Rtk/Slices/accountsSlice";
+import { getAllAccounts } from "@/Rtk/Slices/accountsSlice";
 // ========================================================== //
 export default function Authentication_Page() {
     const dispatch = useDispatch();
@@ -12,7 +12,7 @@ export default function Authentication_Page() {
 
 
     useEffect(function () {
-        dispatch(getAllAccountes() as any);
+        dispatch(getAllAccounts() as any);
         localStorage.setItem("theAccount", "null");
     }, []);
 

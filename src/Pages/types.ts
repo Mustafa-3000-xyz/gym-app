@@ -15,18 +15,20 @@ export interface trainer {
 }
 
 export interface accounte {
-    id?: number | string,
-    img: string,
+    id?: number,
     name: string,
-    age: number | string,
+    age: number,
     password: string,
     type: "manager" | "captain",
+    profileImg: string,
+    coverImg: string,
+    workingHours: number,
     totalForActiveSessions: number,
     permissions?: string[] | "fullAccess",
 }
 
 export interface activeSessionsList_Type {
-    accountId: number,
+    accountId: number | "removed",
     sessions: number[]
 }
 

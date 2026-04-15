@@ -11,7 +11,7 @@ export default function Sing_Up_Page() {
     const [managerInfo, setManagerInfo] = useState({});
 
 
-    const [doesGetAllData, setDoesGetAllData] = useState(false);
+    const [isGetAllData, setIsGetAllData] = useState(false);
     const [getName, setGetName] = useState("");
     const [getAge, setGetAge] = useState("");
     const [getPassword, setGetPassword] = useState("");
@@ -20,11 +20,11 @@ export default function Sing_Up_Page() {
 
     useEffect(function () {
         if (!getName || !getAge || !getPassword) {
-            setDoesGetAllData(false);
+            setIsGetAllData(false);
             return;
         }
 
-        setDoesGetAllData(true);
+        setIsGetAllData(true);
         setManagerInfo({
             name: getName,
             age: getAge,
@@ -68,10 +68,10 @@ export default function Sing_Up_Page() {
                     className={`
                         w-full mt-10 transition duration-300
                         bg-blue-500 text-white p-2 rounded-lg
-                        ${doesGetAllData ? 'opacity-100 cursor-pointer' : 'opacity-45 cursor-not-allowed'}
+                        ${isGetAllData ? 'opacity-100 cursor-pointer' : 'opacity-45 cursor-not-allowed'}
                     `}
                     onClick={() => setIsShowEndMessage(true)}
-                    disabled={!doesGetAllData}
+                    disabled={!isGetAllData}
                 >
                     التالي
                 </button>

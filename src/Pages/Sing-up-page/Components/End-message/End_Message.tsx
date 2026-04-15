@@ -21,22 +21,22 @@ export default function End_Message(
         let count = 0;
 
         const interval = setInterval(() => {
-            setIndex(count);
-
-            if (count >= texts.length) {
+            if (count == texts.length - 1) {
                 clearInterval(interval);
                 dispatch(addAccount({
                     ...managerInfo,
-                    img: "",
+                    profileImg: "",
+                    coverImg: "",
                     type: "manager",
+                    workingHours: 0,
                     totalForActiveSessions: 0,
-                    permissions: "fullAccess",
+                    permissions: "fullAccess"
                 }) as any)
-
-                return;
+            } 
+            else {
+                count += 1;
+                setIndex(count);
             }
-
-            count += 1;
         }, 2500);
 
         return () => clearInterval(interval);

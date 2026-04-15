@@ -1,4 +1,4 @@
-import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath, USING_ACTIVE_SOME_SESSIONS } from "@/Lib/constants";
+import { allPermissions, expalinAppPagePath } from "@/Lib/constants";
 import { Permissions_Props } from "@/Pages/types";
 import { KeyRound } from "lucide-react";
 // ========================================================== //
@@ -9,38 +9,6 @@ export default function Permissions(
         onGetPermissionsList
     }: Permissions_Props
 ) {
-    const allPermissions = [
-        {
-            title: "صفحة المتدربين",
-            key: trainerPagePath
-        },
-        {
-            title: "صفحة الحسابات",
-            key: accountesPagePath
-        },
-        {
-            title: "صفحة سجل الحضور",
-            key: attendanceRecordePagePath
-        },
-        {
-            title: "صفحة الارباح والمصروفات",
-            key: profitsAndExpensesPagePath
-        },
-        {
-            title: "صفحة الاعدادات",
-            key: settingsPagePath
-        },
-        {
-            title: "صفحة شرح البرنامج",
-            key: expalinAppPagePath
-        },
-        {
-            title: "استخدام تفعيل بعض الحصص",
-            key: USING_ACTIVE_SOME_SESSIONS,
-        }
-    ];
-
-
     function clickOnPermission(key: string) {
         if (
             permissionsList == "fullAccess"
@@ -64,7 +32,6 @@ export default function Permissions(
 
         onGetPermissionsList(arr);
     }
-
 
 
     return <div className="flex flex-col gap-2">

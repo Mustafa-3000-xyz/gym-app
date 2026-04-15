@@ -1,6 +1,7 @@
-import { Eye, EyeClosed } from "lucide-react";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { Account_Form_Props } from "../types";
+import Password_Inp from "../Password-inp/Password_Inp";
+import { regexAccountName } from "@/Lib/REGEX";
 // ========================================================== //
 export default function Account_Form(
     {
@@ -14,20 +15,15 @@ export default function Account_Form(
         onGetPassword
     }: Account_Form_Props
 ) {
-    const [isShowPassword, setIsShowPassword] = useState(false);
     const [theName, setTheName] = useState(name);
     const [theAge, setTheAge] = useState(age);
     const [thePassword, setThePassword] = useState(password);
 
 
 
-    function clickOnEye() {
-        if (dontChangeValues) return;
-
-        if (isShowPassword) {
-            setIsShowPassword(false);
-        } else {
-            setIsShowPassword(true);
+    function writeInAccountNameInp(e: ChangeEvent<HTMLInputElement>){
+        if (e.target.value.match(regexAccountName)) {
+            setTheName(e.target.value);
         }
     }
 
@@ -41,31 +37,33 @@ export default function Account_Form(
 
 
 
-    return <form>
+    return <form className="mb-5">
         {/* Name & age */}
-        <div className="flex gap-2 justify-center mb-2">
-            <div>
+        <div className="flex gap-2 justify-center mb-5">
+            <div className="w-1/3">
                 <h3 className="mb-1 font-bold">الاسم</h3>
                 <input
                     value={theName}
                     disabled={dontChangeValues}
                     type="text"
                     className={`
-                        rounded-lg border border-black p-1 px-3 focus:outline-none
+                        w-full
+                        rounded-lg border border-black p-2 px-3 focus:outline-none
                         ${dontChangeValues ? "cursor-not-allowed opacity-45" : ""}
                     `}
-                    onChange={(e) => setTheName(e.target.value) as any}
+                    onChange={writeInAccountNameInp}
                 />
             </div>
 
-            <div>
+            <div className="w-1/3">
                 <h3 className="mb-1 font-bold">العمر</h3>
                 <input
                     value={theAge}
                     disabled={dontChangeValues}
                     type="number"
                     className={`
-                        rounded-lg border border-black p-1 px-3 focus:outline-none
+                        w-full
+                        rounded-lg border border-black p-2 px-3 focus:outline-none
                         ${dontChangeValues ? "cursor-not-allowed opacity-45" : ""}
                     `}
                     onChange={(e) => setTheAge(+e.target.value as number) as any}
@@ -76,49 +74,25 @@ export default function Account_Form(
         {/* Password & type */}
         <div className="flex gap-2 justify-center">
             {/* Password */}
-            <div>
+            <div className="w-1/4">
                 <h3 className="mb-1 font-bold">كلمة السر</h3>
-                <div className="relative">
-                    <input
-                        type={isShowPassword ? "text" : "password"}
-                        value={thePassword}
-                        disabled={dontChangeValues}
-                        dir="ltr"
-                        className={`
-                            rounded-lg border border-black p-1 px-3 focus:outline-none 
-                            ${dontChangeValues ? "cursor-not-allowed opacity-45" : ""}
-                        `}
-                        onChange={(e) => setThePassword(e.target.value) as any}
-                    />
-
-                    {
-                        isShowPassword ?
-                            <Eye
-                                className="absolute top-1.5 right-1.5 cursor-pointer"
-                                onClick={clickOnEye}
-                            />
-                            :
-                            <EyeClosed
-                                className={`
-                                    absolute top-1.5 right-1.5
-                                    ${dontChangeValues ? "cursor-not-allowed opacity-45" : "cursor-pointer"}
-                                `}
-                                onClick={clickOnEye}
-                            />
-                    }
-                </div>
+                <Password_Inp
+                    password={thePassword}
+                    onGetPassword={setThePassword}
+                />
             </div>
 
             {/* Type */}
-            <div>
+            <div className="w-1/4">
                 <h3 className="mb-1 font-bold">نوع الحساب</h3>
                 <input
                     type={"text"}
                     defaultValue={accountType == "manager" ? "مدير" : "كابتن"}
                     disabled
                     className={`
+                        w-full
                         opacity-45 cursor-not-allowed
-                        rounded-lg border border-black p-1 px-3 focus:outline-none 
+                        rounded-lg border border-black p-2 px-3 focus:outline-none 
                     `}
                 />
             </div>

@@ -1,55 +1,40 @@
-import { Archive, Book, IdCardLanyard, LogOut, Settings, Users, WalletMinimal } from "lucide-react";
+import { Archive, Book, CircleUser, IdCardLanyard, Settings, Users, WalletMinimal } from "lucide-react";
 import Sidebar_Links from "./Sidebar-links/Sidebar_Links";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { useDispatch, useSelector } from "react-redux";
-import React, { useEffect, useState } from "react";
-import { getAllAccountes } from "@/Rtk/Slices/accountsSlice";
+import { useEffect, useState } from "react";
+import { getAllAccounts } from "@/Rtk/Slices/accountsSlice";
 import { store_Type } from "@/Rtk/types";
 import { accounte } from "@/Pages/types";
-import { alert } from "@/Lib/functions";
-import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath } from "@/Lib/constants";
-import isShowAccountDetails_Atom from "@/Atoms/Is/isShowAccountDetails_Atom";
+import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profilePagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath } from "@/Lib/constants";
+import { Link, useLocation } from "react-router-dom";
 import accountDetails_Atom from "@/Atoms/Details/accountDetails_Atom";
-import Account_Img from "../All-accountes/Account-img/Account_Img";
 // ========================================================== //
 export default function SideBar() {
-    const [isLoginAtom, setIsLoginAtom] = useAtom(isLogin_Atom);
-    const setAccountDetailsAtom = useSetAtom(accountDetails_Atom);
-    const setIsShowAccountDetailsAtom = useSetAtom(isShowAccountDetails_Atom);
-
     const state = useSelector(state => state as store_Type);
+    const isLoginAtom = useAtomValue(isLogin_Atom);
+    const setAccountDetailsAtom = useSetAtom(accountDetails_Atom);
     const dispatch = useDispatch();
 
     const [theAccount, setTheAccount] = useState<accounte | null>(null);
+    const { pathname } = useLocation();
 
 
 
-    function clickOnLogOutBtn(e: React.MouseEvent) {
-        e.stopPropagation();
+    function clickOnProfilePageLink() {
+        if (pathname == profilePagePath) return;
 
-        alert({
-            titleBeforeClickOnOk: "هل انت متأكد من تسجيل الخروج لهذا الحساب ؟؟",
-            showMessageAfterClickOnOk: false,
-            funRunWhenClickOnOk: function () {
-                setIsLoginAtom(null);
-            }
-        });
+        setAccountDetailsAtom(null);
     }
 
-    function clickOnInfoBtn() {
-        const getAccount = state.accountes.find(ele => ele.id == isLoginAtom.id);
 
-        setIsShowAccountDetailsAtom(true);
-        setAccountDetailsAtom(getAccount as accounte);
-    }
 
 
     useEffect(function () {
-        dispatch(getAllAccountes() as any);
+        dispatch(getAllAccounts() as any);
     }, []);
 
-    // This for return the permissions to array
     useEffect(function () {
         const result = state.accountes.find(ele => ele.id == isLoginAtom?.id);
 
@@ -116,6 +101,17 @@ export default function SideBar() {
             />
 
             <Sidebar_Links
+                isShowTheLink={true}
+                linkName="الملف الشخصي"
+                path={profilePagePath}
+                icon={<CircleUser
+                    size={25}
+                    strokeWidth={1.75}
+                />}
+                onClick={clickOnProfilePageLink}
+            />
+
+            <Sidebar_Links
                 isShowTheLink={theAccount?.permissions?.includes(profitsAndExpensesPagePath) as boolean || theAccount?.permissions == "fullAccess"}
                 linkName="الارباح والمصروفات"
                 path={profitsAndExpensesPagePath}
@@ -124,76 +120,58 @@ export default function SideBar() {
                     strokeWidth={1.75}
                 />}
             />
-
-            <hr />
-
-            <ul className="flex flex-col gap-2">
-                <Sidebar_Links
-                    isShowTheLink={theAccount?.permissions?.includes(settingsPagePath) as boolean || theAccount?.permissions == "fullAccess"}
-                    linkName="الاعدادات"
-                    path={settingsPagePath}
-                    icon={<Settings
-                        size={25}
-                        strokeWidth={1.75}
-                    />}
-                />
-
-                <Sidebar_Links
-                    isShowTheLink={theAccount?.permissions?.includes(expalinAppPagePath) as boolean || theAccount?.permissions == "fullAccess"}
-                    linkName="شرح البرنامج"
-                    path={expalinAppPagePath}
-                    icon={<Book
-                        size={25}
-                        strokeWidth={1.75}
-                    />}
-                />
-            </ul>
         </ul>
 
-        {/* Account */}
-        <div
-            className={`
-                flex items-center justify-between mb-5 select-none rounded-lg
-                trainsition-all duration-300  group-hover:p-3 cursor-pointer
-                ${isLoginAtom.type == "manager" ?
-                    "group-hover:bg-(--managerColor) hover:bg-(--managerColor)/85 text-white"
-                    :
-                    "group-hover:bg-(--captainColor) hover:bg-(--captainColor)/85 text-white"
-                }
-            `}
-            onClick={clickOnInfoBtn}
+        <div className={`
+            transition duration-300 rounded-lg p-4 select-none
+            flex flex-col gap-2 mb-3 group-hover:bg-slate-200
+            items-center group-hover:items-start
+        `}
         >
-            {/* Img & name & type */}
-            <div className="flex items-center gap-3">
-                <Account_Img
-                    img={theAccount?.img as string}
-                    isShowCamera={false}
-                    accountType={theAccount?.type as any}
-                    widthAndHeight={"w-10 h-10"}
-                />
+            <h2 className="hidden group-hover:flex text-lg font-bold whitespace-nowrap">
+                المزيد :
+            </h2>
 
-
-                <div className="mt-1">
-                    <h3 className="hidden group-hover:block font-bold leading-2 whitespace-nowrap">{theAccount?.name}</h3>
-                    <p className="hidden group-hover:block text-sm">
-                        {
-                            theAccount?.type == "manager" ? "المدير" : "الكابتن"
-                        }
-                    </p>
-                </div>
-            </div>
-
-            <div className="hidden group-hover:flex gap-1">
-                <LogOut
-                    size={33}
-                    strokeWidth={3}
+            {
+                theAccount?.permissions == "fullAccess" || theAccount?.permissions?.includes(settingsPagePath) ?
+                <Link
                     className={`
-                        cursor-pointer p-2 rounded-md bg-red-500 text-white
-                        transition duration-300 hover:bg-red-600
+                        flex gap-2 mb-1 hover:underline
+                        ${pathname == settingsPagePath && "underline"}
                     `}
-                    onClick={clickOnLogOutBtn}
+                    to={settingsPagePath}
+                >
+                    <Settings
+                        size={25}
+                        strokeWidth={1.75}
+                        className="shrink-0"
+                    />
+
+                    <h3 className="hidden group-hover:flex whitespace-nowrap">
+                        الاعدادات
+                    </h3>
+                </Link>
+                :
+                null
+            }
+
+            <Link
+                className={`
+                    flex gap-2 mb-1 hover:underline
+                    ${pathname == expalinAppPagePath && "underline"}
+                `}
+                to={expalinAppPagePath}
+            >
+                <Book
+                    size={25}
+                    strokeWidth={1.75}
+                    className="shrink-0"
                 />
-            </div>
+
+                <h3 className="hidden group-hover:flex whitespace-nowrap">
+                    شرح البرنامج
+                </h3>
+            </Link>
         </div>
     </nav>
 }
