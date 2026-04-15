@@ -21,9 +21,18 @@ export default function Account_Form(
 
 
 
-    function writeInAccountNameInp(e: ChangeEvent<HTMLInputElement>){
+    function writeInAccountNameInp(e: ChangeEvent<HTMLInputElement>) {
         if (e.target.value.match(regexAccountName)) {
             setTheName(e.target.value);
+        }
+    }
+
+    function writeInAccountAgeInp(e: ChangeEvent<HTMLInputElement>) {
+        if (+e.target.value >= 100) {
+            setTheAge(100);
+        }
+        else {
+            setTheAge(+e.target.value);
         }
     }
 
@@ -58,7 +67,7 @@ export default function Account_Form(
             <div className="w-1/3">
                 <h3 className="mb-1 font-bold">العمر</h3>
                 <input
-                    value={theAge}
+                    value={theAge >= 100 ? 100 : theAge}
                     disabled={dontChangeValues}
                     type="number"
                     className={`
@@ -66,7 +75,7 @@ export default function Account_Form(
                         rounded-lg border border-black p-2 px-3 focus:outline-none
                         ${dontChangeValues ? "cursor-not-allowed opacity-45" : ""}
                     `}
-                    onChange={(e) => setTheAge(+e.target.value as number) as any}
+                    onChange={writeInAccountAgeInp}
                 />
             </div>
         </div>

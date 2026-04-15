@@ -1,7 +1,7 @@
 import Account_Img from "@/Pages/Profile-page/Components/Account_Img";
 import Box from "@/Global-components/Box/Box";
 import { allPermissions } from "@/Lib/constants";
-import { deleteAccountById, getAllAccounts, updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
+import { deleteAccountById, getAllAccounts, updatePropertyInAccount, updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
 import { useAtom } from "jotai"
 import { BriefcaseBusiness, ImageOff, KeyRound, LogOut, Shell, Trash } from "lucide-react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
@@ -23,6 +23,12 @@ export default function Profile_Page() {
     const [theAccount, setTheAccount] = useState<accounte | null>(accountDetailsAtom ?? null);
     const [permissionsList, setPermissionsList] = useState<string | string[]>("fullAccess");
     const [isShowEditingAccount, setIsShowEditingAccount] = useState(false);
+
+    const [isSaveChange, setIsSaveChange] = useState(false);
+    const [getName, setGetName] = useState("");
+    const [getAge, setGetAge] = useState(0);
+    const [getPassword, setGetPassword] = useState("");
+
     const inpRef = useRef<HTMLInputElement | null>(null);
 
 
@@ -101,8 +107,21 @@ export default function Profile_Page() {
         }) as any);
     }
 
-    function clickOnSaveChangesBtn(){
-        console.log("D");
+    function clickOnSaveChangesBtn() {
+        if (!isSaveChange) return;
+
+
+        dispatch(updateSomePropertiesInAccount({
+            id: theAccount?.id as any,
+            values:{
+                name: getName,
+                age: getAge,
+                password: getPassword
+            }
+        }) as any)
+
+        setIsShowEditingAccount(false);
+        setIsSaveChange(false)
     }
 
 
@@ -150,6 +169,26 @@ export default function Profile_Page() {
         setTheAccount(getAccount ?? null);
     }, [state.accountes]);
 
+
+    useEffect(function () {
+        if (!getName || !getAge || !getPassword) {
+            setIsSaveChange(false);
+            return;
+        }
+
+
+        if (
+            (getName != theAccount?.name)
+            ||
+            (getAge != theAccount?.age)
+            ||
+            (getPassword != theAccount?.password)
+        ) {
+            setIsSaveChange(true);
+        }else{
+            setIsSaveChange(false);
+        }
+    }, [getName, getAge, getPassword]);
 
 
 
@@ -335,20 +374,21 @@ export default function Profile_Page() {
                         password={theAccount.password}
                         accountType={theAccount.type}
                         dontChangeValues={false}
-                        onGetName={() => null}
-                        onGetAge={() => null}
-                        onGetPassword={() => null}
+                        onGetName={setGetName}
+                        onGetAge={setGetAge}
+                        onGetPassword={setGetPassword}
                     />
 
 
                     <div className="flex justify-center my-10">
                         <button
                             className={`
-                                w-2/3
+                                w-2/3 duration-300
                                 bg-(--thirdColor) text-white p-3 rounded-lg 
-                                cursor-not-allowed opacity-45
+                                ${isSaveChange ? "cursor-pointer opacity-100" : "cursor-not-allowed opacity-45"}
                             `}
                             onClick={clickOnSaveChangesBtn}
+                            disabled={!isSaveChange}
                         >
                             حفظ التغيرات
                         </button>
