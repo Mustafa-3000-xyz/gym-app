@@ -31,6 +31,8 @@ export default function Add_Account(
             type: "captain",
             profileImg: "",
             coverImg: "",
+            loginDate: "",
+            logOutDate: "",
             workingHours: 0,
             totalForActiveSessions: 0,
             permissions: JSON.stringify(permissionsList),

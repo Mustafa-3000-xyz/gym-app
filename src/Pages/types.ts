@@ -22,6 +22,8 @@ export interface accounte {
     type: "manager" | "captain",
     profileImg: string,
     coverImg: string,
+    loginDate: Date | string,
+    logOutDate: Date | string,
     workingHours: number,
     totalForActiveSessions: number,
     permissions?: string[] | "fullAccess",

@@ -7,10 +7,15 @@ import { useNavigate } from "react-router-dom";
 import { profilePagePath } from "@/Lib/constants";
 import Password_Inp from "@/Global-components/Password-inp/Password_Inp";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
+import { logOutFromOldAccount } from "@/Lib/functions";
 // ========================================================== //
 export default function Account_Card(
     { account }: { account: accounte }
 ) {
+    const dispatch = useDispatch();
+
     const setAccountDetailsAtom = useSetAtom(accountDetails_Atom);
     const [isLoginAtom, setIsLoginAtom] = useAtom(isLogin_Atom);
 
@@ -26,10 +31,23 @@ export default function Account_Card(
         account: accounte
     ) {
         if (account.password == password) {
+            // when switch another account, this action is log out from old account
+            if (isLoginAtom) {
+                logOutFromOldAccount(isLoginAtom.id);
+            }
+
+            // Set the new account id
             setIsLoginAtom({
                 id: account.id as any,
                 type: account.type as any
             });
+
+            // Start count the work houres for the new account
+            dispatch(updatePropertyInAccount({
+                id: account.id as any,
+                column: "loginDate",
+                value: new Date().toISOString()
+            }) as any);
 
             setErrorMessage("");
         }
@@ -47,7 +65,6 @@ export default function Account_Card(
             navigate(profilePagePath);
         }
     }
-
 
 
 

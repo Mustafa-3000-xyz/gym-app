@@ -42,6 +42,8 @@ export async function accountsTable() {
                 type TEXT,
                 profileImg TEXT,
                 coverImg TEXT,
+                loginDate TEXT,
+                logOutDate TEXT,
                 workingHours INTEGER,
                 totalForActiveSessions INTEGER,
                 permissions TEXT

@@ -22,6 +22,10 @@ type updateOneColumnInAccount =
     | "profileImg"
     | "coverImg"
     | "totalForActiveSessions"
+    | "workingHours"
+    | "loginDate"
+    | "logOutDate"
+
 
 
 export interface store_Type {
@@ -49,6 +53,9 @@ export interface updateSomePropertiesInTrainer_Type {
         subscriptionEnd?: string,
         subscriptionState?: string,
         activeSessionsList?: activeSessionsList_Type[],
+        workingHours?: number,
+        loginDate?: Date | string,
+        logOutDate?: Date | string
     }
 }
 
@@ -67,8 +74,10 @@ export interface updateSomePropertiesInAccount_Type {
         type?: "manager" | "captain",
         profileImg?: string,
         coverImg?: string,
-        workingHours?: number,
         permissions?: string[] | "fullAccess",
-        totalForActiveSessions?: number
+        totalForActiveSessions?: number,
+        workingHours?: number,
+        loginDate?: Date | string,
+        logOutDate?: Date | string
     }
 }

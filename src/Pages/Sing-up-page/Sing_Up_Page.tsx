@@ -34,7 +34,7 @@ export default function Sing_Up_Page() {
 
 
 
-    return <section className="select-none">
+    return <section className="select-none w-full">
         {
             !isWelcomeMessegeFinished && !isShowEndMessage ?
                 <Welcome_Message onIsWelcomeMessegeFinished={setIsWelcomeMessegeFinished} />
@@ -48,6 +48,7 @@ export default function Sing_Up_Page() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1 }}
+                className="w-full"
             >
                 <h1 className="text-center text-2xl font-bold mb-10">
                     الان قم بملئ تلك البيانات

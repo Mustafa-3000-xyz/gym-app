@@ -12,9 +12,11 @@ import { useEffect } from "react";
 import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profilePagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath } from "./Lib/constants";
 import Explain_App_Page from "./Pages/Explain-app-page/Explain_App_Page";
 import Profile_Page from "./Pages/Profile-page/Profile_Page";
+import { logOutFromOldAccount } from "./Lib/functions";
 // ========================================================== //
 function App() {
   const isLoginAtom = useAtomValue(isLogin_Atom);
+
 
 
   async function logOutWhenCloseApp() {
@@ -22,17 +24,19 @@ function App() {
     const appWindow = getCurrentWindow();
 
     await appWindow.listen('tauri://close-requested', async () => {
+      if (isLoginAtom) {
+        logOutFromOldAccount(isLoginAtom.id);
+      }
+
       localStorage.setItem("theAccount", JSON.stringify(null));
       await appWindow.destroy();
     });
   }
 
 
-
-  useEffect(() => {
+  useEffect(function () {
     logOutWhenCloseApp();
   }, []);
-
 
   useEffect(function () {
     localStorage.setItem("theAccount", JSON.stringify(isLoginAtom));

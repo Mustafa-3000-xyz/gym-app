@@ -28,6 +28,8 @@ export default function End_Message(
                     profileImg: "",
                     coverImg: "",
                     type: "manager",
+                    loginDate: "",
+                    logOutDate: "",
                     workingHours: 0,
                     totalForActiveSessions: 0,
                     permissions: "fullAccess"

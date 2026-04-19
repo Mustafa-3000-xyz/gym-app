@@ -1,7 +1,9 @@
-import { trainer } from "@/Pages/types";
+import { accounte, trainer } from "@/Pages/types";
 import Swal from "sweetalert2";
 import { alertSuccessType, alertType } from "./types";
 import { stateIsActive, stateIsPending } from "./constants";
+import store from "@/Rtk/store";
+import { updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
 // ========================================================== //
 /*
     This function his jop is take trainer and return style subscription state,
@@ -69,4 +71,23 @@ export function alert({
             funRunWhenClickOnOk();
         }
     });
+}
+
+export function logOutFromOldAccount(oldAccountId: number) {
+    const state = store.getState().accountes as accounte[];
+    const theAccount = state.find(ele => ele.id == oldAccountId);
+
+    const loginTime = new Date(theAccount?.loginDate as any).getTime();
+    const logOutTime = new Date().getTime();
+    const sessionHours = (logOutTime - loginTime) / (1000 * 60 * 60);
+    const totalUpdatedHours = (theAccount?.workingHours || 0) + sessionHours;
+
+
+    store.dispatch(updateSomePropertiesInAccount({
+        id: oldAccountId,
+        values: {
+            logOutDate: new Date().toISOString(),
+            workingHours: parseFloat(Math.trunc(totalUpdatedHours) as any)
+        }
+    }) as any);
 }

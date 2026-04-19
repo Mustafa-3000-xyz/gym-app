@@ -4,21 +4,22 @@ import { allPermissions } from "@/Lib/constants";
 import { deleteAccountById, getAllAccounts, updatePropertyInAccount, updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
 import { useAtom } from "jotai"
 import { BriefcaseBusiness, ImageOff, KeyRound, LogOut, Shell, Trash } from "lucide-react";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { accounte } from "../types";
 import { store_Type } from "@/Rtk/types";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import Permissions from "../../Global-components/Permissions/Permissions";
 import accountDetails_Atom from "@/Atoms/Details/accountDetails_Atom";
-import { alert } from "@/Lib/functions";
+import { alert, logOutFromOldAccount } from "@/Lib/functions";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
 // ========================================================== //
 export default function Profile_Page() {
+    const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
+
     const [isLoginAtom, setIsLoginAtom] = useAtom(isLogin_Atom);
     const [accountDetailsAtom, setAccountDetailsAtom] = useAtom(accountDetails_Atom);
-    const dispatch = useDispatch();
 
     const [theAccount, setTheAccount] = useState<accounte | null>(accountDetailsAtom ?? null);
     const [permissionsList, setPermissionsList] = useState<string | string[]>("fullAccess");
@@ -65,6 +66,7 @@ export default function Profile_Page() {
             showMessageAfterClickOnOk: false,
             funRunWhenClickOnOk: function () {
                 setIsLoginAtom(null);
+                logOutFromOldAccount(isLoginAtom.id);
             }
         })
     }
@@ -113,7 +115,7 @@ export default function Profile_Page() {
 
         dispatch(updateSomePropertiesInAccount({
             id: theAccount?.id as any,
-            values:{
+            values: {
                 name: getName,
                 age: getAge,
                 password: getPassword
@@ -169,7 +171,6 @@ export default function Profile_Page() {
         setTheAccount(getAccount ?? null);
     }, [state.accountes]);
 
-
     useEffect(function () {
         if (!getName || !getAge || !getPassword) {
             setIsSaveChange(false);
@@ -185,14 +186,31 @@ export default function Profile_Page() {
             (getPassword != theAccount?.password)
         ) {
             setIsSaveChange(true);
-        }else{
+        } else {
             setIsSaveChange(false);
         }
     }, [getName, getAge, getPassword]);
 
 
+    const houresTotal = useMemo(function () {
+        if (accountDetailsAtom) {
+            return accountDetailsAtom.workingHours || 0;
+        }
+        else if (theAccount?.loginDate != "") {
+            const loginTime = new Date(theAccount?.loginDate as any).getTime();
+            const logOutTime = new Date().getTime();
+            const houres = Math.trunc((logOutTime - loginTime) / (1000 * 60 * 60));
+
+
+            return Number(Math.abs(houres)) + Number(theAccount?.workingHours);
+        }
+    }, [theAccount]);
+
+
+
 
     if (!theAccount) return null
+
 
     return <section>
         {/* Cover & img */}
@@ -274,8 +292,8 @@ export default function Profile_Page() {
             <Box
                 icon={<BriefcaseBusiness />}
                 styleIcon="bg-neutral-200 text-neutral-500"
-                title="عدد ساعات العمل"
-                total={345345}
+                title="مجموع عدد ساعات العمل"
+                total={houresTotal as any}
             />
 
             <Box
