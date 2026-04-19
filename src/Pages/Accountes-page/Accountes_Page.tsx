@@ -9,7 +9,6 @@ import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import { useAtomValue } from "jotai";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import Swal from "sweetalert2";
-import Title_And_Discription_For_Pages from "@/Global-components/Title-and-discription-for-page/Title_And_Discription_For_Pages";
 // ========================================================== //
 export default function Accountes_Page() {
     const isLoginAtom = useAtomValue(isLogin_Atom);
@@ -42,12 +41,6 @@ export default function Accountes_Page() {
 
 
     return <section className="mb-5">
-        {/* Title & discription */}
-        <Title_And_Discription_For_Pages
-            title="صفحة الحسابات"
-            discription="في تلك الصفحه يمكنك معرفة كل الحسابات وإنشاء حسابات جديده"
-        />
-
         {/* Boxes */}
         <div className="grid grid-cols-2 gap-3 mb-5">
             <Box

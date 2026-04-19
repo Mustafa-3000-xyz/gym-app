@@ -13,7 +13,6 @@ import { stateIsActive } from "@/Lib/constants";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import { useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
-import Title_And_Discription_For_Pages from "@/Global-components/Title-and-discription-for-page/Title_And_Discription_For_Pages";
 import Table_For_Trainers from "@/Global-components/Table-for-trainers/Table_For_Trainers";
 // ========================================================== //
 export default function Trainers_Page() {
@@ -53,12 +52,6 @@ export default function Trainers_Page() {
 
 
     return <section>
-        {/* Title & discription */}
-        <Title_And_Discription_For_Pages
-            title="صفحة المتدربين"
-            discription="اهلا بك يا كابتن , تلك الصفحه لمعرفة التفاصيل الخاصه بالمشتركين"
-        />
-
         {/* Boxes */}
         <div className="mb-7 grid grid-cols-3 gap-3">
             <Box

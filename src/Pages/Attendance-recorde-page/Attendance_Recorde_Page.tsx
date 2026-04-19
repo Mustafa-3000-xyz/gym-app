@@ -1,6 +1,5 @@
 import Box from "@/Global-components/Box/Box";
 import Input_Search from "@/Global-components/Input-search/Input_Search";
-import Title_And_Discription_For_Pages from "@/Global-components/Title-and-discription-for-page/Title_And_Discription_For_Pages";
 import { BookUser, CalendarDays } from "lucide-react";
 import Date_Box from "./Components/Date-box/Date_Box";
 import Filter_Attendee from "./Components/Filter-attendee/Filter_Attendee";
@@ -8,12 +7,6 @@ import Table_For_Trainers from "@/Global-components/Table-for-trainers/Table_For
 // ========================================================== //
 export default function Attendance_Recorde_Page() {
     return <div>
-        {/* Title & discription*/}
-        <Title_And_Discription_For_Pages
-            title="صفحة سجل الحضور"
-            discription="في تلك الصفحه يتم عرض كل الايام التي حضر فيها المتدربون"
-        />
-
         {/* Boxes */}
         <div className="mb-7 grid grid-cols-2 gap-3">
             <Box
