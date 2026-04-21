@@ -6,7 +6,7 @@ import { Navigation } from "swiper/modules";
 import { updatePropertyInTrainer, updateSomePropertiesInTrainer } from "@/Rtk/Slices/trainersSlice";
 import { alert } from "@/Lib/functions";
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
@@ -28,7 +28,7 @@ export default function Trainer_Details() {
     const state = useSelector(state => state as store_Type);
 
     const isLoginAtom = useAtomValue(isLogin_Atom);
-    const trainerDetailsAtom = useAtomValue(trainerDetails_Atom);
+    const [trainerDetailsAtom, setTrainerDetailsAtom] = useAtom(trainerDetails_Atom);
     const setIsShowTrainerDetailsAtom = useSetAtom(isShowTrainerDetails_Atom);
 
 
@@ -92,9 +92,7 @@ export default function Trainer_Details() {
 
                 dispatch(updateSomePropertiesInTrainer({
                     trainerId: trainerDetailsAtom?.trainerId as any,
-                    values: {
-                        ...updateTheTrainer
-                    } as any
+                    values: { ...updateTheTrainer } as any
                 }) as any);
             }
         });
@@ -103,8 +101,7 @@ export default function Trainer_Details() {
     function finishedSubscriptionUsingSessions(accountId: number) {
         alert({
             titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
-            titleAfterClickOnOk: "تم إنهاء اشتراك المتدرب بنجاح",
-            showMessageAfterClickOnOk: true,
+            showMessageAfterClickOnOk: false,
             funRunWhenClickOnOk: function () {
                 dispatch(updateSomePropertiesInTrainer({
                     trainerId: trainerDetailsAtom?.trainerId as any,
@@ -114,8 +111,12 @@ export default function Trainer_Details() {
                     } as any
                 }) as any);
 
-                setIsShowTrainerDetailsAtom(false);
                 incrementOrDecrementForTotalSession("increment", accountId);
+                setSubscriptionState(stateIsFinished);
+                setTrainerDetailsAtom({
+                    ...trainerDetailsAtom,
+                    subscriptionState: stateIsFinished,
+                } as any);
             }
         });
     }
@@ -378,10 +379,10 @@ export default function Trainer_Details() {
                                 "bg-(--managerColor) text-white !border-0 font-bold"
                                 :
                                 getAccount?.type == "captain" || getAccountId == "removed" ?
-                                "bg-(--captainColor) text-white !border-0" : ""
+                                    "bg-(--captainColor) text-white !border-0" : ""
                             }
 
-                            ${getAccount?.id == isLoginAtom.id || isLoginAtom.type == "manager" || !getAccount ?
+                            ${!getAccount || getAccount?.id == isLoginAtom.id || isLoginAtom.type == "manager" ?
                                 "cursor-pointer opacity-100" : "cursor-not-allowed opacity-40"
                             }
 
@@ -397,21 +398,20 @@ export default function Trainer_Details() {
                     </div>
 
                     {
-                        subscriptionState == stateIsActive &&
-                        <h3 className="text-sm opacity-40">
-                            {
-                                getAccountId == "removed" ?
-                                    <span>
-                                        الحساب <br />
-                                        محذوف
-                                    </span>
-                                    :
-                                    getAccount?.name.includes(" ") ?
-                                        getAccount?.name.split(" ")[0]
+                        subscriptionState == stateIsActive ?
+                            <h3 className="text-sm opacity-40">
+                                {
+                                    getAccountId == "removed" ?
+                                        <span>
+                                            الحساب <br />
+                                            محذوف
+                                        </span>
                                         :
-                                        getAccount?.name
-                            }
-                        </h3>
+                                        getAccount?.name.slice(0, 7)
+                                }
+                            </h3>
+                            :
+                            null
                     }
                 </div>
             })}
@@ -492,32 +492,30 @@ export default function Trainer_Details() {
         </div>
 
         {/* Warning zone */}
-        <div>
-            <div className="bg-red-100/50 p-3 rounded-lg border border-red-300">
-                <h3 className=" text-red-500 font-bold mb-3">
-                    منطقة الإجراءات
-                </h3>
+        <div className="bg-red-100/50 p-3 rounded-lg border border-red-300">
+            <h3 className=" text-red-500 font-bold mb-3">
+                منطقة الإجراءات
+            </h3>
 
-                <div className="flex gap-2">
-                    {
-                        subscriptionState != stateIsFinished ?
-                            <Btn_Finished_Subscription
-                                id={trainerDetailsAtom.trainerId as any}
-                                onGetSubscriptionState={setSubscriptionState}
-                            />
-                            :
-                            <Btn_Subscription_Renewal
-                                trainer={updateTheTrainer as any}
-                                isInfoComplete={isActiveSubscriptionRenewal}
-                                onGetSubscriptionState={setSubscriptionState}
-                            />
-                    }
+            <div className="flex gap-2">
+                {
+                    subscriptionState != stateIsFinished ?
+                        <Btn_Finished_Subscription
+                            id={trainerDetailsAtom.trainerId as any}
+                            onGetSubscriptionState={setSubscriptionState}
+                        />
+                        :
+                        <Btn_Subscription_Renewal
+                            trainer={updateTheTrainer as any}
+                            isInfoComplete={isActiveSubscriptionRenewal}
+                            onGetSubscriptionState={setSubscriptionState}
+                        />
+                }
 
-                    <Btn_Delete_Trainer
-                        closeWindow={() => setIsShowTrainerDetailsAtom(false)}
-                        trainer={trainerDetailsAtom}
-                    />
-                </div>
+                <Btn_Delete_Trainer
+                    trainer={trainerDetailsAtom}
+                    onWhenDeleteTrainer={() => setIsShowTrainerDetailsAtom(false)}
+                />
             </div>
         </div>
     </Popup >

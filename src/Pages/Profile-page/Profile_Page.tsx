@@ -1,4 +1,4 @@
-import Account_Img from "@/Pages/Profile-page/Components/Account_Img";
+import Account_Img from "@/Pages/Profile-page/Components/Account-img/Account_Img";
 import Box from "@/Global-components/Box/Box";
 import { allPermissions } from "@/Lib/constants";
 import { deleteAccountById, getAllAccounts, updatePropertyInAccount, updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
@@ -13,6 +13,7 @@ import Permissions from "../../Global-components/Permissions/Permissions";
 import accountDetails_Atom from "@/Atoms/Details/accountDetails_Atom";
 import { alert, logOutFromOldAccount } from "@/Lib/functions";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
+import Subscriptions_Menu from "./Components/Subscriptions-menu/Subscriptions_Menu";
 // ========================================================== //
 export default function Profile_Page() {
     const dispatch = useDispatch();
@@ -366,20 +367,29 @@ export default function Profile_Page() {
         </div>
 
         {
-            !accountDetailsAtom &&
-            <div className="text-center w-full">
-                <button
-                    className="my-6 cursor-pointer underline text-blue-500"
-                    onClick={clickOnEditingAccountBtn}
-                >
-                    {
-                        isShowEditingAccount ?
-                            "إلغاء تعديل الحساب"
-                            :
-                            " تعديل الحساب"
-                    }
-                </button>
-            </div>
+            !accountDetailsAtom && isLoginAtom.type == "manager" ?
+                <Subscriptions_Menu />
+                :
+                null
+        }
+
+        {
+            !accountDetailsAtom ?
+                <div className="text-center w-full">
+                    <button
+                        className="my-6 cursor-pointer underline text-blue-500"
+                        onClick={clickOnEditingAccountBtn}
+                    >
+                        {
+                            isShowEditingAccount ?
+                                "إلغاء تعديل الحساب"
+                                :
+                                " تعديل الحساب"
+                        }
+                    </button>
+                </div>
+                :
+                null
         }
 
 

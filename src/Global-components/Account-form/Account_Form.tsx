@@ -86,7 +86,7 @@ export default function Account_Form(
             <div className="w-1/4">
                 <h3 className="mb-1 font-bold">كلمة السر</h3>
                 <Password_Inp
-                    password={thePassword}
+                    password={thePassword as any}
                     onGetPassword={setThePassword}
                 />
             </div>

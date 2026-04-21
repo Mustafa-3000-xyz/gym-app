@@ -1,5 +1,5 @@
 import All_Accountes from "@/Global-components/All-accountes/All_Accountes";
-import { IdCardLanyard, Plus, Shell } from "lucide-react";
+import { IdCardLanyard, Shell } from "lucide-react";
 import { useState } from "react";
 import Add_Account from "./Components/Add_Account";
 import Box from "@/Global-components/Box/Box";
@@ -65,9 +65,8 @@ export default function Accountes_Page() {
         {/* Create new account */}
         <div>
             <Add_Btn
-                icon={<Plus size={20} strokeWidth={3} />}
                 title="إنشاء حساب جديد"
-                styleTheBgAndBorderBtn={`
+                styleBtn={`
                     bg-emerald-500 border-emerald-600
                     ${theAccount?.type != "manager" && "cursor-not-allowed opacity-55"}
                 `}

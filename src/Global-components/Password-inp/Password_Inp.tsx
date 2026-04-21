@@ -4,10 +4,11 @@ import { Password_Inp_Props } from "../types";
 import { regexPasswordAccount } from "@/Lib/REGEX";
 // ========================================================== //
 export default function Password_Inp(
-    { 
+    {
+        errorMessageHere,
         password = "",
-        onWriteInInput, 
-        onGetPassword 
+        onGetPassword,
+        onWriteInInput,
     }: Password_Inp_Props
 ) {
     const [isShowPassword, setIsShowPassword] = useState(false);
@@ -28,9 +29,17 @@ export default function Password_Inp(
     function writeInInp(e: ChangeEvent<HTMLInputElement>) {
         if (e.target.value.match(regexPasswordAccount)) {
             onWriteInInput?.(e);
-            setThePassword(e.target.value);
+            setThePassword(e.target.value as any);
         }
     }
+
+
+
+    useEffect(function(){
+        if (errorMessageHere) {
+            setThePassword("");
+        }
+    }, [errorMessageHere]);
 
 
     useEffect(function () {

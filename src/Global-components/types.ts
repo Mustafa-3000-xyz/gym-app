@@ -12,7 +12,7 @@ export interface Sidebar_Linsk_Props {
     path: string,
     icon: ReactNode,
     isShowTheLink: boolean,
-    onClick?: (e: React.MouseEvent)=> void,
+    onClick?: (e: React.MouseEvent) => void,
 }
 
 export interface Popup_Animation_Props {
@@ -50,11 +50,10 @@ export interface Account_Img_Props {
 }
 
 export interface Add_Btn_Props {
-    styleTheBgAndBorderBtn: string,
-    thePaddingY?: string,
+    styleBtn?: string,
+    paddingY?: string,
     title: string,
-    icon: any,
-    onClick: () => void,
+    onClick?: () => void,
 }
 
 export interface Account_Form_Props {
@@ -79,8 +78,9 @@ export interface Input_Search_Props {
     onGetValue: (x: string) => void
 }
 
-export interface Password_Inp_Props{
+export interface Password_Inp_Props {
+    errorMessageHere?: boolean,
     password?: string,
-    onWriteInInput?: (e: ChangeEvent<HTMLInputElement>) => void,
     onGetPassword: (x: string) => void
+    onWriteInInput?: (e: ChangeEvent<HTMLInputElement>) => void,
 }

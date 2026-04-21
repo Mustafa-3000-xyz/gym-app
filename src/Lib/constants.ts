@@ -51,11 +51,7 @@ export const allPermissions = [
         key: settingsPagePath
     },
     {
-        title: "صفحة شرح البرنامج",
-        key: expalinAppPagePath
-    },
-    {
-        title: "استخدام تفعيل بعض الحصص",
+        title: "استخدام ميزة تفعيل بعض الحصص",
         key: USING_ACTIVE_SOME_SESSIONS,
     }
 ];

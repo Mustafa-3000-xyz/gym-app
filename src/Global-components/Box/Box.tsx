@@ -1,7 +1,12 @@
 import { Box_Props } from "../types";
 // ========================================================== //
 export default function Box(
-    {icon, styleIcon, title, total}: Box_Props
+    {
+        icon,
+        styleIcon,
+        title,
+        total
+    }: Box_Props
 ) {
     return <div className="bg-slate-100 rounded-lg h-40 p-5 select-none">
         <div>

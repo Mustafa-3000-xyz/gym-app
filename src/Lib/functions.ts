@@ -73,21 +73,36 @@ export function alert({
     });
 }
 
-export function logOutFromOldAccount(oldAccountId: number) {
+export async function logOutFromOldAccount(oldAccountId: number) {
     const state = store.getState().accountes as accounte[];
     const theAccount = state.find(ele => ele.id == oldAccountId);
 
     const loginTime = new Date(theAccount?.loginDate as any).getTime();
     const logOutTime = new Date().getTime();
     const sessionHours = (logOutTime - loginTime) / (1000 * 60 * 60);
-    const totalUpdatedHours = (theAccount?.workingHours || 0) + sessionHours;
+    const totaldHours = (theAccount?.workingHours || 0) + sessionHours;
 
 
     store.dispatch(updateSomePropertiesInAccount({
         id: oldAccountId,
         values: {
-            logOutDate: new Date().toISOString(),
-            workingHours: parseFloat(Math.trunc(totalUpdatedHours) as any)
+            logOutDate: "",
+            loginDate: "",
+            workingHours: parseFloat(Math.trunc(totaldHours) as any)
         }
     }) as any);
+
+
+    try {
+        const Database = (await import("@tauri-apps/plugin-sql")).default;
+        const db = await Database.load("sqlite:app-gym-db.db");
+
+
+        await db.execute(
+            "UPDATE accounts SET loginDate = ?, logOutDate = ?, workingHours = ? WHERE id = ?",
+            ["", "", totaldHours, oldAccountId]
+        );
+    } catch (err) {
+        console.error("Failed to update DB on close", err);
+    }
 }

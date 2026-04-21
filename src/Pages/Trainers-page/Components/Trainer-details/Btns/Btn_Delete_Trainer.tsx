@@ -5,7 +5,7 @@ import { Trash } from 'lucide-react'
 import { useDispatch } from 'react-redux';
 // ========================================================== //
 export default function Btn_Delete_Trainer(
-    { trainer, closeWindow }: Btn_Delete_Trainer_Props
+    { trainer, onWhenDeleteTrainer }: Btn_Delete_Trainer_Props
 ) {
     const dispatch = useDispatch();
 
@@ -15,9 +15,10 @@ export default function Btn_Delete_Trainer(
         alert({
             titleBeforeClickOnOk: "هل تريد حقا حذف ذلك المتدرب ؟",
             titleAfterClickOnOk: "ذلك المتدرب لم يعد موجود في الجدول",
+            showMessageAfterClickOnOk: true,
             funRunWhenClickOnOk: function () {
                 dispatch(deleteTrainerById(trainer?.trainerId as any) as any)
-                closeWindow();
+                onWhenDeleteTrainer();
             }
         });
     }

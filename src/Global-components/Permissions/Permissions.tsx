@@ -1,4 +1,4 @@
-import { allPermissions, expalinAppPagePath } from "@/Lib/constants";
+import { allPermissions } from "@/Lib/constants";
 import { Permissions_Props } from "@/Pages/types";
 import { KeyRound } from "lucide-react";
 // ========================================================== //
@@ -14,8 +14,6 @@ export default function Permissions(
             permissionsList == "fullAccess"
             ||
             changePermissions == false
-            ||
-            key == expalinAppPagePath
         ) return;
 
         let arr = [...permissionsList as string[]];
@@ -57,7 +55,7 @@ export default function Permissions(
                         className={`
                             border py-2 pb-3 px-5 rounded-full flex gap-2 items-center
                             ${isInclude || permissionsList == "fullAccess" ? "bg-(--thirdColor) text-white" : "border-slate-300"}
-                            ${!changePermissions || ele.key == expalinAppPagePath ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
+                            ${!changePermissions ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
                         `}
                         onClick={() => clickOnPermission(ele.key as any)}
                     >

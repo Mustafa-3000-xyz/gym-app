@@ -13,7 +13,7 @@ export default function Trainer_Info_Form(
         onGetAddress
     }: Trainer_Info_Form_Props
 ) {
-    const trainer = useAtomValue(trainerDetails_Atom);
+    const trainerDetailsAtom = useAtomValue(trainerDetails_Atom);
     const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
 
 
@@ -70,20 +70,20 @@ export default function Trainer_Info_Form(
     }
 
 
-    // When open trainer details, i want show his values
+    // When open trainerDetailsAtom details, i want show his values
     useEffect(function () {
-        if (isShowTrainerDetailsAtom && trainer) {
-            setFirstName(trainer.firstName);
-            setLastName(trainer.lastName);
-            setPhone(trainer.phone);
-            setAddress(trainer.address);
+        if (isShowTrainerDetailsAtom && trainerDetailsAtom) {
+            setFirstName(trainerDetailsAtom.firstName);
+            setLastName(trainerDetailsAtom.lastName);
+            setPhone(trainerDetailsAtom.phone);
+            setAddress(trainerDetailsAtom.address);
         } else {
             setFirstName("");
             setLastName("");
             setPhone("");
             setAddress("");
         }
-    }, [isShowTrainerDetailsAtom, trainer]);
+    }, [isShowTrainerDetailsAtom, trainerDetailsAtom]);
 
 
     useEffect(function () {

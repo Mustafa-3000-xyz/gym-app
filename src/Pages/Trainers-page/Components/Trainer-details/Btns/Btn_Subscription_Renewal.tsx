@@ -25,6 +25,7 @@ export default function Btn_Subscription_Renewal(
         alert({
             titleBeforeClickOnOk: "هل تريد تجديد الاشتراك ؟؟",
             titleAfterClickOnOk: `تم تجديد الاشتراك للمتدرب رقم : ${trainer?.trainerId}`,
+            showMessageAfterClickOnOk: true,
             funRunWhenClickOnOk: function () {
                 dispatch(updateSomePropertiesInTrainer({
                     trainerId: trainer?.trainerId as any,

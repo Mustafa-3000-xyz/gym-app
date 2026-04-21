@@ -19,7 +19,7 @@ export default function Subscription_Info_Form(
         onGetActiveSomeSessions
     }: Subscription_Info_Form_Props
 ) {
-    const trainer = useAtomValue(trainerDetails_Atom);
+    const trainerDetailsAtom = useAtomValue(trainerDetails_Atom);
     const isLoginAtom = useAtomValue(isLogin_Atom);
     const state = useSelector(state => state as store_Type);
     const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
@@ -59,16 +59,16 @@ export default function Subscription_Info_Form(
     }, [state.accountes]);
 
     useEffect(() => {
-        if (isShowTrainerDetailsAtom && trainer) {
-            setSubscriptionName(trainer.subscriptionName);
-            setSessions(trainer.sessionsCount);
-            setPrice(trainer.price);
+        if (isShowTrainerDetailsAtom && trainerDetailsAtom) {
+            setSubscriptionName(trainerDetailsAtom.subscriptionName);
+            setSessions(trainerDetailsAtom.sessionsCount);
+            setPrice(trainerDetailsAtom.price);
         } else {
             setSubscriptionName("");
             setSessions(0);
             setPrice(0);
         }
-    }, [isShowTrainerDetailsAtom, trainer]);
+    }, [isShowTrainerDetailsAtom, trainerDetailsAtom]);
 
 
     useEffect(function () {

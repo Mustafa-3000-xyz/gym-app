@@ -66,7 +66,8 @@ export interface Btn_Slide_Props {
 
 export interface Btn_Filter_Props {
     trainersList: trainer[],
-    onGetFilterResult: (x: trainer[]) => void,
+    onGetFilter: (x: filter) => void,
+    onGetTrainerListAfterFilter: (x: trainer[]) => void,
 }
 
 export interface Menu_Props {
@@ -104,7 +105,7 @@ export interface Btn_Subscription_Renewal_Props {
 
 export interface Btn_Delete_Trainer_Props {
     trainer: trainer,
-    closeWindow: () => void
+    onWhenDeleteTrainer: () => void
 }
 
 export interface Btn_Finished_Subscription_Props {

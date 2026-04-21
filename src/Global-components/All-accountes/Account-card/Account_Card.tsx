@@ -52,10 +52,10 @@ export default function Account_Card(
             setErrorMessage("");
         }
         else {
+
             setErrorMessage("كلمة المرور غير صحيحه");
         }
 
-        setPassword("");
         e.stopPropagation();
     }
 
@@ -127,6 +127,7 @@ export default function Account_Card(
         {/* Set password */}
         <div className="flex gap-1">
             <Password_Inp
+                errorMessageHere={errorMessage != "" ? true : false}
                 onGetPassword={setPassword}
                 onWriteInInput={() => setErrorMessage("")}
             />

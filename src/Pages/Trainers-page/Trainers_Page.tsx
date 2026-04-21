@@ -1,6 +1,6 @@
-import { BicepsFlexed, Plus, ShieldCheck, Users } from "lucide-react";
+import { BicepsFlexed, ShieldCheck, ShieldOff, ShieldQuestionMark, Users } from "lucide-react";
 import { useEffect, useState } from "react";
-import { trainer } from "@/Pages/types";
+import { filter, trainer } from "@/Pages/types";
 import Trainer_Details from "./Components/Trainer-details/Trainer_Details";
 import Add_Trainer from "./Components/Add-trainer/Add_Trainer";
 import Search_Trainer from "./Components/Search-trainer/Search_Trainer";
@@ -9,27 +9,27 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllTrainers } from "@/Rtk/Slices/trainersSlice";
 import { store_Type } from "@/Rtk/types";
 import Box from "@/Global-components/Box/Box";
-import { stateIsActive } from "@/Lib/constants";
+import { activeSubscriptions, allSubscriptions, finishedSubscriptions, pendingSubscriptions, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import { useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import Table_For_Trainers from "@/Global-components/Table-for-trainers/Table_For_Trainers";
 // ========================================================== //
 export default function Trainers_Page() {
-    const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
-
     const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
+    const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
 
-    const [anotherTrainersList, setAnotherTrainersList] = useState<trainer[]>([]);
+
+    const [TrainersListAfterFilter, setTrainersListAfterFilter] = useState<trainer[]>([]);
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
-    const [activeSubscriptionsTotle, setActiveSubscriptionsTotle] = useState(0);
-
-
-
-    function btnAddTrianer() {
-        setIsShowAddTrainer(true);
-    }
+    const [getFilter, setGetFilter] = useState<filter | null>(null);
+    const [boxInfo, setBoxInfo] = useState({
+        name: "",
+        total: 0,
+        styleBg: "",
+        icon: <ShieldCheck size={30} />
+    });
 
 
 
@@ -39,14 +39,33 @@ export default function Trainers_Page() {
 
 
     useEffect(function () {
-        setActiveSubscriptionsTotle(0);
+        if (!getFilter) return;
 
-        state.trainers.forEach(ele => {
-            if (ele.subscriptionState == stateIsActive) {
-                setActiveSubscriptionsTotle(prev => prev + 1);
-            }
-        });
-    }, [state.trainers]);
+        if (getFilter.subscriptionType == allSubscriptions || getFilter.subscriptionType == activeSubscriptions) {
+            setBoxInfo({
+                name: "مجموع الاشتراكات المفعله",
+                styleBg: "bg-emerald-100 text-emerald-500",
+                total: state.trainers.filter(ele => ele.subscriptionState == stateIsActive).length,
+                icon: <ShieldCheck size={30} />
+            });
+        }
+        else if (getFilter.subscriptionType == pendingSubscriptions) {
+            setBoxInfo({
+                name: "مجموع الاشتراكات المُعلقه",
+                styleBg: "bg-amber-100 text-amber-500",
+                total: state.trainers.filter(ele => ele.subscriptionState == stateIsPending).length,
+                icon: <ShieldQuestionMark size={30} />
+            });
+        }
+        else if (getFilter.subscriptionType == finishedSubscriptions) {
+            setBoxInfo({
+                name: "مجموع الاشتراكات المنتهيه",
+                styleBg: "bg-red-100 text-red-500",
+                total: state.trainers.filter(ele => ele.subscriptionState == stateIsFinished).length,
+                icon: <ShieldOff size={30} />
+            });
+        }
+    }, [state.trainers, getFilter]);
 
 
 
@@ -69,10 +88,10 @@ export default function Trainers_Page() {
             />
 
             <Box
-                icon={<ShieldCheck size={30} />}
-                styleIcon="bg-emerald-100 text-emerald-500"
-                title="مجموع الاشتراكات المفعله"
-                total={activeSubscriptionsTotle}
+                icon={boxInfo.icon}
+                styleIcon={boxInfo.styleBg}
+                title={boxInfo.name}
+                total={boxInfo.total}
             />
         </div>
 
@@ -85,21 +104,21 @@ export default function Trainers_Page() {
             <div className="flex justify-end gap-1 col-span-1">
                 <Btn_Filter
                     trainersList={state.trainers}
-                    onGetFilterResult={setAnotherTrainersList}
+                    onGetFilter={setGetFilter}
+                    onGetTrainerListAfterFilter={setTrainersListAfterFilter}
                 />
 
                 <Add_Btn
-                    styleTheBgAndBorderBtn="bg-emerald-500 border-emerald-600 cursor-pointer"
-                    thePaddingY="py-2"
-                    icon={<Plus size={20} strokeWidth={3} />}
+                    styleBtn="cursor-pointer"
+                    paddingY="py-2"
                     title="إضافة متدرب جديد"
-                    onClick={btnAddTrianer}
+                    onClick={() => setIsShowAddTrainer(true)}
                 />
             </div>
         </div>
 
         {/* Table for show all trainers */}
-        <Table_For_Trainers trainersList={anotherTrainersList} />
+        <Table_For_Trainers trainersList={TrainersListAfterFilter} />
 
         {
             isShowAddTrainer ?
