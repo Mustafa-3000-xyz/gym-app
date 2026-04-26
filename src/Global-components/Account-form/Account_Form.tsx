@@ -1,7 +1,7 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Account_Form_Props } from "../types";
-import Password_Inp from "../Password-inp/Password_Inp";
 import { regexAccountName } from "@/Lib/REGEX";
+import Inp_With_Label from "../Inp-with-label/Inp_With_Label";
 // ========================================================== //
 export default function Account_Form(
     {
@@ -9,7 +9,6 @@ export default function Account_Form(
         age,
         password,
         accountType,
-        dontChangeValues,
         onGetName,
         onGetAge,
         onGetPassword
@@ -21,18 +20,18 @@ export default function Account_Form(
 
 
 
-    function writeInAccountNameInp(e: ChangeEvent<HTMLInputElement>) {
-        if (e.target.value.match(regexAccountName)) {
-            setTheName(e.target.value);
+    function writeInAccountNameInp(value: string) {
+        if (value.match(regexAccountName)) {
+            setTheName(value);
         }
     }
 
-    function writeInAccountAgeInp(e: ChangeEvent<HTMLInputElement>) {
-        if (+e.target.value >= 100) {
+    function writeInAccountAgeInp(value: number) {
+        if (value >= 100) {
             setTheAge(100);
         }
         else {
-            setTheAge(+e.target.value);
+            setTheAge(value);
         }
     }
 
@@ -46,36 +45,23 @@ export default function Account_Form(
 
 
 
-    return <form className="mb-5">
+    return <div className="mb-5">
         {/* Name & age */}
         <div className="flex gap-2 justify-center mb-5">
             <div className="w-1/3">
-                <h3 className="mb-1 font-bold">الاسم</h3>
-                <input
-                    value={theName}
-                    disabled={dontChangeValues}
-                    type="text"
-                    className={`
-                        w-full
-                        rounded-lg border border-black p-2 px-3 focus:outline-none
-                        ${dontChangeValues ? "cursor-not-allowed opacity-45" : ""}
-                    `}
-                    onChange={writeInAccountNameInp}
+                <Inp_With_Label
+                    labelName="الاسم"
+                    inpValue={theName}
+                    onWriteInInput={(e) => writeInAccountNameInp(e.target.value)}
                 />
             </div>
 
             <div className="w-1/3">
-                <h3 className="mb-1 font-bold">العمر</h3>
-                <input
-                    value={theAge >= 100 ? 100 : theAge}
-                    disabled={dontChangeValues}
-                    type="number"
-                    className={`
-                        w-full
-                        rounded-lg border border-black p-2 px-3 focus:outline-none
-                        ${dontChangeValues ? "cursor-not-allowed opacity-45" : ""}
-                    `}
-                    onChange={writeInAccountAgeInp}
+                <Inp_With_Label
+                    labelName="العمر"
+                    inpType="number"
+                    inpValue={theAge as any}
+                    onWriteInInput={(e) => writeInAccountAgeInp(+e.target.value)}
                 />
             </div>
         </div>
@@ -84,27 +70,23 @@ export default function Account_Form(
         <div className="flex gap-2 justify-center">
             {/* Password */}
             <div className="w-1/4">
-                <h3 className="mb-1 font-bold">كلمة السر</h3>
-                <Password_Inp
-                    password={thePassword as any}
-                    onGetPassword={setThePassword}
+                <Inp_With_Label
+                    labelName="كلمة السر"
+                    inpType="password"
+                    inpValue={thePassword}
+                    onWriteInInput={(e) => setThePassword(e.target.value)}
                 />
             </div>
 
             {/* Type */}
             <div className="w-1/4">
-                <h3 className="mb-1 font-bold">نوع الحساب</h3>
-                <input
-                    type={"text"}
-                    defaultValue={accountType == "manager" ? "مدير" : "كابتن"}
-                    disabled
-                    className={`
-                        w-full
-                        opacity-45 cursor-not-allowed
-                        rounded-lg border border-black p-2 px-3 focus:outline-none 
-                    `}
+                <Inp_With_Label
+                    labelName="نوع الحساب"
+                    inpValue={accountType == "manager" ? "المدير" : "الكابتن"}
+                    isChangeValue={false}
+                    onWriteInInput={(e) => setThePassword(e.target.value)}
                 />
             </div>
         </div>
-    </form>
+    </div>
 }

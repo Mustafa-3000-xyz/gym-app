@@ -1,22 +1,34 @@
 import All_Accountes from "@/Global-components/All-accountes/All_Accountes";
 import { IdCardLanyard, Shell } from "lucide-react";
-import { useState } from "react";
-import Add_Account from "./Components/Add_Account";
+import { useEffect, useMemo, useState } from "react";
 import Box from "@/Global-components/Box/Box";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import { useAtomValue } from "jotai";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
-import Swal from "sweetalert2";
+import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
+import { addAccount } from "@/Rtk/Slices/accountsSlice";
+import { accounte } from "../types";
+import Account_Form from "@/Global-components/Account-form/Account_Form";
+import Permissions from "@/Global-components/Permissions/Permissions";
+import { trainerPagePath } from "@/Lib/constants";
+import { alertError } from "@/Lib/functions";
 // ========================================================== //
 export default function Accountes_Page() {
+    const dispatch = useDispatch();
     const isLoginAtom = useAtomValue(isLogin_Atom);
 
     const state = useSelector(state => state as store_Type);
     const [isShowAddAccount, setIsShowAddAccount] = useState<boolean>(false);
 
-    const theAccount = state.accountes.find(ele => ele.id == isLoginAtom.id);
+    const [getName, setGetName] = useState("");
+    const [getAge, setGetAge] = useState("");
+    const [getPassword, setGetPassword] = useState("");
+    const [permissionsList, setPermissionsList] = useState([trainerPagePath]);
+    const [isAllDataComplete, setIsAllDataComplete] = useState(false);
+
+
 
 
     function clickOnAddAccount() {
@@ -26,16 +38,48 @@ export default function Accountes_Page() {
         }
 
         if (state.accountes.length == 4) {
-            Swal.fire({
-                icon: "error",
-                title: "المعذره",
-                text: "لقد وصلت للحد الاقصى لإنشاء حساب جديد",
-                confirmButtonText: "تمام"
-            });
+            alertError("لقد وصلت للحد الاقصى")
         } else {
             setIsShowAddAccount(true);
         }
     }
+
+    function saveData() {
+        const data = {
+            name: getName,
+            age: +getAge,
+            password: getPassword,
+            type: "captain",
+            profileImg: "",
+            coverImg: "",
+            loginDate: "",
+            logOutDate: "",
+            workingHours: 0,
+            totalForActiveSessions: 0,
+            permissions: JSON.stringify(permissionsList),
+        } as accounte;
+
+        setIsShowAddAccount(false);
+        dispatch(addAccount(data as accounte) as any);
+    }
+
+
+
+
+    useEffect(function () {
+        if (!getName || !getAge || !getPassword) {
+            setIsAllDataComplete(false);
+            return;
+        }
+
+        setIsAllDataComplete(true);
+    }, [getName, getAge, getPassword]);
+
+
+
+    const theAccount = useMemo(function () {
+        return state.accountes.find(ele => ele.id == isLoginAtom.id);
+    }, [state.accountes]);
 
 
 
@@ -79,8 +123,36 @@ export default function Accountes_Page() {
             <All_Accountes />
         </div>
 
+
         {
-            isShowAddAccount && <Add_Account onIsShowAddAccount={setIsShowAddAccount} />
+            isShowAddAccount ?
+                <Popup_Form
+                    titel={"إنشاء حساب"}
+                    discription="يمكنك الان إنشاء حساب جديد"
+                    isSave={isAllDataComplete}
+                    clickOnCancel={() => setIsShowAddAccount(false)}
+                    clickOnSaveBtn={saveData}
+                >
+                    <Account_Form
+                        name={""}
+                        age={0}
+                        password={""}
+                        accountType={"captain"}
+                        onGetName={setGetName}
+                        onGetAge={setGetAge as any}
+                        onGetPassword={setGetPassword}
+                    />
+
+                    <div className="mt-5">
+                        <Permissions
+                            permissionsList={permissionsList}
+                            changePermissions={isLoginAtom.type == "manager"}
+                            onGetPermissionsList={setPermissionsList as any}
+                        />
+                    </div>
+                </Popup_Form>
+                :
+                null
         }
     </section>
 }

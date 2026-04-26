@@ -1,9 +1,10 @@
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import { Trainer_Info_Form_Props } from "@/Pages/types";
-import { regexPhone, regexTranierName } from "@/Lib/REGEX";
+import { regexFindSpacesInTranierName, regexPhone } from "@/Lib/REGEX";
 import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
+import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
 // ========================================================== //
 export default function Trainer_Info_Form(
     {
@@ -28,25 +29,36 @@ export default function Trainer_Info_Form(
     });
 
 
-    function checkInpName(input: HTMLInputElement) {
-        const getAttr = input.getAttribute("inp-type");
+
+    function checkFirstName(value: string) {
         let valueInp = "";
 
-        if (input.value.match(regexTranierName)) {
-            valueInp += input.value.replace(/\s/g, "");
+
+        if (value.match(regexFindSpacesInTranierName)) {
+            valueInp += value.replace(/\s/g, "");
         } else {
-            valueInp += input.value
+            valueInp += value
         }
 
 
-        if (getAttr == "firstName") {
-            setFirstName(valueInp);
-        } else {
-            setLastName(valueInp);
-        }
+        setFirstName(valueInp);
     }
 
-    function checkInpNumber(input: HTMLInputElement) {
+    function checkLastName(value: string) {
+        let valueInp = "";
+
+
+        if (value.match(regexFindSpacesInTranierName)) {
+            valueInp += value.replace(/\s/g, "");
+        } else {
+            valueInp += value
+        }
+
+
+        setLastName(valueInp);
+    }
+
+    function checkPhoneNumber(input: HTMLInputElement) {
         const parent = input.parentNode as HTMLDivElement;
 
         if (input.value.match(regexPhone) || input.value == "") {
@@ -70,13 +82,14 @@ export default function Trainer_Info_Form(
     }
 
 
+
     // When open trainerDetailsAtom details, i want show his values
     useEffect(function () {
-        if (isShowTrainerDetailsAtom && trainerDetailsAtom) {
-            setFirstName(trainerDetailsAtom.firstName);
-            setLastName(trainerDetailsAtom.lastName);
-            setPhone(trainerDetailsAtom.phone);
-            setAddress(trainerDetailsAtom.address);
+        if (isShowTrainerDetailsAtom) {
+            setFirstName(trainerDetailsAtom?.firstName as any);
+            setLastName(trainerDetailsAtom?.lastName as any);
+            setPhone(trainerDetailsAtom?.phone as any);
+            setAddress(trainerDetailsAtom?.address as any);
         } else {
             setFirstName("");
             setLastName("");
@@ -94,84 +107,53 @@ export default function Trainer_Info_Form(
     }, [firstName, lastName, phone, address]);
 
 
-    return <form>
+
+
+    return <div>
         {/* First name & Last name */}
         <div className="flex justify-center gap-3 mb-5">
-            <div className={`
-                    flex flex-col
-                    w-4/12
-                `}
-            >
-                <h4 className="font-bold">الاسم الاول</h4>
-                <input
-                    value={firstName}
-                    onChange={(e) => checkInpName(e.target)}
-                    inp-type="firstName"
-                    type="text"
-                    className="bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0"
+            <div className="w-4/12">
+                <Inp_With_Label
+                    labelName="الاسم الاول"
+                    inpType="text"
+                    inpValue={firstName}
+                    onWriteInInput={(e) => checkFirstName(e.target.value)}
                 />
             </div>
 
-            <div className={`
-                    flex flex-col
-                    w-4/12
-                `}
-            >
-                <h4 className="font-bold">الاسم الثاني</h4>
-                <input
-                    value={lastName}
-                    onChange={(e) => checkInpName(e.target)}
-                    type="text"
-                    className=" bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0"
+            <div className="w-4/12">
+                <Inp_With_Label
+                    labelName="الاسم الثاني"
+                    inpType="text"
+                    inpValue={lastName}
+                    onWriteInInput={(e) => checkLastName(e.target.value)}
                 />
             </div>
         </div>
 
         {/* Phone number & Adrees */}
         <div className="flex justify-center gap-3">
-            <div className={`
-                    flex flex-col
-                    w-4/12
-                `}
-            >
-                <h4 className="font-bold">رقم الموبايل (اختياري)</h4>
-                <div className="bg-slate-100 border border-slate-300 rounded-lg relative">
-                    <input
-                        value={phone}
-                        onChange={(e) => checkInpNumber(e.target)}
-                        type="number"
-                        placeholder="0000000000"
-                        className={`
-                            p-2 w-[80%] focus:outline-0
-                            appearance-none
-                            [&::-webkit-inner-spin-button]:appearance-none
-                            [&::-webkit-outer-spin-button]:appearance-none"
-                        `}
-                    />
-
-                    <span className="absolute top-2 left-2">
-                        20+
-                    </span>
-                </div>
+            <div className="flex flex-col w-4/12">
+                <Inp_With_Label
+                    labelName="رقم الموبايل (اختياري)"
+                    inpType="text"
+                    inpValue={phone}
+                    onWriteInInput={(e) => checkPhoneNumber(e.target)}
+                />
 
                 <span className="text-red-600">
                     {messageError.phone}
                 </span>
             </div>
 
-            <div className={`
-                    flex flex-col
-                    w-4/12
-                `}
-            >
-                <h4 className="font-bold">العنوان (اختياري)</h4>
-                <input
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    type="text"
-                    className=" bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0"
+            <div className="w-4/12">
+                <Inp_With_Label
+                    labelName="العنوان (اختياري)"
+                    inpType="number"
+                    inpValue={address}
+                    onWriteInInput={(e) => setAddress(e.target.value)}
                 />
             </div>
         </div>
-    </form>
+    </div>
 }

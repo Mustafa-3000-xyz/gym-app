@@ -1,9 +1,9 @@
 import { X } from "lucide-react";
 import Discription from "../Description/Discription";
-import { Popup_Props } from "../types";
+import { Popup_Form_Props } from "../types";
 import Animation from "../Animation/Animation";
 // ========================================================== //
-export default function Popup(
+export default function Popup_Form(
     {
         titel,
         discription,
@@ -13,7 +13,7 @@ export default function Popup(
         typeBtn = "save data",
         clickOnCancel,
         clickOnSaveBtn,
-    }: Popup_Props
+    }: Popup_Form_Props
 ) {
     return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none z-50">
         <Animation
@@ -40,9 +40,9 @@ export default function Popup(
                 <X size={23} onClick={clickOnCancel} className="cursor-pointer text-red-500" />
             </div>
 
-            <div className="p-3">
+            <form className="p-3">
                 {children}
-            </div>
+            </form>
 
             {/* Btn save and cancel */}
             <div className="bg-black/5 p-5 border-t border-t-slate-300 flex gap-3 mt-5">

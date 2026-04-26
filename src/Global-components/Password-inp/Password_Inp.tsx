@@ -5,9 +5,8 @@ import { regexPasswordAccount } from "@/Lib/REGEX";
 // ========================================================== //
 export default function Password_Inp(
     {
-        errorMessageHere,
+        removeValue,
         password = "",
-        onGetPassword,
         onWriteInInput,
     }: Password_Inp_Props
 ) {
@@ -28,23 +27,18 @@ export default function Password_Inp(
 
     function writeInInp(e: ChangeEvent<HTMLInputElement>) {
         if (e.target.value.match(regexPasswordAccount)) {
-            onWriteInInput?.(e);
             setThePassword(e.target.value as any);
+            onWriteInInput?.(e);
         }
     }
 
 
 
-    useEffect(function(){
-        if (errorMessageHere) {
+    useEffect(function () {
+        if (removeValue) {
             setThePassword("");
         }
-    }, [errorMessageHere]);
-
-
-    useEffect(function () {
-        onGetPassword(thePassword);
-    }, [thePassword]);
+    }, [removeValue]);
 
 
 
@@ -52,7 +46,7 @@ export default function Password_Inp(
         <input
             type={isShowPassword ? "text" : "password"}
             placeholder="الرقم السري"
-            className="w-full border p-2 pr-10 rounded-lg focus:outline-0 group-hover:placeholder:!text-white/50"
+            className="w-full border border-black/20 p-2 pr-10 rounded-lg focus:outline-0 group-hover:placeholder:!text-white/50 group-hover:border-white"
             dir={thePassword ? "ltr" : "rtl"}
             value={thePassword ?? ""}
             onChange={writeInInp}

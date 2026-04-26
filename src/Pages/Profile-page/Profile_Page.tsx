@@ -1,9 +1,9 @@
-import Account_Img from "@/Pages/Profile-page/Components/Account-img/Account_Img";
+import Account_Img from "@/Pages/Profile-page/Components/Account_Img";
 import Box from "@/Global-components/Box/Box";
 import { allPermissions } from "@/Lib/constants";
 import { deleteAccountById, getAllAccounts, updatePropertyInAccount, updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
 import { useAtom } from "jotai"
-import { BriefcaseBusiness, ImageOff, KeyRound, LogOut, Shell, Trash } from "lucide-react";
+import { BriefcaseBusiness, KeyRound, LogOut, Shell, Trash } from "lucide-react";
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { accounte } from "../types";
@@ -13,7 +13,6 @@ import Permissions from "../../Global-components/Permissions/Permissions";
 import accountDetails_Atom from "@/Atoms/Details/accountDetails_Atom";
 import { alert, logOutFromOldAccount } from "@/Lib/functions";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
-import Subscriptions_Menu from "./Components/Subscriptions-menu/Subscriptions_Menu";
 // ========================================================== //
 export default function Profile_Page() {
     const dispatch = useDispatch();
@@ -98,14 +97,6 @@ export default function Profile_Page() {
         dispatch(updatePropertyInAccount({
             id: theAccount?.id as any,
             column: "coverImg",
-            value: ""
-        }) as any);
-    }
-
-    function clickOnRemoveProfileImgBtn() {
-        dispatch(updatePropertyInAccount({
-            id: theAccount?.id as any,
-            column: "profileImg",
             value: ""
         }) as any);
     }
@@ -255,6 +246,7 @@ export default function Profile_Page() {
                     img={theAccount?.profileImg as string}
                     accountType={theAccount?.type as any}
                     isShowCamera={!accountDetailsAtom}
+                    isShowRemoveImg={!accountDetailsAtom && theAccount?.profileImg != ""}
                 />
             </div>
         </div>
@@ -319,23 +311,8 @@ export default function Profile_Page() {
             />
         </div>
 
-        {/* Delete account btn & logout btn & remove profile img */}
+        {/* Delete account btn & logout btn */}
         <div className="flex gapp-2 justify-end mt-6">
-            {
-                !accountDetailsAtom && theAccount.profileImg != "" &&
-                <button
-                    className={`
-                        transition duration-300
-                        bg-red-500 text-white p-3 rounded-lg mx-3
-                        cursor-pointer
-                        hover:bg-red-600
-                    `}
-                    onClick={clickOnRemoveProfileImgBtn}
-                >
-                    <ImageOff />
-                </button>
-            }
-
             {
                 !accountDetailsAtom &&
                 <button
@@ -367,13 +344,6 @@ export default function Profile_Page() {
         </div>
 
         {
-            !accountDetailsAtom && isLoginAtom.type == "manager" ?
-                <Subscriptions_Menu />
-                :
-                null
-        }
-
-        {
             !accountDetailsAtom ?
                 <div className="text-center w-full">
                     <button
@@ -401,7 +371,6 @@ export default function Profile_Page() {
                         age={theAccount.age}
                         password={theAccount.password}
                         accountType={theAccount.type}
-                        dontChangeValues={false}
                         onGetName={setGetName}
                         onGetAge={setGetAge}
                         onGetPassword={setGetPassword}

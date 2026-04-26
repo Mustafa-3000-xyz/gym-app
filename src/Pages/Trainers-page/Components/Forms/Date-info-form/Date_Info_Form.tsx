@@ -66,7 +66,7 @@ export default function Date_Info_Form(
 
 
 
-    return <form className="flex justify-center items-center gap-7">
+    return <div className="flex justify-center items-center gap-7">
         {/* Start subscription */}
         <div dir="ltr" className="w-3/4 mt-2">
             <h4 className="font-bold mb-2 text-right">تاريخ بدا الاشتراك</h4>
@@ -121,5 +121,5 @@ export default function Date_Info_Form(
                 onChange={(e) => setSubscriptionEnd(e.value as Date)}
             />
         </div>
-    </form >
+    </div>
 }

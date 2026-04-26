@@ -56,3 +56,25 @@ export async function accountsTable() {
 
     return db;
 }
+
+export async function subscriptionsMenuTable() {
+    const db = await Database.load("sqlite:app-gym-db.db");
+
+    try {
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS subscriptionsMenu (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                subscriptionName TEXT,
+                sessionsCount INTEGER,
+                trainersTotal INTEGER,
+                price INTEGER,
+                isActive TEXT
+            )
+        `);
+    } catch (error) {
+        console.error("DB Error:", error);
+        throw error;
+    }
+
+    return db;
+}

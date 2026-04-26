@@ -6,7 +6,7 @@ import { Shell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { profilePagePath } from "@/Lib/constants";
 import Password_Inp from "@/Global-components/Password-inp/Password_Inp";
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useDispatch } from "react-redux";
 import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
 import { logOutFromOldAccount } from "@/Lib/functions";
@@ -25,6 +25,9 @@ export default function Account_Card(
     const [errorMessage, setErrorMessage] = useState("");
 
 
+    function writeInInp(e: ChangeEvent<HTMLInputElement>){
+        setPassword(e.target.value);
+    }
 
     function clickOnLogInBtn(
         e: React.MouseEvent<HTMLButtonElement>,
@@ -127,9 +130,8 @@ export default function Account_Card(
         {/* Set password */}
         <div className="flex gap-1">
             <Password_Inp
-                errorMessageHere={errorMessage != "" ? true : false}
-                onGetPassword={setPassword}
-                onWriteInInput={() => setErrorMessage("")}
+                removeValue={errorMessage != "" ? true : false}
+                onWriteInInput={writeInInp}
             />
 
 

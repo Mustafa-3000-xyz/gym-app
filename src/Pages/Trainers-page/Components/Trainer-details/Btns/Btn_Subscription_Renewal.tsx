@@ -30,7 +30,8 @@ export default function Btn_Subscription_Renewal(
                 dispatch(updateSomePropertiesInTrainer({
                     trainerId: trainer?.trainerId as any,
                     values: {
-                        ...trainer
+                        ...trainer,
+                        activeSessionsList: JSON.stringify([]) as any
                     }
                 }) as any);
 
@@ -43,13 +44,13 @@ export default function Btn_Subscription_Renewal(
 
 
     return <button
-        onClick={subscriptionRenewal}
+        type='button'
         className={`
-            transition duration-300 
+            duration-300 
             bg-amber-300/40 text-amber-700 rounded-lg px-6 py-3 flex items-center gap-2 font-bold
-            ${isInfoComplete ?
-                "opacity-100 cursor-pointer" : "opacity-50 cursor-not-allowed"}
+            ${isInfoComplete ? "opacity-100 cursor-pointer" : "opacity-50 cursor-not-allowed"}
         `}
+        onClick={subscriptionRenewal}
     >
         <span>
             <RefreshCcw size={23} />

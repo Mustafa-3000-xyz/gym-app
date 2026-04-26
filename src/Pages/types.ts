@@ -29,6 +29,15 @@ export interface accounte {
     permissions?: string[] | "fullAccess",
 }
 
+export interface subscriptionsMenu {
+    id?: number,
+    subscriptionName: string,
+    sessionsCount: number,
+    trainersTotal: number,
+    price: number
+    isActive: "true" | "false"
+}
+
 export interface activeSessionsList_Type {
     accountId: number | "removed",
     sessions: number[]
@@ -104,7 +113,7 @@ export interface Btn_Subscription_Renewal_Props {
 }
 
 export interface Btn_Delete_Trainer_Props {
-    trainer: trainer,
+    trainerId: number,
     onWhenDeleteTrainer: () => void
 }
 

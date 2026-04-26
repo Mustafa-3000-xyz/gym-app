@@ -58,7 +58,6 @@ export default function Sing_Up_Page() {
                     name={""}
                     age={0}
                     password={""}
-                    dontChangeValues={false}
                     accountType={"manager"}
                     onGetName={setGetName}
                     onGetAge={setGetAge as any}

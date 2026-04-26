@@ -11,7 +11,7 @@ import { useAtom, useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import { useDispatch } from "react-redux";
 import { activeSessionsList_Type, trainer } from "@/Pages/types";
-import Popup from "@/Global-components/Popup/Popup";
+import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
 // ========================================================== //
@@ -137,7 +137,7 @@ export default function Add_Trainer(
 
 
 
-    return <Popup
+    return <Popup_Form
         titel="إضافة متدرب"
         discription="الان, يمكنك إضافة متدرب جديد"
         isSave={isAllInfoComplete}
@@ -181,5 +181,5 @@ export default function Add_Trainer(
                 onGetSubscriptionEnd={setGetSubscriptionEnd}
             />
         </div>
-    </Popup>
+    </Popup_Form>
 }

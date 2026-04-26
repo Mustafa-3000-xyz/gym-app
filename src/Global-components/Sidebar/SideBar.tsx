@@ -1,4 +1,4 @@
-import { Archive, Book, CircleUser, IdCardLanyard, Settings, Users, WalletMinimal } from "lucide-react";
+import { Archive, Book, Captions, CircleUser, IdCardLanyard, Settings, Users, WalletMinimal } from "lucide-react";
 import Sidebar_Links from "./Sidebar-links/Sidebar_Links";
 import { useAtomValue, useSetAtom } from "jotai";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { getAllAccounts } from "@/Rtk/Slices/accountsSlice";
 import { store_Type } from "@/Rtk/types";
 import { accounte } from "@/Pages/types";
-import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profilePagePath, profitsAndExpensesPagePath, settingsPagePath, trainerPagePath } from "@/Lib/constants";
+import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profilePagePath, profitsAndExpensesPagePath, settingsPagePath, subscriptionsMenuPath, trainerPagePath } from "@/Lib/constants";
 import { Link, useLocation } from "react-router-dom";
 import accountDetails_Atom from "@/Atoms/Details/accountDetails_Atom";
 // ========================================================== //
@@ -81,20 +81,32 @@ export default function SideBar() {
             />
 
             <Sidebar_Links
-                isShowTheLink={theAccount?.permissions?.includes(accountesPagePath) as boolean || theAccount?.permissions == "fullAccess"}
-                linkName="الحسابات"
-                path={accountesPagePath}
-                icon={<IdCardLanyard
+                isShowTheLink={theAccount?.permissions?.includes(attendanceRecordePagePath) as boolean || theAccount?.permissions == "fullAccess"}
+                linkName="سجل الحضور"
+                path={attendanceRecordePagePath}
+                icon={<Archive
                     size={25}
                     strokeWidth={1.75}
                 />}
             />
 
             <Sidebar_Links
-                isShowTheLink={theAccount?.permissions?.includes(attendanceRecordePagePath) as boolean || theAccount?.permissions == "fullAccess"}
-                linkName="سجل الحضور"
-                path={attendanceRecordePagePath}
-                icon={<Archive
+                isShowTheLink={theAccount?.permissions?.includes(subscriptionsMenuPath) as boolean || theAccount?.permissions == "fullAccess"}
+                linkName="قائمة الاشتراكات"
+                path={subscriptionsMenuPath}
+                icon={<Captions
+                    size={25}
+                    strokeWidth={1.75}
+                />}
+            />
+
+            <hr />
+
+            <Sidebar_Links
+                isShowTheLink={theAccount?.permissions?.includes(accountesPagePath) as boolean || theAccount?.permissions == "fullAccess"}
+                linkName="الحسابات"
+                path={accountesPagePath}
+                icon={<IdCardLanyard
                     size={25}
                     strokeWidth={1.75}
                 />}
@@ -134,25 +146,25 @@ export default function SideBar() {
 
             {
                 theAccount?.permissions == "fullAccess" || theAccount?.permissions?.includes(settingsPagePath) ?
-                <Link
-                    className={`
+                    <Link
+                        className={`
                         flex gap-2 mb-1 hover:underline
                         ${pathname == settingsPagePath && "underline"}
                     `}
-                    to={settingsPagePath}
-                >
-                    <Settings
-                        size={25}
-                        strokeWidth={1.75}
-                        className="shrink-0"
-                    />
+                        to={settingsPagePath}
+                    >
+                        <Settings
+                            size={25}
+                            strokeWidth={1.75}
+                            className="shrink-0"
+                        />
 
-                    <h3 className="hidden group-hover:flex whitespace-nowrap">
-                        الاعدادات
-                    </h3>
-                </Link>
-                :
-                null
+                        <h3 className="hidden group-hover:flex whitespace-nowrap">
+                            الاعدادات
+                        </h3>
+                    </Link>
+                    :
+                    null
             }
 
             <Link

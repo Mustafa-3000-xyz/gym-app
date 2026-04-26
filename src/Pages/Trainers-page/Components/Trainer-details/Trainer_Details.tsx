@@ -17,7 +17,7 @@ import Btn_Finished_Subscription from "./Btns/Btn_Finished_Subscription";
 import Btn_Delete_Trainer from "./Btns/Btn_Delete_Trainer";
 import Btn_Subscription_Renewal from "./Btns/Btn_Subscription_Renewal";
 import { useDispatch, useSelector } from "react-redux";
-import Popup from "@/Global-components/Popup/Popup";
+import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
 import { activeSessionsList_Type } from "@/Pages/types";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { store_Type } from "@/Rtk/types";
@@ -312,7 +312,7 @@ export default function Trainer_Details() {
 
     if (!trainerDetailsAtom) return null;
 
-    return <Popup
+    return <Popup_Form
         titel="تفاصيل المتدرب"
         discription="تلك التفاصيل الخاصه بالمتدرب"
         isSave={isChangeInfo}
@@ -513,10 +513,10 @@ export default function Trainer_Details() {
                 }
 
                 <Btn_Delete_Trainer
-                    trainer={trainerDetailsAtom}
+                    trainerId={trainerDetailsAtom.trainerId as any}
                     onWhenDeleteTrainer={() => setIsShowTrainerDetailsAtom(false)}
                 />
             </div>
         </div>
-    </Popup >
+    </Popup_Form >
 }

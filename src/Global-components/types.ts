@@ -31,7 +31,7 @@ export interface Box_Props {
     total: string | number,
 }
 
-export interface Popup_Props {
+export interface Popup_Form_Props {
     titel: string,
     discription: string,
     children: ReactNode,
@@ -46,6 +46,7 @@ export interface Account_Img_Props {
     accountId: number,
     img: string,
     isShowCamera: boolean,
+    isShowRemoveImg: boolean,
     accountType: "manager" | "captain",
 }
 
@@ -60,7 +61,6 @@ export interface Account_Form_Props {
     name: string,
     age: number,
     password: string,
-    dontChangeValues: boolean,
     accountType: "manager" | "captain"
     onGetName: (x: string) => void;
     onGetAge: (x: number) => void;
@@ -79,8 +79,20 @@ export interface Input_Search_Props {
 }
 
 export interface Password_Inp_Props {
-    errorMessageHere?: boolean,
+    removeValue?: boolean,
     password?: string,
-    onGetPassword: (x: string) => void
     onWriteInInput?: (e: ChangeEvent<HTMLInputElement>) => void,
+}
+
+export interface Inp_With_Label_Props{
+    labelName: string,
+    inpType?: "password" | "text" | "number"
+    inpValue?: string | number,
+    isChangeValue?: boolean,
+    onWriteInInput: (x: ChangeEvent<HTMLInputElement>) => void
+}
+
+export interface Toggle_Btn_Props{
+    value: boolean,
+    onGetValue: (x: boolean) => void
 }

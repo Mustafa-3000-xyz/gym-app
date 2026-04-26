@@ -1,4 +1,4 @@
-import { accounte, activeSessionsList_Type, trainer } from "@/Pages/types";
+import { accounte, activeSessionsList_Type, subscriptionsMenu, trainer } from "@/Pages/types";
 // ========================================================== //
 type updateOneColumnInTrainer =
     | "subscriptionState"
@@ -26,11 +26,19 @@ type updateOneColumnInAccount =
     | "loginDate"
     | "logOutDate"
 
+type updateOneColumnInSubscriptionsMenu =
+    | "subscriptionName"
+    | "sessionsCount"
+    | "trainersTotal"
+    | "price"
+    | "isActive"
+
 
 
 export interface store_Type {
     trainers: trainer[],
-    accountes: accounte[]
+    accountes: accounte[],
+    subscriptionsMenu: subscriptionsMenu[]
 }
 
 export interface updatePropertyInTrainer_Type {
@@ -79,5 +87,22 @@ export interface updateSomePropertiesInAccount_Type {
         workingHours?: number,
         loginDate?: Date | string,
         logOutDate?: Date | string
+    }
+}
+
+export interface updatePropertyInSubscriptionsMenu_Type {
+    id: string | number,
+    column: updateOneColumnInSubscriptionsMenu,
+    value: any
+}
+
+export interface updateSomePropertiesInSubscriptionsMenu_Type {
+    id: number,
+    values: {
+        subscriptionName?: string,
+        sessionsCount?: number,
+        trainersTotal?: number,
+        price?: number,
+        isActive?: "true" | "false"
     }
 }

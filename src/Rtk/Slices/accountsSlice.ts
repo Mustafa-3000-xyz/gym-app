@@ -1,42 +1,49 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { accountsTable } from "../tables";
+import { accountsTable } from "../../Lib/tables";
 import { accounte } from "@/Pages/types";
 import { updatePropertyInAccount_Type, updateSomePropertiesInAccount_Type } from "../types";
 // ======================================= //
-export const getAllAccounts = createAsyncThunk("accountsSlice/getAllAccounts", async function () {
-    const database = await accountsTable();
-    const accountsList: accounte[] = await database.select("SELECT * FROM accounts");
-    const result = accountsList.sort((a, b) => a.id as any - (b.id as any));
-    return result
-});
+export const getAllAccounts = createAsyncThunk(
+    "accountsSlice/getAllAccounts",
+    async function () {
+        const database = await accountsTable();
+        const accountsList: accounte[] = await database.select("SELECT * FROM accounts");
+        const result = accountsList.sort((a, b) => a.id as any - (b.id as any));
+        return result
+    }
+);
 
-export const addAccount = createAsyncThunk("accountsSlice/addAccount", async function (data: accounte) {
-    const database = await accountsTable();
-    const query = `INSERT INTO accounts (
+export const addAccount = createAsyncThunk(
+    "accountsSlice/addAccount",
+    async function (data: accounte) {
+        const database = await accountsTable();
+        const query = `INSERT INTO accounts (
         name, age, password, type, profileImg, coverImg, 
         loginDate, logOutDate, workingHours, totalForActiveSessions, permissions
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-    const values = [
-        data.name,
-        data.age,
-        data.password,
-        data.type,
-        data.profileImg,
-        data.coverImg,
-        data.loginDate,
-        data.logOutDate,
-        data.workingHours,
-        data.totalForActiveSessions,
-        data.permissions
-    ];
-    const getId = await database.execute(query, values);
+        const values = [
+            data.name,
+            data.age,
+            data.password,
+            data.type,
+            data.profileImg,
+            data.coverImg,
+            data.loginDate,
+            data.logOutDate,
+            data.workingHours,
+            data.totalForActiveSessions,
+            data.permissions
+        ];
+        const getId = (await database.execute(query, values)).lastInsertId;
 
-    return {
-        id: getId.lastInsertId,
-        ...data
-    };
-});
+
+        return {
+            id: getId,
+            ...data
+        };
+    }
+);
 
 export const deleteAccountById = createAsyncThunk(
     "accountsSlice/deleteAccountById",
@@ -49,7 +56,8 @@ export const deleteAccountById = createAsyncThunk(
         );
 
         return id;
-});
+    }
+);
 
 export const updatePropertyInAccount = createAsyncThunk(
     "accountsSlice/updatePropertyInAccount",
@@ -72,7 +80,8 @@ export const updatePropertyInAccount = createAsyncThunk(
 
 
         return (result as accounte[])[0];
-});
+    }
+);
 
 export const updateSomePropertiesInAccount = createAsyncThunk(
     "accountsSlice/updateSomePropertiesInAccount",
@@ -99,7 +108,8 @@ export const updateSomePropertiesInAccount = createAsyncThunk(
         );
 
         return (updatedTrainer as accounte[])[0];
-});
+    }
+);
 
 
 const accountsSlice = createSlice({

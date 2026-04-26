@@ -1,7 +1,7 @@
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import { trainer } from "@/Pages/types";
 import { styleForSubscriptionState } from "@/Lib/functions";
-import { stateIsFinished, styleDate } from "@/Lib/constants";
+import { styleDate } from "@/Lib/constants";
 import { format } from "date-fns";
 import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
@@ -106,20 +106,10 @@ export default function Table_For_Trainers(
                         <td className="font-bold underline">{ele.trainerId}</td>
                         <td className="p-2 py-4">{ele.subscriptionName}</td>
                         <td className="p-2 py-4">
-                            {
-                                ele.subscriptionState != stateIsFinished ?
-                                    format(ele.subscriptionStart, styleDate)
-                                    :
-                                    "-"
-                            }
+                            {format(ele.subscriptionStart, styleDate)}
                         </td>
                         <td className="p-2 py-4">
-                            {
-                                ele.subscriptionState != stateIsFinished ?
-                                    format(ele.subscriptionEnd, styleDate)
-                                    :
-                                    "-"
-                            }
+                            {format(ele.subscriptionEnd, styleDate)}
                         </td>
                         <td className="p-2 py-4">
                             <span className={`

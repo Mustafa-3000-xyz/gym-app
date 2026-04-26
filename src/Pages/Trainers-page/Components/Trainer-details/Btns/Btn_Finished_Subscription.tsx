@@ -42,8 +42,9 @@ export default function Btn_Finished_Subscription(
 
 
     return <button
-        onClick={finishedSubscriptionUsingBtn}
+        type='button'
         className="flex items-center gap-2 font-bold px-6 py-3 cursor-pointer rounded-lg bg-amber-300/40 text-amber-700"
+        onClick={finishedSubscriptionUsingBtn}
     >
         <span>
             <BanknoteX size={23} />

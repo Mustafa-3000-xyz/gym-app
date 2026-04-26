@@ -1,43 +1,49 @@
 import { trainer } from "@/Pages/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { updatePropertyInTrainer_Type, updateSomePropertiesInTrainer_Type } from "../types";
-import { trainerTable } from "@/Rtk/tables";
+import { trainerTable } from "@/Lib/tables";
 // ======================================= //
-export const getAllTrainers = createAsyncThunk("trainersSlice/getAllTrainers", async function () {
-    const database = await trainerTable();
-    return await database.select("SELECT * FROM trainers");
-});
+export const getAllTrainers = createAsyncThunk(
+    "trainersSlice/getAllTrainers",
+    async function () {
+        const database = await trainerTable();
+        return await database.select("SELECT * FROM trainers");
+    }
+);
 
-export const addTrainer = createAsyncThunk("trainersSlice/addTrainer", async function (data: trainer) {
-    const database = await trainerTable();
-    const query = `INSERT INTO trainers (
+export const addTrainer = createAsyncThunk(
+    "trainersSlice/addTrainer",
+    async function (data: trainer) {
+        const database = await trainerTable();
+        const query = `INSERT INTO trainers (
         subscriptionState, activeSessionsList, firstName, lastName, 
         phone, address, subscriptionName, sessionsCount, 
         price, subscriptionStart, subscriptionEnd, dateAdded
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-    const values = [
-        data.subscriptionState,
-        data.activeSessionsList,
-        data.firstName,
-        data.lastName,
-        data.phone,
-        data.address,
-        data.subscriptionName,
-        data.sessionsCount,
-        data.price,
-        data.subscriptionStart,
-        data.subscriptionEnd,
-        data.dateAdded
-    ];
+        const values = [
+            data.subscriptionState,
+            data.activeSessionsList,
+            data.firstName,
+            data.lastName,
+            data.phone,
+            data.address,
+            data.subscriptionName,
+            data.sessionsCount,
+            data.price,
+            data.subscriptionStart,
+            data.subscriptionEnd,
+            data.dateAdded
+        ];
 
-    const getId = await database.execute(query, values);
+        const getId = await database.execute(query, values);
 
-    return {
-        trainerId: getId.lastInsertId,
-        ...data
-    };
-});
+        return {
+            trainerId: getId.lastInsertId,
+            ...data
+        };
+    }
+);
 
 export const deleteTrainerById = createAsyncThunk(
     "trainersSlice/deleteTrainerById",
@@ -50,7 +56,8 @@ export const deleteTrainerById = createAsyncThunk(
         );
 
         return id;
-});
+    }
+);
 
 export const updatePropertyInTrainer = createAsyncThunk(
     "trainersSlice/updatePropertyInTrainer",
@@ -73,7 +80,8 @@ export const updatePropertyInTrainer = createAsyncThunk(
 
 
         return (result as trainer[])[0];
-});
+    }
+);
 
 export const updateSomePropertiesInTrainer = createAsyncThunk(
     "trainersSlice/updateSomePropertiesInTrainer",
@@ -100,7 +108,8 @@ export const updateSomePropertiesInTrainer = createAsyncThunk(
         );
 
         return (updatedTrainer as trainer[])[0];
-});
+    }
+);
 
 
 

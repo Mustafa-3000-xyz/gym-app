@@ -16,15 +16,16 @@ export const finishedSubscriptions = "finishedSubscriptions";
 
 // These pages paths
 export const trainerPagePath = "/trainers-page";
-export const accountesPagePath = "/accountes-page";
 export const attendanceRecordePagePath = "/attendance-recorde-page";
+export const subscriptionsMenuPath = "/subscriptions-menu";
+export const accountesPagePath = "/accountes-page";
+export const profilePagePath = "/profile-page";
 export const profitsAndExpensesPagePath = "/profits-and-expenses-page";
 export const settingsPagePath = "/settings-page";
 export const expalinAppPagePath = "/explain-app-page";
-export const profilePagePath = "/profile-page";
 
 
-// These permissions
+// Permissions
 export const USING_ACTIVE_SOME_SESSIONS = "USING_ACTIVE_SOME_SESSIONS";
 
 
@@ -35,12 +36,16 @@ export const allPermissions = [
         key: trainerPagePath
     },
     {
-        title: "صفحة الحسابات",
-        key: accountesPagePath
-    },
-    {
         title: "صفحة سجل الحضور",
         key: attendanceRecordePagePath
+    },
+    {
+        title: "صفحة قائمة الاشتراكات",
+        key: subscriptionsMenuPath
+    },
+    {
+        title: "صفحة الحسابات",
+        key: accountesPagePath
     },
     {
         title: "صفحة الارباح والمصروفات",

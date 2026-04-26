@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { USING_ACTIVE_SOME_SESSIONS } from "@/Lib/constants";
+import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
 // ========================================================== //
 export default function Subscription_Info_Form(
     {
@@ -58,6 +59,10 @@ export default function Subscription_Info_Form(
         }
     }, [state.accountes]);
 
+    useEffect(function(){
+        setActiveSomeSessions(0);
+    }, [sessions]);
+
     useEffect(() => {
         if (isShowTrainerDetailsAtom && trainerDetailsAtom) {
             setSubscriptionName(trainerDetailsAtom.subscriptionName);
@@ -70,7 +75,6 @@ export default function Subscription_Info_Form(
         }
     }, [isShowTrainerDetailsAtom, trainerDetailsAtom]);
 
-
     useEffect(function () {
         onGetSubscriptionName(subscriptionName);
         onGetSessionsCount(sessions);
@@ -80,7 +84,7 @@ export default function Subscription_Info_Form(
 
 
 
-    return <form className={`
+    return <div className={`
         mb-5 gap-3
         ${!isShowTrainerDetailsAtom ? "grid grid-cols-2" : ""}
     `}
@@ -90,54 +94,33 @@ export default function Subscription_Info_Form(
             ${!isShowTrainerDetailsAtom ? "border border-slate-300 p-4" : ""}
         `}
         >
-            <div className="mb-5">
-                <Subscriptions_Menu />
-            </div>
+            <Subscriptions_Menu />
 
             {/* Inputs */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 gap-2 mt-5">
                 {/* Subscription name */}
-                <div>
-                    <h4 className="font-bold">اسم الاشتراك</h4>
-                    <input
-                        value={subscriptionName}
-                        onChange={(e) => setSubscriptionName(e.target.value)}
-                        type="text"
-                        className="w-full bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0"
-                    />
-                </div>
+                <Inp_With_Label
+                    labelName="اسم الاشتراك"
+                    inpType="text"
+                    inpValue={subscriptionName}
+                    onWriteInInput={(e) => setSubscriptionName(e.target.value)}
+                />
 
                 {/* Sessions count */}
-                <div>
-                    <h4 className="font-bold">عدد الحصص</h4>
-                    <input
-                        value={sessions}
-                        onChange={(e) => setSessions(+e.target.value)}
-                        type="number"
-                        className={`
-                            bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0
-                            appearance-none w-full
-                            [&::-webkit-inner-spin-button]:appearance-none
-                            [&::-webkit-outer-spin-button]:appearance-none
-                        `}
-                    />
-                </div>
+                <Inp_With_Label
+                    labelName="عدد الحصص"
+                    inpType="number"
+                    inpValue={sessions}
+                    onWriteInInput={(e) => setSessions(+e.target.value)}
+                />
 
                 {/* Price */}
-                <div>
-                    <h4 className="font-bold">السعر</h4>
-                    <input
-                        value={price}
-                        onChange={(e) => setPrice(Number(e.target.value))}
-                        type="number"
-                        className={`
-                            bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0
-                            appearance-none w-full
-                            [&::-webkit-inner-spin-button]:appearance-none
-                            [&::-webkit-outer-spin-button]:appearance-none
-                        `}
-                    />
-                </div>
+                <Inp_With_Label
+                    labelName="السعر"
+                    inpType="number"
+                    inpValue={price}
+                    onWriteInInput={(e) => setPrice(+e.target.value)}
+                />
             </div>
         </div>
 
@@ -159,9 +142,7 @@ export default function Subscription_Info_Form(
                         </h3>
                     </div>
 
-                    <Discription
-                        discription="هذا الخيار يُمكنك من تفعيل بعض الحصص ويجب ان تفعيل بعض الحصص تكون اقل من عدد الحصص"
-                    />
+                    <Discription discription="هذا الخيار يُمكنك من تفعيل بعض الحصص ويجب ان تفعيل بعض الحصص تكون اقل من عدد الحصص" />
                 </div>
 
                 {/* Active some session inp */}
@@ -182,5 +163,5 @@ export default function Subscription_Info_Form(
                 </div>
             </div>
         }
-    </form>
+    </div>
 }

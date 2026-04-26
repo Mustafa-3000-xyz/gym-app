@@ -44,6 +44,15 @@ export function alertSuccess({
     });
 }
 
+export function alertError(text: string) {
+    Swal.fire({
+        icon: "error",
+        title: "المعذره",
+        text: text,
+        confirmButtonText: "تمام"
+    });
+}
+
 export function alert({
     titleBeforeClickOnOk,
     titleAfterClickOnOk,

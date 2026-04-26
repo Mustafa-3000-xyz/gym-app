@@ -14,8 +14,8 @@ export default function Add_Btn(
             onClick={onClick}
             className={`
                 ${styleBtn} px-6 ${paddingY}
-                whitespace-nowrap bg-emerald-500 border-emerald-600
-                w-full flex gap-2 justify-center items-center transition-all text-white rounded-lg border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]
+                whitespace-nowrap !bg-emerald-500 !border-emerald-600
+                w-full flex gap-2 justify-center items-center transition-all !text-white rounded-lg border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]
             `}
         >
             <p>
