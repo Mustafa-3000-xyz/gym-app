@@ -1,62 +1,88 @@
-import styled from 'styled-components';
+import Drop_Menu from "@/Global-components/Drop-menu/Drop_Menu";
+import { Subscriptions_Menu_Props, subscriptionsMenu } from "@/Pages/types";
+import { getAllSubscriptionsMenu } from "@/Rtk/Slices/subscriptionsMenuSlice";
+import { store_Type } from "@/Rtk/types";
+import { Menu } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 // ========================================================== //
-export default function Subscriptions_Menu() {
-    return <div className='flex justify-center mb-3'>
-        <StyledWrapper className='w-full'>
-            <button 
-                type='button'
-                className="btn-96 w-full font-bold"
-            >
-                <span className='border border-slate-200'>
-                    قائمة الإشتراكات 
-                </span>
-            </button>
-        </StyledWrapper>
-    </div>
+export default function Subscriptions_Menu(
+    {
+        onGetSubscriptionName,
+        onGetSessionsCount,
+        onGetPrice
+    }: Subscriptions_Menu_Props
+) {
+    const state = useSelector(state => state as store_Type);
+    const dispatch = useDispatch();
+
+
+    const [isShowMenu, setIsShowMenu] = useState(false);
+    const [menusList, setMenusList] = useState<subscriptionsMenu[] | null>(null);
+
+
+
+    function clickOnSubscriptionMenu(subscriptionInfo: subscriptionsMenu) {
+        onGetSubscriptionName(subscriptionInfo.subscriptionName);
+        onGetSessionsCount(subscriptionInfo.sessionsCount);
+        onGetPrice(subscriptionInfo.price);
+
+        setIsShowMenu(false);
+    }
+
+
+
+    useEffect(function () {
+        dispatch(getAllSubscriptionsMenu() as any);
+    }, []);
+
+
+    useEffect(function () {
+        if (state.subscriptionsMenu.length == 0) return;
+        const arr: subscriptionsMenu[] = [];
+
+
+        state.subscriptionsMenu.forEach(ele => ele.isActive == "true" && arr.push(ele));
+        setMenusList(arr.length == 0 ? null : arr);
+    }, [state.subscriptionsMenu]);
+
+
+
+    return <Drop_Menu
+        title="قوائم الاشتراكات"
+        menuHeight="fixed"
+        menuIsFullWidth={true}
+        isShowTheMenu={isShowMenu}
+        icon={<Menu size={23} />}
+        onGetCurrentIsShowMenu={setIsShowMenu}
+    >
+        {
+            menusList?.map(ele => (
+                <div
+                    key={ele.id}
+                    className={`
+                        duration-300
+                        flex justify-between mb-3 items-center p-3 bg-slate-200 rounded-lg cursor-pointer
+                        hover:bg-slate-200/60
+                    `}
+                    onClick={() => clickOnSubscriptionMenu(ele)}
+                >
+                    <ul className=" list-disc ms-5">
+                        <li className="text-lg font-bold">
+                            {ele.subscriptionName}
+                        </li>
+
+                        <li className="font-bold">
+                            عدد الحصص : {ele.sessionsCount}
+                        </li>
+                    </ul>
+
+
+                    <h3 className="text-emerald-500 font-bold underline">
+                        ${ele.price}
+                    </h3>
+                </div>
+            ))
+        }
+    </Drop_Menu>
 }
-
-
-
-const StyledWrapper = styled.div`
-    .btn-96 {
-        -webkit-tap-highlight-color: transparent;
-        color: #fff;
-        cursor: pointer;
-        font-size: 100%;
-        line-height: 1.5;
-    }
-
-    .btn-96 {
-        display: block;
-        padding: 20px 5rem;
-        position: relative;
-    }
-
-    .btn-96 span {
-        background: #fff;
-        color: #000;
-        display: grid;
-        inset: 0;
-        place-items: center;
-        position: absolute;
-        transform: rotateX(0deg);
-        transform-origin: top center;
-        transition: 0.2s;
-    }
-
-    .btn-96:hover span {
-        transform: rotateX(35deg);
-    }
-
-    .btn-96:after{
-        background: #ededed;
-        content: "";
-        height: 100%;
-        left: 0;
-        position: absolute;
-        top: 0;
-        width: 100%;
-        z-index: -1;
-        transition: all 1s;
-    }
-`;

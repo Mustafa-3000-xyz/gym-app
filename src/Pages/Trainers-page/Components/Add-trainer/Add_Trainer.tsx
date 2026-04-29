@@ -9,16 +9,20 @@ import { stateIsActive, stateIsPending } from "@/Lib/constants";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import { useAtom, useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { activeSessionsList_Type, trainer } from "@/Pages/types";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
+import { store_Type } from "@/Rtk/types";
+import { updatePropertyInSubscriptionMenu } from "@/Rtk/Slices/subscriptionsMenuSlice";
 // ========================================================== //
 export default function Add_Trainer(
     { onIsShowAddTrainer }: { onIsShowAddTrainer: (x: boolean) => void }
 ) {
     const dispatch = useDispatch();
+    const state = useSelector(state => state as store_Type);
+
     const isLoginAtom = useAtomValue(isLogin_Atom);
     const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
 
@@ -40,7 +44,6 @@ export default function Add_Trainer(
 
     // These variables
     const [isAllInfoComplete, setIsAllInfoComplete] = useState(false);
-
 
 
 
@@ -70,6 +73,7 @@ export default function Add_Trainer(
             } as trainer) as any
         );
 
+        incrementTheTrainersTotalForSubscriptionMenu();
         closeThisWinow();
         alertSuccess({
             mainTitle: "تم إضافة المتدرب بنجاح",
@@ -79,7 +83,7 @@ export default function Add_Trainer(
     function makeActiveSessionList(): activeSessionsList_Type[] | [] {
         if (getActiveSomeSessions == 0) {
             return [];
-        } 
+        }
         else {
             const arr: number[] = [];
 
@@ -102,6 +106,23 @@ export default function Add_Trainer(
         }
     }
 
+    function incrementTheTrainersTotalForSubscriptionMenu() {
+        state.subscriptionsMenu.forEach(function (ele) {
+            if (
+                ele.subscriptionName == getSubscriptionName
+                &&
+                ele.sessionsCount == getSessionsCount
+                &&
+                ele.price == getPrice
+            ) {
+                dispatch(updatePropertyInSubscriptionMenu({
+                    id: ele.id as any,
+                    column: "trainersTotal",
+                    value: ele.trainersTotal + 1
+                }) as any);
+            }
+        })
+    }
 
 
     useEffect(function () {

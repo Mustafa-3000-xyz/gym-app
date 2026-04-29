@@ -132,3 +132,9 @@ export interface Permissions_Props {
     changePermissions: boolean,
     onGetPermissionsList: (x: string[]) => void,
 }
+
+export interface Subscriptions_Menu_Props {
+    onGetSubscriptionName: (x: string) => void,
+    onGetSessionsCount: (x: number) => void,
+    onGetPrice: (x: number) => void
+}

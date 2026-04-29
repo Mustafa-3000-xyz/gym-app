@@ -15,7 +15,10 @@ export default function Popup_Form(
         clickOnSaveBtn,
     }: Popup_Form_Props
 ) {
-    return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none z-50">
+    return <form 
+        className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none z-50"
+        onSubmit={(e)=> e.preventDefault()}
+    >
         <Animation
             className={`
                 absolute top-1/2 end-1/2 -translate-x-1/2 -translate-y-1/2
@@ -40,9 +43,9 @@ export default function Popup_Form(
                 <X size={23} onClick={clickOnCancel} className="cursor-pointer text-red-500" />
             </div>
 
-            <form className="p-3">
+            <div className="p-3">
                 {children}
-            </form>
+            </div>
 
             {/* Btn save and cancel */}
             <div className="bg-black/5 p-5 border-t border-t-slate-300 flex gap-3 mt-5">
@@ -71,5 +74,5 @@ export default function Popup_Form(
                 </button>
             </div>
         </Animation>
-    </div>
+    </form>
 }

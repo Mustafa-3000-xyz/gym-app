@@ -15,7 +15,7 @@ export interface Sidebar_Linsk_Props {
     onClick?: (e: React.MouseEvent) => void,
 }
 
-export interface Popup_Animation_Props {
+export interface Animation_Props {
     children: ReactNode;
     className?: string;
     ref?: any;
@@ -84,7 +84,8 @@ export interface Password_Inp_Props {
     onWriteInInput?: (e: ChangeEvent<HTMLInputElement>) => void,
 }
 
-export interface Inp_With_Label_Props{
+export interface Inp_With_Label_Props {
+    valueOrDefaultValue?: "value" | "default value"
     labelName: string,
     inpType?: "password" | "text" | "number"
     inpValue?: string | number,
@@ -92,7 +93,17 @@ export interface Inp_With_Label_Props{
     onWriteInInput: (x: ChangeEvent<HTMLInputElement>) => void
 }
 
-export interface Toggle_Btn_Props{
+export interface Toggle_Btn_Props {
     value: boolean,
     onGetValue: (x: boolean) => void
+}
+
+export interface Drop_Menu_Props {
+    title: string,
+    menuHeight?: "auto" | "fixed",
+    icon: any,
+    children?: ReactNode,
+    menuIsFullWidth?: boolean,
+    isShowTheMenu?: boolean,
+    onGetCurrentIsShowMenu?: (x: boolean) => void
 }

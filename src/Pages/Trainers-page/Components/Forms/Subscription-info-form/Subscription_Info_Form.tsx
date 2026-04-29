@@ -20,17 +20,17 @@ export default function Subscription_Info_Form(
         onGetActiveSomeSessions
     }: Subscription_Info_Form_Props
 ) {
-    const trainerDetailsAtom = useAtomValue(trainerDetails_Atom);
-    const isLoginAtom = useAtomValue(isLogin_Atom);
     const state = useSelector(state => state as store_Type);
+
+    const isLoginAtom = useAtomValue(isLogin_Atom);
+    const trainerDetailsAtom = useAtomValue(trainerDetails_Atom);
     const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
 
-
+    const [isUsingTheActiveSomeSessions, setIsUsingTheActiveSomeSessions] = useState(false);
+    const [activeSomeSessions, setActiveSomeSessions] = useState(0);
     const [subscriptionName, setSubscriptionName] = useState<string>("");
     const [sessions, setSessions] = useState<number>(0);
     const [price, setPrice] = useState<number>(0);
-    const [activeSomeSessions, setActiveSomeSessions] = useState(0);
-    const [isUsingTheActiveSomeSessions, setIsUsingTheActiveSomeSessions] = useState(false);
 
 
 
@@ -42,6 +42,10 @@ export default function Subscription_Info_Form(
         setActiveSomeSessions(value);
         onGetActiveSomeSessions?.(value);
     }
+
+
+
+
 
 
     useEffect(function () {
@@ -59,7 +63,7 @@ export default function Subscription_Info_Form(
         }
     }, [state.accountes]);
 
-    useEffect(function(){
+    useEffect(function () {
         setActiveSomeSessions(0);
     }, [sessions]);
 
@@ -74,6 +78,7 @@ export default function Subscription_Info_Form(
             setPrice(0);
         }
     }, [isShowTrainerDetailsAtom, trainerDetailsAtom]);
+
 
     useEffect(function () {
         onGetSubscriptionName(subscriptionName);
@@ -90,11 +95,15 @@ export default function Subscription_Info_Form(
     `}
     >
         <div className={`
-            w-full rounded-lg flex flex-col justify-between
+            w-full rounded-lg flex flex-col justify-between px-4
             ${!isShowTrainerDetailsAtom ? "border border-slate-300 p-4" : ""}
         `}
         >
-            <Subscriptions_Menu />
+            <Subscriptions_Menu
+                onGetSubscriptionName={setSubscriptionName}
+                onGetSessionsCount={setSessions}
+                onGetPrice={setPrice}
+            />
 
             {/* Inputs */}
             <div className="grid grid-cols-3 gap-2 mt-5">

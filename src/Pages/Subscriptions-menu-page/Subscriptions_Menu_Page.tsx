@@ -144,11 +144,13 @@ export default function Subscriptions_Menu_Page() {
                 >
                     <div className="grid grid-cols-2 gap-3 mb-5 px-10">
                         <Inp_With_Label
+                            valueOrDefaultValue="default value"
                             labelName="اسم الاشتراك"
                             onWriteInInput={(e) => setGetSubscriptionName(e.target.value)}
                         />
 
                         <Inp_With_Label
+                            valueOrDefaultValue="default value"
                             labelName="عدد الحصص"
                             onWriteInInput={(e) => setGetSessionCount(+e.target.value)}
                         />
@@ -157,6 +159,7 @@ export default function Subscriptions_Menu_Page() {
                     <div className="flex justify-center">
                         <div className="w-2/5">
                             <Inp_With_Label
+                                valueOrDefaultValue="default value"
                                 labelName="السعر"
                                 onWriteInInput={(e) => setGetPrice(+e.target.value)}
                             />

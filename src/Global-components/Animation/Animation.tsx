@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Popup_Animation_Props } from "../types";
+import { Animation_Props } from "../types";
 // ========================================================== //
 export default function Animation(
     {
@@ -9,7 +9,7 @@ export default function Animation(
         initial,
         animate,
         transition,
-    }: Popup_Animation_Props
+    }: Animation_Props
 ) {
     return <motion.div
         ref={ref}

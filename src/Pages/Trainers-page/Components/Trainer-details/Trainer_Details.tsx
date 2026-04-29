@@ -22,6 +22,7 @@ import { activeSessionsList_Type } from "@/Pages/types";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { store_Type } from "@/Rtk/types";
 import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
+import { updatePropertyInSubscriptionMenu } from "@/Rtk/Slices/subscriptionsMenuSlice";
 // ========================================================== //
 export default function Trainer_Details() {
     const dispatch = useDispatch();
@@ -90,6 +91,7 @@ export default function Trainer_Details() {
             funRunWhenClickOnOk: function () {
                 setIsShowTrainerDetailsAtom(false);
 
+                incrementTheTrainersTotalForSubscriptionMenu();
                 dispatch(updateSomePropertiesInTrainer({
                     trainerId: trainerDetailsAtom?.trainerId as any,
                     values: { ...updateTheTrainer } as any
@@ -240,6 +242,24 @@ export default function Trainer_Details() {
         }
     }
 
+
+    function incrementTheTrainersTotalForSubscriptionMenu() {
+        state.subscriptionsMenu.forEach(function (ele) {
+            if (
+                ele.subscriptionName == getSubscriptionName
+                &&
+                ele.sessionsCount == getSessionsCount
+                &&
+                ele.price == getPrice
+            ) {
+                dispatch(updatePropertyInSubscriptionMenu({
+                    id: ele.id as any,
+                    column: "trainersTotal",
+                    value: ele.trainersTotal + 1
+                }) as any);
+            }
+        })
+    }
 
 
 
@@ -476,7 +496,7 @@ export default function Trainer_Details() {
                 }
 
                 {/* Subscription info & Date info*/}
-                <SwiperSlide>
+                <SwiperSlide className="overflow-auto pb-6">
                     <Subscription_Info_Form
                         onGetSubscriptionName={setGetSubscriptionName}
                         onGetSessionsCount={setGetSessionsCount}

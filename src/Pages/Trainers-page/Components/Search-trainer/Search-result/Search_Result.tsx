@@ -87,7 +87,7 @@ export default function Search_Result(
             {
                 searchResult.length == 0 ?
                     <Not_Found
-                        srcImg='not_found_in_search.svg'
+                        srcImg='not_found_in_drop_menu.svg'
                         title=' لا يوجد نتائج'
                         className='w-28'
                     />
