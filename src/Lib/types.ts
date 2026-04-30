@@ -1,4 +1,4 @@
-export interface alertSuccessType{
+export interface alertSuccessType {
     mainTitle: string,
     text?: string,
 }
@@ -10,7 +10,13 @@ export interface alertType {
     showMessageAfterClickOnOk?: boolean
 }
 
-export interface allPermissions_Type{
+export interface allPermissions_Type {
     title: string,
     path: string,
+}
+
+export interface normalAlert_Type {
+    title: string,
+    text?: string,
+    icon: "success" | "error" | "question" | "info"
 }

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { updatePropertyInTrainer, updateSomePropertiesInTrainer } from "@/Rtk/Slices/trainersSlice";
-import { alert } from "@/Lib/functions";
+import { alert, theTodayDate } from "@/Lib/functions";
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
@@ -62,12 +62,23 @@ export default function Trainer_Details() {
 
 
     const totalActiveSessions = activeSessionsList.reduce((sum, ele) => sum + ele.sessions.length, 0);
-    const todayDate = new Date();
+    const todayDate = theTodayDate();
+    const conditionalForActiveSubscription = todayDate.getTime() >= new Date(getSubscriptionStart as any).getTime() && todayDate.getTime() <= new Date(getSubscriptionEnd as any).getTime();
+    const conditionalForPendingSubscription = todayDate.getTime() < new Date(getSubscriptionStart as any).getTime();
+    const conditionalForFinishedSubscription = todayDate.getTime() > new Date(getSubscriptionEnd as any).getTime();
+
+
     const updateTheTrainer = {
         ...trainerDetailsAtom,
         // I want when change the sessions count and click on btn save change, so reset the activeSessionsList
         activeSessionsList: getSessionsCount != trainerDetailsAtom?.sessionsCount ? "[]" : JSON.stringify(activeSessionsList),
-        subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() ? stateIsPending : stateIsActive,
+        subscriptionState: conditionalForActiveSubscription ?
+            stateIsActive
+            :
+            conditionalForPendingSubscription ?
+                stateIsPending
+                :
+                conditionalForFinishedSubscription && stateIsFinished,
         firstName: getFirstName != "" ? getFirstName : trainerDetailsAtom?.firstName,
         lastName: getLastName != "" ? getLastName : trainerDetailsAtom?.lastName,
         address: getAddress != "" ? getAddress : trainerDetailsAtom?.address,

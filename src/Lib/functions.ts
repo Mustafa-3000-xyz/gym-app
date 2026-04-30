@@ -1,6 +1,6 @@
 import { accounte, trainer } from "@/Pages/types";
 import Swal from "sweetalert2";
-import { alertSuccessType, alertType } from "./types";
+import { alertType, normalAlert_Type } from "./types";
 import { stateIsActive, stateIsPending } from "./constants";
 import store from "@/Rtk/store";
 import { updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
@@ -33,24 +33,19 @@ export function styleForSubscriptionState(trainer: trainer) {
     return styleObj;
 }
 
-export function alertSuccess({
-    mainTitle, text = ""
-}: alertSuccessType) {
+export function normalAlert(
+    {
+        title,
+        text = "",
+        icon
+    }: normalAlert_Type
+) {
     Swal.fire({
-        title: mainTitle,
+        title: title,
         text: text,
-        icon: "success",
+        icon: icon,
         confirmButtonText: "تمام"
-    });
-}
-
-export function alertError(text: string) {
-    Swal.fire({
-        icon: "error",
-        title: "المعذره",
-        text: text,
-        confirmButtonText: "تمام"
-    });
+    } as any);
 }
 
 export function alert({
@@ -71,9 +66,10 @@ export function alert({
     }).then((result) => {
         if (result.isConfirmed) {
             if (showMessageAfterClickOnOk) {
-                alertSuccess({
-                    mainTitle: "تمت العمليه",
+                normalAlert({
+                    title: "تمت العمليه",
                     text: titleAfterClickOnOk as string,
+                    icon: "success"
                 });
             }
 
@@ -102,4 +98,11 @@ export function logOutFromOldAccount(oldAccountId: number) {
             workingHours: parseFloat(Math.trunc(totaldHours) as any)
         }
     }) as any);
+}
+
+export function theTodayDate() {
+    const todayDate = new Date();
+    todayDate.setHours(0, 0, 0, 0);
+
+    return todayDate;
 }

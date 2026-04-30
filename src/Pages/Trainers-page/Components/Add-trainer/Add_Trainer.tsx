@@ -4,11 +4,10 @@ import { addTrainer } from "@/Rtk/Slices/trainersSlice";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
-import { alertSuccess } from "@/Lib/functions";
-import { stateIsActive, stateIsPending } from "@/Lib/constants";
+import { normalAlert, theTodayDate } from "@/Lib/functions";
+import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
-import { useAtom, useAtomValue } from "jotai";
-import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
+import { useAtomValue } from "jotai";
 import { useDispatch, useSelector } from "react-redux";
 import { activeSessionsList_Type, trainer } from "@/Pages/types";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
@@ -24,7 +23,6 @@ export default function Add_Trainer(
     const state = useSelector(state => state as store_Type);
 
     const isLoginAtom = useAtomValue(isLogin_Atom);
-    const setIsShowTrainerDetailsAtom = useAtom(isShowTrainerDetails_Atom)[1];
 
     // Get trainer info
     const [getFirstName, setGetFirstName] = useState("");
@@ -54,11 +52,25 @@ export default function Add_Trainer(
     function saveTrainerInfo() {
         if (!isAllInfoComplete) return
 
-        const todayDate = new Date();
+        const todayDate = theTodayDate();
+
+
+        const conditionalForActiveSubscription = todayDate.getTime() >= new Date(getSubscriptionStart as any).getTime() && todayDate.getTime() <= new Date(getSubscriptionEnd as any).getTime();
+        const conditionalForPendingSubscription = todayDate.getTime() < new Date(getSubscriptionStart as any).getTime();
+        const conditionalForFinishedSubscription = todayDate.getTime() > new Date(getSubscriptionEnd as any).getTime();
+
+
 
         dispatch(
             addTrainer({
-                subscriptionState: todayDate.getTime() < new Date(getSubscriptionStart as any).getTime() as any ? stateIsPending : stateIsActive,
+                subscriptionState:
+                    conditionalForActiveSubscription ?
+                        stateIsActive
+                        :
+                        conditionalForPendingSubscription ?
+                            stateIsPending
+                            :
+                            conditionalForFinishedSubscription && stateIsFinished,
                 activeSessionsList: JSON.stringify(makeActiveSessionList()) as any,
                 firstName: getFirstName,
                 lastName: getLastName,
@@ -69,14 +81,16 @@ export default function Add_Trainer(
                 price: Number(getPrice),
                 subscriptionStart: getSubscriptionStart?.toISOString(),
                 subscriptionEnd: getSubscriptionEnd?.toISOString(),
-                dateAdded: todayDate.toISOString()
+                dateAdded: new Date().toISOString()
             } as trainer) as any
         );
 
         incrementTheTrainersTotalForSubscriptionMenu();
         closeThisWinow();
-        alertSuccess({
-            mainTitle: "تم إضافة المتدرب بنجاح",
+        normalAlert({
+            title: "تمت العمليه بنجاح",
+            text: "إضافة متدرب جديد",
+            icon: "success"
         });
     }
 
@@ -125,9 +139,6 @@ export default function Add_Trainer(
     }
 
 
-    useEffect(function () {
-        setIsShowTrainerDetailsAtom(false);
-    }, []);
 
     // This check the trainer info is compolete or no
     useEffect(() => {

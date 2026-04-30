@@ -9,7 +9,7 @@ import { store_Type } from "@/Rtk/types";
 import { addSubscriptionMenu, getAllSubscriptionsMenu } from "@/Rtk/Slices/subscriptionsMenuSlice";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
-import { alertError, alertSuccess } from "@/Lib/functions";
+import { normalAlert } from "@/Lib/functions";
 // ========================================================== //
 export default function Subscriptions_Menu_Page() {
     const dispatch = useDispatch();
@@ -28,7 +28,11 @@ export default function Subscriptions_Menu_Page() {
 
     function addNewSubscriptionMenu() {
         if (state.subscriptionsMenu.length == 6) {
-            alertError("لقد وصلت للحد الاقصى");
+            normalAlert({
+                title: "المعذره",
+                text: "لقد وصلت للحد الاقصى",
+                icon: "error"
+            });
         }
         else {
             setIsShowAddNewSubscriptionType(true);
@@ -46,10 +50,11 @@ export default function Subscriptions_Menu_Page() {
             isActive: "true"
         }) as any);
 
-        alertSuccess({
-            mainTitle: "تم بنجاح",
-            text: "إضافة قائمة جديده"
-        });
+        normalAlert({
+            title: "تمت العمليه بنجاح",
+            text: "لقد تم إضافة قائمة جديده",
+            icon: "success"
+        })
 
         setIsShowAddNewSubscriptionType(false);
     }

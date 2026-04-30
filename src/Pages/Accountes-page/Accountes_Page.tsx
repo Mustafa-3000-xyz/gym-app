@@ -13,7 +13,7 @@ import { accounte } from "../types";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
 import Permissions from "@/Global-components/Permissions/Permissions";
 import { trainerPagePath } from "@/Lib/constants";
-import { alertError } from "@/Lib/functions";
+import { normalAlert } from "@/Lib/functions";
 // ========================================================== //
 export default function Accountes_Page() {
     const dispatch = useDispatch();
@@ -38,7 +38,11 @@ export default function Accountes_Page() {
         }
 
         if (state.accountes.length == 4) {
-            alertError("لقد وصلت للحد الاقصى")
+            normalAlert({
+                title: "المعذره",
+                text: "لقد وصلت للحد الاقصى",
+                icon: "error"
+            })
         } else {
             setIsShowAddAccount(true);
         }

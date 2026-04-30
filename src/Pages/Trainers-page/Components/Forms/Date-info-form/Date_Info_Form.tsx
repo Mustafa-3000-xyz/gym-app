@@ -6,6 +6,7 @@ import { Calendar } from 'primereact/calendar';
 import { useAtomValue } from "jotai";
 import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
+import { normalAlert, theTodayDate } from "@/Lib/functions";
 // ========================================================== //
 export default function Date_Info_Form(
     { onGetSubscriptionStart, onGetSubscriptionEnd }: Date_Info_Props
@@ -19,21 +20,46 @@ export default function Date_Info_Form(
 
     const [minDateInSubscriptionEnd, setMinDateInSubscriptionEnd] = useState<Date | null>(null);
 
+    const todayDate = theTodayDate();
 
 
-    useEffect(function(){
+
+
+    // This for set date start in subscription end
+    useEffect(function () {
         if (!subscriptionStart) return;
 
         const date = new Date(subscriptionStart as any);
-        
+
         date.setDate(date.getDate() + 1);
-        date.setHours(0,0,0,0);
+        date.setHours(0, 0, 0, 0);
 
         setMinDateInSubscriptionEnd(date);
     }, [subscriptionStart]);
 
+    useEffect(function () {
+        if (!trainerDetailsAtom) return
+
+        if (
+            trainerDetailsAtom?.subscriptionState == stateIsFinished
+            &&
+            subscriptionStart
+            &&
+            todayDate.getTime() > new Date(subscriptionStart as any).getTime()
+        ) {
+            setSubscriptionStart(null);
+            normalAlert({
+                title: "تنويه",
+                text: "في حالة تجديد الاشتراك , يجب ان تاريخ بداية الاشتراك يسبق تاريخ اليوم او يساويه",
+                icon: "info"
+            })
+        }
+    }, [trainerDetailsAtom?.subscriptionState, subscriptionStart])
+
     // This for get days between subscriptionStart and subscriptionEnd
     useEffect(function () {
+        if (!subscriptionStart && !subscriptionEnd) return
+
         const startDate = format(subscriptionStart as Date, styleDate);
         const endDate = format(subscriptionEnd as Date, styleDate);
         const diff = differenceInDays(endDate, startDate);

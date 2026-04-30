@@ -21,7 +21,7 @@ export default function Trainers_Page() {
     const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
 
 
-    const [TrainersListAfterFilter, setTrainersListAfterFilter] = useState<trainer[]>([]);
+    const [trainersListAfterFilter, setTrainersListAfterFilter] = useState<trainer[]>([]);
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
 
 
@@ -328,7 +328,7 @@ export default function Trainers_Page() {
         </div>
 
         {/* Table for show all trainers */}
-        <Table_For_Trainers trainersList={TrainersListAfterFilter} />
+        <Table_For_Trainers trainersList={trainersListAfterFilter} />
 
         {
             isShowAddTrainer ?
