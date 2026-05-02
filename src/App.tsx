@@ -9,7 +9,7 @@ import Authentication_Page from "./Pages/Authentication-page/Authentication_Page
 import { useAtomValue } from "jotai";
 import isLogin_Atom from "./Atoms/Is/isLogin_Atom";
 import { useEffect } from "react";
-import { accountesPagePath, allSubscriptions, attendanceRecordePagePath, expalinAppPagePath, fromOldToNew, profilePagePath, profitsAndExpensesPagePath, settingsPagePath, subscriptionsMenuPath, trainerPagePath } from "./Lib/constants";
+import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profilePagePath, profitsAndExpensesPagePath, settingsPagePath, subscriptionsMenuPath, trainerPagePath } from "./Lib/constants";
 import Explain_App_Page from "./Pages/Explain-app-page/Explain_App_Page";
 import Profile_Page from "./Pages/Profile-page/Profile_Page";
 import { logOutFromOldAccount } from "./Lib/functions";
@@ -37,14 +37,6 @@ function App() {
   }
 
 
-  useEffect(function () {
-    const filtetObj = {
-      arrange: fromOldToNew,
-      subscriptionType: allSubscriptions
-    };
-
-    localStorage.setItem("filter", JSON.stringify(filtetObj));
-  }, []);
 
   useEffect(function () {
     logOutWhenCloseApp();

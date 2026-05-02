@@ -26,8 +26,8 @@ export default function Trainers_Page() {
 
 
     const [filterObj, setFilterObj] = useState<filter>({
-        arrange: JSON.parse(localStorage.getItem("filter") as any).arrange,
-        subscriptionType: JSON.parse(localStorage.getItem("filter") as any).subscriptionType
+        arrange: JSON.parse(localStorage.getItem("filter") as any ?? "{}").arrange ?? fromOldToNew,
+        subscriptionType: JSON.parse(localStorage.getItem("filter") as any ?? "{}").subscriptionType ?? allSubscriptions
     });
     const [boxInfo, setBoxInfo] = useState({
         name: "",
@@ -73,40 +73,6 @@ export default function Trainers_Page() {
         setFilterObj(obj);
     }
 
-    function getTrainersListAfterFilter(): trainer[] {
-        let arr: trainer[] = [];
-
-
-        // clone the list before sorting to avoid mutating props or frozen data
-        const resultArrange = [...state.trainers].sort(function (a, b) {
-            if (filterObj.arrange == fromOldToNew) {
-                return new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime()
-            }
-            else {
-                return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()
-            }
-        });
-
-
-
-        if (filterObj.subscriptionType == allSubscriptions) {
-            resultArrange.forEach(ele => arr.push(ele));
-        }
-        else if (filterObj.subscriptionType == activeSubscriptions) {
-            resultArrange.forEach(ele => ele.subscriptionState == stateIsActive && arr.push(ele));
-        }
-        else if (filterObj.subscriptionType == pendingSubscriptions) {
-            resultArrange.forEach(ele => ele.subscriptionState == stateIsPending && arr.push(ele));
-        }
-        else {
-            resultArrange.forEach(ele => ele.subscriptionState == stateIsFinished && arr.push(ele));
-        }
-
-
-        localStorage.setItem("filter", JSON.stringify(filterObj) as any);
-        return arr;
-    }
-
     function makeBoxInfo() {
         if (!filterObj) return;
 
@@ -136,6 +102,38 @@ export default function Trainers_Page() {
         }
     }
 
+    function getTrainersListAfterFilter(): trainer[] {
+        let arr: trainer[] = [];
+
+
+        // clone the list before sorting to avoid mutating props or frozen data
+        const resultArrange = [...state.trainers].sort(function (a, b) {
+            if (filterObj.arrange == fromOldToNew) {
+                return new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime()
+            }
+            else {
+                return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()
+            }
+        });
+
+
+
+        if (filterObj.subscriptionType == allSubscriptions) {
+            resultArrange.forEach(ele => arr.push(ele));
+        }
+        else if (filterObj.subscriptionType == activeSubscriptions) {
+            resultArrange.forEach(ele => ele.subscriptionState == stateIsActive && arr.push(ele));
+        }
+        else if (filterObj.subscriptionType == pendingSubscriptions) {
+            resultArrange.forEach(ele => ele.subscriptionState == stateIsPending && arr.push(ele));
+        }
+        else {
+            resultArrange.forEach(ele => ele.subscriptionState == stateIsFinished && arr.push(ele));
+        }
+
+        return arr;
+    }
+
 
 
 
@@ -146,10 +144,11 @@ export default function Trainers_Page() {
 
     useEffect(function () {
         const result = getTrainersListAfterFilter();
+
+
         makeBoxInfo();
-
-
         setTrainersListAfterFilter(result);
+        localStorage.setItem("filter", JSON.stringify(filterObj) as any);
     }, [state.trainers, filterObj]);
 
 
