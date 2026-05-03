@@ -285,7 +285,7 @@ export default function Profile_Page() {
             <Box
                 icon={<BriefcaseBusiness />}
                 styleIcon="bg-neutral-200 text-neutral-500"
-                title="مجموع عدد ساعات العمل"
+                title="مجموع ساعات العمل"
                 total={houresTotal as any}
             />
 
