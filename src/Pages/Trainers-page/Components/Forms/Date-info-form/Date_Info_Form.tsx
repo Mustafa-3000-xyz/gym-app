@@ -20,7 +20,7 @@ export default function Date_Info_Form(
 
     const [minDateInSubscriptionEnd, setMinDateInSubscriptionEnd] = useState<Date | null>(null);
 
-    const todayDate = theTodayDate();
+    const todayDate = theTodayDate({ startingIn12Houre: true });
 
 
 
@@ -38,7 +38,7 @@ export default function Date_Info_Form(
     }, [subscriptionStart]);
 
     useEffect(function () {
-        if (!trainerDetailsAtom) return
+        if (!isShowTrainerDetailsAtom) return
 
         if (
             trainerDetailsAtom?.subscriptionState == stateIsFinished
@@ -54,7 +54,7 @@ export default function Date_Info_Form(
                 icon: "info"
             })
         }
-    }, [trainerDetailsAtom?.subscriptionState, subscriptionStart])
+    }, [isShowTrainerDetailsAtom, trainerDetailsAtom?.subscriptionState, subscriptionStart])
 
     // This for get days between subscriptionStart and subscriptionEnd
     useEffect(function () {

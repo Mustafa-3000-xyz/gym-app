@@ -52,7 +52,7 @@ export default function Add_Trainer(
     function saveTrainerInfo() {
         if (!isAllInfoComplete) return
 
-        const todayDate = theTodayDate();
+        const todayDate = theTodayDate({startingIn12Houre: true});
 
 
         const conditionalForActiveSubscription = todayDate.getTime() >= new Date(getSubscriptionStart as any).getTime() && todayDate.getTime() <= new Date(getSubscriptionEnd as any).getTime();

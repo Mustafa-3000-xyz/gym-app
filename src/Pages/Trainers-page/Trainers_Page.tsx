@@ -4,8 +4,7 @@ import { filter, trainer } from "@/Pages/types";
 import Trainer_Details from "./Components/Trainer-details/Trainer_Details";
 import Add_Trainer from "./Components/Add-trainer/Add_Trainer";
 import Search_Trainer from "./Components/Search-trainer/Search_Trainer";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllTrainers } from "@/Rtk/Slices/trainersSlice";
+import { useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import Box from "@/Global-components/Box/Box";
 import { activeSubscriptions, allSubscriptions, finishedSubscriptions, fromNewToOld, fromOldToNew, pendingSubscriptions, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
@@ -16,7 +15,6 @@ import Table_For_Trainers from "@/Global-components/Table-for-trainers/Table_For
 import Drop_Menu from "@/Global-components/Drop-menu/Drop_Menu";
 // ========================================================== //
 export default function Trainers_Page() {
-    const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
     const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
 
@@ -136,11 +134,6 @@ export default function Trainers_Page() {
 
 
 
-
-
-    useEffect(function () {
-        dispatch(getAllTrainers() as any);
-    }, []);
 
     useEffect(function () {
         const result = getTrainersListAfterFilter();

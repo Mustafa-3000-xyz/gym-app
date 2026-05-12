@@ -100,9 +100,14 @@ export function logOutFromOldAccount(oldAccountId: number) {
     }) as any);
 }
 
-export function theTodayDate() {
+export function theTodayDate(
+    { startingIn12Houre }: { startingIn12Houre?: boolean }
+) {
     const todayDate = new Date();
-    todayDate.setHours(0, 0, 0, 0);
+
+    if (startingIn12Houre) {
+        todayDate.setHours(0, 0, 0, 0);
+    }
 
     return todayDate;
 }

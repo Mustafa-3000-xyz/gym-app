@@ -62,7 +62,7 @@ export default function Trainer_Details() {
 
 
     const totalActiveSessions = activeSessionsList.reduce((sum, ele) => sum + ele.sessions.length, 0);
-    const todayDate = theTodayDate();
+    const todayDate = theTodayDate({ startingIn12Houre: true });
     const conditionalForActiveSubscription = todayDate.getTime() >= new Date(getSubscriptionStart as any).getTime() && todayDate.getTime() <= new Date(getSubscriptionEnd as any).getTime();
     const conditionalForPendingSubscription = todayDate.getTime() < new Date(getSubscriptionStart as any).getTime();
     const conditionalForFinishedSubscription = todayDate.getTime() > new Date(getSubscriptionEnd as any).getTime();
@@ -252,8 +252,7 @@ export default function Trainer_Details() {
             setActiveSessionsList(result);
         }
     }
-
-
+    
     function incrementTheTrainersTotalForSubscriptionMenu() {
         state.subscriptionsMenu.forEach(function (ele) {
             if (
