@@ -45,14 +45,11 @@ export default function Add_Trainer(
 
 
 
-    function closeThisWinow() {
-        onIsShowAddTrainer(false);
-    }
 
     function saveTrainerInfo() {
         if (!isAllInfoComplete) return
 
-        const todayDate = theTodayDate({startingIn12Houre: true});
+        const todayDate = theTodayDate({ startingIn12Houre: true });
 
 
         const conditionalForActiveSubscription = todayDate.getTime() >= new Date(getSubscriptionStart as any).getTime() && todayDate.getTime() <= new Date(getSubscriptionEnd as any).getTime();
@@ -86,7 +83,7 @@ export default function Add_Trainer(
         );
 
         incrementTheTrainersTotalForSubscriptionMenu();
-        closeThisWinow();
+        onIsShowAddTrainer(false);
         normalAlert({
             title: "تمت العمليه بنجاح",
             text: "إضافة متدرب جديد",
@@ -143,9 +140,8 @@ export default function Add_Trainer(
     // This check the trainer info is compolete or no
     useEffect(() => {
         if (
-            (
-                getPhone == 0 || new String(getPhone).match(regexPhone)
-            ) &&
+            (getPhone == 0 || new String(getPhone).match(regexPhone))
+            &&
             getFirstName &&
             getLastName &&
             getSubscriptionName &&
@@ -173,7 +169,7 @@ export default function Add_Trainer(
         titel="إضافة متدرب"
         discription="الان, يمكنك إضافة متدرب جديد"
         isSave={isAllInfoComplete}
-        clickOnCancel={closeThisWinow}
+        clickOnCancel={() => onIsShowAddTrainer(false)}
         clickOnSaveBtn={saveTrainerInfo}
     >
         {/* Trainer info */}
@@ -207,11 +203,9 @@ export default function Add_Trainer(
         </div>
 
         {/* Date info */}
-        <div>
-            <Date_Info_Form
-                onGetSubscriptionStart={setGetSubscriptionStart}
-                onGetSubscriptionEnd={setGetSubscriptionEnd}
-            />
-        </div>
+        <Date_Info_Form
+            onGetSubscriptionStart={setGetSubscriptionStart}
+            onGetSubscriptionEnd={setGetSubscriptionEnd}
+        />
     </Popup_Form>
 }

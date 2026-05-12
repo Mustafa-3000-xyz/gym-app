@@ -9,14 +9,14 @@ import { store_Type } from "@/Rtk/types";
 import Box from "@/Global-components/Box/Box";
 import { activeSubscriptions, allSubscriptions, finishedSubscriptions, fromNewToOld, fromOldToNew, pendingSubscriptions, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
-import { useAtomValue } from "jotai";
-import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import Table_For_Trainers from "@/Global-components/Table-for-trainers/Table_For_Trainers";
 import Drop_Menu from "@/Global-components/Drop-menu/Drop_Menu";
+import { useAtom } from "jotai";
+import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 // ========================================================== //
 export default function Trainers_Page() {
     const state = useSelector(state => state as store_Type);
-    const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
+    const [trainerDetailsAtom, setTrainerDetailsAtom] = useAtom(trainerDetails_Atom);
 
 
     const [trainersListAfterFilter, setTrainersListAfterFilter] = useState<trainer[]>([]);
@@ -40,18 +40,26 @@ export default function Trainers_Page() {
         allPendingSubscriptions,
         allFinishedSubscriptions
     ] = useMemo(function () {
-        const allActiveSubscriptions = state.trainers.filter(ele => ele.subscriptionState == stateIsActive).length;
-        const allPendingSubscriptions = state.trainers.filter(ele => ele.subscriptionState == stateIsPending).length;
-        const allFinishedSubscriptions = state.trainers.filter(ele => ele.subscriptionState == stateIsFinished).length;
+        if (state.trainers.length == 0 || state.trainers.includes(undefined as any)) {
+            return [0, 0, 0]
+        }
+        else {
+            const allActiveSubscriptions = state.trainers.filter(ele => ele.subscriptionState == stateIsActive).length;
+            const allPendingSubscriptions = state.trainers.filter(ele => ele.subscriptionState == stateIsPending).length;
+            const allFinishedSubscriptions = state.trainers.filter(ele => ele.subscriptionState == stateIsFinished).length;
 
 
-        return [allActiveSubscriptions, allPendingSubscriptions, allFinishedSubscriptions];
+            return [allActiveSubscriptions, allPendingSubscriptions, allFinishedSubscriptions];
+        }
     }, [state.trainers]);
 
 
 
 
-
+    function clickOnAddTrainerBtn(){
+        setIsShowAddTrainer(true);
+        setTrainerDetailsAtom(null);
+    }
 
     function clickOnArrange(type: string) {
         const obj = {
@@ -314,13 +322,17 @@ export default function Trainers_Page() {
                     styleBtn="cursor-pointer"
                     paddingY="py-2"
                     title="إضافة متدرب جديد"
-                    onClick={() => setIsShowAddTrainer(true)}
+                    onClick={clickOnAddTrainerBtn}
                 />
             </div>
         </div>
 
         {/* Table for show all trainers */}
-        <Table_For_Trainers trainersList={trainersListAfterFilter} />
+        <Table_For_Trainers
+            trainersList={
+                trainersListAfterFilter.length == 0 || trainersListAfterFilter.includes(undefined as any) ? [] : trainersListAfterFilter
+            }
+        />
 
         {
             isShowAddTrainer ?
@@ -329,7 +341,7 @@ export default function Trainers_Page() {
         }
 
         {
-            isShowTrainerDetailsAtom ?
+            trainerDetailsAtom ?
                 <Trainer_Details />
                 : null
         }

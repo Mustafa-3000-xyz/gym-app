@@ -6,7 +6,6 @@ import { useSetAtom } from "jotai";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import Animation from "@/Global-components/Animation/Animation";
 import { useEffect, useRef } from "react";
-import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 // ========================================================== //
 export default function Search_Result(
     {
@@ -17,9 +16,8 @@ export default function Search_Result(
         onGetSearchValue,
     }: Search_Result_Props
 ) {
-    const setIsShowTrainerDetailsAtom = useSetAtom(isShowTrainerDetails_Atom);
     const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
-    
+
     const searchResultRef = useRef<HTMLDivElement>(null);
 
 
@@ -33,20 +31,20 @@ export default function Search_Result(
 
     function showTrainer(trainer: trainer) {
         setTrainerDetailsAtom(trainer);
-        onIsShowSearchResult(false);
-        setIsShowTrainerDetailsAtom(true);
-        onGetSearchResult([]);
-        onGetSearchValue("");
+        close();
     }
 
 
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
             if (
-                (!searchInpRef.current?.contains(e.target as any))
+                !searchInpRef.current?.contains(e.target as any)
                 &&
-                (searchResultRef.current != e.target &&
-                    !searchResultRef.current?.contains(e.target as any))
+                (
+                    searchResultRef.current != e.target
+                    &&
+                    !searchResultRef.current?.contains(e.target as any)
+                )
             ) {
                 close();
             }

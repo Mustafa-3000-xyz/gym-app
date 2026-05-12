@@ -17,13 +17,13 @@ import Subscriptions_Menu_Page from "./Pages/Subscriptions-menu-page/Subscriptio
 import { useDispatch, useSelector } from "react-redux";
 import { getAllTrainers, updatePropertyInTrainer } from "./Rtk/Slices/trainersSlice";
 import { store_Type } from "./Rtk/types";
-import isShowTrainerDetails_Atom from "./Atoms/Is/isShowTrainerDetails_Atom";
+import trainerDetails_Atom from "./Atoms/Details/trainerDetails_Atom";
 // ========================================================== //
 function App() {
   const dispatch = useDispatch();
   const state = useSelector(state => state as store_Type);
 
-  const setIShowTrainerDetailsAtom = useSetAtom(isShowTrainerDetails_Atom);
+  const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
   const isLoginAtom = useAtomValue(isLogin_Atom);
 
   const [todayDate, setTodayDate] = useState<Date>(theTodayDate({ startingIn12Houre: false }));
@@ -48,6 +48,9 @@ function App() {
 
   // Implement the case number 3 for finished subscription
   function checkSubscriptionsStateForTrainers() {
+    if (state.trainers.length == 0 || state.trainers.includes(undefined as any)) return;
+
+
     state.trainers.forEach(function (ele) {
       const expirationDate = new Date(ele.subscriptionEnd);
       /*
@@ -105,7 +108,7 @@ function App() {
 
     const timeUntilMidnight = tomorrow.getTime() - todayDate.getTime();
     const timer = setTimeout(() => {
-      setIShowTrainerDetailsAtom(false);
+      setTrainerDetailsAtom(null);
       setTodayDate(tomorrow);
     }, timeUntilMidnight);
 

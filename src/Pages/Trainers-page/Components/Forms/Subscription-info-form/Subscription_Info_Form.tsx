@@ -1,4 +1,3 @@
-import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import Subscriptions_Menu from "@/Pages/Trainers-page/Components/Subscriptions-menu/Subscriptions_Menu";
 import { Subscription_Info_Form_Props } from "@/Pages/types";
@@ -24,13 +23,14 @@ export default function Subscription_Info_Form(
 
     const isLoginAtom = useAtomValue(isLogin_Atom);
     const trainerDetailsAtom = useAtomValue(trainerDetails_Atom);
-    const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
 
     const [isUsingTheActiveSomeSessions, setIsUsingTheActiveSomeSessions] = useState(false);
     const [activeSomeSessions, setActiveSomeSessions] = useState(0);
     const [subscriptionName, setSubscriptionName] = useState<string>("");
     const [sessions, setSessions] = useState<number>(0);
     const [price, setPrice] = useState<number>(0);
+
+
 
 
 
@@ -42,7 +42,6 @@ export default function Subscription_Info_Form(
         setActiveSomeSessions(value);
         onGetActiveSomeSessions?.(value);
     }
-
 
 
 
@@ -67,8 +66,9 @@ export default function Subscription_Info_Form(
         setActiveSomeSessions(0);
     }, [sessions]);
 
+    // When open trainerDetailsAtom details, i want show his values
     useEffect(() => {
-        if (isShowTrainerDetailsAtom && trainerDetailsAtom) {
+        if (trainerDetailsAtom) {
             setSubscriptionName(trainerDetailsAtom.subscriptionName);
             setSessions(trainerDetailsAtom.sessionsCount);
             setPrice(trainerDetailsAtom.price);
@@ -77,7 +77,7 @@ export default function Subscription_Info_Form(
             setSessions(0);
             setPrice(0);
         }
-    }, [isShowTrainerDetailsAtom, trainerDetailsAtom]);
+    }, [trainerDetailsAtom]);
 
 
     useEffect(function () {
@@ -91,12 +91,12 @@ export default function Subscription_Info_Form(
 
     return <div className={`
         mb-5 gap-3
-        ${!isShowTrainerDetailsAtom ? "grid grid-cols-2" : ""}
+        ${!trainerDetailsAtom ? "grid grid-cols-2" : ""}
     `}
     >
         <div className={`
             w-full rounded-lg flex flex-col justify-between px-4
-            ${!isShowTrainerDetailsAtom ? "border border-slate-300 p-4" : ""}
+            ${!trainerDetailsAtom ? "border border-slate-300 p-4" : ""}
         `}
         >
             <Subscriptions_Menu
@@ -135,7 +135,7 @@ export default function Subscription_Info_Form(
 
 
         {
-            !isShowTrainerDetailsAtom &&
+            !trainerDetailsAtom &&
             <div className={`
                 w-full border border-slate-300 p-4 rounded-lg flex flex-col justify-between
                 ${!isUsingTheActiveSomeSessions && "cursor-not-allowed opacity-40"}

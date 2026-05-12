@@ -4,23 +4,22 @@ import { Date_Info_Props } from "@/Pages/types";
 import { stateIsFinished, styleDate } from "@/Lib/constants";
 import { Calendar } from 'primereact/calendar';
 import { useAtomValue } from "jotai";
-import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import { normalAlert, theTodayDate } from "@/Lib/functions";
 // ========================================================== //
 export default function Date_Info_Form(
     { onGetSubscriptionStart, onGetSubscriptionEnd }: Date_Info_Props
 ) {
-    const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
     const trainerDetailsAtom = useAtomValue(trainerDetails_Atom);
 
     const [subscriptionStart, setSubscriptionStart] = useState<Date | null>(null);
     const [subscriptionEnd, setSubscriptionEnd] = useState<Date | null>(null);
-    const [theDaysBetweenSubStartAndSubEnd, setTheDaysBetweenSubStartAndSubEnd] = useState(0);
 
+    const [theDaysBetweenSubStartAndSubEnd, setTheDaysBetweenSubStartAndSubEnd] = useState(0);
     const [minDateInSubscriptionEnd, setMinDateInSubscriptionEnd] = useState<Date | null>(null);
 
     const todayDate = theTodayDate({ startingIn12Houre: true });
+
 
 
 
@@ -37,8 +36,43 @@ export default function Date_Info_Form(
         setMinDateInSubscriptionEnd(date);
     }, [subscriptionStart]);
 
+    /* 
+        When show trainer info, i want see the subscriptionStart and subscriptionEnd
+        if the subscriptionState is not stateIsFinished
+    */
     useEffect(function () {
-        if (!isShowTrainerDetailsAtom) return
+        if (trainerDetailsAtom && trainerDetailsAtom?.subscriptionState != stateIsFinished) {
+            setSubscriptionStart(new Date(trainerDetailsAtom?.subscriptionStart as string));
+            setSubscriptionEnd(new Date(trainerDetailsAtom?.subscriptionEnd as string));
+        } else {
+            setSubscriptionStart(null);
+            setSubscriptionEnd(null);
+        }
+    }, [trainerDetailsAtom?.subscriptionState]);
+
+    // This for get days between subscriptionStart and subscriptionEnd
+    useEffect(function () {
+        if (!subscriptionStart && !subscriptionEnd) return
+
+        const startDate = format(subscriptionStart as Date, styleDate);
+        const endDate = format(subscriptionEnd as Date, styleDate);
+        const diff = differenceInDays(endDate, startDate);
+
+
+        if (subscriptionStart && subscriptionEnd && diff > 0) {
+            setTheDaysBetweenSubStartAndSubEnd(diff);
+        } else {
+            setTheDaysBetweenSubStartAndSubEnd(0);
+            setSubscriptionEnd(null);
+        }
+
+
+        onGetSubscriptionStart(subscriptionStart as Date);
+        onGetSubscriptionEnd(subscriptionEnd as Date);
+    }, [subscriptionStart, subscriptionEnd]);
+
+    useEffect(function () {
+        if (!trainerDetailsAtom) return
 
         if (
             trainerDetailsAtom?.subscriptionState == stateIsFinished
@@ -54,40 +88,7 @@ export default function Date_Info_Form(
                 icon: "info"
             })
         }
-    }, [isShowTrainerDetailsAtom, trainerDetailsAtom?.subscriptionState, subscriptionStart])
-
-    // This for get days between subscriptionStart and subscriptionEnd
-    useEffect(function () {
-        if (!subscriptionStart && !subscriptionEnd) return
-
-        const startDate = format(subscriptionStart as Date, styleDate);
-        const endDate = format(subscriptionEnd as Date, styleDate);
-        const diff = differenceInDays(endDate, startDate);
-
-        if (subscriptionStart && subscriptionEnd && diff > 0) {
-            setTheDaysBetweenSubStartAndSubEnd(diff);
-        } else {
-            setTheDaysBetweenSubStartAndSubEnd(0);
-            setSubscriptionEnd(null);
-        }
-
-        onGetSubscriptionStart(subscriptionStart as Date);
-        onGetSubscriptionEnd(subscriptionEnd as Date);
-    }, [subscriptionStart, subscriptionEnd]);
-
-    /* 
-        When show trainer info, i want see the subscriptionStart and subscriptionEnd,
-        if the subscriptionState is not stateIsFinished and i show the trainer info
-    */
-    useEffect(function () {
-        if (isShowTrainerDetailsAtom && trainerDetailsAtom?.subscriptionState != stateIsFinished) {
-            setSubscriptionStart(new Date(trainerDetailsAtom?.subscriptionStart as string));
-            setSubscriptionEnd(new Date(trainerDetailsAtom?.subscriptionEnd as string));
-        } else {
-            setSubscriptionStart(null);
-            setSubscriptionEnd(null);
-        }
-    }, [isShowTrainerDetailsAtom, trainerDetailsAtom]);
+    }, [trainerDetailsAtom?.subscriptionState, subscriptionStart])
 
 
 

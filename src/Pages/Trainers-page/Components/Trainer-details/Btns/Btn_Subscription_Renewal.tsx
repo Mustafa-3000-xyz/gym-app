@@ -1,20 +1,18 @@
-import isShowTrainerDetails_Atom from '@/Atoms/Is/isShowTrainerDetails_Atom';
 import { alert } from '@/Lib/functions';
-import { stateIsActive } from '@/Lib/constants';
 import { Btn_Subscription_Renewal_Props } from "@/Pages/types";
 import { updateSomePropertiesInTrainer } from '@/Rtk/Slices/trainersSlice';
 import { useSetAtom } from 'jotai';
 import { RefreshCcw } from 'lucide-react'
 import { useDispatch } from 'react-redux';
+import trainerDetails_Atom from '@/Atoms/Details/trainerDetails_Atom';
 // ========================================================== //
 export default function Btn_Subscription_Renewal(
     {
         trainer,
         isInfoComplete,
-        onGetSubscriptionState
     }: Btn_Subscription_Renewal_Props
 ) {
-    const setIsShowTrainerDetailsAtom = useSetAtom(isShowTrainerDetails_Atom);
+    const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
     const dispatch = useDispatch();
 
 
@@ -35,8 +33,7 @@ export default function Btn_Subscription_Renewal(
                     }
                 }) as any);
 
-                setIsShowTrainerDetailsAtom(false);
-                onGetSubscriptionState(stateIsActive);
+                setTrainerDetailsAtom(null);
             }
         });
     }

@@ -12,14 +12,12 @@ import { Navigation } from "swiper/modules";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Btn_Slide from "./Btn-slide/Btn_Slide";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
-import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 // ========================================================== //
 export default function Table_For_Trainers(
     { trainersList }: { trainersList: trainer[] }
 ) {
     const isLoginAtom = useAtomValue(isLogin_Atom);
     const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
-    const setIsShowTrainerDetailsAtom = useSetAtom(isShowTrainerDetails_Atom);
 
 
 
@@ -31,10 +29,6 @@ export default function Table_For_Trainers(
     const trainersCountInSlide = 6;
 
 
-    async function showDetailsTrainer(trainer: trainer) {
-        setIsShowTrainerDetailsAtom(true);
-        setTrainerDetailsAtom(trainer);
-    }
 
 
     // This for create slides, and each slides have 5 trainers or less
@@ -96,7 +90,7 @@ export default function Table_For_Trainers(
                 slides[currentSlide].map(ele => (
                     <tr
                         key={ele.trainerId}
-                        onClick={() => showDetailsTrainer(ele as trainer)}
+                        onClick={() => setTrainerDetailsAtom(ele as trainer)}
                         className={`
                             text-center bg-slate-100 cursor-pointer transition duration-100
                             hover:text-white ${isLoginAtom.type == "manager" ? "hover:bg-(--managerColor)" : "hover:bg-(--captainColor)"}

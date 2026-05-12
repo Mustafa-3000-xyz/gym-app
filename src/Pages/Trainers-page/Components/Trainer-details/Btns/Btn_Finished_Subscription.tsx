@@ -1,40 +1,34 @@
 import { alert } from "@/Lib/functions";
 import { stateIsFinished } from "@/Lib/constants";
-import { Btn_Finished_Subscription_Props } from "@/Pages/types";
 import { updateSomePropertiesInTrainer } from "@/Rtk/Slices/trainersSlice";
 import { BanknoteX } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { useAtom } from "jotai";
+import { useSetAtom } from "jotai";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 // ========================================================== //
 export default function Btn_Finished_Subscription(
-    {
-        id,
-        onGetSubscriptionState,
-    }: Btn_Finished_Subscription_Props
+    {trainerId}: {trainerId: number}
 ) {
-    const [trainerDetailsAtom, setTrainerDetailsAtom] = useAtom(trainerDetails_Atom);
+    const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
     const dispatch = useDispatch();
+
 
 
     function finishedSubscriptionUsingBtn() {
         alert({
             titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
-            showMessageAfterClickOnOk: false,
+            titleAfterClickOnOk: `تم إنهاء الاشتراك للمتدرب رقم : ${trainerId}`,
             funRunWhenClickOnOk: function () {
                 dispatch(updateSomePropertiesInTrainer({
-                    trainerId: id as any,
+                    trainerId: trainerId as any,
                     values: {
                         activeSessionsList: JSON.stringify([]),
                         subscriptionState: stateIsFinished,
                     } as any
                 }) as any);
 
-                onGetSubscriptionState(stateIsFinished);
-                setTrainerDetailsAtom({
-                    ...trainerDetailsAtom,
-                    subscriptionState: stateIsFinished,
-                } as any);
+
+                setTrainerDetailsAtom(null);
             }
         });
     }

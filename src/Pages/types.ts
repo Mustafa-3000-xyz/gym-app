@@ -109,16 +109,10 @@ export interface Btn_Save_Change_Props {
 export interface Btn_Subscription_Renewal_Props {
     trainer: trainer,
     isInfoComplete: boolean,
-    onGetSubscriptionState: (x: string) => void,
-}
-
-export interface Btn_Delete_Trainer_Props {
-    trainerId: number,
-    onWhenDeleteTrainer: () => void
 }
 
 export interface Btn_Finished_Subscription_Props {
-    id: string | number,
+    trainerId: string | number,
     onGetSubscriptionState: (x: string) => void,
 }
 

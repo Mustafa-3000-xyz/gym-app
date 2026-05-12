@@ -1,4 +1,3 @@
-import isShowTrainerDetails_Atom from "@/Atoms/Is/isShowTrainerDetails_Atom";
 import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import { Trainer_Info_Form_Props } from "@/Pages/types";
 import { regexFindSpacesInTranierName, regexPhone } from "@/Lib/REGEX";
@@ -15,7 +14,6 @@ export default function Trainer_Info_Form(
     }: Trainer_Info_Form_Props
 ) {
     const trainerDetailsAtom = useAtomValue(trainerDetails_Atom);
-    const isShowTrainerDetailsAtom = useAtomValue(isShowTrainerDetails_Atom);
 
 
     const [firstName, setFirstName] = useState<string>("");
@@ -85,7 +83,7 @@ export default function Trainer_Info_Form(
 
     // When open trainerDetailsAtom details, i want show his values
     useEffect(function () {
-        if (isShowTrainerDetailsAtom) {
+        if (trainerDetailsAtom) {
             setFirstName(trainerDetailsAtom?.firstName as any);
             setLastName(trainerDetailsAtom?.lastName as any);
             setPhone(trainerDetailsAtom?.phone as any);
@@ -96,7 +94,7 @@ export default function Trainer_Info_Form(
             setPhone("");
             setAddress("");
         }
-    }, [isShowTrainerDetailsAtom, trainerDetailsAtom]);
+    }, [trainerDetailsAtom]);
 
 
     useEffect(function () {
