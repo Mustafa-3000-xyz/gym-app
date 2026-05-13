@@ -18,13 +18,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllTrainers, updatePropertyInTrainer } from "./Rtk/Slices/trainersSlice";
 import { store_Type } from "./Rtk/types";
 import trainerDetails_Atom from "./Atoms/Details/trainerDetails_Atom";
+import { getAllAccounts } from "./Rtk/Slices/accountsSlice";
+import { getAllSubscriptionsMenu } from "./Rtk/Slices/subscriptionsMenuSlice";
 // ========================================================== //
 function App() {
   const dispatch = useDispatch();
   const state = useSelector(state => state as store_Type);
 
-  const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
   const isLoginAtom = useAtomValue(isLogin_Atom);
+  const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
+
 
   const [todayDate, setTodayDate] = useState<Date>(theTodayDate({ startingIn12Houre: false }));
 
@@ -90,6 +93,8 @@ function App() {
 
   useEffect(function () {
     dispatch(getAllTrainers() as any);
+    dispatch(getAllAccounts() as any);
+    dispatch(getAllSubscriptionsMenu() as any);
   }, []);
 
   useEffect(function () {

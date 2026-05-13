@@ -1,22 +1,20 @@
 import { accounte } from "@/Pages/types";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
-import accountDetails_Atom from "@/Atoms/Details/accountDetails_Atom";
 import { Shell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { profilePagePath } from "@/Lib/constants";
+import { profilePagePath, trainerPagePath } from "@/Lib/constants";
 import Password_Inp from "@/Global-components/Password-inp/Password_Inp";
-import { ChangeEvent, useState } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
+import { updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
 import { logOutFromOldAccount } from "@/Lib/functions";
+import { Account_Card_Props } from "@/Global-components/types";
 // ========================================================== //
 export default function Account_Card(
-    { account }: { account: accounte }
+    { account, isShowAccountCard }: Account_Card_Props
 ) {
     const dispatch = useDispatch();
-
-    const setAccountDetailsAtom = useSetAtom(accountDetails_Atom);
     const [isLoginAtom, setIsLoginAtom] = useAtom(isLogin_Atom);
 
 
@@ -25,9 +23,6 @@ export default function Account_Card(
     const [errorMessage, setErrorMessage] = useState("");
 
 
-    function writeInInp(e: ChangeEvent<HTMLInputElement>){
-        setPassword(e.target.value);
-    }
 
     function clickOnLogInBtn(
         e: React.MouseEvent<HTMLButtonElement>,
@@ -46,16 +41,18 @@ export default function Account_Card(
             });
 
             // Start count the work houres for the new account
-            dispatch(updatePropertyInAccount({
+            dispatch(updateSomePropertiesInAccount({
                 id: account.id as any,
-                column: "loginDate",
-                value: new Date().toISOString()
+                values: {
+                    loginDate: new Date().toISOString(),
+                    logOutDate: ""
+                }
             }) as any);
 
             setErrorMessage("");
+            navigate(trainerPagePath);
         }
         else {
-
             setErrorMessage("كلمة المرور غير صحيحه");
         }
 
@@ -64,96 +61,98 @@ export default function Account_Card(
 
     function showAccountDetail() {
         if (isLoginAtom && isLoginAtom.type == "manager") {
-            setAccountDetailsAtom(account);
-            navigate(profilePagePath);
+            navigate(profilePagePath.replace(":accountId", account.id as any));
         }
     }
 
 
 
-    return <div
-        className={`
-            transition-all duration-300
-            rounded-3xl shadow-xl p-8 relative
-            flex flex-col justify-between items-center w-96 gap-10 text-gray-900
-            ${isLoginAtom != null && isLoginAtom.id == account.id && isLoginAtom.type == "manager" ?
-                "hover:bg-(--managerColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
-                :
-                ""
-            }
+    return isShowAccountCard ?
+        <div
+            className={`
+                transition-all duration-300
+                rounded-3xl shadow-xl p-8 relative
+                flex flex-col justify-between items-center w-96 gap-10 text-gray-900
+                ${isLoginAtom != null && isLoginAtom.id == account.id && isLoginAtom.type == "manager" ?
+                    "hover:bg-(--managerColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
+                    :
+                    ""
+                }
 
-            ${(isLoginAtom != null && isLoginAtom.type == "manager" && account.type == "captain")
-                ||
-                (isLoginAtom != null && isLoginAtom.id == account.id && account.type == "captain") ?
-                "group hover:bg-(--captainColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
-                :
-                ""
-            }
-        `}
-        onClick={showAccountDetail}
-    >
-        {/* Sessions */}
-        <div className="flex gap-2 absolute bg-neutral-200 text-neutral-500 top-0 left-0 p-3 rounded-br-2xl rounded-tl-3xl">
-            <Shell size={25} />
+                ${(isLoginAtom != null && isLoginAtom.type == "manager" && account.type == "captain")
+                    ||
+                    (isLoginAtom != null && isLoginAtom.id == account.id && account.type == "captain") ?
+                    "group hover:bg-(--captainColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
+                    :
+                    ""
+                }
+            `}
+            onClick={showAccountDetail}
+        >
+            {/* Sessions */}
+            <div className="flex gap-2 absolute bg-neutral-200 text-neutral-500 top-0 left-0 p-3 rounded-br-2xl rounded-tl-3xl">
+                <Shell size={25} />
 
-            <h3>
-                {Math.trunc(account.totalForActiveSessions)}
-            </h3>
-        </div>
+                <h3>
+                    {Math.trunc(account.totalForActiveSessions)}
+                </h3>
+            </div>
 
-        {/* Account image & Name & Tagline */}
-        <div className="flex flex-col items-center gap-3 select-none">
-            <div className=" w-28 h-28">
-                <img
-                    src={account.profileImg != "" ? account.profileImg : "account.png"}
-                    alt={account.type}
-                    className={`
-                        w-full h-full object-cover rounded-full border-4
-                        ${account.type == "manager" ? "border-(--colorManager)" : "border-(--captainColor)"}
-                    `}
+            {/* Account image & Name & Tagline */}
+            <div className="flex flex-col items-center gap-3 select-none">
+                <div className=" w-28 h-28">
+                    <img
+                        className={`
+                            w-full h-full object-cover rounded-full border-4
+                            ${account.type == "manager" ? "border-(--colorManager)" : "border-(--captainColor)"}
+                        `}
+                        src={account.profileImg != "" ? account.profileImg : "/account.png"}
+                        alt={account.type}
+                    />
+                </div>
+
+                <div className="text-center">
+                    <h2 className="text-xl font-bold tracking-tight">
+                        {account.name}
+                    </h2>
+                    <p className="text-sm text-gray-400 italic mt-1">
+                        <span>
+                            {account.type == "manager" ? "المدير" : "كابتن في المكان "}
+                        </span>
+                        ({Math.trunc(+account.age)} سنه)
+                    </p>
+                </div>
+            </div>
+
+            {/* Set password */}
+            <div className="flex gap-1">
+                <Password_Inp
+                    removeValue={errorMessage != "" ? true : false}
+                    onWriteInInput={(e) => setPassword(e.target.value)}
                 />
-            </div>
-
-            <div className="text-center">
-                <h2 className="text-xl font-bold tracking-tight">
-                    {account.name}
-                </h2>
-                <p className="text-sm text-gray-400 italic mt-1">
-                    <span>
-                        {account.type == "manager" ? "المدير" : "كابتن في المكان "}
-                    </span>
-                    ({Math.trunc(+account.age)} سنه)
-                </p>
-            </div>
-        </div>
-
-        {/* Set password */}
-        <div className="flex gap-1">
-            <Password_Inp
-                removeValue={errorMessage != "" ? true : false}
-                onWriteInInput={writeInInp}
-            />
 
 
-            <button
-                className={`
+                <button
+                    className={`
                     transition duration-300 whitespace-nowrap
                     bg-neutral-500 text-white p-2 rounded-lg
                     ${!password ? "opacity-45 cursor-not-allowed" : "opacity-100 cursor-pointer"}
                 `}
-                disabled={!password}
-                onClick={(e) => clickOnLogInBtn(e as any, account as accounte)}
-            >
-                استخدام
-            </button>
+                    disabled={!password}
+                    onClick={(e) => clickOnLogInBtn(e as any, account as accounte)}
+                >
+                    استخدام
+                </button>
+            </div>
+
+
+            {
+                errorMessage &&
+                <p className="text-red-500 select-none">
+                    {errorMessage}
+                </p>
+            }
         </div>
-
-
-        {
-            errorMessage &&
-            <p className="text-red-500 select-none">
-                {errorMessage}
-            </p>
-        }
-    </div>
+        :
+        null
 }

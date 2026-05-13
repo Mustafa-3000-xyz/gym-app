@@ -9,14 +9,15 @@ export default function Sidebar_Links(
         path,
         icon,
         isShowTheLink,
-        onClick
     }: Sidebar_Linsk_Props
 ) {
     const isLoginAtom = useAtomValue(isLogin_Atom);
     const { pathname } = useLocation();
 
 
-    return isShowTheLink &&
+
+
+    return isShowTheLink ?
         <li 
             className={`
                 transition-all duration-300 p-2 rounded-sm
@@ -32,7 +33,6 @@ export default function Sidebar_Links(
                         "hover:bg-(--captainColor)/70 hover:text-white"
                 }
             `}
-            onClick={(e)=> onClick?.(e)}
         >
             <Link to={path} className="flex items-center gap-2">
                 <div>
@@ -48,4 +48,6 @@ export default function Sidebar_Links(
                 </span>
             </Link>
         </li>
+        :
+        null
 }

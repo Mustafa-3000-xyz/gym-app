@@ -1,27 +1,26 @@
-import Account_Img from "@/Pages/Profile-page/Components/Account_Img";
+import Account_Img from "@/Pages/Profile-page/Components/Account-img/Account_Img";
 import Box from "@/Global-components/Box/Box";
 import { allPermissions } from "@/Lib/constants";
-import { deleteAccountById, getAllAccounts, updatePropertyInAccount, updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
+import { deleteAccountById, updatePropertyInAccount, updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
 import { useAtom } from "jotai"
 import { BriefcaseBusiness, KeyRound, LogOut, Shell, Trash } from "lucide-react";
-import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { accounte } from "../types";
-import { store_Type } from "@/Rtk/types";
 import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import Permissions from "../../Global-components/Permissions/Permissions";
-import accountDetails_Atom from "@/Atoms/Details/accountDetails_Atom";
 import { alert, logOutFromOldAccount } from "@/Lib/functions";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
+import { useParams } from "react-router-dom";
+import { store_Type } from "@/Rtk/types";
+import Cover_Img from "./Components/Cover-img/Cover_Img";
 // ========================================================== //
 export default function Profile_Page() {
     const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
-
     const [isLoginAtom, setIsLoginAtom] = useAtom(isLogin_Atom);
-    const [accountDetailsAtom, setAccountDetailsAtom] = useAtom(accountDetails_Atom);
 
-    const [theAccount, setTheAccount] = useState<accounte | null>(accountDetailsAtom ?? null);
+    const [theAccount, setTheAccount] = useState<accounte | null>(null);
     const [permissionsList, setPermissionsList] = useState<string | string[]>("fullAccess");
     const [isShowEditingAccount, setIsShowEditingAccount] = useState(false);
 
@@ -30,35 +29,9 @@ export default function Profile_Page() {
     const [getAge, setGetAge] = useState(0);
     const [getPassword, setGetPassword] = useState("");
 
-    const inpRef = useRef<HTMLInputElement | null>(null);
+    const { accountId } = useParams();
 
 
-
-
-    function clickOnCover() {
-        if (accountDetailsAtom) return;
-
-        inpRef.current?.click()
-    }
-
-    function selectCoverImg(e: React.ChangeEvent<HTMLInputElement>) {
-        const file = e.target.files?.[0];
-
-        if (!file) return;
-
-        const reader = new FileReader();
-
-        reader.readAsDataURL(file);
-        reader.onloadend = () => {
-            const base64 = reader.result as string;
-
-            dispatch(updatePropertyInAccount({
-                id: theAccount?.id as any,
-                column: "coverImg",
-                value: base64
-            }) as any);
-        };
-    }
 
     function clickOnLogOutBtn() {
         alert({
@@ -76,8 +49,7 @@ export default function Profile_Page() {
             titleBeforeClickOnOk: "هل تريد بالفعل حذف ذلك الحساب ؟؟",
             titleAfterClickOnOk: "تم حذف الحساب بنجاح",
             funRunWhenClickOnOk: function () {
-                dispatch(deleteAccountById(accountDetailsAtom?.id as any) as any);
-                setAccountDetailsAtom(null);
+                dispatch(deleteAccountById(accountId as any) as any);
             }
         })
     }
@@ -89,16 +61,6 @@ export default function Profile_Page() {
         else {
             setIsShowEditingAccount(true);
         }
-    }
-
-    function clickOnRemoveCoverImgBtn(e: ChangeEvent<HTMLButtonElement>) {
-        e.stopPropagation();
-
-        dispatch(updatePropertyInAccount({
-            id: theAccount?.id as any,
-            column: "coverImg",
-            value: ""
-        }) as any);
     }
 
     function clickOnSaveChangesBtn() {
@@ -121,24 +83,6 @@ export default function Profile_Page() {
 
 
 
-    useEffect(function () {
-        if (accountDetailsAtom) return;
-
-        dispatch(getAllAccounts() as any);
-    }, []);
-
-    // Check permissions value
-    useEffect(function () {
-        if (!theAccount?.permissions) return;
-
-        if (theAccount.permissions == "fullAccess") {
-            setPermissionsList("fullAccess")
-        }
-        else {
-            setPermissionsList(JSON.parse(theAccount.permissions as any))
-        }
-    }, [theAccount?.permissions]);
-
     // Update permissions
     useEffect(function () {
         if (
@@ -154,14 +98,23 @@ export default function Profile_Page() {
         }) as any);
     }, [permissionsList]);
 
-    /* Get the account i'm using if the accountDetailsAtom is null,
-        else i show the accountDetailsAtom value */
+    // Check permissions value
     useEffect(function () {
-        if (accountDetailsAtom) return;
+        if (!theAccount?.permissions) return;
 
-        const getAccount = state.accountes.find(ele => ele.id == isLoginAtom.id);
-        setTheAccount(getAccount ?? null);
-    }, [state.accountes]);
+        if (theAccount.permissions == "fullAccess") {
+            setPermissionsList("fullAccess")
+        }
+        else {
+            setPermissionsList(JSON.parse(theAccount.permissions as any))
+        }
+    }, [theAccount?.permissions]);
+
+    useEffect(function () {
+        const getAccount = state.accountes.find(ele => ele.id == (Number(accountId)));
+
+        setTheAccount(getAccount as accounte);
+    }, [accountId, state.accountes]);
 
     useEffect(function () {
         if (!getName || !getAge || !getPassword) {
@@ -185,18 +138,19 @@ export default function Profile_Page() {
 
 
     const houresTotal = useMemo(function () {
-        if (accountDetailsAtom) {
-            return accountDetailsAtom.workingHours || 0;
+        if (theAccount?.logOutDate) {
+            return theAccount.totalForActiveSessions;
         }
-        else if (theAccount?.loginDate != "") {
-            const loginTime = new Date(theAccount?.loginDate as any).getTime();
-            const logOutTime = new Date().getTime();
-            const houres = Math.trunc((logOutTime - loginTime) / (1000 * 60 * 60));
+        else {
+            const startDate = new Date(theAccount?.loginDate as any).getTime();
+            const dateNow = new Date().getTime();
+            const convertToHoures = (dateNow - startDate) / (1000 * 60 * 60)
 
-
-            return Number(Math.abs(houres)) + Number(theAccount?.workingHours);
+            return Math.trunc(convertToHoures) + Number(theAccount?.workingHours);
         }
     }, [theAccount]);
+
+
 
 
 
@@ -208,36 +162,11 @@ export default function Profile_Page() {
         {/* Cover & img */}
         <div className="relative">
             {/* Cover */}
-            <div
-                className={`
-                    transition duration-300
-                    w-full h-96 relative group
-                    ${accountDetailsAtom ? "hover:opacity-100 cursor-not-allowed" : "cursor-pointer hover:opacity-80"}
-                `}
-                onClick={clickOnCover}
-            >
-                <img
-                    className="rounded-lg w-full h-full object-cover"
-                    src={theAccount?.coverImg != "" ? theAccount?.coverImg : "background_for_account.jpg"}
-                    alt="background_for_account"
-                />
-
-                {
-                    !accountDetailsAtom && theAccount?.coverImg != "" ?
-                        <button
-                            className={`
-                                transition duration-300
-                                absolute top-0 end-0 m-3 bg-red-500 p-2 rounded-lg text-white
-                                opacity-0 group-hover:opacity-100 cursor-cell
-                            `}
-                            onClick={clickOnRemoveCoverImgBtn as any}
-                        >
-                            <Trash size={15} />
-                        </button>
-                        :
-                        null
-                }
-            </div>
+            <Cover_Img
+                accountId={Number(accountId)}
+                coverImgSrc={theAccount.coverImg}
+                isChangeCoverImg={isLoginAtom.id == accountId}
+            />
 
             {/* Profile img */}
             <div className="absolute -bottom-6 left-1/2 -translate-x-1/2">
@@ -245,8 +174,7 @@ export default function Profile_Page() {
                     accountId={theAccount?.id as number}
                     img={theAccount?.profileImg as string}
                     accountType={theAccount?.type as any}
-                    isShowCamera={!accountDetailsAtom}
-                    isShowRemoveImg={!accountDetailsAtom && theAccount?.profileImg != ""}
+                    isChangeTheImg={isLoginAtom.id == accountId}
                 />
             </div>
         </div>
@@ -306,7 +234,7 @@ export default function Profile_Page() {
         <div className="mt-6 flex gap-3">
             <Permissions
                 permissionsList={permissionsList as any}
-                changePermissions={isLoginAtom.type == "manager" && accountDetailsAtom?.type == "captain"}
+                changePermissions={isLoginAtom.type == "manager" && isLoginAtom.type == "captain"}
                 onGetPermissionsList={setPermissionsList as any}
             />
         </div>
@@ -314,7 +242,7 @@ export default function Profile_Page() {
         {/* Delete account btn & logout btn */}
         <div className="flex gapp-2 justify-end mt-6">
             {
-                !accountDetailsAtom &&
+                isLoginAtom.id == accountId &&
                 <button
                     className={`
                         transition duration-300
@@ -329,7 +257,7 @@ export default function Profile_Page() {
 
 
             {
-                isLoginAtom.type == "manager" && accountDetailsAtom?.type == "captain" &&
+                isLoginAtom.type == "manager" && isLoginAtom?.type == "captain" &&
                 <button
                     className={`
                         transition duration-300
@@ -344,7 +272,7 @@ export default function Profile_Page() {
         </div>
 
         {
-            !accountDetailsAtom ?
+            isLoginAtom.id == accountId ?
                 <div className="text-center w-full">
                     <button
                         className="my-6 cursor-pointer underline text-blue-500"
@@ -391,16 +319,8 @@ export default function Profile_Page() {
                         </button>
                     </div>
                 </div>
-                : null
+                :
+                null
         }
-
-
-        <input
-            ref={inpRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={e => selectCoverImg(e)}
-        />
     </section>
 }

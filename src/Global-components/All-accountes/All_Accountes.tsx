@@ -22,7 +22,7 @@ export default function All_Accountes() {
 
     if (state.accountes.length == 1 && isLoginAtom != null) {
         return <Not_Found
-            srcImg="not_found_in_accounts.svg"
+            srcImg="/not_found_in_accounts.svg"
             title="لايوجد حسابات كباتن"
         />
     }
@@ -31,21 +31,11 @@ export default function All_Accountes() {
     return <div className="flex justify-center items-center gap-3 flex-wrap">
         {
             state.accountes.map(ele => {
-                /* 
-                    When I'm not logged in, show all accounts. 
-                    After I log in, do not show the account I'm using on the accounts page.
-                */
-                return isLoginAtom == null ?
-                    <Account_Card
-                        key={ele.id}
-                        account={ele}
-                    />
-                    :
-                    ele.id != isLoginAtom.id &&
-                    <Account_Card
-                        key={ele.id}
-                        account={ele}
-                    />
+                return <Account_Card
+                    key={ele.id}
+                    account={ele}
+                    isShowAccountCard={!isLoginAtom || isLoginAtom.id != ele.id}
+                />
             })
         }
     </div>

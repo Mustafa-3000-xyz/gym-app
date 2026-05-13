@@ -8,9 +8,8 @@ export default function Account_Img(
     {
         accountId,
         img,
+        isChangeTheImg,
         accountType,
-        isShowCamera,
-        isShowRemoveImg
     }: Account_Img_Props
 ) {
     const dispatch = useDispatch();
@@ -59,18 +58,18 @@ export default function Account_Img(
             w-28 h-28 relative
             border-4 rounded-full
             flex items-center justify-center text-white group 
-            ${isShowCamera ? "cursor-default" : "cursor-not-allowed"}
+            ${isChangeTheImg ? "cursor-default" : "cursor-not-allowed"}
             ${accountType == "manager" ? "border-(--managerColor)" : "border-(--captainColor)"}
         `}
     >
         <img
             className="w-full h-full object-cover rounded-full"
-            src={img ? img : "account.png"}
+            src={img ? img : "/account.png"}
             alt="account"
         />
 
         {
-            isShowCamera ?
+            isChangeTheImg ?
                 <button
                     className={`
                         duration-500
@@ -90,7 +89,7 @@ export default function Account_Img(
 
 
         {
-            isShowRemoveImg ?
+            isChangeTheImg && img != ""?
                 <button
                     className={`
                         duration-500

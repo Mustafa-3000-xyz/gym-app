@@ -82,19 +82,21 @@ export function logOutFromOldAccount(oldAccountId: number) {
     const state = store.getState().accountes as accounte[];
     const theAccount = state.find(ele => ele.id == oldAccountId);
 
+
     if (!theAccount) return;
 
     const loginTime = new Date(theAccount?.loginDate as any).getTime();
     const logOutTime = new Date().getTime();
-    const sessionHours = (logOutTime - loginTime) / (1000 * 60 * 60);
-    const totaldHours = (theAccount?.workingHours || 0) + sessionHours;
+
+    const convertToHours = (logOutTime - loginTime) / (1000 * 60 * 60);
+    const totaldHours = (theAccount?.workingHours || 0) + convertToHours;
 
 
     store.dispatch(updateSomePropertiesInAccount({
         id: oldAccountId,
         values: {
-            logOutDate: "",
-            loginDate: "",
+            loginDate: theAccount.loginDate,
+            logOutDate: new Date().toISOString(),
             workingHours: parseFloat(Math.trunc(totaldHours) as any)
         }
     }) as any);

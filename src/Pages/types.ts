@@ -132,3 +132,9 @@ export interface Subscriptions_Menu_Props {
     onGetSessionsCount: (x: number) => void,
     onGetPrice: (x: number) => void
 }
+
+export interface Cover_Img_Props {
+    accountId: number,
+    coverImgSrc: string,
+    isChangeCoverImg: boolean
+}

@@ -56,7 +56,7 @@ export default function Trainers_Page() {
 
 
 
-    function clickOnAddTrainerBtn(){
+    function clickOnAddTrainerBtn() {
         setIsShowAddTrainer(true);
         setTrainerDetailsAtom(null);
     }
@@ -172,12 +172,45 @@ export default function Trainers_Page() {
                 total={232344324}
             />
 
-            <Box
-                icon={boxInfo.icon}
-                styleIcon={boxInfo.styleBg}
-                title={boxInfo.name}
-                total={boxInfo.total}
-            />
+            {
+                filterObj.subscriptionType == allSubscriptions ?
+                    <div className="flex justify-center items-center gap-10 bg-slate-100 rounded-lg h-40 select-none">
+                        <div className="flex flex-col items-center">
+                            <ShieldCheck
+                                size={60}
+                                className="bg-emerald-100 text-emerald-500 p-3 rounded-lg"
+                            />
+                            <p>{allActiveSubscriptions}</p>
+                        </div>
+
+                        <div className="bg-black h-5 w-0.5"></div>
+                        
+                        <div className="flex flex-col items-center">
+                            <ShieldQuestionMark
+                                size={60}
+                                className="bg-amber-100 text-amber-500 p-3 rounded-lg"
+                            />
+                            <p>{allPendingSubscriptions}</p>
+                        </div>
+
+                        <div className="bg-black h-5 w-0.5"></div>
+
+                        <div className="flex flex-col items-center">
+                            <ShieldOff
+                                size={60}
+                                className="bg-red-100 text-red-500 p-3 rounded-lg"
+                            />
+                            <p>{allFinishedSubscriptions}</p>
+                        </div>
+                    </div>
+                    :
+                    <Box
+                        icon={boxInfo.icon}
+                        styleIcon={boxInfo.styleBg}
+                        title={boxInfo.name}
+                        total={boxInfo.total}
+                    />
+            }
         </div>
 
         {/* Search & filter & add trainer */}

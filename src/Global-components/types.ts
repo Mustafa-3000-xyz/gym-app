@@ -1,5 +1,6 @@
 import React, { ChangeEvent, ReactNode } from "react";
 import { TargetAndTransition, Transition } from "framer-motion";
+import { accounte } from "@/Pages/types";
 // ========================================================== //
 export interface Not_Found_Props {
     srcImg: string,
@@ -45,8 +46,7 @@ export interface Popup_Form_Props {
 export interface Account_Img_Props {
     accountId: number,
     img: string,
-    isShowCamera: boolean,
-    isShowRemoveImg: boolean,
+    isChangeTheImg: boolean,
     accountType: "manager" | "captain",
 }
 
@@ -106,4 +106,9 @@ export interface Drop_Menu_Props {
     menuIsFullWidth?: boolean,
     isShowTheMenu?: boolean,
     onGetCurrentIsShowMenu?: (x: boolean) => void
+}
+
+export interface Account_Card_Props{
+    account: accounte,
+    isShowAccountCard: boolean
 }
