@@ -7,11 +7,9 @@ import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription
 import { normalAlert, theTodayDate } from "@/Lib/functions";
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
-import { useAtomValue } from "jotai";
 import { useDispatch, useSelector } from "react-redux";
 import { activeSessionsList_Type, trainer } from "@/Pages/types";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
-import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
 import { store_Type } from "@/Rtk/types";
 import { updatePropertyInSubscriptionMenu } from "@/Rtk/Slices/subscriptionsMenuSlice";
@@ -22,7 +20,6 @@ export default function Add_Trainer(
     const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
 
-    const isLoginAtom = useAtomValue(isLogin_Atom);
 
     // Get trainer info
     const [getFirstName, setGetFirstName] = useState("");
@@ -103,12 +100,12 @@ export default function Add_Trainer(
             }
 
             const obj = {
-                accountId: isLoginAtom.id,
+                accountId: state.logInInfo?.id,
                 sessions: arr
             } as activeSessionsList_Type
 
             dispatch(updatePropertyInAccount({
-                id: isLoginAtom.id as any,
+                id: state.logInInfo?.id as any,
                 column: "totalForActiveSessions",
                 value: getActiveSomeSessions
             }) as any);

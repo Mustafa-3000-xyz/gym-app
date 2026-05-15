@@ -5,8 +5,6 @@ import Box from "@/Global-components/Box/Box";
 import { useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
-import { useAtomValue } from "jotai";
-import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
 import { addAccount } from "@/Rtk/Slices/accountsSlice";
 import { accounte } from "../types";
@@ -17,11 +15,9 @@ import { normalAlert } from "@/Lib/functions";
 // ========================================================== //
 export default function Accountes_Page() {
     const dispatch = useDispatch();
-    const isLoginAtom = useAtomValue(isLogin_Atom);
-
     const state = useSelector(state => state as store_Type);
-    const [isShowAddAccount, setIsShowAddAccount] = useState<boolean>(false);
 
+    const [isShowAddAccount, setIsShowAddAccount] = useState<boolean>(false);
     const [getName, setGetName] = useState("");
     const [getAge, setGetAge] = useState("");
     const [getPassword, setGetPassword] = useState("");
@@ -82,7 +78,7 @@ export default function Accountes_Page() {
 
 
     const theAccount = useMemo(function () {
-        return state.accountes.find(ele => ele.id == isLoginAtom.id);
+        return state.accountes.find(ele => ele.id == state.logInInfo?.id);
     }, [state.accountes]);
 
 
@@ -150,7 +146,7 @@ export default function Accountes_Page() {
                     <div className="mt-5">
                         <Permissions
                             permissionsList={permissionsList}
-                            changePermissions={isLoginAtom.type == "manager"}
+                            changePermissions={state.logInInfo?.type == "manager"}
                             onGetPermissionsList={setPermissionsList as any}
                         />
                     </div>

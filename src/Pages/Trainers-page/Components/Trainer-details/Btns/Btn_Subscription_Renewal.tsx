@@ -1,10 +1,9 @@
 import { alert } from '@/Lib/functions';
 import { Btn_Subscription_Renewal_Props } from "@/Pages/types";
 import { updateSomePropertiesInTrainer } from '@/Rtk/Slices/trainersSlice';
-import { useSetAtom } from 'jotai';
+import { removeTrainerDetails } from '@/Rtk/Slices/trainerDetailsSlice';
 import { RefreshCcw } from 'lucide-react'
 import { useDispatch } from 'react-redux';
-import trainerDetails_Atom from '@/Atoms/Details/trainerDetails_Atom';
 // ========================================================== //
 export default function Btn_Subscription_Renewal(
     {
@@ -12,7 +11,6 @@ export default function Btn_Subscription_Renewal(
         isInfoComplete,
     }: Btn_Subscription_Renewal_Props
 ) {
-    const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
     const dispatch = useDispatch();
 
 
@@ -33,7 +31,7 @@ export default function Btn_Subscription_Renewal(
                     }
                 }) as any);
 
-                setTrainerDetailsAtom(null);
+                dispatch(removeTrainerDetails() as any);
             }
         });
     }

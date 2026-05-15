@@ -3,14 +3,15 @@ import { format, differenceInDays } from "date-fns";
 import { Date_Info_Props } from "@/Pages/types";
 import { stateIsFinished, styleDate } from "@/Lib/constants";
 import { Calendar } from 'primereact/calendar';
-import { useAtomValue } from "jotai";
-import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import { normalAlert, theTodayDate } from "@/Lib/functions";
+import { useSelector } from "react-redux";
+import { store_Type } from "@/Rtk/types";
 // ========================================================== //
 export default function Date_Info_Form(
     { onGetSubscriptionStart, onGetSubscriptionEnd }: Date_Info_Props
 ) {
-    const trainerDetailsAtom = useAtomValue(trainerDetails_Atom);
+    const trainerDetails = useSelector(state => state as store_Type).trainerDetails;
+
 
     const [subscriptionStart, setSubscriptionStart] = useState<Date | null>(null);
     const [subscriptionEnd, setSubscriptionEnd] = useState<Date | null>(null);
@@ -41,14 +42,14 @@ export default function Date_Info_Form(
         if the subscriptionState is not stateIsFinished
     */
     useEffect(function () {
-        if (trainerDetailsAtom && trainerDetailsAtom?.subscriptionState != stateIsFinished) {
-            setSubscriptionStart(new Date(trainerDetailsAtom?.subscriptionStart as string));
-            setSubscriptionEnd(new Date(trainerDetailsAtom?.subscriptionEnd as string));
+        if (trainerDetails && trainerDetails?.subscriptionState != stateIsFinished) {
+            setSubscriptionStart(new Date(trainerDetails?.subscriptionStart as string));
+            setSubscriptionEnd(new Date(trainerDetails?.subscriptionEnd as string));
         } else {
             setSubscriptionStart(null);
             setSubscriptionEnd(null);
         }
-    }, [trainerDetailsAtom?.subscriptionState]);
+    }, [trainerDetails?.subscriptionState]);
 
     // This for get days between subscriptionStart and subscriptionEnd
     useEffect(function () {
@@ -72,10 +73,10 @@ export default function Date_Info_Form(
     }, [subscriptionStart, subscriptionEnd]);
 
     useEffect(function () {
-        if (!trainerDetailsAtom) return
+        if (!trainerDetails) return
 
         if (
-            trainerDetailsAtom?.subscriptionState == stateIsFinished
+            trainerDetails?.subscriptionState == stateIsFinished
             &&
             subscriptionStart
             &&
@@ -88,7 +89,7 @@ export default function Date_Info_Form(
                 icon: "info"
             })
         }
-    }, [trainerDetailsAtom?.subscriptionState, subscriptionStart])
+    }, [trainerDetails?.subscriptionState, subscriptionStart])
 
 
 

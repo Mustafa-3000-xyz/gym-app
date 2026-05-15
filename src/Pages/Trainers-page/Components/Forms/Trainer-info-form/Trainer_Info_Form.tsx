@@ -1,9 +1,9 @@
-import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import { Trainer_Info_Form_Props } from "@/Pages/types";
 import { regexFindSpacesInTranierName, regexPhone } from "@/Lib/REGEX";
-import { useAtomValue } from "jotai";
 import { useEffect, useState } from "react";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
+import { useSelector } from "react-redux";
+import { store_Type } from "@/Rtk/types";
 // ========================================================== //
 export default function Trainer_Info_Form(
     {
@@ -13,7 +13,7 @@ export default function Trainer_Info_Form(
         onGetAddress
     }: Trainer_Info_Form_Props
 ) {
-    const trainerDetailsAtom = useAtomValue(trainerDetails_Atom);
+    const trainerDetails = useSelector(state => state as store_Type).trainerDetails;
 
 
     const [firstName, setFirstName] = useState<string>("");
@@ -81,20 +81,20 @@ export default function Trainer_Info_Form(
 
 
 
-    // When open trainerDetailsAtom details, i want show his values
+    // When open trainerDetails details, i want show his values
     useEffect(function () {
-        if (trainerDetailsAtom) {
-            setFirstName(trainerDetailsAtom?.firstName as any);
-            setLastName(trainerDetailsAtom?.lastName as any);
-            setPhone(trainerDetailsAtom?.phone as any);
-            setAddress(trainerDetailsAtom?.address as any);
+        if (trainerDetails) {
+            setFirstName(trainerDetails?.firstName as any);
+            setLastName(trainerDetails?.lastName as any);
+            setPhone(trainerDetails?.phone as any);
+            setAddress(trainerDetails?.address as any);
         } else {
             setFirstName("");
             setLastName("");
             setPhone("");
             setAddress("");
         }
-    }, [trainerDetailsAtom]);
+    }, [trainerDetails]);
 
 
     useEffect(function () {

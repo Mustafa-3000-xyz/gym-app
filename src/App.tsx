@@ -6,8 +6,6 @@ import Attendance_Recorde_Page from "./Pages/Attendance-recorde-page/Attendance_
 import Profits_And_Expenses_Page from "./Pages/Profits-and-expenses-page/Profits_And_Expenses_Page";
 import Accountes_Page from "./Pages/Accountes-page/Accountes_Page";
 import Authentication_Page from "./Pages/Authentication-page/Authentication_Page";
-import { useAtomValue, useSetAtom } from "jotai";
-import isLogin_Atom from "./Atoms/Is/isLogin_Atom";
 import { useEffect, useState } from "react";
 import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profilePagePath, profitsAndExpensesPagePath, settingsPagePath, stateIsActive, stateIsFinished, stateIsPending, subscriptionsMenuPath, trainerPagePath } from "./Lib/constants";
 import Explain_App_Page from "./Pages/Explain-app-page/Explain_App_Page";
@@ -17,18 +15,14 @@ import Subscriptions_Menu_Page from "./Pages/Subscriptions-menu-page/Subscriptio
 import { useDispatch, useSelector } from "react-redux";
 import { getAllTrainers, updatePropertyInTrainer } from "./Rtk/Slices/trainersSlice";
 import { store_Type } from "./Rtk/types";
-import trainerDetails_Atom from "./Atoms/Details/trainerDetails_Atom";
 import { getAllAccounts } from "./Rtk/Slices/accountsSlice";
 import { getAllSubscriptionsMenu } from "./Rtk/Slices/subscriptionsMenuSlice";
+import { removeTrainerDetails } from "./Rtk/Slices/trainerDetailsSlice";
+import { getLogInInfo } from "./Rtk/Slices/logInInfoSlice";
 // ========================================================== //
 function App() {
   const dispatch = useDispatch();
   const state = useSelector(state => state as store_Type);
-
-  const isLoginAtom = useAtomValue(isLogin_Atom);
-  const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
-
-
   const [todayDate, setTodayDate] = useState<Date>(theTodayDate({ startingIn12Houre: false }));
 
 
@@ -38,7 +32,7 @@ function App() {
     const appWindow = getCurrentWindow();
 
     await appWindow.listen('tauri://close-requested', async () => {
-      logOutFromOldAccount(isLoginAtom.id);
+      logOutFromOldAccount(Number(state.logInInfo?.id));
 
       localStorage.setItem("theAccount", JSON.stringify(null));
 
@@ -92,6 +86,7 @@ function App() {
 
 
   useEffect(function () {
+    dispatch(getLogInInfo());
     dispatch(getAllTrainers() as any);
     dispatch(getAllAccounts() as any);
     dispatch(getAllSubscriptionsMenu() as any);
@@ -99,8 +94,8 @@ function App() {
 
   useEffect(function () {
     logOutWhenCloseApp();
-    localStorage.setItem("theAccount", JSON.stringify(isLoginAtom));
-  }, [isLoginAtom]);
+    localStorage.setItem("theAccount", JSON.stringify(state.logInInfo));
+  }, [state.logInInfo]);
 
   useEffect(() => {
     if (state.trainers.length == 0) return;
@@ -113,7 +108,7 @@ function App() {
 
     const timeUntilMidnight = tomorrow.getTime() - todayDate.getTime();
     const timer = setTimeout(() => {
-      setTrainerDetailsAtom(null);
+      dispatch(removeTrainerDetails());
       setTodayDate(tomorrow);
     }, timeUntilMidnight);
 
@@ -124,7 +119,8 @@ function App() {
 
 
 
-  return isLoginAtom ?
+
+  return state.logInInfo ?
     <main dir="rtl" className="flex">
       <SideBar />
 

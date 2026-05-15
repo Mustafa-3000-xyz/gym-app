@@ -1,9 +1,7 @@
-import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import { trainer } from "@/Pages/types";
 import { styleForSubscriptionState } from "@/Lib/functions";
 import { styleDate } from "@/Lib/constants";
 import { format } from "date-fns";
-import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect, useState } from "react";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 
@@ -11,13 +9,15 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Btn_Slide from "./Btn-slide/Btn_Slide";
-import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
+import { useDispatch, useSelector } from "react-redux";
+import { addTrainerDetails } from "@/Rtk/Slices/trainerDetailsSlice";
+import { store_Type } from "@/Rtk/types";
 // ========================================================== //
 export default function Table_For_Trainers(
     { trainersList }: { trainersList: trainer[] }
 ) {
-    const isLoginAtom = useAtomValue(isLogin_Atom);
-    const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
+    const dispath = useDispatch();
+    const logInInfo = useSelector(state => state as store_Type).logInInfo;
 
 
 
@@ -29,6 +29,11 @@ export default function Table_For_Trainers(
     const trainersCountInSlide = 6;
 
 
+
+
+    function clickOnTrainer(trainer: trainer) {
+        dispath(addTrainerDetails(trainer));
+    }
 
 
     // This for create slides, and each slides have 5 trainers or less
@@ -90,10 +95,10 @@ export default function Table_For_Trainers(
                 slides[currentSlide].map(ele => (
                     <tr
                         key={ele.trainerId}
-                        onClick={() => setTrainerDetailsAtom(ele as trainer)}
+                        onClick={() => clickOnTrainer(ele as trainer)}
                         className={`
                             text-center bg-slate-100 cursor-pointer transition duration-100
-                            hover:text-white ${isLoginAtom.type == "manager" ? "hover:bg-(--managerColor)" : "hover:bg-(--captainColor)"}
+                            hover:text-white ${logInInfo?.type == "manager" ? "hover:bg-(--managerColor)" : "hover:bg-(--captainColor)"}
                         `}
                     >
                         <td className="p-2 py-4">{ele.firstName} {ele.lastName}</td>

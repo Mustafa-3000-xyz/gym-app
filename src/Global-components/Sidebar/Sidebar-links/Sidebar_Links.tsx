@@ -1,6 +1,6 @@
-import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { Sidebar_Linsk_Props } from "@/Global-components/types";
-import { useAtomValue } from "jotai";
+import { store_Type } from "@/Rtk/types";
+import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom"
 // ========================================================== //
 export default function Sidebar_Links(
@@ -11,23 +11,23 @@ export default function Sidebar_Links(
         isShowTheLink,
     }: Sidebar_Linsk_Props
 ) {
-    const isLoginAtom = useAtomValue(isLogin_Atom);
+    const logInInfo = useSelector(state => state as store_Type).logInInfo;
     const { pathname } = useLocation();
 
 
 
 
     return isShowTheLink ?
-        <li 
+        <li
             className={`
                 transition-all duration-300 p-2 rounded-sm
                 ${pathname == path ?
-                    isLoginAtom.type == "manager" ?
+                    logInInfo?.type == "manager" ?
                         "bg-(--managerColor) text-white"
                         :
                         "bg-(--captainColor) text-white"
                     :
-                    isLoginAtom.type == "manager" ?
+                    logInInfo?.type == "manager" ?
                         "hover:bg-(--managerColor)/70 hover:text-white"
                         :
                         "hover:bg-(--captainColor)/70 hover:text-white"

@@ -2,10 +2,10 @@ import { X } from "lucide-react";
 import { styleForSubscriptionState } from '@/Lib/functions';
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 import { Search_Result_Props, trainer } from "@/Pages/types";
-import { useSetAtom } from "jotai";
-import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import Animation from "@/Global-components/Animation/Animation";
 import { useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { addTrainerDetails } from "@/Rtk/Slices/trainerDetailsSlice";
 // ========================================================== //
 export default function Search_Result(
     {
@@ -16,8 +16,7 @@ export default function Search_Result(
         onGetSearchValue,
     }: Search_Result_Props
 ) {
-    const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
-
+    const dispatch = useDispatch();
     const searchResultRef = useRef<HTMLDivElement>(null);
 
 
@@ -30,7 +29,7 @@ export default function Search_Result(
 
 
     function showTrainer(trainer: trainer) {
-        setTrainerDetailsAtom(trainer);
+        dispatch(addTrainerDetails(trainer))
         close();
     }
 

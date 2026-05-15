@@ -1,14 +1,12 @@
-import trainerDetails_Atom from '@/Atoms/Details/trainerDetails_Atom';
 import { alert } from '@/Lib/functions';
 import { deleteTrainerById } from '@/Rtk/Slices/trainersSlice';
-import { useSetAtom } from 'jotai';
+import { removeTrainerDetails } from '@/Rtk/Slices/trainerDetailsSlice';
 import { Trash } from 'lucide-react'
 import { useDispatch } from 'react-redux';
 // ========================================================== //
 export default function Btn_Delete_Trainer(
     { trainerId }: {trainerId: number}
 ) {
-    const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
     const dispatch = useDispatch();
 
 
@@ -20,7 +18,7 @@ export default function Btn_Delete_Trainer(
             showMessageAfterClickOnOk: true,
             funRunWhenClickOnOk: function () {
                 dispatch(deleteTrainerById(trainerId as any) as any)
-                setTrainerDetailsAtom(null);
+                dispatch(removeTrainerDetails() as any);
             }
         });
     }

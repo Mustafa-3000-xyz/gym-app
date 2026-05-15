@@ -1,15 +1,13 @@
 import { alert } from "@/Lib/functions";
 import { stateIsFinished } from "@/Lib/constants";
 import { updateSomePropertiesInTrainer } from "@/Rtk/Slices/trainersSlice";
+import { removeTrainerDetails } from "@/Rtk/Slices/trainerDetailsSlice";
 import { BanknoteX } from "lucide-react";
 import { useDispatch } from "react-redux";
-import { useSetAtom } from "jotai";
-import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 // ========================================================== //
 export default function Btn_Finished_Subscription(
     {trainerId}: {trainerId: number}
 ) {
-    const setTrainerDetailsAtom = useSetAtom(trainerDetails_Atom);
     const dispatch = useDispatch();
 
 
@@ -27,8 +25,7 @@ export default function Btn_Finished_Subscription(
                     } as any
                 }) as any);
 
-
-                setTrainerDetailsAtom(null);
+                dispatch(removeTrainerDetails());
             }
         });
     }

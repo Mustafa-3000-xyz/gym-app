@@ -1,21 +1,21 @@
 import { accounte } from "@/Pages/types";
-import { useAtom } from "jotai";
-import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { Shell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { profilePagePath, trainerPagePath } from "@/Lib/constants";
 import Password_Inp from "@/Global-components/Password-inp/Password_Inp";
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
 import { logOutFromOldAccount } from "@/Lib/functions";
 import { Account_Card_Props } from "@/Global-components/types";
+import { store_Type } from "@/Rtk/types";
+import { changeLogInInfo } from "@/Rtk/Slices/logInInfoSlice";
 // ========================================================== //
 export default function Account_Card(
     { account, isShowAccountCard }: Account_Card_Props
 ) {
     const dispatch = useDispatch();
-    const [isLoginAtom, setIsLoginAtom] = useAtom(isLogin_Atom);
+    const logInInfo = useSelector(state => state as store_Type).logInInfo;
 
 
     const navigate = useNavigate();
@@ -30,15 +30,15 @@ export default function Account_Card(
     ) {
         if (account.password == password) {
             // when switch another account, this action is log out from old account
-            if (isLoginAtom) {
-                logOutFromOldAccount(isLoginAtom.id);
+            if (logInInfo) {
+                logOutFromOldAccount(logInInfo.id);
             }
 
             // Set the new account id
-            setIsLoginAtom({
+            dispatch(changeLogInInfo({
                 id: account.id as any,
                 type: account.type as any
-            });
+            }));
 
             // Start count the work houres for the new account
             dispatch(updateSomePropertiesInAccount({
@@ -60,7 +60,7 @@ export default function Account_Card(
     }
 
     function showAccountDetail() {
-        if (isLoginAtom && isLoginAtom.type == "manager") {
+        if (logInInfo) {
             navigate(profilePagePath.replace(":accountId", account.id as any));
         }
     }
@@ -73,18 +73,17 @@ export default function Account_Card(
                 transition-all duration-300
                 rounded-3xl shadow-xl p-8 relative
                 flex flex-col justify-between items-center w-96 gap-10 text-gray-900
-                ${isLoginAtom != null && isLoginAtom.id == account.id && isLoginAtom.type == "manager" ?
-                    "hover:bg-(--managerColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
-                    :
-                    ""
-                }
-
-                ${(isLoginAtom != null && isLoginAtom.type == "manager" && account.type == "captain")
-                    ||
-                    (isLoginAtom != null && isLoginAtom.id == account.id && account.type == "captain") ?
+                ${
+                    logInInfo != null
+                    &&
+                    (
+                        logInInfo.type == "manager" && account.type == "captain"
+                        ||
+                        logInInfo.type == "captain" && account.type == "captain"
+                    ) ?
                     "group hover:bg-(--captainColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
                     :
-                    ""
+                    "group hover:bg-(--managerColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
                 }
             `}
             onClick={showAccountDetail}

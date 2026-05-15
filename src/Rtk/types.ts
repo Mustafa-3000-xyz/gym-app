@@ -38,7 +38,9 @@ type updateOneColumnInSubscriptionsMenu =
 export interface store_Type {
     trainers: trainer[],
     accountes: accounte[],
-    subscriptionsMenu: subscriptionsMenu[]
+    subscriptionsMenu: subscriptionsMenu[],
+    trainerDetails: trainer | null,
+    logInInfo: logInInfoSlice_Type | null
 }
 
 export interface updatePropertyInTrainer_Type {
@@ -105,4 +107,9 @@ export interface updateSomePropertiesInSubscriptionsMenu_Type {
         price?: number,
         isActive?: "true" | "false"
     }
+}
+
+export interface logInInfoSlice_Type{
+    id: number,
+    type: "manager" | "captain",
 }

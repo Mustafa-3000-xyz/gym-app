@@ -1,24 +1,22 @@
 import Account_Img from "@/Pages/Profile-page/Components/Account-img/Account_Img";
 import Box from "@/Global-components/Box/Box";
-import { allPermissions } from "@/Lib/constants";
+import { allPermissions, trainerPagePath } from "@/Lib/constants";
 import { deleteAccountById, updatePropertyInAccount, updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
-import { useAtom } from "jotai"
 import { BriefcaseBusiness, KeyRound, LogOut, Shell, Trash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { accounte } from "../types";
-import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import Permissions from "../../Global-components/Permissions/Permissions";
 import { alert, logOutFromOldAccount } from "@/Lib/functions";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { store_Type } from "@/Rtk/types";
 import Cover_Img from "./Components/Cover-img/Cover_Img";
+import { changeLogInInfo } from "@/Rtk/Slices/logInInfoSlice";
 // ========================================================== //
 export default function Profile_Page() {
     const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
-    const [isLoginAtom, setIsLoginAtom] = useAtom(isLogin_Atom);
 
     const [theAccount, setTheAccount] = useState<accounte | null>(null);
     const [permissionsList, setPermissionsList] = useState<string | string[]>("fullAccess");
@@ -29,6 +27,7 @@ export default function Profile_Page() {
     const [getAge, setGetAge] = useState(0);
     const [getPassword, setGetPassword] = useState("");
 
+    const navigate = useNavigate();
     const { accountId } = useParams();
 
 
@@ -38,8 +37,8 @@ export default function Profile_Page() {
             titleBeforeClickOnOk: "هل تريد بالفعل تسجيل الخروج ؟؟",
             showMessageAfterClickOnOk: false,
             funRunWhenClickOnOk: function () {
-                setIsLoginAtom(null);
-                logOutFromOldAccount(isLoginAtom.id);
+                dispatch(changeLogInInfo(null))
+                logOutFromOldAccount(Number(state.logInInfo?.id));
             }
         })
     }
@@ -50,6 +49,7 @@ export default function Profile_Page() {
             titleAfterClickOnOk: "تم حذف الحساب بنجاح",
             funRunWhenClickOnOk: function () {
                 dispatch(deleteAccountById(accountId as any) as any);
+                navigate(trainerPagePath);
             }
         })
     }
@@ -138,15 +138,15 @@ export default function Profile_Page() {
 
 
     const houresTotal = useMemo(function () {
-        if (theAccount?.logOutDate) {
-            return theAccount.totalForActiveSessions;
-        }
-        else {
+        if (theAccount?.loginDate) {
             const startDate = new Date(theAccount?.loginDate as any).getTime();
             const dateNow = new Date().getTime();
-            const convertToHoures = (dateNow - startDate) / (1000 * 60 * 60)
+            const totalForHours = (startDate - dateNow) / (1000 * 60 * 60);
 
-            return Math.trunc(convertToHoures) + Number(theAccount?.workingHours);
+            return Math.trunc(totalForHours);
+        }
+        else {
+            return theAccount?.workingHours;
         }
     }, [theAccount]);
 
@@ -165,7 +165,7 @@ export default function Profile_Page() {
             <Cover_Img
                 accountId={Number(accountId)}
                 coverImgSrc={theAccount.coverImg}
-                isChangeCoverImg={isLoginAtom.id == accountId}
+                isChangeCoverImg={state.logInInfo?.id == accountId}
             />
 
             {/* Profile img */}
@@ -174,7 +174,7 @@ export default function Profile_Page() {
                     accountId={theAccount?.id as number}
                     img={theAccount?.profileImg as string}
                     accountType={theAccount?.type as any}
-                    isChangeTheImg={isLoginAtom.id == accountId}
+                    isChangeTheImg={state.logInInfo?.id == accountId}
                 />
             </div>
         </div>
@@ -234,7 +234,7 @@ export default function Profile_Page() {
         <div className="mt-6 flex gap-3">
             <Permissions
                 permissionsList={permissionsList as any}
-                changePermissions={isLoginAtom.type == "manager" && isLoginAtom.type == "captain"}
+                changePermissions={state.logInInfo?.type == "manager" && state.logInInfo?.type == "captain" as any}
                 onGetPermissionsList={setPermissionsList as any}
             />
         </div>
@@ -242,37 +242,41 @@ export default function Profile_Page() {
         {/* Delete account btn & logout btn */}
         <div className="flex gapp-2 justify-end mt-6">
             {
-                isLoginAtom.id == accountId &&
-                <button
-                    className={`
-                        transition duration-300
-                        bg-red-500 text-white px-3 py-2 rounded-lg cursor-pointer
-                        hover:bg-red-600
-                    `}
-                    onClick={clickOnLogOutBtn}
-                >
-                    <LogOut />
-                </button>
+                state.logInInfo?.id == accountId ?
+                    <button
+                        className={`
+                            transition duration-300
+                            bg-red-500 text-white px-3 py-2 rounded-lg cursor-pointer
+                            hover:bg-red-600
+                        `}
+                        onClick={clickOnLogOutBtn}
+                    >
+                        <LogOut />
+                    </button>
+                    :
+                    null
             }
 
 
             {
-                isLoginAtom.type == "manager" && isLoginAtom?.type == "captain" &&
-                <button
-                    className={`
+                state.logInInfo?.type == "manager" && theAccount?.type == "captain" ?
+                    <button
+                        className={`
                         transition duration-300
                         bg-red-500 text-white px-3 py-2 rounded-lg cursor-pointer
                         hover:bg-red-600
                     `}
-                    onClick={clickOnRemoveAccountBtn}
-                >
-                    <Trash />
-                </button>
+                        onClick={clickOnRemoveAccountBtn}
+                    >
+                        <Trash />
+                    </button>
+                    :
+                    null
             }
         </div>
 
         {
-            isLoginAtom.id == accountId ?
+            state.logInInfo?.id == accountId ?
                 <div className="text-center w-full">
                     <button
                         className="my-6 cursor-pointer underline text-blue-500"

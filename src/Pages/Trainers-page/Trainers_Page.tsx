@@ -11,12 +11,9 @@ import { activeSubscriptions, allSubscriptions, finishedSubscriptions, fromNewTo
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import Table_For_Trainers from "@/Global-components/Table-for-trainers/Table_For_Trainers";
 import Drop_Menu from "@/Global-components/Drop-menu/Drop_Menu";
-import { useAtom } from "jotai";
-import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 // ========================================================== //
 export default function Trainers_Page() {
     const state = useSelector(state => state as store_Type);
-    const [trainerDetailsAtom, setTrainerDetailsAtom] = useAtom(trainerDetails_Atom);
 
 
     const [trainersListAfterFilter, setTrainersListAfterFilter] = useState<trainer[]>([]);
@@ -58,7 +55,6 @@ export default function Trainers_Page() {
 
     function clickOnAddTrainerBtn() {
         setIsShowAddTrainer(true);
-        setTrainerDetailsAtom(null);
     }
 
     function clickOnArrange(type: string) {
@@ -155,6 +151,9 @@ export default function Trainers_Page() {
 
 
 
+
+
+
     return <section>
         {/* Boxes */}
         <div className="mb-7 grid grid-cols-3 gap-3">
@@ -184,7 +183,7 @@ export default function Trainers_Page() {
                         </div>
 
                         <div className="bg-black h-5 w-0.5"></div>
-                        
+
                         <div className="flex flex-col items-center">
                             <ShieldQuestionMark
                                 size={60}
@@ -370,13 +369,15 @@ export default function Trainers_Page() {
         {
             isShowAddTrainer ?
                 <Add_Trainer onIsShowAddTrainer={setIsShowAddTrainer} />
-                : null
+                :
+                null
         }
 
         {
-            trainerDetailsAtom ?
+            state.trainerDetails ?
                 <Trainer_Details />
-                : null
+                :
+                null
         }
     </section>
 }

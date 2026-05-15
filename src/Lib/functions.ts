@@ -89,15 +89,15 @@ export function logOutFromOldAccount(oldAccountId: number) {
     const logOutTime = new Date().getTime();
 
     const convertToHours = (logOutTime - loginTime) / (1000 * 60 * 60);
-    const totaldHours = (theAccount?.workingHours || 0) + convertToHours;
+    const totalForHours = (theAccount?.workingHours || 0) + convertToHours;
 
 
     store.dispatch(updateSomePropertiesInAccount({
         id: oldAccountId,
         values: {
-            loginDate: theAccount.loginDate,
+            loginDate: "",
             logOutDate: new Date().toISOString(),
-            workingHours: parseFloat(Math.trunc(totaldHours) as any)
+            workingHours: Math.trunc(totalForHours)
         }
     }) as any);
 }

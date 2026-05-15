@@ -6,8 +6,6 @@ import { Navigation } from "swiper/modules";
 import { updatePropertyInTrainer, updateSomePropertiesInTrainer } from "@/Rtk/Slices/trainersSlice";
 import { alert, theTodayDate } from "@/Lib/functions";
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
-import { useAtom, useAtomValue } from "jotai";
-import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
@@ -18,17 +16,14 @@ import Btn_Subscription_Renewal from "./Btns/Btn_Subscription_Renewal";
 import { useDispatch, useSelector } from "react-redux";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
 import { activeSessionsList_Type } from "@/Pages/types";
-import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { store_Type } from "@/Rtk/types";
 import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
 import { updatePropertyInSubscriptionMenu } from "@/Rtk/Slices/subscriptionsMenuSlice";
+import { removeTrainerDetails } from "@/Rtk/Slices/trainerDetailsSlice";
 // ========================================================== //
 export default function Trainer_Details() {
     const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
-
-    const isLoginAtom = useAtomValue(isLogin_Atom);
-    const [trainerDetailsAtom, setTrainerDetailsAtom] = useAtom(trainerDetails_Atom);
 
 
     const containerRef = useRef<HTMLDivElement | null>(null)
@@ -65,9 +60,9 @@ export default function Trainer_Details() {
 
 
     const updateTheTrainer = {
-        ...trainerDetailsAtom,
+        ...state.trainerDetails,
         // I want when change the sessions count and click on btn save change, so reset the activeSessionsList
-        activeSessionsList: getSessionsCount != trainerDetailsAtom?.sessionsCount ? "[]" : JSON.stringify(activeSessionsList),
+        activeSessionsList: getSessionsCount != state.trainerDetails?.sessionsCount ? "[]" : JSON.stringify(activeSessionsList),
         subscriptionState: conditionalForActiveSubscription ?
             stateIsActive
             :
@@ -75,10 +70,10 @@ export default function Trainer_Details() {
                 stateIsPending
                 :
                 conditionalForFinishedSubscription && stateIsFinished,
-        firstName: getFirstName != "" ? getFirstName : trainerDetailsAtom?.firstName,
-        lastName: getLastName != "" ? getLastName : trainerDetailsAtom?.lastName,
-        address: getAddress != "" ? getAddress : trainerDetailsAtom?.address,
-        phone: getPhone != "" ? getPhone : trainerDetailsAtom?.phone,
+        firstName: getFirstName != "" ? getFirstName : state.trainerDetails?.firstName,
+        lastName: getLastName != "" ? getLastName : state.trainerDetails?.lastName,
+        address: getAddress != "" ? getAddress : state.trainerDetails?.address,
+        phone: getPhone != "" ? getPhone : state.trainerDetails?.phone,
         subscriptionName: getSubscriptionName,
         sessionsCount: getSessionsCount,
         price: getPrice,
@@ -93,15 +88,15 @@ export default function Trainer_Details() {
 
         alert({
             titleBeforeClickOnOk: "هل انت متأكد من تعديل البيانات , في حالة تعديل عدد الحصص سوف يتم اعاده الحصص من الاول",
-            titleAfterClickOnOk: `تم تحديث المتدرب رقم : ${trainerDetailsAtom?.trainerId}`,
+            titleAfterClickOnOk: `تم تحديث المتدرب رقم : ${state.trainerDetails?.trainerId}`,
             funRunWhenClickOnOk: function () {
-                setTrainerDetailsAtom(null);
-
-                incrementTheTrainersTotalForSubscriptionMenu();
                 dispatch(updateSomePropertiesInTrainer({
-                    trainerId: trainerDetailsAtom?.trainerId as any,
+                    trainerId: state.trainerDetails?.trainerId as any,
                     values: { ...updateTheTrainer } as any
                 }) as any);
+
+                incrementTheTrainersTotalForSubscriptionMenu();
+                dispatch(removeTrainerDetails());
             }
         });
     }
@@ -109,10 +104,10 @@ export default function Trainer_Details() {
     function finishedSubscriptionUsingSessions(accountId: number) {
         alert({
             titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
-            showMessageAfterClickOnOk: false,
+            titleAfterClickOnOk: `تم إنهاء الاشتراك للمتدرب رقم : ${state.trainerDetails?.trainerId}`,
             funRunWhenClickOnOk: function () {
                 dispatch(updateSomePropertiesInTrainer({
-                    trainerId: trainerDetailsAtom?.trainerId as any,
+                    trainerId: state.trainerDetails?.trainerId as any,
                     values: {
                         activeSessionsList: JSON.stringify([]),
                         subscriptionState: stateIsFinished,
@@ -121,7 +116,7 @@ export default function Trainer_Details() {
 
                 incrementOrDecrementForTotalSessionInAccount("increment", accountId);
                 setSubscriptionState(stateIsFinished);
-                setTrainerDetailsAtom(null);
+                dispatch(removeTrainerDetails());
             }
         });
     }
@@ -130,15 +125,15 @@ export default function Trainer_Details() {
         if (subscriptionState == stateIsPending || subscriptionState == stateIsFinished) return;
 
         const arr = [...activeSessionsList];
-        const getAccount = arr.find(ele => ele.accountId == isLoginAtom?.id);
+        const getAccount = arr.find(ele => ele.accountId == state.logInInfo?.id);
         const findTheSession = arr.find(ele => ele.sessions.includes(numCircle));
 
         if (
-            (trainerDetailsAtom?.sessionsCount == totalActiveSessions + 1)
+            (state.trainerDetails?.sessionsCount == totalActiveSessions + 1)
             &&
             !findTheSession
         ) {
-            finishedSubscriptionUsingSessions(isLoginAtom.id);
+            finishedSubscriptionUsingSessions(Number(state.logInInfo?.id));
             return;
         }
 
@@ -146,12 +141,12 @@ export default function Trainer_Details() {
             and the session does not exist, create a new entry */
         if (!findTheSession && !getAccount) {
             const obj = {
-                accountId: isLoginAtom.id,
+                accountId: state.logInInfo?.id,
                 sessions: [numCircle]
             } as activeSessionsList_Type
 
             arr.push(obj);
-            incrementOrDecrementForTotalSessionInAccount("increment", isLoginAtom.id);
+            incrementOrDecrementForTotalSessionInAccount("increment", Number(state.logInInfo?.id));
         }
 
         // If the account exists but the session does not here, append the session
@@ -172,9 +167,9 @@ export default function Trainer_Details() {
         /* If the account and session exist, and either the session belongs to the account
             or the account is a manager, remove the session */
         else if (
-            (findTheSession?.accountId == isLoginAtom.id)
+            (findTheSession?.accountId == state.logInInfo?.id)
             ||
-            (isLoginAtom.type == "manager")
+            (state.logInInfo?.type == "manager")
         ) {
             const getIndex = arr.findIndex(ele => ele.accountId == findTheSession?.accountId);
             const removeSession = findTheSession?.sessions.filter(ele => ele != numCircle);
@@ -270,17 +265,17 @@ export default function Trainer_Details() {
     }, []);
 
     useEffect(function () {
-        if (!trainerDetailsAtom) return;
+        if (!state.trainerDetails) return;
 
-        setSubscriptionState(trainerDetailsAtom.subscriptionState);
-        setActiveSessionsList(JSON.parse(trainerDetailsAtom?.activeSessionsList as any));
-    }, [trainerDetailsAtom]);
+        setSubscriptionState(state.trainerDetails.subscriptionState);
+        setActiveSessionsList(JSON.parse(state.trainerDetails?.activeSessionsList as any));
+    }, [state.trainerDetails]);
 
     useEffect(function () {
-        if (!trainerDetailsAtom) return;
+        if (!state.trainerDetails) return;
 
         dispatch(updatePropertyInTrainer({
-            trainerId: trainerDetailsAtom?.trainerId as any,
+            trainerId: state.trainerDetails?.trainerId as any,
             column: "activeSessionsList",
             value: JSON.stringify(activeSessionsList),
         }) as any);
@@ -298,7 +293,7 @@ export default function Trainer_Details() {
         }
 
 
-    
+
         if (
             !getFirstName || !getLastName || !getSubscriptionName || !getPrice ||
             !getSessionsCount || !getSubscriptionEnd || getPhone != 0 && !String(getPhone).match(regexPhone)
@@ -308,26 +303,26 @@ export default function Trainer_Details() {
         }
 
         if (
-            (getFirstName != trainerDetailsAtom?.firstName)
+            (getFirstName != state.trainerDetails?.firstName)
             ||
-            (getLastName != trainerDetailsAtom?.lastName)
+            (getLastName != state.trainerDetails?.lastName)
             ||
-            (getAddress != trainerDetailsAtom?.address)
+            (getAddress != state.trainerDetails?.address)
             ||
             (
                 (getPhone == 0 || String(getPhone).match(regexPhone))
-                && getPhone != trainerDetailsAtom?.phone
+                && getPhone != state.trainerDetails?.phone
             )
             ||
-            (getSubscriptionName != trainerDetailsAtom?.subscriptionName)
+            (getSubscriptionName != state.trainerDetails?.subscriptionName)
             ||
-            (getSessionsCount != trainerDetailsAtom?.sessionsCount)
+            (getSessionsCount != state.trainerDetails?.sessionsCount)
             ||
-            (getPrice != trainerDetailsAtom?.price)
+            (getPrice != state.trainerDetails?.price)
             ||
-            (new Date(getSubscriptionStart as any).getTime() != new Date(trainerDetailsAtom?.subscriptionStart as any).getTime())
+            (new Date(getSubscriptionStart as any).getTime() != new Date(state.trainerDetails?.subscriptionStart as any).getTime())
             ||
-            (new Date(getSubscriptionEnd as any).getTime() != new Date(trainerDetailsAtom?.subscriptionEnd as any).getTime())
+            (new Date(getSubscriptionEnd as any).getTime() != new Date(state.trainerDetails?.subscriptionEnd as any).getTime())
         ) {
             setIsChangeInfo(true);
         } else {
@@ -342,7 +337,8 @@ export default function Trainer_Details() {
 
 
 
-    if (!trainerDetailsAtom) return null;
+
+    if (!state.trainerDetails) return null;
 
     return <Popup_Form
         titel="تفاصيل المتدرب"
@@ -350,7 +346,7 @@ export default function Trainer_Details() {
         isSave={isChangeInfo}
         typeBtn="save change"
         isShowBtn={subscriptionState == stateIsFinished ? false : true}
-        clickOnCancel={() => setTrainerDetailsAtom(null)}
+        clickOnCancel={() => dispatch(removeTrainerDetails())}
         clickOnSaveBtn={updateInfo}
     >
         {/* Title for sessions */}
@@ -370,7 +366,7 @@ export default function Trainer_Details() {
                             </span>
                             <span>  من اصل </span>
                             <span className="font-bold">
-                                {trainerDetailsAtom.sessionsCount}
+                                {state.trainerDetails.sessionsCount}
                             </span>
                         </p>
                         :
@@ -395,7 +391,7 @@ export default function Trainer_Details() {
                 ${containerRef.current?.clientHeight as any > 100 ? "h-[120px]" : "h-auto"}
             `}
         >
-            {Array.from({ length: trainerDetailsAtom.sessionsCount }).map((_, i) => {
+            {Array.from({ length: state.trainerDetails.sessionsCount }).map((_, i) => {
                 const getAccountId = activeSessionsList.find(ele => ele.sessions.includes(i))?.accountId;
                 const getAccount = state.accountes.find(ele => ele.id == getAccountId);
 
@@ -414,7 +410,7 @@ export default function Trainer_Details() {
                                     "bg-(--captainColor) text-white !border-0" : ""
                             }
 
-                            ${!getAccount || getAccount?.id == isLoginAtom.id || isLoginAtom.type == "manager" ?
+                            ${!getAccount || getAccount?.id == state.logInInfo?.id || state.logInInfo?.type == "manager" ?
                                 "cursor-pointer opacity-100" : "cursor-not-allowed opacity-40"
                             }
 
@@ -532,7 +528,7 @@ export default function Trainer_Details() {
             <div className="flex gap-2">
                 {
                     subscriptionState != stateIsFinished ?
-                        <Btn_Finished_Subscription trainerId={trainerDetailsAtom.trainerId as any} />
+                        <Btn_Finished_Subscription trainerId={state.trainerDetails.trainerId as any} />
                         :
                         <Btn_Subscription_Renewal
                             trainer={updateTheTrainer as any}
@@ -540,7 +536,7 @@ export default function Trainer_Details() {
                         />
                 }
 
-                <Btn_Delete_Trainer trainerId={trainerDetailsAtom.trainerId as any} />
+                <Btn_Delete_Trainer trainerId={state.trainerDetails.trainerId as any} />
             </div>
         </div>
     </Popup_Form >

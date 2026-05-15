@@ -1,7 +1,5 @@
 import { Archive, Book, Captions, CircleUser, IdCardLanyard, Settings, Users, WalletMinimal } from "lucide-react";
 import Sidebar_Links from "./Sidebar-links/Sidebar_Links";
-import { useAtomValue } from "jotai";
-import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { getAllAccounts } from "@/Rtk/Slices/accountsSlice";
@@ -13,7 +11,6 @@ import { Link, useLocation } from "react-router-dom";
 export default function SideBar() {
     const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
-    const isLoginAtom = useAtomValue(isLogin_Atom);
 
     const [theAccount, setTheAccount] = useState<accounte | null>(null);
     const { pathname } = useLocation();
@@ -27,7 +24,7 @@ export default function SideBar() {
     }, []);
 
     useEffect(function () {
-        const result = state.accountes.find(ele => ele.id == isLoginAtom?.id);
+        const result = state.accountes.find(ele => ele.id == state.logInInfo?.id);
 
         if (!result) {
             setTheAccount(null);
@@ -40,7 +37,7 @@ export default function SideBar() {
         } as accounte
 
         setTheAccount(obj);
-    }, [state.accountes, isLoginAtom]);
+    }, [state.accountes, state.logInInfo]);
 
 
 
@@ -106,7 +103,7 @@ export default function SideBar() {
             <Sidebar_Links
                 isShowTheLink={true}
                 linkName="الملف الشخصي"
-                path={profilePagePath.replace(":accountId", isLoginAtom.id)}
+                path={profilePagePath.replace(":accountId", `${state.logInInfo?.id}`)}
                 icon={<CircleUser
                     size={25}
                     strokeWidth={1.75}

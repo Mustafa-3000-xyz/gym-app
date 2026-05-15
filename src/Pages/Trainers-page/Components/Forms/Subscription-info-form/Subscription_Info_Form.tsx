@@ -1,13 +1,10 @@
-import trainerDetails_Atom from "@/Atoms/Details/trainerDetails_Atom";
 import Subscriptions_Menu from "@/Pages/Trainers-page/Components/Subscriptions-menu/Subscriptions_Menu";
 import { Subscription_Info_Form_Props } from "@/Pages/types";
-import { useAtomValue } from "jotai";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Shell } from "lucide-react";
 import Discription from "@/Global-components/Description/Discription";
 import { useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
-import isLogin_Atom from "@/Atoms/Is/isLogin_Atom";
 import { USING_ACTIVE_SOME_SESSIONS } from "@/Lib/constants";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
 // ========================================================== //
@@ -20,9 +17,6 @@ export default function Subscription_Info_Form(
     }: Subscription_Info_Form_Props
 ) {
     const state = useSelector(state => state as store_Type);
-
-    const isLoginAtom = useAtomValue(isLogin_Atom);
-    const trainerDetailsAtom = useAtomValue(trainerDetails_Atom);
 
     const [isUsingTheActiveSomeSessions, setIsUsingTheActiveSomeSessions] = useState(false);
     const [activeSomeSessions, setActiveSomeSessions] = useState(0);
@@ -48,7 +42,7 @@ export default function Subscription_Info_Form(
 
 
     useEffect(function () {
-        const theAccount = state.accountes.find(ele => ele.id == isLoginAtom.id);
+        const theAccount = state.accountes.find(ele => ele.id == state.logInInfo?.id);
 
         if (
             theAccount?.permissions?.includes(USING_ACTIVE_SOME_SESSIONS)
@@ -66,18 +60,18 @@ export default function Subscription_Info_Form(
         setActiveSomeSessions(0);
     }, [sessions]);
 
-    // When open trainerDetailsAtom details, i want show his values
+    // When open state.trainerDetails details, i want show his values
     useEffect(() => {
-        if (trainerDetailsAtom) {
-            setSubscriptionName(trainerDetailsAtom.subscriptionName);
-            setSessions(trainerDetailsAtom.sessionsCount);
-            setPrice(trainerDetailsAtom.price);
+        if (state.trainerDetails) {
+            setSubscriptionName(state.trainerDetails.subscriptionName);
+            setSessions(state.trainerDetails.sessionsCount);
+            setPrice(state.trainerDetails.price);
         } else {
             setSubscriptionName("");
             setSessions(0);
             setPrice(0);
         }
-    }, [trainerDetailsAtom]);
+    }, [state.trainerDetails]);
 
 
     useEffect(function () {
@@ -91,12 +85,12 @@ export default function Subscription_Info_Form(
 
     return <div className={`
         mb-5 gap-3
-        ${!trainerDetailsAtom ? "grid grid-cols-2" : ""}
+        ${!state.trainerDetails ? "grid grid-cols-2" : ""}
     `}
     >
         <div className={`
             w-full rounded-lg flex flex-col justify-between px-4
-            ${!trainerDetailsAtom ? "border border-slate-300 p-4" : ""}
+            ${!state.trainerDetails ? "border border-slate-300 p-4" : ""}
         `}
         >
             <Subscriptions_Menu
@@ -135,7 +129,7 @@ export default function Subscription_Info_Form(
 
 
         {
-            !trainerDetailsAtom &&
+            !state.trainerDetails &&
             <div className={`
                 w-full border border-slate-300 p-4 rounded-lg flex flex-col justify-between
                 ${!isUsingTheActiveSomeSessions && "cursor-not-allowed opacity-40"}
