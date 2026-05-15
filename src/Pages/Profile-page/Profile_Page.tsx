@@ -222,8 +222,7 @@ export default function Profile_Page() {
                 styleIcon="bg-(--thirdColor)/10 text-(--thirdColor)"
                 title="عدد الصلاحيات للحساب"
                 total={`
-                    ${theAccount?.type == "manager" ? allPermissions.length
-                        : permissionsList?.length}
+                    ${theAccount?.type == "manager" ? allPermissions.length : permissionsList?.length}
                     من اصل
                     ${allPermissions.length}
                 `}
@@ -233,8 +232,8 @@ export default function Profile_Page() {
         {/* Permissions */}
         <div className="mt-6 flex gap-3">
             <Permissions
+                changePermissions={state.logInInfo?.type == "manager" && theAccount?.type == "captain" as any}
                 permissionsList={permissionsList as any}
-                changePermissions={state.logInInfo?.type == "manager" && state.logInInfo?.type == "captain" as any}
                 onGetPermissionsList={setPermissionsList as any}
             />
         </div>

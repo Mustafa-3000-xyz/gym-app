@@ -1,7 +1,7 @@
 import { accounte } from "@/Pages/types";
 import { Shell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { profilePagePath, trainerPagePath } from "@/Lib/constants";
+import { expalinAppPagePath, profilePagePath } from "@/Lib/constants";
 import Password_Inp from "@/Global-components/Password-inp/Password_Inp";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -49,8 +49,9 @@ export default function Account_Card(
                 }
             }) as any);
 
+
             setErrorMessage("");
-            navigate(trainerPagePath);
+            navigate(expalinAppPagePath);
         }
         else {
             setErrorMessage("كلمة المرور غير صحيحه");
@@ -61,7 +62,7 @@ export default function Account_Card(
 
     function showAccountDetail() {
         if (logInInfo) {
-            navigate(profilePagePath.replace(":accountId", account.id as any));
+            navigate(profilePagePath.replace(":accountId", `${account.id}`));
         }
     }
 
@@ -73,8 +74,7 @@ export default function Account_Card(
                 transition-all duration-300
                 rounded-3xl shadow-xl p-8 relative
                 flex flex-col justify-between items-center w-96 gap-10 text-gray-900
-                ${
-                    logInInfo != null
+                ${logInInfo != null
                     &&
                     (
                         logInInfo.type == "manager" && account.type == "captain"
@@ -83,7 +83,10 @@ export default function Account_Card(
                     ) ?
                     "group hover:bg-(--captainColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
                     :
-                    "group hover:bg-(--managerColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
+                    logInInfo?.type == "captain" && account.type == "manager" ?
+                        "group hover:bg-(--managerColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
+                        :
+                        ""
                 }
             `}
             onClick={showAccountDetail}
