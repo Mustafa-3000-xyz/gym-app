@@ -241,7 +241,7 @@ export default function Trainer_Details() {
     }
 
     function incrementTheTrainersTotalForSubscriptionMenu() {
-        state.subscriptionsMenu.forEach(function (ele) {
+        state.subscriptionsMenus.forEach(function (ele) {
             if (
                 ele.subscriptionName == getSubscriptionName
                 &&

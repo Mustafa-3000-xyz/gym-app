@@ -115,7 +115,7 @@ export default function Add_Trainer(
     }
 
     function incrementTheTrainersTotalForSubscriptionMenu() {
-        state.subscriptionsMenu.forEach(function (ele) {
+        state.subscriptionsMenus.forEach(function (ele) {
             if (
                 ele.subscriptionName == getSubscriptionName
                 &&

@@ -1,6 +1,6 @@
 import Toggle_Btn from "@/Global-components/Toggle-btn/Toggle_Btn";
 import { alert } from "@/Lib/functions";
-import { subscriptionsMenu } from "@/Pages/types";
+import { subscriptionsMenus } from "@/Pages/types";
 import { deleteRowInSubscriptionsMenusTableById, updatePropertyInRowInSubscriptionsMenusTable, updateSomePropertiesInRowInSubscriptionsMenusTable } from "@/Rtk/Slices/subscriptionsMenusSlice";
 import { ArrowDownToLine, Pen, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -14,7 +14,7 @@ export default function Subscription_Menu_Card(
         price,
         trainersTotal,
         isActive
-    }: subscriptionsMenu
+    }: subscriptionsMenus
 ) {
     const dispatch = useDispatch();
 

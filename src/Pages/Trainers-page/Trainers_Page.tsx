@@ -105,16 +105,13 @@ export default function Trainers_Page() {
     }
 
     function getTrainersListAfterFilter(): trainer[] {
-        let arr: trainer[] = [];
-
-
-        // clone the list before sorting to avoid mutating props or frozen data
+        const arr: trainer[] = [];
         const resultArrange = [...state.trainers].sort(function (a, b) {
             if (filterObj.arrange == fromOldToNew) {
-                return new Date(a.dateAdded).getTime() - new Date(b.dateAdded).getTime()
+                return Number(a.trainerId) - Number(b.trainerId);
             }
             else {
-                return new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime()
+                return Number(b.trainerId) - Number(a.trainerId);
             }
         });
 

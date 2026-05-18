@@ -27,7 +27,7 @@ export default function Subscriptions_Menu_Page() {
 
 
     function addNewSubscriptionMenu() {
-        if (state.subscriptionsMenu.length == 6) {
+        if (state.subscriptionsMenus.length == 6) {
             normalAlert({
                 title: "المعذره",
                 text: "لقد وصلت للحد الاقصى",
@@ -78,8 +78,8 @@ export default function Subscriptions_Menu_Page() {
 
 
     const trainersTotal = useMemo(function () {
-        return state.subscriptionsMenu.reduce((sum, ele) => sum + ele.trainersTotal, 0);
-    }, [state.subscriptionsMenu.length]);
+        return state.subscriptionsMenus.reduce((sum, ele) => sum + ele.trainersTotal, 0);
+    }, [state.subscriptionsMenus.length]);
 
 
 
@@ -91,7 +91,7 @@ export default function Subscriptions_Menu_Page() {
             <Box
                 icon={<Captions size={30} />}
                 title="مجموع قوائم الاشتراكات"
-                total={`${state.subscriptionsMenu.length} من اصل 6`}
+                total={`${state.subscriptionsMenus.length} من اصل 6`}
                 styleIcon="bg-(--thirdColor)/10 text-(--thirdColor)"
             />
 
@@ -115,13 +115,13 @@ export default function Subscriptions_Menu_Page() {
         {/* All subscriptions menu */}
         <div className="flex justify-center items-center flex-wrap gap-3">
             {
-                state.subscriptionsMenu.length == 0 ?
+                state.subscriptionsMenus.length == 0 ?
                     <Not_Found
                         srcImg="not_found_in_subscription_menu.svg"
                         title="لا يوجد قوائم الان"
                     />
                     :
-                    state.subscriptionsMenu.map(ele => <Subscription_Menu_Card
+                    state.subscriptionsMenus.map(ele => <Subscription_Menu_Card
                         key={ele.id}
                         id={ele.id}
                         subscriptionName={ele.subscriptionName}

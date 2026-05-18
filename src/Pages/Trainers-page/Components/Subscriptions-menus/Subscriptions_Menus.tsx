@@ -1,5 +1,5 @@
 import Drop_Menu from "@/Global-components/Drop-menu/Drop_Menu";
-import { Subscriptions_Menu_Props, subscriptionsMenu } from "@/Pages/types";
+import { Subscriptions_Menu_Props, subscriptionsMenus } from "@/Pages/types";
 import { store_Type } from "@/Rtk/types";
 import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -16,11 +16,11 @@ export default function Subscriptions_Menu(
 
 
     const [isShowMenu, setIsShowMenu] = useState(false);
-    const [menusList, setMenusList] = useState<subscriptionsMenu[] | null>(null);
+    const [menusList, setMenusList] = useState<subscriptionsMenus[] | null>(null);
 
 
 
-    function clickOnSubscriptionMenu(subscriptionInfo: subscriptionsMenu) {
+    function clickOnSubscriptionMenu(subscriptionInfo: subscriptionsMenus) {
         onGetSubscriptionName(subscriptionInfo.subscriptionName);
         onGetSessionsCount(subscriptionInfo.sessionsCount);
         onGetPrice(subscriptionInfo.price);
@@ -31,13 +31,13 @@ export default function Subscriptions_Menu(
 
 
     useEffect(function () {
-        if (state.subscriptionsMenu.length == 0) return;
-        const arr: subscriptionsMenu[] = [];
+        if (state.subscriptionsMenus.length == 0) return;
+        const arr: subscriptionsMenus[] = [];
 
 
-        state.subscriptionsMenu.forEach(ele => ele.isActive == "true" && arr.push(ele));
+        state.subscriptionsMenus.forEach(ele => ele.isActive == "true" && arr.push(ele));
         setMenusList(arr.length == 0 ? null : arr);
-    }, [state.subscriptionsMenu]);
+    }, [state.subscriptionsMenus]);
 
 
 

@@ -11,7 +11,7 @@ import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profi
 import Explain_App_Page from "./Pages/Explain-app-page/Explain_App_Page";
 import Profile_Page from "./Pages/Profile-page/Profile_Page";
 import { logOutFromOldAccount, theTodayDate } from "./Lib/functions";
-import Subscriptions_Menu_Page from "./Pages/Subscriptions-menu-page/Subscriptions_Menu_Page";
+import Subscriptions_Menu_Page from "./Pages/Subscriptions-menus-page/Subscriptions_Menus_Page";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllRowsInTrainersTable, updatePropertyInRowInTrainersTable } from "./Rtk/Slices/trainersSlice";
 import { store_Type } from "./Rtk/types";
@@ -20,6 +20,8 @@ import { getAllRowsInSubscriptionsMenusTable } from "./Rtk/Slices/subscriptionsM
 import { removeTrainerDetails } from "./Rtk/Slices/trainerDetailsSlice";
 import { getLogInInfo } from "./Rtk/Slices/logInInfoSlice";
 import { accountsTable, daysDetailsTable, daysTable, subscriptionsMenusTable, trainerTable } from "./Lib/tables";
+import { getAllRowsInDaysTable } from "./Rtk/Slices/daysSlice";
+import { getAllRowsInDaysDetailsTable } from "./Rtk/Slices/daysDetailsSlice";
 // ========================================================== //
 function App() {
   const dispatch = useDispatch();
@@ -101,6 +103,8 @@ function App() {
     dispatch(getAllRowsInTrainersTable() as any);
     dispatch(getAllRowsInAccountsTable() as any);
     dispatch(getAllRowsInSubscriptionsMenusTable() as any);
+    dispatch(getAllRowsInDaysTable() as any);
+    dispatch(getAllRowsInDaysDetailsTable() as any);
   }, []);
 
   useEffect(function () {

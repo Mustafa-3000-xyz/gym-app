@@ -29,7 +29,7 @@ export interface accounte {
     permissions?: string[] | "fullAccess",
 }
 
-export interface subscriptionsMenu {
+export interface subscriptionsMenus {
     id?: number,
     subscriptionName: string,
     sessionsCount: number,

@@ -1,4 +1,4 @@
-import { accounte, activeSessionsList_Type, subscriptionsMenu, trainer } from "@/Pages/types";
+import { accounte, activeSessionsList_Type, subscriptionsMenus, trainer } from "@/Pages/types";
 // ========================================================== //
 type updateOneColumnInTrainer =
     | "subscriptionState"
@@ -38,7 +38,7 @@ type updateOneColumnInSubscriptionsMenu =
 export interface store_Type {
     trainers: trainer[],
     accountes: accounte[],
-    subscriptionsMenu: subscriptionsMenu[],
+    subscriptionsMenus: subscriptionsMenus[],
     trainerDetails: trainer | null,
     logInInfo: logInInfoSlice_Type | null
 }

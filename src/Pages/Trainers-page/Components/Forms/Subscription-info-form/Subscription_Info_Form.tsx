@@ -1,4 +1,4 @@
-import Subscriptions_Menu from "@/Pages/Trainers-page/Components/Subscriptions-menu/Subscriptions_Menu";
+import Subscriptions_Menu from "@/Pages/Trainers-page/Components/Subscriptions-menus/Subscriptions_Menus";
 import { Subscription_Info_Form_Props } from "@/Pages/types";
 import { ChangeEvent, useEffect, useState } from "react";
 import { Shell } from "lucide-react";
