@@ -1,7 +1,7 @@
 import Account_Img from "@/Pages/Profile-page/Components/Account-img/Account_Img";
 import Box from "@/Global-components/Box/Box";
 import { allPermissions, trainerPagePath } from "@/Lib/constants";
-import { deleteAccountById, updatePropertyInAccount, updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
+import { deleteRowInAccountsTableById, updatePropertyInRowInAccountsTable, updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
 import { BriefcaseBusiness, KeyRound, LogOut, Shell, Trash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -48,7 +48,7 @@ export default function Profile_Page() {
             titleBeforeClickOnOk: "هل تريد بالفعل حذف ذلك الحساب ؟؟",
             titleAfterClickOnOk: "تم حذف الحساب بنجاح",
             funRunWhenClickOnOk: function () {
-                dispatch(deleteAccountById(accountId as any) as any);
+                dispatch(deleteRowInAccountsTableById(accountId as any) as any);
                 navigate(trainerPagePath);
             }
         })
@@ -67,7 +67,7 @@ export default function Profile_Page() {
         if (!isSaveChange) return;
 
 
-        dispatch(updateSomePropertiesInAccount({
+        dispatch(updateSomePropertiesInRowInAccountsTable({
             id: theAccount?.id as any,
             values: {
                 name: getName,
@@ -91,7 +91,7 @@ export default function Profile_Page() {
             theAccount?.permissions == permissionsList
         ) return
 
-        dispatch(updatePropertyInAccount({
+        dispatch(updatePropertyInRowInAccountsTable({
             id: theAccount?.id as any,
             column: "permissions",
             value: permissionsList

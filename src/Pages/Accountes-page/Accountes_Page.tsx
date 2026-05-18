@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
-import { addAccount } from "@/Rtk/Slices/accountsSlice";
+import { addRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
 import { accounte } from "../types";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
 import Permissions from "@/Global-components/Permissions/Permissions";
@@ -60,7 +60,7 @@ export default function Accountes_Page() {
         } as accounte;
 
         setIsShowAddAccount(false);
-        dispatch(addAccount(data as accounte) as any);
+        dispatch(addRowInAccountsTable(data as accounte) as any);
     }
 
 

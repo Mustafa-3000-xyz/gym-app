@@ -113,3 +113,9 @@ export interface logInInfoSlice_Type{
     id: number,
     type: "manager" | "captain",
 }
+
+export interface updatePropertyInDaysDetails_Type{
+    id: number,
+    column: "trainers",
+    value: number[]
+}

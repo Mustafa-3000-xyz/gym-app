@@ -1,25 +1,28 @@
 import { trainer } from "@/Pages/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { updatePropertyInTrainer_Type, updateSomePropertiesInTrainer_Type } from "../types";
-import { trainerTable } from "@/Lib/tables";
+import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-export const getAllTrainers = createAsyncThunk(
-    "trainersSlice/getAllTrainers",
+const database = await Database.load("sqlite:app-gym-db.db");
+
+
+export const getAllRowsInTrainersTable = createAsyncThunk(
+    "trainersSlice/getAllRowsInTrainersTable",
     async function () {
-        const database = await trainerTable();
         return await database.select("SELECT * FROM trainers");
     }
 );
 
-export const addTrainer = createAsyncThunk(
-    "trainersSlice/addTrainer",
+export const addRowInTrainersTable = createAsyncThunk(
+    "trainersSlice/addRowInTrainersTable",
     async function (data: trainer) {
-        const database = await trainerTable();
-        const query = `INSERT INTO trainers (
-        subscriptionState, activeSessionsList, firstName, lastName, 
-        phone, address, subscriptionName, sessionsCount, 
-        price, subscriptionStart, subscriptionEnd, dateAdded
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const query = `
+            INSERT INTO trainers (
+                subscriptionState, activeSessionsList, firstName, lastName, 
+                phone, address, subscriptionName, sessionsCount, 
+                price, subscriptionStart, subscriptionEnd, dateAdded
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
 
         const values = [
             data.subscriptionState,
@@ -36,59 +39,51 @@ export const addTrainer = createAsyncThunk(
             data.dateAdded
         ];
 
-        const getId = await database.execute(query, values);
+        const createRow = await database.execute(query, values);
 
         return {
-            trainerId: getId.lastInsertId,
+            trainerId: createRow.lastInsertId,
             ...data
         };
     }
 );
 
-export const deleteTrainerById = createAsyncThunk(
-    "trainersSlice/deleteTrainerById",
+export const deleteRowInTrainersTableById = createAsyncThunk(
+    "trainersSlice/deleteRowInTrainersTableById",
     async function (id: number | string) {
-        const database = await trainerTable();
+        const query = "DELETE FROM trainers WHERE trainerId = ?";
 
-        await database.execute(
-            "DELETE FROM trainers WHERE trainerId = ?",
-            [id]
-        );
-
+        await database.execute(query, [id]);
         return id;
     }
 );
 
-export const updatePropertyInTrainer = createAsyncThunk(
-    "trainersSlice/updatePropertyInTrainer",
+export const updatePropertyInRowInTrainersTable = createAsyncThunk(
+    "trainersSlice/updatePropertyInRowInTrainersTable",
     async function ({
         trainerId,
         column,
         value
     }: updatePropertyInTrainer_Type) {
-        const database = await trainerTable();
+        const query = `UPDATE trainers SET ${column} = ? WHERE trainerId = ?`;
 
-        await database.execute(
-            `UPDATE trainers SET ${column} = ? WHERE trainerId = ?`,
-            [value, trainerId]
-        );
+        await database.execute(query, [value, trainerId]);
 
-        const result = await database.select(
+        const getTrainerAfterUpdate = await database.select(
             `SELECT * FROM trainers WHERE trainerId = ?`,
             [trainerId]
         );
 
 
-        return (result as trainer[])[0];
+        return (getTrainerAfterUpdate as trainer[])[0];
     }
 );
 
-export const updateSomePropertiesInTrainer = createAsyncThunk(
-    "trainersSlice/updateSomePropertiesInTrainer",
+export const updateSomePropertiesInRowInTrainersTable = createAsyncThunk(
+    "trainersSlice/updateSomePropertiesInRowInTrainersTable",
     async function (
         { trainerId, values }: updateSomePropertiesInTrainer_Type
     ) {
-        const database = await trainerTable();
         const keys = Object.keys(values);
 
 
@@ -112,32 +107,30 @@ export const updateSomePropertiesInTrainer = createAsyncThunk(
 );
 
 
-
 const trainersSlice = createSlice({
     name: "trainersSlice",
     initialState: [],
     reducers: {},
 
     extraReducers: function (builde) {
-        builde.addCase(getAllTrainers.fulfilled as any, (_, action) => {
+        builde.addCase(getAllRowsInTrainersTable.fulfilled as any, (_, action) => {
             return action.payload
         });
 
-        builde.addCase(addTrainer.fulfilled as any, (state, action): any => {
+        builde.addCase(addRowInTrainersTable.fulfilled as any, (state, action): any => {
             return [...state, action.payload];
         });
 
-        builde.addCase(deleteTrainerById.fulfilled as any, (state: trainer[], action): any => {
-            const result = state.filter(ele => ele.trainerId != action.payload);
-            return result;
+        builde.addCase(deleteRowInTrainersTableById.fulfilled as any, (state: trainer[], action): any => {
+            return state.filter(ele => ele.trainerId != action.payload);
         });
 
-        builde.addCase(updatePropertyInTrainer.fulfilled as any, (state: trainer[], action): any => {
+        builde.addCase(updatePropertyInRowInTrainersTable.fulfilled as any, (state: trainer[], action): any => {
             const result = state.filter(ele => ele.trainerId != action.payload.trainerId);
             return [...result, action.payload];
         });
 
-        builde.addCase(updateSomePropertiesInTrainer.fulfilled as any, (state: trainer[], action): any => {
+        builde.addCase(updateSomePropertiesInRowInTrainersTable.fulfilled as any, (state: trainer[], action): any => {
             const result = state.filter(ele => ele.trainerId != action.payload.trainerId);
             return [...result, action.payload];
         });

@@ -1,19 +1,10 @@
-import { getAllAccounts } from "@/Rtk/Slices/accountsSlice";
 import { store_Type } from "@/Rtk/types";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Account_Card from "./Account-card/Account_Card";
 import Not_Found from "../Not-found/Not_Found";
 // ========================================================== //
 export default function All_Accountes() {
-    const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
-
-
-
-    useEffect(function () {
-        dispatch(getAllAccounts() as any);
-    }, []);
 
 
 

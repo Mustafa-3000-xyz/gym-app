@@ -1,6 +1,6 @@
 import { alert } from '@/Lib/functions';
 import { Btn_Subscription_Renewal_Props } from "@/Pages/types";
-import { updateSomePropertiesInTrainer } from '@/Rtk/Slices/trainersSlice';
+import { updateSomePropertiesInRowInTrainersTable } from '@/Rtk/Slices/trainersSlice';
 import { removeTrainerDetails } from '@/Rtk/Slices/trainerDetailsSlice';
 import { RefreshCcw } from 'lucide-react'
 import { useDispatch } from 'react-redux';
@@ -23,7 +23,7 @@ export default function Btn_Subscription_Renewal(
             titleAfterClickOnOk: `تم تجديد الاشتراك للمتدرب رقم : ${trainer?.trainerId}`,
             showMessageAfterClickOnOk: true,
             funRunWhenClickOnOk: function () {
-                dispatch(updateSomePropertiesInTrainer({
+                dispatch(updateSomePropertiesInRowInTrainersTable({
                     trainerId: trainer?.trainerId as any,
                     values: {
                         ...trainer,

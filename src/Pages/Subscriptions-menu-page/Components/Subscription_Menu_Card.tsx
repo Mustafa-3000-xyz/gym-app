@@ -1,7 +1,7 @@
 import Toggle_Btn from "@/Global-components/Toggle-btn/Toggle_Btn";
 import { alert } from "@/Lib/functions";
 import { subscriptionsMenu } from "@/Pages/types";
-import { deleteSubscriptionMenuById, updatePropertyInSubscriptionMenu, updateSomePropertiesInSubscriptionMenu } from "@/Rtk/Slices/subscriptionsMenuSlice";
+import { deleteRowInSubscriptionsMenusTableById, updatePropertyInRowInSubscriptionsMenusTable, updateSomePropertiesInRowInSubscriptionsMenusTable } from "@/Rtk/Slices/subscriptionsMenusSlice";
 import { ArrowDownToLine, Pen, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -35,7 +35,7 @@ export default function Subscription_Menu_Card(
             titleBeforeClickOnOk: `${subscriptionName} <= هل انت متأكد من انك تريد حذف تلك القائمة`,
             titleAfterClickOnOk: "تم حذف القائمه بنجاح",
             funRunWhenClickOnOk: function () {
-                dispatch(deleteSubscriptionMenuById(id as any) as any);
+                dispatch(deleteRowInSubscriptionsMenusTableById(id as any) as any);
             }
         })
     }
@@ -49,7 +49,7 @@ export default function Subscription_Menu_Card(
                 titleBeforeClickOnOk: "هل انت متأكد من حفظ البيانات الجديده ؟",
                 titleAfterClickOnOk: "تم التحديث بنجاح",
                 funRunWhenClickOnOk: function () {
-                    dispatch(updateSomePropertiesInSubscriptionMenu({
+                    dispatch(updateSomePropertiesInRowInSubscriptionsMenusTable({
                         id: id as any,
                         values: {
                             subscriptionName: nameVal,
@@ -69,7 +69,7 @@ export default function Subscription_Menu_Card(
 
 
     useEffect(function () {
-        dispatch(updatePropertyInSubscriptionMenu({
+        dispatch(updatePropertyInRowInSubscriptionsMenusTable({
             id: id as any,
             value: getValueForIsActive,
             column: "isActive"

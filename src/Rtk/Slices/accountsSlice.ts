@@ -1,26 +1,27 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { accountsTable } from "../../Lib/tables";
 import { accounte } from "@/Pages/types";
 import { updatePropertyInAccount_Type, updateSomePropertiesInAccount_Type } from "../types";
+import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-export const getAllAccounts = createAsyncThunk(
-    "accountsSlice/getAllAccounts",
+const database = await Database.load("sqlite:app-gym-db.db");
+
+
+export const getAllRowsInAccountsTable = createAsyncThunk(
+    "accountsSlice/getAllRowsInAccountsTable",
     async function () {
-        const database = await accountsTable();
-        const accountsList: accounte[] = await database.select("SELECT * FROM accounts");
-        const result = accountsList.sort((a, b) => a.id as any - (b.id as any));
-        return result
+        return await database.select("SELECT * FROM accounts");
     }
 );
 
-export const addAccount = createAsyncThunk(
-    "accountsSlice/addAccount",
+export const addRowInAccountsTable = createAsyncThunk(
+    "accountsSlice/addRowInAccountsTable",
     async function (data: accounte) {
-        const database = await accountsTable();
-        const query = `INSERT INTO accounts (
-        name, age, password, type, profileImg, coverImg, 
-        loginDate, logOutDate, workingHours, totalForActiveSessions, permissions
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const query = `
+            INSERT INTO accounts (
+                name, age, password, type, profileImg, coverImg, 
+                loginDate, logOutDate, workingHours, totalForActiveSessions, permissions
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
 
         const values = [
             data.name,
@@ -35,20 +36,20 @@ export const addAccount = createAsyncThunk(
             data.totalForActiveSessions,
             data.permissions
         ];
-        const getId = (await database.execute(query, values)).lastInsertId;
+
+        const createRow = (await database.execute(query, values)).lastInsertId;
 
 
         return {
-            id: getId,
+            id: createRow,
             ...data
         };
     }
 );
 
-export const deleteAccountById = createAsyncThunk(
-    "accountsSlice/deleteAccountById",
+export const deleteRowInAccountsTableById = createAsyncThunk(
+    "accountsSlice/deleteRowInAccountsTableById",
     async function (id: number | string) {
-        const database = await accountsTable();
 
         await database.execute(
             "DELETE FROM accounts WHERE id = ?",
@@ -59,36 +60,32 @@ export const deleteAccountById = createAsyncThunk(
     }
 );
 
-export const updatePropertyInAccount = createAsyncThunk(
-    "accountsSlice/updatePropertyInAccount",
+export const updatePropertyInRowInAccountsTable = createAsyncThunk(
+    "accountsSlice/updatePropertyInRowInAccountsTable",
     async function ({
         id,
         column,
         value
     }: updatePropertyInAccount_Type) {
-        const database = await accountsTable();
+        const query = `UPDATE accounts SET ${column} = ? WHERE id = ?`;
 
-        await database.execute(
-            `UPDATE accounts SET ${column} = ? WHERE id = ?`,
-            [value, id]
-        );
+        await database.execute(query, [value, id]);
 
-        const result = await database.select(
+        const getAccountAfterUpdate = await database.select(
             `SELECT * FROM accounts WHERE id = ?`,
             [id]
         );
 
 
-        return (result as accounte[])[0];
+        return (getAccountAfterUpdate as accounte[])[0];
     }
 );
 
-export const updateSomePropertiesInAccount = createAsyncThunk(
-    "accountsSlice/updateSomePropertiesInAccount",
+export const updateSomePropertiesInRowInAccountsTable = createAsyncThunk(
+    "accountsSlice/updateSomePropertiesInRowInAccountsTable",
     async function (
         { id, values }: updateSomePropertiesInAccount_Type
     ) {
-        const database = await accountsTable();
         const keys = Object.keys(values);
 
 
@@ -118,29 +115,26 @@ const accountsSlice = createSlice({
     reducers: {},
 
     extraReducers: function (builde) {
-        builde.addCase(getAllAccounts.fulfilled as any, (_, action) => {
+        builde.addCase(getAllRowsInAccountsTable.fulfilled as any, (_, action) => {
             return action.payload;
         });
 
-        builde.addCase(addAccount.fulfilled as any, (state, action): any => {
+        builde.addCase(addRowInAccountsTable.fulfilled as any, (state, action): any => {
             return [...state, action.payload];
         });
 
-        builde.addCase(deleteAccountById.fulfilled as any, (state: accounte[], action): any => {
-            const result = state.filter(ele => ele.id != action.payload);
-            return result;
+        builde.addCase(deleteRowInAccountsTableById.fulfilled as any, (state: accounte[], action): any => {
+            return state.filter(ele => ele.id != action.payload);
         });
 
-        builde.addCase(updatePropertyInAccount.fulfilled as any, (state: accounte[], action): any => {
+        builde.addCase(updatePropertyInRowInAccountsTable.fulfilled as any, (state: accounte[], action): any => {
             const filter = state.filter(ele => ele.id != action.payload.id);
-            const result = [...filter, action.payload].sort((a, b) => a.id - b.id);
-            return result;
+            return [...filter, action.payload].sort((a, b) => a.id - b.id);
         });
 
-        builde.addCase(updateSomePropertiesInAccount.fulfilled as any, (state: accounte[], action): any => {
+        builde.addCase(updateSomePropertiesInRowInAccountsTable.fulfilled as any, (state: accounte[], action): any => {
             const filter = state.filter(ele => ele.id != action.payload.id);
-            const result = [...filter, action.payload].sort((a, b) => a.id - b.id);
-            return result;
+            return [...filter, action.payload].sort((a, b) => a.id - b.id);;
         });
     }
 });

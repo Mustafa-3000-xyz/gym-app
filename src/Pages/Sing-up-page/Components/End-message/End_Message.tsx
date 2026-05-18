@@ -1,6 +1,6 @@
 import Animation from "@/Global-components/Animation/Animation";
 import { accounte } from "@/Pages/types";
-import { addAccount } from "@/Rtk/Slices/accountsSlice";
+import { addRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 // ========================================================== //
@@ -23,7 +23,7 @@ export default function End_Message(
         const interval = setInterval(() => {
             if (count == texts.length - 1) {
                 clearInterval(interval);
-                dispatch(addAccount({
+                dispatch(addRowInAccountsTable({
                     ...managerInfo,
                     profileImg: "",
                     coverImg: "",

@@ -3,7 +3,7 @@ import Swal from "sweetalert2";
 import { alertType, normalAlert_Type } from "./types";
 import { stateIsActive, stateIsPending } from "./constants";
 import store from "@/Rtk/store";
-import { updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
+import { updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
 // ========================================================== //
 /*
     This function his jop is take trainer and return style subscription state,
@@ -92,7 +92,7 @@ export function logOutFromOldAccount(oldAccountId: number) {
     const totalForHours = (theAccount?.workingHours || 0) + convertToHours;
 
 
-    store.dispatch(updateSomePropertiesInAccount({
+    store.dispatch(updateSomePropertiesInRowInAccountsTable({
         id: oldAccountId,
         values: {
             loginDate: "",

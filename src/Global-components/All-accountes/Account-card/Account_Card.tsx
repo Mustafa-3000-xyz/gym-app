@@ -5,7 +5,7 @@ import { expalinAppPagePath, profilePagePath } from "@/Lib/constants";
 import Password_Inp from "@/Global-components/Password-inp/Password_Inp";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateSomePropertiesInAccount } from "@/Rtk/Slices/accountsSlice";
+import { updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
 import { logOutFromOldAccount } from "@/Lib/functions";
 import { Account_Card_Props } from "@/Global-components/types";
 import { store_Type } from "@/Rtk/types";
@@ -41,7 +41,7 @@ export default function Account_Card(
             }));
 
             // Start count the work houres for the new account
-            dispatch(updateSomePropertiesInAccount({
+            dispatch(updateSomePropertiesInRowInAccountsTable({
                 id: account.id as any,
                 values: {
                     loginDate: new Date().toISOString(),

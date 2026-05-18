@@ -1,5 +1,5 @@
 import { Cover_Img_Props } from "@/Pages/types";
-import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
+import { updatePropertyInRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
 import { Trash } from "lucide-react";
 import React, { useRef } from "react";
 import { useDispatch } from "react-redux";
@@ -34,7 +34,7 @@ export default function Cover_Img(
         reader.onloadend = () => {
             const base64 = reader.result as string;
 
-            dispatch(updatePropertyInAccount({
+            dispatch(updatePropertyInRowInAccountsTable({
                 id: accountId as any,
                 column: "coverImg",
                 value: base64
@@ -45,7 +45,7 @@ export default function Cover_Img(
     function clickOnRemoveCoverImgBtn(e: React.ChangeEvent<HTMLButtonElement>) {
         e.stopPropagation();
 
-        dispatch(updatePropertyInAccount({
+        dispatch(updatePropertyInRowInAccountsTable({
             id: accountId as any,
             column: "coverImg",
             value: ""

@@ -1,6 +1,6 @@
 import { alert } from "@/Lib/functions";
 import { stateIsFinished } from "@/Lib/constants";
-import { updateSomePropertiesInTrainer } from "@/Rtk/Slices/trainersSlice";
+import { updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/trainersSlice";
 import { removeTrainerDetails } from "@/Rtk/Slices/trainerDetailsSlice";
 import { BanknoteX } from "lucide-react";
 import { useDispatch } from "react-redux";
@@ -17,7 +17,7 @@ export default function Btn_Finished_Subscription(
             titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
             titleAfterClickOnOk: `تم إنهاء الاشتراك للمتدرب رقم : ${trainerId}`,
             funRunWhenClickOnOk: function () {
-                dispatch(updateSomePropertiesInTrainer({
+                dispatch(updateSomePropertiesInRowInTrainersTable({
                     trainerId: trainerId as any,
                     values: {
                         activeSessionsList: JSON.stringify([]),

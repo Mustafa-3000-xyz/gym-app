@@ -1,6 +1,6 @@
 import { Presentation, UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
-import { addTrainer } from "@/Rtk/Slices/trainersSlice";
+import { addRowInTrainersTable } from "@/Rtk/Slices/trainersSlice";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
@@ -10,9 +10,9 @@ import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import { useDispatch, useSelector } from "react-redux";
 import { activeSessionsList_Type, trainer } from "@/Pages/types";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
-import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
+import { updatePropertyInRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
 import { store_Type } from "@/Rtk/types";
-import { updatePropertyInSubscriptionMenu } from "@/Rtk/Slices/subscriptionsMenuSlice";
+import { updatePropertyInRowInSubscriptionsMenusTable } from "@/Rtk/Slices/subscriptionsMenusSlice";
 // ========================================================== //
 export default function Add_Trainer(
     { onIsShowAddTrainer }: { onIsShowAddTrainer: (x: boolean) => void }
@@ -56,7 +56,7 @@ export default function Add_Trainer(
 
 
         dispatch(
-            addTrainer({
+            addRowInTrainersTable({
                 subscriptionState:
                     conditionalForActiveSubscription ?
                         stateIsActive
@@ -104,7 +104,7 @@ export default function Add_Trainer(
                 sessions: arr
             } as activeSessionsList_Type
 
-            dispatch(updatePropertyInAccount({
+            dispatch(updatePropertyInRowInAccountsTable({
                 id: state.logInInfo?.id as any,
                 column: "totalForActiveSessions",
                 value: getActiveSomeSessions
@@ -123,7 +123,7 @@ export default function Add_Trainer(
                 &&
                 ele.price == getPrice
             ) {
-                dispatch(updatePropertyInSubscriptionMenu({
+                dispatch(updatePropertyInRowInSubscriptionsMenusTable({
                     id: ele.id as any,
                     column: "trainersTotal",
                     value: ele.trainersTotal + 1

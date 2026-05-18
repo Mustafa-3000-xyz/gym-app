@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import trainersSlice from "../Rtk/Slices/trainersSlice";
 import accountsSlice from "../Rtk/Slices/accountsSlice";
-import subscriptionsMenuSlice from "../Rtk/Slices/subscriptionsMenuSlice";
+import subscriptionsMenuSlice from "./Slices/subscriptionsMenusSlice";
 import trainerDetailsSlice from "../Rtk/Slices/trainerDetailsSlice";
 import logInInfoSlice from "../Rtk/Slices/logInInfoSlice";
 // ======================================= //

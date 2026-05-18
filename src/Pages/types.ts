@@ -38,6 +38,18 @@ export interface subscriptionsMenu {
     isActive: "true" | "false"
 }
 
+export interface day {
+    id?: number,
+    date: string
+}
+
+export interface dayDetails {
+    id?: number,
+    dateId: number,
+    accountId: number,
+    trainers: number[],
+} 
+
 export interface activeSessionsList_Type {
     accountId: number | "removed",
     sessions: number[]

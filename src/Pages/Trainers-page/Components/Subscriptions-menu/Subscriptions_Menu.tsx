@@ -1,10 +1,9 @@
 import Drop_Menu from "@/Global-components/Drop-menu/Drop_Menu";
 import { Subscriptions_Menu_Props, subscriptionsMenu } from "@/Pages/types";
-import { getAllSubscriptionsMenu } from "@/Rtk/Slices/subscriptionsMenuSlice";
 import { store_Type } from "@/Rtk/types";
 import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 // ========================================================== //
 export default function Subscriptions_Menu(
     {
@@ -14,7 +13,6 @@ export default function Subscriptions_Menu(
     }: Subscriptions_Menu_Props
 ) {
     const state = useSelector(state => state as store_Type);
-    const dispatch = useDispatch();
 
 
     const [isShowMenu, setIsShowMenu] = useState(false);
@@ -30,11 +28,6 @@ export default function Subscriptions_Menu(
         setIsShowMenu(false);
     }
 
-
-
-    useEffect(function () {
-        dispatch(getAllSubscriptionsMenu() as any);
-    }, []);
 
 
     useEffect(function () {

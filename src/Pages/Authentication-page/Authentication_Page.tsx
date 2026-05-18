@@ -1,21 +1,10 @@
 import { store_Type } from "@/Rtk/types";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Sing_Up_Page from "../Sing-up-page/Sing_Up_Page";
 import Login_Page from "../Login-page/Login_Page";
-import { getAllAccounts } from "@/Rtk/Slices/accountsSlice";
 // ========================================================== //
 export default function Authentication_Page() {
-    const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
-
-
-
-    useEffect(function () {
-        dispatch(getAllAccounts() as any);
-        localStorage.setItem("theAccount", "null");
-    }, []);
-
 
 
     return <main

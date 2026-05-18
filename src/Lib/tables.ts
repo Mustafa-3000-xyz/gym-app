@@ -1,8 +1,9 @@
 import Database from "@tauri-apps/plugin-sql";
 // ========================================================== //
-export async function trainerTable() {
-    const db = await Database.load("sqlite:app-gym-db.db");
+const db = await Database.load("sqlite:app-gym-db.db");
 
+
+export async function trainerTable() {
     try {
         await db.execute(`
             CREATE TABLE IF NOT EXISTS trainers (
@@ -21,17 +22,13 @@ export async function trainerTable() {
                 dateAdded TEXT
             )
         `);
-    } catch (error) {
-        console.error("DB Error:", error);
-        throw error;
+    } catch (err) {
+        console.error("DB Error:", err);
+        throw err;
     }
-
-    return db;
 }
 
 export async function accountsTable() {
-    const db = await Database.load("sqlite:app-gym-db.db");
-
     try {
         await db.execute(`
             CREATE TABLE IF NOT EXISTS accounts (
@@ -49,20 +46,16 @@ export async function accountsTable() {
                 permissions TEXT
             )
         `);
-    } catch (error) {
-        console.error("DB Error:", error);
-        throw error;
+    } catch (err) {
+        console.error("DB Error:", err);
+        throw err;
     }
-
-    return db;
 }
 
-export async function subscriptionsMenuTable() {
-    const db = await Database.load("sqlite:app-gym-db.db");
-
+export async function subscriptionsMenusTable() {
     try {
         await db.execute(`
-            CREATE TABLE IF NOT EXISTS subscriptionsMenu (
+            CREATE TABLE IF NOT EXISTS subscriptionsMenus (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 subscriptionName TEXT,
                 sessionsCount INTEGER,
@@ -71,10 +64,41 @@ export async function subscriptionsMenuTable() {
                 isActive TEXT
             )
         `);
-    } catch (error) {
-        console.error("DB Error:", error);
-        throw error;
+    } catch (err) {
+        console.error("DB Error:", err);
+        throw err;
     }
+}
 
-    return db;
+export async function daysTable() {
+    try {
+        db.execute(`
+            CREATE TABLE IF NOT EXISTS days(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                date TEXT
+            )
+        `);
+    }
+    catch (err) {
+        console.log(err);
+        throw err;
+    }
+}
+
+export async function daysDetailsTable() {
+    try {
+        await db.execute("PRAGMA foreign_keys = ON;");
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS daysDetails (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                dateId INTEGER,
+                accountId INTEGER,
+                trainers JSON,
+                FOREIGN KEY (dateId) REFERENCES days (id) ON DELETE CASCADE
+            )
+        `);
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
 }

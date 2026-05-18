@@ -13,12 +13,13 @@ import Profile_Page from "./Pages/Profile-page/Profile_Page";
 import { logOutFromOldAccount, theTodayDate } from "./Lib/functions";
 import Subscriptions_Menu_Page from "./Pages/Subscriptions-menu-page/Subscriptions_Menu_Page";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllTrainers, updatePropertyInTrainer } from "./Rtk/Slices/trainersSlice";
+import { getAllRowsInTrainersTable, updatePropertyInRowInTrainersTable } from "./Rtk/Slices/trainersSlice";
 import { store_Type } from "./Rtk/types";
-import { getAllAccounts } from "./Rtk/Slices/accountsSlice";
-import { getAllSubscriptionsMenu } from "./Rtk/Slices/subscriptionsMenuSlice";
+import { getAllRowsInAccountsTable } from "./Rtk/Slices/accountsSlice";
+import { getAllRowsInSubscriptionsMenusTable } from "./Rtk/Slices/subscriptionsMenusSlice";
 import { removeTrainerDetails } from "./Rtk/Slices/trainerDetailsSlice";
 import { getLogInInfo } from "./Rtk/Slices/logInInfoSlice";
+import { accountsTable, daysDetailsTable, daysTable, subscriptionsMenusTable, trainerTable } from "./Lib/tables";
 // ========================================================== //
 function App() {
   const dispatch = useDispatch();
@@ -26,6 +27,14 @@ function App() {
   const [todayDate, setTodayDate] = useState<Date>(theTodayDate({ startingIn12Houre: false }));
 
 
+
+  async function runTables() {
+    await trainerTable()
+    await accountsTable();
+    await subscriptionsMenusTable();
+    await daysTable();
+    await daysDetailsTable();
+  }
 
   async function logOutWhenCloseApp() {
     const { getCurrentWindow } = await import('@tauri-apps/api/window');
@@ -62,7 +71,7 @@ function App() {
         &&
         (ele.subscriptionState == stateIsActive || ele.subscriptionState == stateIsPending)
       ) {
-        dispatch(updatePropertyInTrainer({
+        dispatch(updatePropertyInRowInTrainersTable({
           trainerId: ele.trainerId as any,
           column: "subscriptionState",
           value: stateIsFinished
@@ -73,7 +82,7 @@ function App() {
         &&
         todayDate.getTime() >= new Date(ele.subscriptionStart as any).getTime()
       ) {
-        dispatch(updatePropertyInTrainer({
+        dispatch(updatePropertyInRowInTrainersTable({
           trainerId: ele.trainerId as any,
           column: "subscriptionState",
           value: stateIsActive
@@ -86,10 +95,12 @@ function App() {
 
 
   useEffect(function () {
+    runTables();
+
     dispatch(getLogInInfo());
-    dispatch(getAllTrainers() as any);
-    dispatch(getAllAccounts() as any);
-    dispatch(getAllSubscriptionsMenu() as any);
+    dispatch(getAllRowsInTrainersTable() as any);
+    dispatch(getAllRowsInAccountsTable() as any);
+    dispatch(getAllRowsInSubscriptionsMenusTable() as any);
   }, []);
 
   useEffect(function () {

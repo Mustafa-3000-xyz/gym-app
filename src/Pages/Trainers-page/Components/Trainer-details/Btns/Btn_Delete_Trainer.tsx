@@ -1,5 +1,5 @@
 import { alert } from '@/Lib/functions';
-import { deleteTrainerById } from '@/Rtk/Slices/trainersSlice';
+import { deleteRowInTrainersTableById } from '@/Rtk/Slices/trainersSlice';
 import { removeTrainerDetails } from '@/Rtk/Slices/trainerDetailsSlice';
 import { Trash } from 'lucide-react'
 import { useDispatch } from 'react-redux';
@@ -17,7 +17,7 @@ export default function Btn_Delete_Trainer(
             titleAfterClickOnOk: "ذلك المتدرب لم يعد موجود في الجدول",
             showMessageAfterClickOnOk: true,
             funRunWhenClickOnOk: function () {
-                dispatch(deleteTrainerById(trainerId as any) as any)
+                dispatch(deleteRowInTrainersTableById(trainerId as any) as any)
                 dispatch(removeTrainerDetails() as any);
             }
         });

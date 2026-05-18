@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
-import { updatePropertyInTrainer, updateSomePropertiesInTrainer } from "@/Rtk/Slices/trainersSlice";
+import { updatePropertyInRowInTrainersTable, updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/trainersSlice";
 import { alert, theTodayDate } from "@/Lib/functions";
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
@@ -17,8 +17,8 @@ import { useDispatch, useSelector } from "react-redux";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
 import { activeSessionsList_Type } from "@/Pages/types";
 import { store_Type } from "@/Rtk/types";
-import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
-import { updatePropertyInSubscriptionMenu } from "@/Rtk/Slices/subscriptionsMenuSlice";
+import { updatePropertyInRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
+import { updatePropertyInRowInSubscriptionsMenusTable } from "@/Rtk/Slices/subscriptionsMenusSlice";
 import { removeTrainerDetails } from "@/Rtk/Slices/trainerDetailsSlice";
 // ========================================================== //
 export default function Trainer_Details() {
@@ -90,7 +90,7 @@ export default function Trainer_Details() {
             titleBeforeClickOnOk: "هل انت متأكد من تعديل البيانات , في حالة تعديل عدد الحصص سوف يتم اعاده الحصص من الاول",
             titleAfterClickOnOk: `تم تحديث المتدرب رقم : ${state.trainerDetails?.trainerId}`,
             funRunWhenClickOnOk: function () {
-                dispatch(updateSomePropertiesInTrainer({
+                dispatch(updateSomePropertiesInRowInTrainersTable({
                     trainerId: state.trainerDetails?.trainerId as any,
                     values: { ...updateTheTrainer } as any
                 }) as any);
@@ -106,7 +106,7 @@ export default function Trainer_Details() {
             titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
             titleAfterClickOnOk: `تم إنهاء الاشتراك للمتدرب رقم : ${state.trainerDetails?.trainerId}`,
             funRunWhenClickOnOk: function () {
-                dispatch(updateSomePropertiesInTrainer({
+                dispatch(updateSomePropertiesInRowInTrainersTable({
                     trainerId: state.trainerDetails?.trainerId as any,
                     values: {
                         activeSessionsList: JSON.stringify([]),
@@ -198,14 +198,14 @@ export default function Trainer_Details() {
 
         switch (incrementOrDecrement) {
             case "increment":
-                dispatch(updatePropertyInAccount({
+                dispatch(updatePropertyInRowInAccountsTable({
                     id: accountId,
                     column: "totalForActiveSessions",
                     value: Math.trunc(getAccount?.totalForActiveSessions as number) + 1
                 }) as any);
                 break;
             case "decrement":
-                dispatch(updatePropertyInAccount({
+                dispatch(updatePropertyInRowInAccountsTable({
                     id: accountId,
                     column: "totalForActiveSessions",
                     value: Math.trunc(getAccount?.totalForActiveSessions as number) - 1
@@ -249,7 +249,7 @@ export default function Trainer_Details() {
                 &&
                 ele.price == getPrice
             ) {
-                dispatch(updatePropertyInSubscriptionMenu({
+                dispatch(updatePropertyInRowInSubscriptionsMenusTable({
                     id: ele.id as any,
                     column: "trainersTotal",
                     value: ele.trainersTotal + 1
@@ -274,7 +274,7 @@ export default function Trainer_Details() {
     useEffect(function () {
         if (!state.trainerDetails) return;
 
-        dispatch(updatePropertyInTrainer({
+        dispatch(updatePropertyInRowInTrainersTable({
             trainerId: state.trainerDetails?.trainerId as any,
             column: "activeSessionsList",
             value: JSON.stringify(activeSessionsList),

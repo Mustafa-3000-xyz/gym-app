@@ -1,5 +1,5 @@
 import { Account_Img_Props } from "@/Global-components/types";
-import { updatePropertyInAccount } from "@/Rtk/Slices/accountsSlice";
+import { updatePropertyInRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
 import { Camera, ImageOff } from "lucide-react";
 import { useRef } from "react";
 import { useDispatch } from "react-redux";
@@ -24,7 +24,7 @@ export default function Account_Img(
 
     function clickOnRemoveImg(e: React.MouseEvent<HTMLButtonElement>) {
         e.stopPropagation();
-        dispatch(updatePropertyInAccount({
+        dispatch(updatePropertyInRowInAccountsTable({
             id: accountId as any,
             column: "profileImg",
             value: ""
@@ -43,7 +43,7 @@ export default function Account_Img(
             const base64 = reader.result as string;
 
 
-            dispatch(updatePropertyInAccount({
+            dispatch(updatePropertyInRowInAccountsTable({
                 id: accountId as any,
                 column: "profileImg",
                 value: base64
