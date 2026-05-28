@@ -9,6 +9,7 @@ import { USING_ACTIVE_SOME_SESSIONS } from "@/Lib/constants";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
 import { addSessions, removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import { theTodayDate } from "@/Lib/functions";
+import { differenceInDays } from "date-fns";
 // ========================================================== //
 export default function Subscription_Info_Form(
     {
@@ -93,14 +94,16 @@ export default function Subscription_Info_Form(
     }, [subscriptionName, price]);
 
     useEffect(() => {
+        const subscriptionStart = new Date(state.subscriptionStart as any);
+
         if (
             state.subscriptionStart && state.subscriptionEnd &&
-            new Date(state.subscriptionStart as any).getTime() < todayDate.getTime() &&
+            subscriptionStart.getTime() < todayDate.getTime() &&
             new Date(state.subscriptionEnd as any).getTime() >= todayDate.getTime()
         ) {
-            const result = state.sessionsCount - 1;
-            setMaxForActiveSomeSessions(result);
-            onGetActiveSomeSessions?.(result);
+            const diff = Math.abs(differenceInDays(todayDate, subscriptionStart)) + 1;
+            setMaxForActiveSomeSessions(diff);
+            onGetActiveSomeSessions?.(diff);
         } else {
             setMaxForActiveSomeSessions(0);
             onGetActiveSomeSessions?.(0);
@@ -142,7 +145,15 @@ export default function Subscription_Info_Form(
                     labelName="عدد الحصص"
                     inpType="number"
                     inpValue={state.sessionsCount}
-                    onWriteInInput={(e) => dispatch(addSessions(Number(e.target.value)))}
+                    onWriteInInput={(e) => {
+                        const value = Number(e.target.value)
+                        if (value <= 60) {
+                            dispatch(addSessions(value));
+                        }
+                        else{
+                            dispatch(addSessions(60));
+                        }
+                    }}
                 />
 
                 {/* Price */}

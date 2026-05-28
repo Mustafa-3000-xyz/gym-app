@@ -1,9 +1,10 @@
 import Drop_Menu from "@/Global-components/Drop-menu/Drop_Menu";
 import { Subscriptions_Menu_Props, subscriptionsMenus } from "@/Pages/types";
+import { addSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import { store_Type } from "@/Rtk/types";
 import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // ========================================================== //
 export default function Subscriptions_Menu(
     {
@@ -11,6 +12,7 @@ export default function Subscriptions_Menu(
         onGetPrice
     }: Subscriptions_Menu_Props
 ) {
+    const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
 
 
@@ -23,6 +25,7 @@ export default function Subscriptions_Menu(
         onGetSubscriptionName(subscriptionInfo.subscriptionName);
         onGetPrice(subscriptionInfo.price);
 
+        dispatch(addSessions(subscriptionInfo.sessionsCount));
         setIsShowMenu(false);
     }
 

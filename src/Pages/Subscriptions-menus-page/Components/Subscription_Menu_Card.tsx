@@ -12,7 +12,6 @@ export default function Subscription_Menu_Card(
         subscriptionName,
         sessionsCount,
         price,
-        trainersTotal,
         isActive
     }: subscriptionsMenus
 ) {
@@ -76,8 +75,6 @@ export default function Subscription_Menu_Card(
         }) as any);
     }, [getValueForIsActive]);
 
-
-
     useEffect(function () {
         if (nameVal != "" && sessionsVal != 0 && priceVal != 0) {
             setIsSaveChanges(true);
@@ -135,7 +132,11 @@ export default function Subscription_Menu_Card(
                 }
             </li>
 
-            <li>إجمالي المشتركين : {trainersTotal}</li>
+            <li>حالة الاشتراك :   
+                <span className={`${isActive ? "text-emerald-500" : "text-red-500"} ms-1`}>
+                    {isActive ? "مفعل" : "غير مفعل"} 
+                </span>
+            </li>
         </ul>
 
         <hr className="my-10" />

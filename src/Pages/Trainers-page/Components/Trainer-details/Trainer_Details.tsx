@@ -49,6 +49,7 @@ export default function Trainer_Details() {
 
 
 
+
     function updateInfo() {
         if (!isChangeInfo) return;
 
@@ -137,8 +138,6 @@ export default function Trainer_Details() {
     ]);
 
 
-
-
     const updateTheTrainer = useMemo(() => {
         return {
             ...state.trainerDetails,
@@ -175,7 +174,6 @@ export default function Trainer_Details() {
             return stateIsFinished;
         }
     }, [state.subscriptionStart, state.subscriptionEnd, todayDate]);
-
 
 
 

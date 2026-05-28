@@ -32,7 +32,6 @@ export interface subscriptionsMenus {
     id?: number,
     subscriptionName: string,
     sessionsCount: number,
-    trainersTotal: number,
     price: number
     isActive: "true" | "false"
 }

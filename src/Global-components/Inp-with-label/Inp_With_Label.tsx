@@ -38,13 +38,13 @@ export default function Inp_With_Label(
                         value={inpValue}
                         disabled={!isChangeValue}
                         className={`
-                        w-full
-                        rounded-lg border border-black/20 p-2 px-3 focus:outline-none
-                        appearance-none
-                        [&::-webkit-inner-spin-button]:appearance-none
-                        [&::-webkit-outer-spin-button]:appearance-none
-                        ${!isChangeValue ? "cursor-not-allowed opacity-45" : ""}
-                    `}
+                            w-full
+                            rounded-lg border border-black/20 p-2 px-3 focus:outline-none
+                            appearance-none
+                            [&::-webkit-inner-spin-button]:appearance-none
+                            [&::-webkit-outer-spin-button]:appearance-none
+                            ${!isChangeValue ? "cursor-not-allowed opacity-45" : ""}
+                        `}
                         onChange={writeInInp}
                     />
                     :
@@ -52,13 +52,13 @@ export default function Inp_With_Label(
                         type={inpType}
                         disabled={!isChangeValue}
                         className={`
-                        w-full
-                        rounded-lg border border-black/20 p-2 px-3 focus:outline-none
-                        appearance-none
-                        [&::-webkit-inner-spin-button]:appearance-none
-                        [&::-webkit-outer-spin-button]:appearance-none
-                        ${!isChangeValue ? "cursor-not-allowed opacity-45" : ""}
-                    `}
+                            w-full
+                            rounded-lg border border-black/20 p-2 px-3 focus:outline-none
+                            appearance-none
+                            [&::-webkit-inner-spin-button]:appearance-none
+                            [&::-webkit-outer-spin-button]:appearance-none
+                            ${!isChangeValue ? "cursor-not-allowed opacity-45" : ""}
+                        `}
                         onChange={writeInInp}
                     />
         }

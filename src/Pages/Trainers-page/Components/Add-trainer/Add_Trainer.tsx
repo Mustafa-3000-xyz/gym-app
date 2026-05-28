@@ -58,10 +58,10 @@ export default function Add_Trainer(
             }
 
             incrementOrDecrementForTotalSessionsInAccount(
-                "increment",
                 Number(state.logInInfo?.id),
-                getActiveSomeSessions
-            )
+                getActiveSomeSessions,
+                "increment"
+            );
             return arr;
         }
         else {
@@ -71,6 +71,13 @@ export default function Add_Trainer(
 
     function saveTrainerInfo() {
         if (!isAllInfoComplete) return
+        onIsShowAddTrainer(false);
+        normalAlert({
+            title: "تمت العمليه بنجاح",
+            text: "إضافة متدرب جديد",
+            icon: "success"
+        });
+
 
         dispatch(removeSubscriptionStart());
         dispatch(removeSubscriptionEnd());
@@ -91,13 +98,6 @@ export default function Add_Trainer(
                 dateAdded: new Date().toISOString()
             } as trainer) as any
         );
-
-        onIsShowAddTrainer(false);
-        normalAlert({
-            title: "تمت العمليه بنجاح",
-            text: "إضافة متدرب جديد",
-            icon: "success"
-        });
     }
 
 

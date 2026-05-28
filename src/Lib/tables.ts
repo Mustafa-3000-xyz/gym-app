@@ -58,7 +58,6 @@ export async function subscriptionsMenusTable() {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 subscriptionName TEXT,
                 sessionsCount INTEGER,
-                trainersTotal INTEGER,
                 price INTEGER,
                 isActive TEXT
             )

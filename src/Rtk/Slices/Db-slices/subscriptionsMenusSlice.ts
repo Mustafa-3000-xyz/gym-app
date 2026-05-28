@@ -18,8 +18,8 @@ export const addRowInSubscriptionsMenusTable = createAsyncThunk(
     async function (data: subscriptionsMenus) {
         const query = `
             INSERT INTO subscriptionsMenus (
-                subscriptionName, sessionsCount, trainersTotal, price, isActive
-            ) VALUES (?, ?, ?, ?, ?)
+                subscriptionName, sessionsCount, price, isActive
+            ) VALUES (?, ?, ?, ?)
         `;
 
 
@@ -27,7 +27,6 @@ export const addRowInSubscriptionsMenusTable = createAsyncThunk(
         const values = [
             data.subscriptionName,
             data.sessionsCount,
-            data.trainersTotal,
             data.price,
             data.isActive
         ];

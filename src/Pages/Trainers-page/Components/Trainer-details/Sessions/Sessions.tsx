@@ -37,9 +37,9 @@ export default function Sessions() {
             titleAfterClickOnOk: `تم إنهاء الاشتراك للمتدرب رقم : ${state.trainerDetails?.trainerId}`,
             funRunWhenClickOnOk: function () {
                 incrementOrDecrementForTotalSessionsInAccount(
-                    "increment",
                     Number(state.logInInfo?.id),
-                    1
+                    1,
+                    "increment"
                 );
                 dispatch(removeSubscriptionStart());
                 dispatch(removeSubscriptionEnd());
@@ -90,9 +90,9 @@ export default function Sessions() {
 
             copyActiveSessionsList.push(obj);
             incrementOrDecrementForTotalSessionsInAccount(
-                "increment",
                 Number(state.logInInfo?.id),
-                1
+                1,
+                "increment"
             );
         }
         // Remove session
@@ -108,9 +108,9 @@ export default function Sessions() {
             copyActiveSessionsList = copyActiveSessionsList.filter(ele => ele.sessionNumber != sessionNum);
 
             incrementOrDecrementForTotalSessionsInAccount(
-                "decrement",
                 Number(state.logInInfo?.id),
-                1
+                1,
+                "decrement"
             );
         }
 

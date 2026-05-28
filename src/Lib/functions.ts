@@ -114,15 +114,15 @@ export function theTodayDate(
 }
 
 export function incrementOrDecrementForTotalSessionsInAccount(
-    incrementOrDecrement: "increment" | "decrement",
     accountId: number,
-    sessionsCount: number
+    sessionsCount: number,
+    type: "increment" | "decrement",
 ) {
     const accountes = store.getState().accountes as accounte[];
     const getAccount = accountes.find(ele => ele.id == accountId);
 
 
-    switch (incrementOrDecrement) {
+    switch (type) {
         case "increment":
             const result = Math.trunc(Math.abs(getAccount?.totalActiveSubscriptions as any)) + sessionsCount;
 

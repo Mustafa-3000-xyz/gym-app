@@ -28,7 +28,6 @@ type updateOneColumnInAccount =
 type updateOneColumnInSubscriptionsMenu =
     | "subscriptionName"
     | "sessionsCount"
-    | "trainersTotal"
     | "price"
     | "isActive"
 
@@ -104,7 +103,6 @@ export interface updateSomePropertiesInSubscriptionsMenu_Type {
     values: {
         subscriptionName?: string,
         sessionsCount?: number,
-        trainersTotal?: number,
         price?: number,
         isActive?: "true" | "false"
     }

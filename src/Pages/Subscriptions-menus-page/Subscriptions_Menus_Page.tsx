@@ -39,14 +39,11 @@ export default function Subscriptions_Menu_Page() {
         }
     }
 
-
-
     function saveData() {
         dispatch(addRowInSubscriptionsMenusTable({
             subscriptionName: getSubscriptionName,
             sessionsCount: getSessionCount,
             price: getPrice,
-            trainersTotal: 0,
             isActive: "true"
         }) as any);
 
@@ -75,11 +72,9 @@ export default function Subscriptions_Menu_Page() {
     }, [getSubscriptionName, getSessionCount, getPrice]);
 
 
-
-
-    const trainersTotal = useMemo(function () {
-        return state.subscriptionsMenus.reduce((sum, ele) => sum + ele.trainersTotal, 0);
-    }, [state.subscriptionsMenus.length]);
+    const totalActivesMenu = useMemo(function () {
+        return state.subscriptionsMenus.filter(ele => ele.isActive == "true" && ele).length;
+    }, [state.subscriptionsMenus]);
 
 
 
@@ -97,8 +92,8 @@ export default function Subscriptions_Menu_Page() {
 
             <Box
                 icon={<Users size={30} />}
-                title="مجموع المشتركين في كل قوائم الاشتراك"
-                total={trainersTotal}
+                title="مجموع الاشتراكات المفعله"
+                total={totalActivesMenu}
                 styleIcon="bg-neutral-200 text-neutral-500"
             />
         </div>
@@ -126,7 +121,6 @@ export default function Subscriptions_Menu_Page() {
                         id={ele.id}
                         subscriptionName={ele.subscriptionName}
                         sessionsCount={ele.sessionsCount}
-                        trainersTotal={ele.trainersTotal}
                         price={ele.price}
                         isActive={JSON.parse(ele.isActive)}
                     />)
