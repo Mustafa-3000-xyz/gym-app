@@ -341,8 +341,13 @@ export default function Sessions() {
                 left: `${popoverCoords.left}px`
             }}
         >
-            <p className="font-bold">
-                {popoverInfo.name.slice(0, 7)}
+            <p className="font-bold whitespace-nowrap">
+                {
+                    popoverInfo.name != "removed" ?
+                        popoverInfo.name.slice(0, 7)
+                        :
+                        "الحساب محذوف"
+                }
             </p>
 
             <p>
