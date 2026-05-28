@@ -1,42 +1,56 @@
 import Subscriptions_Menu from "@/Pages/Trainers-page/Components/Subscriptions-menus/Subscriptions_Menus";
 import { Subscription_Info_Form_Props } from "@/Pages/types";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Shell } from "lucide-react";
 import Discription from "@/Global-components/Description/Discription";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import { USING_ACTIVE_SOME_SESSIONS } from "@/Lib/constants";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
+import { addSessions, removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
+import { theTodayDate } from "@/Lib/functions";
 // ========================================================== //
 export default function Subscription_Info_Form(
     {
         onGetSubscriptionName,
-        onGetSessionsCount,
         onGetPrice,
         onGetActiveSomeSessions
     }: Subscription_Info_Form_Props
 ) {
+    const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
 
-    const [isUsingTheActiveSomeSessions, setIsUsingTheActiveSomeSessions] = useState(false);
     const [activeSomeSessions, setActiveSomeSessions] = useState(0);
     const [subscriptionName, setSubscriptionName] = useState<string>("");
-    const [sessions, setSessions] = useState<number>(0);
     const [price, setPrice] = useState<number>(0);
 
+    const [isUsingTheActiveSomeSessions, setIsUsingTheActiveSomeSessions] = useState(false);
+    const [maxForActiveSomeSessions, setMaxForActiveSomeSessions] = useState(0);
+    const [alertForActiveSomeSubscription, setAlertForActiveSomeSubscription] = useState<string | null>("");
+    const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
 
 
 
-
-    function writeInActiveSomeSessionsInp(e: ChangeEvent<HTMLInputElement>) {
-        const value = +e.target.value;
-
-        if (value >= sessions) return;
-
-        setActiveSomeSessions(value);
-        onGetActiveSomeSessions?.(value);
+    function makeAlertForActiveSomeSubscription() {
+        if (state.sessionsCount == 0) {
+            setAlertForActiveSomeSubscription("قم بكتابة عدد الحصص");
+        }
+        else if (!state.subscriptionStart) {
+            setAlertForActiveSomeSubscription("اختر تاريخ بداية الاشتراك");
+        }
+        else if (new Date(state.subscriptionStart).getTime() >= todayDate.getTime()) {
+            setAlertForActiveSomeSubscription("تاريخ بداية الاشتراك غير مناسب لاستخدام ميزة تفعيل بعض الحصص");
+        }
+        else if (!state.subscriptionEnd && new Date(state.subscriptionStart).getTime() < todayDate.getTime()) {
+            setAlertForActiveSomeSubscription("قم بختيار تاريخ نهاية الاشتراك");
+        }
+        else if (new Date(state.subscriptionEnd as any).getTime() < todayDate.getTime()) {
+            setAlertForActiveSomeSubscription("تاريخ نهاية الاشتراك غير مناسب لاستخدام ميزة تفعيل بعض الحصص");
+        }
+        else {
+            setAlertForActiveSomeSubscription(null);
+        }
     }
-
 
 
 
@@ -56,46 +70,60 @@ export default function Subscription_Info_Form(
         }
     }, [state.accountes]);
 
-    useEffect(function () {
-        setActiveSomeSessions(0);
-    }, [sessions]);
-
-    // When open state.trainerDetails details, i want show his values
     useEffect(() => {
+        // When open state.trainerDetails details, i want show his values
         if (state.trainerDetails) {
             setSubscriptionName(state.trainerDetails.subscriptionName);
-            setSessions(state.trainerDetails.sessionsCount);
+            dispatch(addSessions(Number(state.trainerDetails.sessionsCount)))
             setPrice(state.trainerDetails.price);
+
+            dispatch(addSessions(Number(state.trainerDetails.sessionsCount)));
         } else {
             setSubscriptionName("");
-            setSessions(0);
+            dispatch(addSessions(0));
             setPrice(0);
+
+            dispatch(removeAllSessions());
         }
     }, [state.trainerDetails]);
 
-
     useEffect(function () {
         onGetSubscriptionName(subscriptionName);
-        onGetSessionsCount(sessions);
         onGetPrice(price);
-    }, [subscriptionName, sessions, price]);
+    }, [subscriptionName, price]);
+
+    useEffect(() => {
+        if (
+            state.subscriptionStart && state.subscriptionEnd &&
+            new Date(state.subscriptionStart as any).getTime() < todayDate.getTime() &&
+            new Date(state.subscriptionEnd as any).getTime() >= todayDate.getTime()
+        ) {
+            const result = state.sessionsCount - 1;
+            setMaxForActiveSomeSessions(result);
+            onGetActiveSomeSessions?.(result);
+        } else {
+            setMaxForActiveSomeSessions(0);
+            onGetActiveSomeSessions?.(0);
+        }
+
+        makeAlertForActiveSomeSubscription();
+    }, [state.subscriptionStart, state.subscriptionEnd, state.sessionsCount, todayDate]);
 
 
 
 
     return <div className={`
-        mb-5 gap-3
-        ${!state.trainerDetails ? "grid grid-cols-2" : ""}
-    `}
+            mb-5 gap-3
+            ${!state.trainerDetails ? "grid grid-cols-2" : ""}
+        `}
     >
         <div className={`
-            w-full rounded-lg flex flex-col justify-between px-4
-            ${!state.trainerDetails ? "border border-slate-300 p-4" : ""}
-        `}
+                w-full rounded-lg flex flex-col justify-between px-4
+                ${!state.trainerDetails ? "border border-slate-300 p-4" : ""}
+            `}
         >
             <Subscriptions_Menu
                 onGetSubscriptionName={setSubscriptionName}
-                onGetSessionsCount={setSessions}
                 onGetPrice={setPrice}
             />
 
@@ -113,8 +141,8 @@ export default function Subscription_Info_Form(
                 <Inp_With_Label
                     labelName="عدد الحصص"
                     inpType="number"
-                    inpValue={sessions}
-                    onWriteInInput={(e) => setSessions(+e.target.value)}
+                    inpValue={state.sessionsCount}
+                    onWriteInInput={(e) => dispatch(addSessions(Number(e.target.value)))}
                 />
 
                 {/* Price */}
@@ -131,9 +159,9 @@ export default function Subscription_Info_Form(
         {
             !state.trainerDetails &&
             <div className={`
-                w-full border border-slate-300 p-4 rounded-lg flex flex-col justify-between
-                ${!isUsingTheActiveSomeSessions && "cursor-not-allowed opacity-40"}
-            `}
+                    w-full border border-slate-300 p-4 rounded-lg flex flex-col justify-between
+                    ${!isUsingTheActiveSomeSessions && "cursor-not-allowed opacity-40"}
+                `}
             >
                 {/* Title and discription*/}
                 <div className="mb-5">
@@ -145,24 +173,45 @@ export default function Subscription_Info_Form(
                         </h3>
                     </div>
 
-                    <Discription discription="هذا الخيار يُمكنك من تفعيل بعض الحصص ويجب ان تفعيل بعض الحصص تكون اقل من عدد الحصص" />
+                    <Discription discription="هذا الخيار يُمكنك من تفعيل بعض الحصص للاشتراكات القديمه التي لم تنتهي بعد" />
                 </div>
 
                 {/* Active some session inp */}
-                <div className="mb-5">
-                    <input
-                        type="number"
-                        value={activeSomeSessions}
-                        disabled={!isUsingTheActiveSomeSessions}
-                        onChange={writeInActiveSomeSessionsInp}
-                        className={`
-                            bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0
-                            appearance-none w-full text-center
-                            [&::-webkit-inner-spin-button]:appearance-none
-                            [&::-webkit-outer-spin-button]:appearance-none
-                            ${!isUsingTheActiveSomeSessions && "cursor-not-allowed"}
-                        `}
-                    />
+                <div>
+                    {
+                        alertForActiveSomeSubscription == null ?
+                            <>
+                                <input
+                                    type="number"
+                                    value={activeSomeSessions ?? 0}
+                                    onChange={(e) => {
+                                        const result = Number(e.target.value) > Number(maxForActiveSomeSessions) ? maxForActiveSomeSessions : e.target.value;
+                                        setActiveSomeSessions(Number(result));
+                                    }}
+                                    disabled={!isUsingTheActiveSomeSessions}
+                                    className={`
+                                        bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0
+                                        appearance-none w-full text-center
+                                        [&::-webkit-inner-spin-button]:appearance-none
+                                        [&::-webkit-outer-spin-button]:appearance-none
+                                        ${!isUsingTheActiveSomeSessions && "cursor-not-allowed"}
+                                    `}
+                                />
+
+                                {
+                                    maxForActiveSomeSessions ?
+                                        <p className="font-bold mt-3">
+                                            الحد الاقصى للتفعيل : {maxForActiveSomeSessions}
+                                        </p>
+                                        :
+                                        null
+                                }
+                            </>
+                            :
+                            <p className="bg-slate-200 border border-slate-300 p-2 rounded-lg focus:outline-0 w-full cursor-not-allowed text-center">
+                                {alertForActiveSomeSubscription}
+                            </p>
+                    }
                 </div>
             </div>
         }

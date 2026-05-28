@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { subscriptionsMenus } from "@/Pages/types";
-import { updatePropertyInSubscriptionsMenu_Type, updateSomePropertiesInSubscriptionsMenu_Type } from "../types";
+import { updatePropertyInSubscriptionsMenu_Type, updateSomePropertiesInSubscriptionsMenu_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
 const database = await Database.load("sqlite:app-gym-db.db");

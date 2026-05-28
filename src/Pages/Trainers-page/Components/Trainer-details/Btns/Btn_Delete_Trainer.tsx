@@ -1,11 +1,14 @@
 import { alert } from '@/Lib/functions';
-import { deleteRowInTrainersTableById } from '@/Rtk/Slices/trainersSlice';
-import { removeTrainerDetails } from '@/Rtk/Slices/trainerDetailsSlice';
+import { deleteRowInTrainersTableById } from '@/Rtk/Slices/Db-slices/trainersSlice';
+import { removeAllSessions } from '@/Rtk/Slices/UI-slices/sessionsCountSlice';
+import { removeSubscriptionEnd } from '@/Rtk/Slices/UI-slices/subscriptionEndSlice';
+import { removeSubscriptionStart } from '@/Rtk/Slices/UI-slices/subscriptionStartSlice';
+import { removeTrainerDetails } from '@/Rtk/Slices/UI-slices/trainerDetailsSlice';
 import { Trash } from 'lucide-react'
 import { useDispatch } from 'react-redux';
 // ========================================================== //
 export default function Btn_Delete_Trainer(
-    { trainerId }: {trainerId: number}
+    { trainerId }: { trainerId: number }
 ) {
     const dispatch = useDispatch();
 
@@ -15,10 +18,12 @@ export default function Btn_Delete_Trainer(
         alert({
             titleBeforeClickOnOk: "هل تريد حقا حذف ذلك المتدرب ؟",
             titleAfterClickOnOk: "ذلك المتدرب لم يعد موجود في الجدول",
-            showMessageAfterClickOnOk: true,
             funRunWhenClickOnOk: function () {
                 dispatch(deleteRowInTrainersTableById(trainerId as any) as any)
                 dispatch(removeTrainerDetails() as any);
+                dispatch(removeSubscriptionStart());
+                dispatch(removeSubscriptionEnd());
+                dispatch(removeAllSessions());
             }
         });
     }

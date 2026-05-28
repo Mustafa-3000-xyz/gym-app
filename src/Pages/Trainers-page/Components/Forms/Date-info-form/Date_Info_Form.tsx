@@ -1,96 +1,123 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { format, differenceInDays } from "date-fns";
-import { Date_Info_Props } from "@/Pages/types";
 import { stateIsFinished, styleDate } from "@/Lib/constants";
 import { Calendar } from 'primereact/calendar';
 import { normalAlert, theTodayDate } from "@/Lib/functions";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
+import { addSubscriptionStart } from "@/Rtk/Slices/UI-slices/subscriptionStartSlice";
+import { addSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSlice";
 // ========================================================== //
-export default function Date_Info_Form(
-    { onGetSubscriptionStart, onGetSubscriptionEnd }: Date_Info_Props
-) {
-    const trainerDetails = useSelector(state => state as store_Type).trainerDetails;
+export default function Date_Info_Form() {
+    const dispatch = useDispatch();
+    const state = useSelector(state => state as store_Type);
 
-
-    const [subscriptionStart, setSubscriptionStart] = useState<Date | null>(null);
-    const [subscriptionEnd, setSubscriptionEnd] = useState<Date | null>(null);
 
     const [theDaysBetweenSubStartAndSubEnd, setTheDaysBetweenSubStartAndSubEnd] = useState(0);
     const [minDateInSubscriptionEnd, setMinDateInSubscriptionEnd] = useState<Date | null>(null);
-
-    const todayDate = theTodayDate({ startingIn12Houre: true });
-
+    const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
 
 
 
 
-    // This for set date start in subscription end
-    useEffect(function () {
-        if (!subscriptionStart) return;
-
-        const date = new Date(subscriptionStart as any);
-
-        date.setDate(date.getDate() + 1);
-        date.setHours(0, 0, 0, 0);
-
-        setMinDateInSubscriptionEnd(date);
-    }, [subscriptionStart]);
-
-    /* 
-        When show trainer info, i want see the subscriptionStart and subscriptionEnd
-        if the subscriptionState is not stateIsFinished
-    */
-    useEffect(function () {
-        if (trainerDetails && trainerDetails?.subscriptionState != stateIsFinished) {
-            setSubscriptionStart(new Date(trainerDetails?.subscriptionStart as string));
-            setSubscriptionEnd(new Date(trainerDetails?.subscriptionEnd as string));
-        } else {
-            setSubscriptionStart(null);
-            setSubscriptionEnd(null);
-        }
-    }, [trainerDetails?.subscriptionState]);
-
-    // This for get days between subscriptionStart and subscriptionEnd
-    useEffect(function () {
-        if (!subscriptionStart && !subscriptionEnd) return
-
-        const startDate = format(subscriptionStart as Date, styleDate);
-        const endDate = format(subscriptionEnd as Date, styleDate);
-        const diff = differenceInDays(endDate, startDate);
-
-
-        if (subscriptionStart && subscriptionEnd && diff > 0) {
-            setTheDaysBetweenSubStartAndSubEnd(diff);
-        } else {
-            setTheDaysBetweenSubStartAndSubEnd(0);
-            setSubscriptionEnd(null);
-        }
-
-
-        onGetSubscriptionStart(subscriptionStart as Date);
-        onGetSubscriptionEnd(subscriptionEnd as Date);
-    }, [subscriptionStart, subscriptionEnd]);
-
-    useEffect(function () {
-        if (!trainerDetails) return
+    function renewalSubscription() {
+        if (!state.trainerDetails) return;
 
         if (
-            trainerDetails?.subscriptionState == stateIsFinished
+            state.trainerDetails?.subscriptionState == stateIsFinished
             &&
-            subscriptionStart
+            state.subscriptionStart
             &&
-            todayDate.getTime() > new Date(subscriptionStart as any).getTime()
+            todayDate.getTime() > new Date(state.subscriptionStart as any).getTime()
         ) {
-            setSubscriptionStart(null);
+            dispatch(addSubscriptionStart(null));
             normalAlert({
                 title: "تنويه",
                 text: "في حالة تجديد الاشتراك , يجب ان تاريخ بداية الاشتراك يسبق تاريخ اليوم او يساويه",
                 icon: "info"
             })
         }
-    }, [trainerDetails?.subscriptionState, subscriptionStart])
+    }
 
+    function firstDateForSubscriptionEnd() {
+        if (!state.subscriptionStart) return;
+
+        const date = new Date(state.subscriptionStart as any);
+
+        date.setDate(date.getDate() + 1);
+        date.setHours(0, 0, 0, 0);
+
+        setMinDateInSubscriptionEnd(date);
+    }
+
+    function getDaysBetweenSubscriptionStartAndSubscriptionDate() {
+        if (!state.subscriptionStart && !state.subscriptionEnd) {
+            setTheDaysBetweenSubStartAndSubEnd(0);
+            return;
+        }
+
+        const startDate = format(state.subscriptionStart as string, styleDate);
+        const endDate = format(state.subscriptionEnd as string, styleDate);
+        const diff = differenceInDays(endDate, startDate) + 1;
+
+
+        if (diff > 0) {
+            setTheDaysBetweenSubStartAndSubEnd(diff);
+        } else {
+            setTheDaysBetweenSubStartAndSubEnd(0);
+            dispatch(addSubscriptionEnd(null));
+        }
+    }
+
+
+
+
+    useEffect(function () {
+        /* 
+            When show trainer info, i want see the subscriptionStart and subscriptionEnd
+            if the subscriptionState is not stateIsFinished
+        */
+        if (state.trainerDetails && state.trainerDetails?.subscriptionState != stateIsFinished) {
+            dispatch(addSubscriptionStart(new Date(state.trainerDetails?.subscriptionStart as string).toISOString()));
+            dispatch(addSubscriptionEnd(new Date(state.trainerDetails?.subscriptionEnd as string).toISOString()));
+        } else {
+            dispatch(addSubscriptionStart(null));
+            dispatch(addSubscriptionEnd(null));
+        }
+    }, [state.trainerDetails]);
+
+    useEffect(function () {
+        // If the user select subscriptionEnd in first, so we must block this action :)
+        if (state.subscriptionEnd && state.sessionsCount == 0) {
+            dispatch(addSubscriptionEnd(null));
+            normalAlert({
+                title: "تنويه",
+                text: "قم بكتابة عدد الحصص اولا",
+                icon: "info"
+            });
+            return;
+        }
+
+
+        if (
+            theDaysBetweenSubStartAndSubEnd != 0
+            &&
+            theDaysBetweenSubStartAndSubEnd < state.sessionsCount
+        ) {
+            dispatch(addSubscriptionEnd(null));
+            normalAlert({
+                title: "تنويه",
+                text: "يجب ان الايام التي تبدأ من تاريخ بداية الاشتراك الى تاريخ نهاية الاشتراك تكون اكبر من او تساوي عدد الحصص",
+                icon: "info"
+            });
+        }
+    }, [theDaysBetweenSubStartAndSubEnd, state.sessionsCount]);
+
+    useEffect(function () {
+        renewalSubscription();
+        firstDateForSubscriptionEnd();
+        getDaysBetweenSubscriptionStartAndSubscriptionDate();
+    }, [state.subscriptionStart, state.subscriptionEnd, state.trainerDetails?.subscriptionState]);
 
 
 
@@ -103,7 +130,7 @@ export default function Date_Info_Form(
                 showIcon
                 showButtonBar
                 readOnlyInput
-                value={subscriptionStart}
+                value={state.subscriptionStart ? new Date(state.subscriptionStart as any) : null}
                 showOtherMonths={false}
                 dateFormat="yy/mm/dd"
                 className="w-full select-none"
@@ -111,7 +138,7 @@ export default function Date_Info_Form(
                 clearButtonClassName="clear-btn-in-calendar"
                 todayButtonClassName="today-btn-in-calendar"
                 inputClassName="text-right input-date-in-calendar"
-                onChange={(e) => setSubscriptionStart(e.value as Date)}
+                onChange={(e) => dispatch(addSubscriptionStart(new Date(e.value as Date).toISOString()))}
             />
         </div>
 
@@ -135,18 +162,18 @@ export default function Date_Info_Form(
             <Calendar
                 showIcon
                 readOnlyInput
-                value={subscriptionEnd}
+                value={state.subscriptionEnd ? new Date(state.subscriptionEnd as any) : null}
                 minDate={minDateInSubscriptionEnd as any}
                 showOtherMonths={false}
-                disabled={subscriptionStart ? false : true}
+                disabled={state.subscriptionStart ? false : true}
                 inputClassName="text-right input-date-in-calendar"
                 dateFormat="yy/mm/dd"
-                className={`w-full ${subscriptionStart ? "opacity-100" : "opacity-55"}`}
-                placeholder={!subscriptionStart
+                className={`w-full ${state.subscriptionStart ? "opacity-100" : "opacity-55"}`}
+                placeholder={!state.subscriptionStart
                     ? "اختر تاريخ بداية الاشتراك اولا"
                     : "اليوم / الشهر / السنه"
                 }
-                onChange={(e) => setSubscriptionEnd(e.value as Date)}
+                onChange={(e) => dispatch(addSubscriptionEnd(new Date(e.value as Date).toISOString()))}
             />
         </div>
     </div>

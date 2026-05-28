@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 export default function Subscriptions_Menu(
     {
         onGetSubscriptionName,
-        onGetSessionsCount,
         onGetPrice
     }: Subscriptions_Menu_Props
 ) {
@@ -22,7 +21,6 @@ export default function Subscriptions_Menu(
 
     function clickOnSubscriptionMenu(subscriptionInfo: subscriptionsMenus) {
         onGetSubscriptionName(subscriptionInfo.subscriptionName);
-        onGetSessionsCount(subscriptionInfo.sessionsCount);
         onGetPrice(subscriptionInfo.price);
 
         setIsShowMenu(false);

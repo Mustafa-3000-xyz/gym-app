@@ -1,5 +1,5 @@
 import { Cover_Img_Props } from "@/Pages/types";
-import { updatePropertyInRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
+import { updatePropertyInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { Trash } from "lucide-react";
 import React, { useRef } from "react";
 import { useDispatch } from "react-redux";

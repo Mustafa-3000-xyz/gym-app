@@ -43,7 +43,7 @@ export default function Popup_Form(
                 <X size={23} onClick={clickOnCancel} className="cursor-pointer text-red-500" />
             </div>
 
-            <div className="p-3">
+            <div className="p-3 relative">
                 {children}
             </div>
 

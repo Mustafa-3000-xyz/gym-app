@@ -9,7 +9,7 @@ export async function trainerTable() {
             CREATE TABLE IF NOT EXISTS trainers (
                 trainerId INTEGER PRIMARY KEY AUTOINCREMENT, 
                 subscriptionState TEXT,
-                activeSessionsList TEXT,
+                activeSessionsList JSON,
                 firstName TEXT,
                 lastName TEXT,
                 phone INTEGER,
@@ -40,9 +40,8 @@ export async function accountsTable() {
                 profileImg TEXT,
                 coverImg TEXT,
                 loginDate TEXT,
-                logOutDate TEXT,
                 workingHours INTEGER,
-                totalForActiveSessions INTEGER,
+                totalActiveSubscriptions INTEGER,
                 permissions TEXT
             )
         `);

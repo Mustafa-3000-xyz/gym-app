@@ -1,7 +1,7 @@
 import Account_Img from "@/Pages/Profile-page/Components/Account-img/Account_Img";
 import Box from "@/Global-components/Box/Box";
 import { allPermissions, trainerPagePath } from "@/Lib/constants";
-import { deleteRowInAccountsTableById, updatePropertyInRowInAccountsTable, updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
+import { deleteRowInAccountsTableById, updatePropertyInRowInAccountsTable, updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { BriefcaseBusiness, KeyRound, LogOut, Shell, Trash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -12,7 +12,7 @@ import Account_Form from "@/Global-components/Account-form/Account_Form";
 import { useNavigate, useParams } from "react-router-dom";
 import { store_Type } from "@/Rtk/types";
 import Cover_Img from "./Components/Cover-img/Cover_Img";
-import { changeLogInInfo } from "@/Rtk/Slices/logInInfoSlice";
+import { changeLogInInfo } from "@/Rtk/Slices/UI-slices/logInInfoSlice";
 // ========================================================== //
 export default function Profile_Page() {
     const dispatch = useDispatch();
@@ -35,7 +35,6 @@ export default function Profile_Page() {
     function clickOnLogOutBtn() {
         alert({
             titleBeforeClickOnOk: "هل تريد بالفعل تسجيل الخروج ؟؟",
-            showMessageAfterClickOnOk: false,
             funRunWhenClickOnOk: function () {
                 dispatch(changeLogInInfo(null))
                 logOutFromOldAccount(Number(state.logInInfo?.id));
@@ -143,10 +142,10 @@ export default function Profile_Page() {
             const dateNow = new Date().getTime();
             const totalForHours = (startDate - dateNow) / (1000 * 60 * 60);
 
-            return Math.trunc(totalForHours);
+            return Math.trunc(Math.abs(totalForHours));
         }
         else {
-            return theAccount?.workingHours;
+            return Math.trunc(Math.abs(theAccount?.workingHours as any));
         }
     }, [theAccount]);
 
@@ -207,7 +206,7 @@ export default function Profile_Page() {
                 icon={<Shell />}
                 styleIcon="bg-(--thirdColor)/10 text-(--thirdColor)"
                 title="عدد الحصص المفعله"
-                total={Math.trunc(theAccount?.totalForActiveSessions as any) as any}
+                total={Math.trunc(Math.abs(theAccount?.totalActiveSubscriptions) as any) as any}
             />
 
             <Box

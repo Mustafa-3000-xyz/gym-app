@@ -1,12 +1,15 @@
 import { alert } from "@/Lib/functions";
 import { stateIsFinished } from "@/Lib/constants";
-import { updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/trainersSlice";
-import { removeTrainerDetails } from "@/Rtk/Slices/trainerDetailsSlice";
+import { updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
+import { removeTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { BanknoteX } from "lucide-react";
 import { useDispatch } from "react-redux";
+import { removeSubscriptionStart } from "@/Rtk/Slices/UI-slices/subscriptionStartSlice";
+import { removeSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSlice";
+import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 // ========================================================== //
-export default function Btn_Finished_Subscription(
-    {trainerId}: {trainerId: number}
+export default function Btn_Withdraw_Money(
+    { trainerId }: { trainerId: number }
 ) {
     const dispatch = useDispatch();
 
@@ -14,8 +17,8 @@ export default function Btn_Finished_Subscription(
 
     function finishedSubscriptionUsingBtn() {
         alert({
-            titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
-            titleAfterClickOnOk: `تم إنهاء الاشتراك للمتدرب رقم : ${trainerId}`,
+            titleBeforeClickOnOk: "هل تريد بالفعل سحب اشتراك ذلك المتدرب ؟؟",
+            titleAfterClickOnOk: `تم سحب الاشتراك للمتدرب رقم : ${trainerId}`,
             funRunWhenClickOnOk: function () {
                 dispatch(updateSomePropertiesInRowInTrainersTable({
                     trainerId: trainerId as any,
@@ -26,6 +29,9 @@ export default function Btn_Finished_Subscription(
                 }) as any);
 
                 dispatch(removeTrainerDetails());
+                dispatch(removeSubscriptionStart());
+                dispatch(removeSubscriptionEnd());
+                dispatch(removeAllSessions());
             }
         });
     }
@@ -42,7 +48,7 @@ export default function Btn_Finished_Subscription(
         </span>
 
         <span>
-            إنهاء الاشتراك
+            سحب الاشتراك
         </span>
     </button>
 }

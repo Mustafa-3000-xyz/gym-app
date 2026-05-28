@@ -147,7 +147,7 @@ export default function Trainer_Info_Form(
             <div className="w-4/12">
                 <Inp_With_Label
                     labelName="العنوان (اختياري)"
-                    inpType="number"
+                    inpType="text"
                     inpValue={address}
                     onWriteInInput={(e) => setAddress(e.target.value)}
                 />

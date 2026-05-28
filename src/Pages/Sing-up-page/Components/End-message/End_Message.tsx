@@ -1,6 +1,6 @@
 import Animation from "@/Global-components/Animation/Animation";
 import { accounte } from "@/Pages/types";
-import { addRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
+import { addRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 // ========================================================== //
@@ -29,9 +29,8 @@ export default function End_Message(
                     coverImg: "",
                     type: "manager",
                     loginDate: "",
-                    logOutDate: "",
                     workingHours: 0,
-                    totalForActiveSessions: 0,
+                    totalActiveSubscriptions: 0,
                     permissions: "fullAccess"
                 }) as any)
             } 

@@ -1,15 +1,16 @@
 import { alert } from '@/Lib/functions';
 import { Btn_Subscription_Renewal_Props } from "@/Pages/types";
-import { updateSomePropertiesInRowInTrainersTable } from '@/Rtk/Slices/trainersSlice';
-import { removeTrainerDetails } from '@/Rtk/Slices/trainerDetailsSlice';
+import { updateSomePropertiesInRowInTrainersTable } from '@/Rtk/Slices/Db-slices/trainersSlice';
+import { removeTrainerDetails } from '@/Rtk/Slices/UI-slices/trainerDetailsSlice';
 import { RefreshCcw } from 'lucide-react'
 import { useDispatch } from 'react-redux';
+import { stateIsActive } from '@/Lib/constants';
+import { removeSubscriptionStart } from '@/Rtk/Slices/UI-slices/subscriptionStartSlice';
+import { removeSubscriptionEnd } from '@/Rtk/Slices/UI-slices/subscriptionEndSlice';
+import { removeAllSessions } from '@/Rtk/Slices/UI-slices/sessionsCountSlice';
 // ========================================================== //
 export default function Btn_Subscription_Renewal(
-    {
-        trainer,
-        isInfoComplete,
-    }: Btn_Subscription_Renewal_Props
+    { trainer, isInfoComplete }: Btn_Subscription_Renewal_Props
 ) {
     const dispatch = useDispatch();
 
@@ -21,17 +22,20 @@ export default function Btn_Subscription_Renewal(
         alert({
             titleBeforeClickOnOk: "هل تريد تجديد الاشتراك ؟؟",
             titleAfterClickOnOk: `تم تجديد الاشتراك للمتدرب رقم : ${trainer?.trainerId}`,
-            showMessageAfterClickOnOk: true,
             funRunWhenClickOnOk: function () {
                 dispatch(updateSomePropertiesInRowInTrainersTable({
                     trainerId: trainer?.trainerId as any,
                     values: {
                         ...trainer,
+                        subscriptionState: stateIsActive,
                         activeSessionsList: JSON.stringify([]) as any
                     }
                 }) as any);
 
                 dispatch(removeTrainerDetails() as any);
+                dispatch(removeSubscriptionStart());
+                dispatch(removeSubscriptionEnd());
+                dispatch(removeAllSessions());
             }
         });
     }

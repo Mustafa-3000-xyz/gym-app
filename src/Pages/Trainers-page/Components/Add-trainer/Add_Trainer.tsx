@@ -1,24 +1,27 @@
 import { Presentation, UserRound } from "lucide-react";
-import { useEffect, useState } from "react";
-import { addRowInTrainersTable } from "@/Rtk/Slices/trainersSlice";
+import { useMemo, useState } from "react";
+import { addRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
 import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
-import { normalAlert, theTodayDate } from "@/Lib/functions";
+import { incrementOrDecrementForTotalSessionsInAccount, normalAlert, theTodayDate } from "@/Lib/functions";
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
 import { useDispatch, useSelector } from "react-redux";
 import { activeSessionsList_Type, trainer } from "@/Pages/types";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
-import { updatePropertyInRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
 import { store_Type } from "@/Rtk/types";
-import { updatePropertyInRowInSubscriptionsMenusTable } from "@/Rtk/Slices/subscriptionsMenusSlice";
+import { removeSubscriptionStart } from "@/Rtk/Slices/UI-slices/subscriptionStartSlice";
+import { removeSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSlice";
+import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
+import { addDays } from "date-fns";
 // ========================================================== //
 export default function Add_Trainer(
     { onIsShowAddTrainer }: { onIsShowAddTrainer: (x: boolean) => void }
 ) {
     const dispatch = useDispatch();
     const state = useSelector(state => state as store_Type);
+
 
 
     // Get trainer info
@@ -29,57 +32,66 @@ export default function Add_Trainer(
 
     // Get subscription info
     const [getSubscriptionName, setGetSubscriptionName] = useState<string>("");
-    const [getSessionsCount, setGetSessionsCount] = useState<number>(0);
     const [getPrice, setGetPrice] = useState<number>(0);
     const [getActiveSomeSessions, setGetActiveSomeSessions] = useState<number>(0);
 
-    // Get date info
-    const [getSubscriptionStart, setGetSubscriptionStart] = useState<Date | null>(null);
-    const [getSubscriptionEnd, setGetSubscriptionEnd] = useState<Date | null>(null);
-
-    // These variables
-    const [isAllInfoComplete, setIsAllInfoComplete] = useState(false);
+    const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
 
 
 
+    function makeObjectsInActiceSessionsList(): activeSessionsList_Type[] | [] {
+        if (getActiveSomeSessions) {
+            let date = new Date(state.subscriptionStart as string);
+            const arr: activeSessionsList_Type[] = [];
+
+            for (let i = 0; i < getActiveSomeSessions; i++) {
+                const obj = {
+                    accountId: state.logInInfo?.id,
+                    sessionNumber: i,
+                    activationDate: new Date(date as Date).toISOString()
+                } as activeSessionsList_Type
+
+                arr.push(obj);
+
+                const nextDay = addDays(date, 1);
+                date = nextDay;
+            }
+
+            incrementOrDecrementForTotalSessionsInAccount(
+                "increment",
+                Number(state.logInInfo?.id),
+                getActiveSomeSessions
+            )
+            return arr;
+        }
+        else {
+            return [];
+        }
+    }
 
     function saveTrainerInfo() {
         if (!isAllInfoComplete) return
 
-        const todayDate = theTodayDate({ startingIn12Houre: true });
-
-
-        const conditionalForActiveSubscription = todayDate.getTime() >= new Date(getSubscriptionStart as any).getTime() && todayDate.getTime() <= new Date(getSubscriptionEnd as any).getTime();
-        const conditionalForPendingSubscription = todayDate.getTime() < new Date(getSubscriptionStart as any).getTime();
-        const conditionalForFinishedSubscription = todayDate.getTime() > new Date(getSubscriptionEnd as any).getTime();
-
-
-
+        dispatch(removeSubscriptionStart());
+        dispatch(removeSubscriptionEnd());
+        dispatch(removeAllSessions());
         dispatch(
             addRowInTrainersTable({
-                subscriptionState:
-                    conditionalForActiveSubscription ?
-                        stateIsActive
-                        :
-                        conditionalForPendingSubscription ?
-                            stateIsPending
-                            :
-                            conditionalForFinishedSubscription && stateIsFinished,
-                activeSessionsList: JSON.stringify(makeActiveSessionList()) as any,
+                subscriptionState: statusTheSubscription,
+                activeSessionsList: JSON.stringify(makeObjectsInActiceSessionsList()) as any,
                 firstName: getFirstName,
                 lastName: getLastName,
                 phone: String(getPhone),
                 address: getAddress,
                 subscriptionName: getSubscriptionName,
-                sessionsCount: Number(getSessionsCount),
+                sessionsCount: Number(state.sessionsCount),
                 price: Number(getPrice),
-                subscriptionStart: getSubscriptionStart?.toISOString(),
-                subscriptionEnd: getSubscriptionEnd?.toISOString(),
+                subscriptionStart: state.subscriptionStart,
+                subscriptionEnd: state.subscriptionEnd,
                 dateAdded: new Date().toISOString()
             } as trainer) as any
         );
 
-        incrementTheTrainersTotalForSubscriptionMenu();
         onIsShowAddTrainer(false);
         normalAlert({
             title: "تمت العمليه بنجاح",
@@ -88,77 +100,47 @@ export default function Add_Trainer(
         });
     }
 
-    function makeActiveSessionList(): activeSessionsList_Type[] | [] {
-        if (getActiveSomeSessions == 0) {
-            return [];
-        }
-        else {
-            const arr: number[] = [];
-
-            for (let i = 0; i < getActiveSomeSessions; i++) {
-                arr.push(i);
-            }
-
-            const obj = {
-                accountId: state.logInInfo?.id,
-                sessions: arr
-            } as activeSessionsList_Type
-
-            dispatch(updatePropertyInRowInAccountsTable({
-                id: state.logInInfo?.id as any,
-                column: "totalForActiveSessions",
-                value: getActiveSomeSessions
-            }) as any);
-
-            return [obj];
-        }
-    }
-
-    function incrementTheTrainersTotalForSubscriptionMenu() {
-        state.subscriptionsMenus.forEach(function (ele) {
-            if (
-                ele.subscriptionName == getSubscriptionName
-                &&
-                ele.sessionsCount == getSessionsCount
-                &&
-                ele.price == getPrice
-            ) {
-                dispatch(updatePropertyInRowInSubscriptionsMenusTable({
-                    id: ele.id as any,
-                    column: "trainersTotal",
-                    value: ele.trainersTotal + 1
-                }) as any);
-            }
-        })
-    }
 
 
 
-    // This check the trainer info is compolete or no
-    useEffect(() => {
+    const isAllInfoComplete = useMemo(function () {
+        // This check the trainer info is compolete or no
         if (
             (getPhone == 0 || new String(getPhone).match(regexPhone))
             &&
             getFirstName &&
             getLastName &&
             getSubscriptionName &&
-            getSessionsCount &&
+            state.sessionsCount &&
             getPrice &&
-            getSubscriptionStart && getSubscriptionEnd
+            state.subscriptionStart && state.subscriptionEnd
         ) {
-            setIsAllInfoComplete(true);
+            return true
         } else {
-            setIsAllInfoComplete(false);
+            return false;
         }
-    }, [
-        getFirstName,
-        getLastName,
-        getSubscriptionName,
-        getSessionsCount,
-        getPrice,
-        getPhone,
-        getSubscriptionStart, getSubscriptionEnd
+    }, [getFirstName, getLastName, getSubscriptionName, state.sessionsCount,
+        getPrice, getPhone, state.subscriptionStart, state.subscriptionEnd
     ]);
+
+    const statusTheSubscription = useMemo(() => {
+        if (
+            todayDate.getTime() >= new Date(state.subscriptionStart as any).getTime()
+            &&
+            todayDate.getTime() <= new Date(state.subscriptionEnd as any).getTime()
+        ) {
+            return stateIsActive;
+        }
+        else if (
+            todayDate.getTime() < new Date(state.subscriptionStart as any).getTime()
+        ) {
+            return stateIsPending;
+        }
+        else {
+            return stateIsFinished;
+        }
+    }, [state.subscriptionStart, state.subscriptionEnd, todayDate]);
+
 
 
 
@@ -166,11 +148,16 @@ export default function Add_Trainer(
         titel="إضافة متدرب"
         discription="الان, يمكنك إضافة متدرب جديد"
         isSave={isAllInfoComplete}
-        clickOnCancel={() => onIsShowAddTrainer(false)}
+        clickOnCancel={() => {
+            onIsShowAddTrainer(false)
+            dispatch(removeSubscriptionStart());
+            dispatch(removeSubscriptionEnd());
+            dispatch(removeAllSessions());
+        }}
         clickOnSaveBtn={saveTrainerInfo}
     >
         {/* Trainer info */}
-        <div className="mb-5">
+        <div className="mb-5" >
             <div className="flex items-center gap-2 text-(--thirdColor) font-bold mb-2">
                 <UserRound size={23} />
                 <p className="leading-none pt-0.5">المعلومات الشخصيه</p>
@@ -193,16 +180,11 @@ export default function Add_Trainer(
 
             <Subscription_Info_Form
                 onGetSubscriptionName={setGetSubscriptionName}
-                onGetSessionsCount={setGetSessionsCount}
                 onGetPrice={setGetPrice}
                 onGetActiveSomeSessions={setGetActiveSomeSessions}
             />
         </div>
 
-        {/* Date info */}
-        <Date_Info_Form
-            onGetSubscriptionStart={setGetSubscriptionStart}
-            onGetSubscriptionEnd={setGetSubscriptionEnd}
-        />
-    </Popup_Form>
+        <Date_Info_Form />
+    </Popup_Form >
 }

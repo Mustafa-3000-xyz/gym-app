@@ -1,7 +1,7 @@
 import { dayDetails } from "@/Pages/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Database from "@tauri-apps/plugin-sql";
-import { updatePropertyInDaysDetails_Type } from "../types";
+import { updatePropertyInDaysDetails_Type } from "../../types";
 // ======================================= //
 const database = await Database.load("sqlite:app-gym-db.db");
 

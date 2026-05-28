@@ -3,13 +3,14 @@ import Swal from "sweetalert2";
 import { alertType, normalAlert_Type } from "./types";
 import { stateIsActive, stateIsPending } from "./constants";
 import store from "@/Rtk/store";
-import { updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
+import { updatePropertyInRowInAccountsTable, updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 // ========================================================== //
-/*
-    This function his jop is take trainer and return style subscription state,
-    please look in [Search_Result] file or [All_Trainers] file
-*/
 export function styleForSubscriptionState(trainer: trainer) {
+    /*
+        This function his jop is take trainer and return style subscription state,
+        please look in [Search_Result] file or [All_Trainers] file
+    */
+
     const styleObj = {
         style: "",
         title: ""
@@ -52,7 +53,6 @@ export function alert({
     titleBeforeClickOnOk,
     titleAfterClickOnOk,
     funRunWhenClickOnOk,
-    showMessageAfterClickOnOk = true
 }: alertType): void {
     Swal.fire({
         title: "!! تحذير",
@@ -65,7 +65,7 @@ export function alert({
         cancelButtonText: "إلغاء",
     }).then((result) => {
         if (result.isConfirmed) {
-            if (showMessageAfterClickOnOk) {
+            if (titleAfterClickOnOk) {
                 normalAlert({
                     title: "تمت العمليه",
                     text: titleAfterClickOnOk as string,
@@ -96,7 +96,6 @@ export function logOutFromOldAccount(oldAccountId: number) {
         id: oldAccountId,
         values: {
             loginDate: "",
-            logOutDate: new Date().toISOString(),
             workingHours: Math.trunc(totalForHours)
         }
     }) as any);
@@ -112,4 +111,36 @@ export function theTodayDate(
     }
 
     return todayDate;
+}
+
+export function incrementOrDecrementForTotalSessionsInAccount(
+    incrementOrDecrement: "increment" | "decrement",
+    accountId: number,
+    sessionsCount: number
+) {
+    const accountes = store.getState().accountes as accounte[];
+    const getAccount = accountes.find(ele => ele.id == accountId);
+
+
+    switch (incrementOrDecrement) {
+        case "increment":
+            const result = Math.trunc(Math.abs(getAccount?.totalActiveSubscriptions as any)) + sessionsCount;
+
+            store.dispatch(updatePropertyInRowInAccountsTable({
+                id: accountId,
+                column: "totalActiveSubscriptions",
+                value: result
+            }) as any);
+            break;
+
+        case "decrement":
+            const result2 = Math.trunc(Math.abs(getAccount?.totalActiveSubscriptions as any)) - sessionsCount;
+
+            store.dispatch(updatePropertyInRowInAccountsTable({
+                id: accountId,
+                column: "totalActiveSubscriptions",
+                value: result2
+            }) as any);
+            break;
+    }
 }

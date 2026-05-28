@@ -23,9 +23,8 @@ export interface accounte {
     profileImg: string,
     coverImg: string,
     loginDate: Date | string,
-    logOutDate: Date | string,
     workingHours: number,
-    totalForActiveSessions: number,
+    totalActiveSubscriptions: number,
     permissions?: string[] | "fullAccess",
 }
 
@@ -48,16 +47,16 @@ export interface dayDetails {
     dateId: number,
     accountId: number,
     trainers: number[],
-} 
+}
 
 export interface activeSessionsList_Type {
-    accountId: number | "removed",
-    sessions: number[]
+    accountId: number,
+    sessionNumber: number,
+    activationDate: Date | string,
 }
 
 export interface Subscription_Info_Form_Props {
     onGetSubscriptionName: (x: string) => void,
-    onGetSessionsCount: (x: number) => void,
     onGetPrice: (x: number) => void,
     onGetActiveSomeSessions?: (x: number) => void
 }
@@ -141,7 +140,6 @@ export interface Permissions_Props {
 
 export interface Subscriptions_Menu_Props {
     onGetSubscriptionName: (x: string) => void,
-    onGetSessionsCount: (x: number) => void,
     onGetPrice: (x: number) => void
 }
 
@@ -149,4 +147,11 @@ export interface Cover_Img_Props {
     accountId: number,
     coverImgSrc: string,
     isChangeCoverImg: boolean
+}
+
+export interface sessionListForRead {
+    account: accounte | "removed",
+    session: number,
+    date?: null | any,
+    isActive: boolean
 }

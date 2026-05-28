@@ -10,7 +10,7 @@ import { Navigation } from "swiper/modules";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Btn_Slide from "./Btn-slide/Btn_Slide";
 import { useDispatch, useSelector } from "react-redux";
-import { addTrainerDetails } from "@/Rtk/Slices/trainerDetailsSlice";
+import { addTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { store_Type } from "@/Rtk/types";
 // ========================================================== //
 export default function Table_For_Trainers(

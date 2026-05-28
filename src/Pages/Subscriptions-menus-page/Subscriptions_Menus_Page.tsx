@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
 import { useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
-import { addRowInSubscriptionsMenusTable } from "@/Rtk/Slices/subscriptionsMenusSlice";
+import { addRowInSubscriptionsMenusTable } from "@/Rtk/Slices/Db-slices/subscriptionsMenusSlice";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
 import { normalAlert } from "@/Lib/functions";

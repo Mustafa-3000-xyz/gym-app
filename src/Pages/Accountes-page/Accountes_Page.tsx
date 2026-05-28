@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
-import { addRowInAccountsTable } from "@/Rtk/Slices/accountsSlice";
+import { addRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { accounte } from "../types";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
 import Permissions from "@/Global-components/Permissions/Permissions";
@@ -53,9 +53,8 @@ export default function Accountes_Page() {
             profileImg: "",
             coverImg: "",
             loginDate: "",
-            logOutDate: "",
             workingHours: 0,
-            totalForActiveSessions: 0,
+            totalActiveSubscriptions: 0,
             permissions: JSON.stringify(permissionsList),
         } as accounte;
 
@@ -101,7 +100,7 @@ export default function Accountes_Page() {
                 title="مجموع الحصص المفعله"
                 styleIcon="bg-neutral-200 text-neutral-500"
                 total={
-                    Math.trunc(state.accountes.reduce((sum, ele) => sum + Number(ele.totalForActiveSessions), 0))
+                    Math.trunc(state.accountes.reduce((sum, ele) => sum + Number(ele.totalActiveSubscriptions), 0))
                 }
             />
         </div>

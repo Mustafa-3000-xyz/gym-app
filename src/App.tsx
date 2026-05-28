@@ -13,20 +13,21 @@ import Profile_Page from "./Pages/Profile-page/Profile_Page";
 import { logOutFromOldAccount, theTodayDate } from "./Lib/functions";
 import Subscriptions_Menu_Page from "./Pages/Subscriptions-menus-page/Subscriptions_Menus_Page";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllRowsInTrainersTable, updatePropertyInRowInTrainersTable } from "./Rtk/Slices/trainersSlice";
+import { getAllRowsInTrainersTable, updatePropertyInRowInTrainersTable } from "./Rtk/Slices/Db-slices/trainersSlice";
 import { store_Type } from "./Rtk/types";
-import { getAllRowsInAccountsTable } from "./Rtk/Slices/accountsSlice";
-import { getAllRowsInSubscriptionsMenusTable } from "./Rtk/Slices/subscriptionsMenusSlice";
-import { removeTrainerDetails } from "./Rtk/Slices/trainerDetailsSlice";
-import { getLogInInfo } from "./Rtk/Slices/logInInfoSlice";
+import { getAllRowsInAccountsTable } from "./Rtk/Slices/Db-slices/accountsSlice";
+import { getAllRowsInSubscriptionsMenusTable } from "./Rtk/Slices/Db-slices/subscriptionsMenusSlice";
+import { removeTrainerDetails } from "./Rtk/Slices/UI-slices/trainerDetailsSlice";
+import { changeLogInInfo, getLogInInfo } from "./Rtk/Slices/UI-slices/logInInfoSlice";
 import { accountsTable, daysDetailsTable, daysTable, subscriptionsMenusTable, trainerTable } from "./Lib/tables";
-import { getAllRowsInDaysTable } from "./Rtk/Slices/daysSlice";
-import { getAllRowsInDaysDetailsTable } from "./Rtk/Slices/daysDetailsSlice";
+import { getAllRowsInDaysTable } from "./Rtk/Slices/Db-slices/daysSlice";
+import { getAllRowsInDaysDetailsTable } from "./Rtk/Slices/Db-slices/daysDetailsSlice";
 // ========================================================== //
 function App() {
   const dispatch = useDispatch();
   const state = useSelector(state => state as store_Type);
   const [todayDate, setTodayDate] = useState<Date>(theTodayDate({ startingIn12Houre: false }));
+
 
 
 
@@ -42,22 +43,14 @@ function App() {
     const { getCurrentWindow } = await import('@tauri-apps/api/window');
     const appWindow = getCurrentWindow();
 
-    await appWindow.listen('tauri://close-requested', async () => {
+
+    await appWindow.onCloseRequested(() => {
       logOutFromOldAccount(Number(state.logInInfo?.id));
-
-      localStorage.setItem("theAccount", JSON.stringify(null));
-
-      // I using setTimeout because i want the logOutFromOldAccount function work
-      setTimeout(async function () {
-        await appWindow.destroy();
-      }, 500);
     });
   }
 
-  // Implement the case number 3 for finished subscription
   function checkSubscriptionsStateForTrainers() {
     if (state.trainers.length == 0 || state.trainers.includes(undefined as any)) return;
-
 
     state.trainers.forEach(function (ele) {
       const expirationDate = new Date(ele.subscriptionEnd);
@@ -67,19 +60,7 @@ function App() {
       */
       expirationDate.setHours(23, 59, 59, 999);
 
-
       if (
-        todayDate.getTime() > expirationDate.getTime()
-        &&
-        (ele.subscriptionState == stateIsActive || ele.subscriptionState == stateIsPending)
-      ) {
-        dispatch(updatePropertyInRowInTrainersTable({
-          trainerId: ele.trainerId as any,
-          column: "subscriptionState",
-          value: stateIsFinished
-        }) as any);
-      }
-      else if (
         ele.subscriptionState == stateIsPending
         &&
         todayDate.getTime() >= new Date(ele.subscriptionStart as any).getTime()
@@ -90,6 +71,18 @@ function App() {
           value: stateIsActive
         }) as any);
       }
+
+      else if (
+        todayDate.getTime() > expirationDate.getTime()
+        &&
+        (ele.subscriptionState == stateIsActive || ele.subscriptionState == stateIsPending)
+      ) {
+        dispatch(updatePropertyInRowInTrainersTable({
+          trainerId: ele.trainerId as any,
+          column: "subscriptionState",
+          value: stateIsFinished
+        }) as any);
+      }
     });
   }
 
@@ -98,6 +91,7 @@ function App() {
 
   useEffect(function () {
     runTables();
+    dispatch(changeLogInInfo(null));
 
     dispatch(getLogInInfo());
     dispatch(getAllRowsInTrainersTable() as any);
@@ -109,7 +103,6 @@ function App() {
 
   useEffect(function () {
     logOutWhenCloseApp();
-    localStorage.setItem("theAccount", JSON.stringify(state.logInInfo));
   }, [state.logInInfo]);
 
   useEffect(() => {
@@ -121,10 +114,11 @@ function App() {
     tomorrow.setHours(0, 0, 0, 0);
 
 
+
     const timeUntilMidnight = tomorrow.getTime() - todayDate.getTime();
     const timer = setTimeout(() => {
-      dispatch(removeTrainerDetails());
       setTodayDate(tomorrow);
+      dispatch(removeTrainerDetails());
     }, timeUntilMidnight);
 
 

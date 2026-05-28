@@ -1,7 +1,7 @@
 import Toggle_Btn from "@/Global-components/Toggle-btn/Toggle_Btn";
 import { alert } from "@/Lib/functions";
 import { subscriptionsMenus } from "@/Pages/types";
-import { deleteRowInSubscriptionsMenusTableById, updatePropertyInRowInSubscriptionsMenusTable, updateSomePropertiesInRowInSubscriptionsMenusTable } from "@/Rtk/Slices/subscriptionsMenusSlice";
+import { deleteRowInSubscriptionsMenusTableById, updatePropertyInRowInSubscriptionsMenusTable, updateSomePropertiesInRowInSubscriptionsMenusTable } from "@/Rtk/Slices/Db-slices/subscriptionsMenusSlice";
 import { ArrowDownToLine, Pen, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
@@ -90,7 +90,7 @@ export default function Subscription_Menu_Card(
 
 
 
-    return <div className="w-[420px] p-10 rounded-lg select-none bg-slate-100 shadow-md">
+    return <div className="w-105 p-10 rounded-lg select-none bg-slate-100 shadow-md">
         <div className="flex justify-center text-3xl mb-10">
             {isEditing ?
                 <input

@@ -5,7 +5,7 @@ import { Search_Result_Props, trainer } from "@/Pages/types";
 import Animation from "@/Global-components/Animation/Animation";
 import { useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { addTrainerDetails } from "@/Rtk/Slices/trainerDetailsSlice";
+import { addTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
 // ========================================================== //
 export default function Search_Result(
     {

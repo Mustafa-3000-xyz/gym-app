@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { accounte } from "@/Pages/types";
-import { updatePropertyInAccount_Type, updateSomePropertiesInAccount_Type } from "../types";
+import { updatePropertyInAccount_Type, updateSomePropertiesInAccount_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
 const database = await Database.load("sqlite:app-gym-db.db");
@@ -19,8 +19,8 @@ export const addRowInAccountsTable = createAsyncThunk(
         const query = `
             INSERT INTO accounts (
                 name, age, password, type, profileImg, coverImg, 
-                loginDate, logOutDate, workingHours, totalForActiveSessions, permissions
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                loginDate, workingHours, totalActiveSubscriptions, permissions
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const values = [
@@ -31,9 +31,8 @@ export const addRowInAccountsTable = createAsyncThunk(
             data.profileImg,
             data.coverImg,
             data.loginDate,
-            data.logOutDate,
             data.workingHours,
-            data.totalForActiveSessions,
+            data.totalActiveSubscriptions,
             data.permissions
         ];
 
