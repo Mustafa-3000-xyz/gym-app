@@ -21,10 +21,10 @@ export default function Btn_Subscription_Renewal(
 
         alert({
             titleBeforeClickOnOk: "هل تريد تجديد الاشتراك ؟؟",
-            titleAfterClickOnOk: `تم تجديد الاشتراك للمتدرب رقم : ${trainer?.trainerId}`,
+            titleAfterClickOnOk: `تم تجديد الاشتراك للمتدرب رقم : ${trainer?.id}`,
             funRunWhenClickOnOk: function () {
                 dispatch(updateSomePropertiesInRowInTrainersTable({
-                    trainerId: trainer?.trainerId as any,
+                    id: trainer?.id as any,
                     values: {
                         ...trainer,
                         subscriptionState: stateIsActive,

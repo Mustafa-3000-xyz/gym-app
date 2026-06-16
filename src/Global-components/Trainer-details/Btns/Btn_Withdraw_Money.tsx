@@ -9,7 +9,7 @@ import { removeSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSli
 import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 // ========================================================== //
 export default function Btn_Withdraw_Money(
-    { trainerId }: { trainerId: number }
+    { id }: { id: number }
 ) {
     const dispatch = useDispatch();
 
@@ -18,10 +18,10 @@ export default function Btn_Withdraw_Money(
     function finishedSubscriptionUsingBtn() {
         alert({
             titleBeforeClickOnOk: "هل تريد بالفعل سحب اشتراك ذلك المتدرب ؟؟",
-            titleAfterClickOnOk: `تم سحب الاشتراك للمتدرب رقم : ${trainerId}`,
+            titleAfterClickOnOk: `تم سحب الاشتراك للمتدرب رقم : ${id}`,
             funRunWhenClickOnOk: function () {
                 dispatch(updateSomePropertiesInRowInTrainersTable({
-                    trainerId: trainerId as any,
+                    id: id as any,
                     values: {
                         activeSessionsList: JSON.stringify([]),
                         subscriptionState: stateIsFinished,

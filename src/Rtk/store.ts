@@ -2,8 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import trainersSlice from "../Rtk/Slices/Db-slices/trainersSlice";
 import accountsSlice from "../Rtk/Slices/Db-slices/accountsSlice";
 import subscriptionsMenuSlice from "./Slices/Db-slices/subscriptionsMenusSlice";
-import daysSlice from "./Slices/Db-slices/daysSlice";
-import daysDetailsSlice from "./Slices/Db-slices/daysDetailsSlice";
+import attendanceSlice from "./Slices/Db-slices/attendanceSlice";
 import trainerDetailsSlice from "./Slices/UI-slices/trainerDetailsSlice";
 import logInInfoSlice from "./Slices/UI-slices/logInInfoSlice";
 import sessionsCountSlice from "./Slices/UI-slices/sessionsCountSlice";
@@ -16,8 +15,7 @@ const store = configureStore({
         trainers: trainersSlice,
         accountes: accountsSlice,
         subscriptionsMenus: subscriptionsMenuSlice,
-        days: daysSlice,
-        daysDetails: daysDetailsSlice,
+        attendance: attendanceSlice,
 
         // Ui slices
         trainerDetails: trainerDetailsSlice,

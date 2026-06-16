@@ -63,10 +63,10 @@ export default function Trainer_Details() {
 
         alert({
             titleBeforeClickOnOk: "هل انت متأكد من تعديل البيانات , في حالة تعديل عدد الحصص سوف يتم اعاده الحصص من الاول",
-            titleAfterClickOnOk: `تم تحديث المتدرب رقم : ${state.trainerDetails?.trainerId}`,
+            titleAfterClickOnOk: `تم تحديث المتدرب رقم : ${state.trainerDetails?.id}`,
             funRunWhenClickOnOk: function () {
                 dispatch(updateSomePropertiesInRowInTrainersTable({
-                    trainerId: state.trainerDetails?.trainerId as any,
+                    id: state.trainerDetails?.id as any,
                     values: {
                         ...updateTheTrainer,
                         subscriptionState: statusTheSubscription,
@@ -285,7 +285,7 @@ export default function Trainer_Details() {
             <div className="flex gap-2">
                 {
                     subscriptionState != stateIsFinished ?
-                        <Btn_Withdraw_Money trainerId={state.trainerDetails.trainerId as any} />
+                        <Btn_Withdraw_Money id={state.trainerDetails.id as any} />
                         :
                         <Btn_Subscription_Renewal
                             trainer={updateTheTrainer as any}
@@ -293,7 +293,7 @@ export default function Trainer_Details() {
                         />
                 }
 
-                <Btn_Delete_Trainer trainerId={state.trainerDetails.trainerId as any} />
+                <Btn_Delete_Trainer id={state.trainerDetails.id as any} />
             </div>
         </div>
     </Popup_Form >

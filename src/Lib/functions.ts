@@ -146,11 +146,11 @@ export function incrementOrDecrementForTotalSessionsInAccount(
     }
 }
 
-export async function getAllDetailsForMainDay(dayId: number) {
+export async function getAllAttendanceInSpecificDate(date: Date | string) {
     const database = await Database.load("sqlite:app-gym-db.db");
 
     return await database.select(
-        "SELECT * FROM daysDetails WHERE dayId = ?",
-        [dayId]
+        "SELECT * FROM attendance WHERE date = ?",
+        [date]
     );
 }

@@ -1,5 +1,5 @@
 export interface trainer {
-    trainerId?: number;
+    id?: number;
     subscriptionState: string;
     activeSessionsList: activeSessionsList_Type[] | [];
     firstName: string;
@@ -36,14 +36,9 @@ export interface subscriptionsMenus {
     isActive: "true" | "false"
 }
 
-export interface day {
+export interface attendanceDetails {
     id?: number,
-    date: string
-}
-
-export interface dayDetails {
-    id?: number,
-    dayId: number,
+    date: Date | string,
     accountId: number,
     trainers: number[],
 }
@@ -114,7 +109,7 @@ export interface Btn_Subscription_Renewal_Props {
 }
 
 export interface Btn_Finished_Subscription_Props {
-    trainerId: string | number,
+    id: string | number,
     onGetSubscriptionState: (x: string) => void,
 }
 
@@ -156,14 +151,15 @@ export interface box_Info_In_Trainers_Page {
 
 export interface Filter_For_Attendance_Props {
     filterType: number | "allTrainers",
-    dayDetails: dayDetails[],
+    dayDetails: attendanceDetails[],
     onGetTrainers: (x: trainer[]) => void
     onChangeFilterType: (x: number | "allTrainers") => void,
 }
 
 export interface Date_Box_Props {
-    onGetDayDetails: (x: dayDetails[]) => void,
-    onChangeFilterType: (x: number | "allTrainers") => void,
+    onGetDatesTotal: (x: number) => void,
+    onGetDayDetails: (x: attendanceDetails[]) => void,
+    onChangeFilterType: (x: number | "allTrainers") => void
 }
 
 export interface Filter_For_Trainers_Props {

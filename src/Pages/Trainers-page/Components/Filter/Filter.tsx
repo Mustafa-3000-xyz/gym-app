@@ -79,10 +79,10 @@ export default function Filter(
         let arr: trainer[] = [];
         const resultArrange = [...state.trainers as any].sort(function (a, b) {
             if (filterObj.arrange == fromOldToNew) {
-                return Number(a.trainerId) - Number(b.trainerId);
+                return Number(a.id) - Number(b.id);
             }
             else {
-                return Number(b.trainerId) - Number(a.trainerId);
+                return Number(b.id) - Number(a.id);
             }
         });
 

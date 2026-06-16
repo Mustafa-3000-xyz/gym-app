@@ -1,4 +1,4 @@
-import { accounte, activeSessionsList_Type, day, dayDetails, subscriptionsMenus, trainer } from "@/Pages/types";
+import { accounte, activeSessionsList_Type, attendanceDetails, subscriptionsMenus, trainer } from "@/Pages/types";
 // ========================================================== //
 type updateOneColumnInTrainer =
     | "subscriptionState"
@@ -32,29 +32,14 @@ type updateOneColumnInSubscriptionsMenu =
     | "isActive"
 
 
-
-export interface store_Type {
-    trainers?: trainer[],
-    accountes?: accounte[],
-    subscriptionsMenus?: subscriptionsMenus[],
-    days?: day[],
-    daysDetails?: dayDetails[]
-
-    trainerDetails?: trainer | null,
-    logInInfo?: logInInfoSlice_Type | null,
-    sessionsCount?: number,
-    subscriptionStart?: string | null,
-    subscriptionEnd?: string | null
-}
-
 export interface updatePropertyInTrainer_Type {
-    trainerId: string | number,
+    id: string | number,
     column: updateOneColumnInTrainer,
     value: any
 }
 
 export interface updateSomePropertiesInTrainer_Type {
-    trainerId: number,
+    id: number,
     values: {
         firstName?: string,
         lastName?: string,
@@ -71,6 +56,7 @@ export interface updateSomePropertiesInTrainer_Type {
         loginDate?: Date | string,
     }
 }
+
 
 export interface updatePropertyInAccount_Type {
     id: string | number,
@@ -110,13 +96,30 @@ export interface updateSomePropertiesInSubscriptionsMenu_Type {
     }
 }
 
-export interface logInInfoSlice_Type{
-    id: number,
-    type: "manager" | "captain",
-}
-
-export interface updatePropertyInDaysDetails_Type{
+export interface updatePropertyInAttendance_Type {
     id: number,
     column: "trainers",
     value: number[]
+}
+
+
+
+export interface store_Type {
+    // Db
+    trainers?: trainer[],
+    accountes?: accounte[],
+    subscriptionsMenus?: subscriptionsMenus[],
+    attendance: attendanceDetails[],
+
+    // Ui
+    trainerDetails?: trainer | null,
+    logInInfo?: logInInfoSlice_Type | null,
+    sessionsCount?: number,
+    subscriptionStart?: string | null,
+    subscriptionEnd?: string | null
+}
+
+export interface logInInfoSlice_Type {
+    id: number,
+    type: "manager" | "captain",
 }

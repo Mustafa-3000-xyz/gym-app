@@ -1,6 +1,6 @@
 import { BicepsFlexed, ShieldCheck, ShieldOff, ShieldQuestionMark, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { box_Info_In_Trainers_Page, dayDetails, trainer } from "@/Pages/types";
+import { attendanceDetails, box_Info_In_Trainers_Page, trainer } from "@/Pages/types";
 import Add_Trainer from "./Components/Add-trainer/Add_Trainer";
 import { shallowEqual, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
@@ -9,15 +9,13 @@ import { allSubscriptions, stateIsActive, stateIsFinished, stateIsPending } from
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import Table_For_Trainers from "@/Global-components/Table-for-trainers/Table_For_Trainers";
 import Search_Box_For_Trainers from "@/Global-components/Search-box-for-trainers/Search_Box_For_Trainers";
-import { getAllDetailsForMainDay, theTodayDate } from "@/Lib/functions";
+import { getAllAttendanceInSpecificDate, theTodayDate } from "@/Lib/functions";
 import Filter from "./Components/Filter/Filter";
-import Trainer_Details from "./Components/Trainer-details/Trainer_Details";
 // ========================================================== //
 export default function Trainers_Page() {
     const state = useSelector(function (state: store_Type) {
         return {
-            days: state.days,
-            daysDetails: state.daysDetails,
+            attendance: state.attendance,
             trainers: state.trainers,
             trainerDetails: state.trainerDetails
         }
@@ -41,13 +39,11 @@ export default function Trainers_Page() {
 
     // I want when open trainers page, get attendance total
     useEffect(function () {
-        const getMainDay = state.days?.find(ele => new Date(ele.date).getTime() == theTodayDate({ startingIn12Houre: true }).getTime());
-
-        if (!getMainDay) return;
-
         async function x() {
-            const dayDetails = await getAllDetailsForMainDay(Number(getMainDay?.id)) as dayDetails[];
+            const dayDetails = await getAllAttendanceInSpecificDate(theTodayDate({ startingIn12Houre: true })) as attendanceDetails[];
             let total = 0;
+
+            if (!dayDetails) return 0;
 
             dayDetails.forEach(function (row) {
                 const convertToArray = JSON.parse(row.trainers as any) as number[];
@@ -57,7 +53,7 @@ export default function Trainers_Page() {
             setAttendanceTodayTotal(total);
         }
         x();
-    }, [state.daysDetails, state.days]);
+    }, [state.attendance]);
 
 
     const [
@@ -170,13 +166,6 @@ export default function Trainers_Page() {
         {
             isShowAddTrainer ?
                 <Add_Trainer onIsShowAddTrainer={setIsShowAddTrainer} />
-                :
-                null
-        }
-
-        {
-            state.trainerDetails ?
-                <Trainer_Details />
                 :
                 null
         }

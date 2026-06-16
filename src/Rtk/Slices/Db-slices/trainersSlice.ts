@@ -42,7 +42,7 @@ export const addRowInTrainersTable = createAsyncThunk(
         const createRow = await database.execute(query, values);
 
         return {
-            trainerId: createRow.lastInsertId,
+            id: createRow.lastInsertId,
             ...data
         };
     }
@@ -51,7 +51,7 @@ export const addRowInTrainersTable = createAsyncThunk(
 export const deleteRowInTrainersTableById = createAsyncThunk(
     "trainersSlice/deleteRowInTrainersTableById",
     async function (id: number | string) {
-        const query = "DELETE FROM trainers WHERE trainerId = ?";
+        const query = "DELETE FROM trainers WHERE id = ?";
 
         await database.execute(query, [id]);
         return id;
@@ -61,17 +61,17 @@ export const deleteRowInTrainersTableById = createAsyncThunk(
 export const updatePropertyInRowInTrainersTable = createAsyncThunk(
     "trainersSlice/updatePropertyInRowInTrainersTable",
     async function ({
-        trainerId,
+        id,
         column,
         value
     }: updatePropertyInTrainer_Type) {
-        const query = `UPDATE trainers SET ${column} = ? WHERE trainerId = ?`;
+        const query = `UPDATE trainers SET ${column} = ? WHERE id = ?`;
 
-        await database.execute(query, [value, trainerId]);
+        await database.execute(query, [value, id]);
 
         const getTrainerAfterUpdate = await database.select(
-            `SELECT * FROM trainers WHERE trainerId = ?`,
-            [trainerId]
+            `SELECT * FROM trainers WHERE id = ?`,
+            [id]
         );
 
 
@@ -82,7 +82,7 @@ export const updatePropertyInRowInTrainersTable = createAsyncThunk(
 export const updateSomePropertiesInRowInTrainersTable = createAsyncThunk(
     "trainersSlice/updateSomePropertiesInRowInTrainersTable",
     async function (
-        { trainerId, values }: updateSomePropertiesInTrainer_Type
+        { id, values }: updateSomePropertiesInTrainer_Type
     ) {
         const keys = Object.keys(values);
 
@@ -93,13 +93,13 @@ export const updateSomePropertiesInRowInTrainersTable = createAsyncThunk(
         const result = keys.map(key => (values as any)[key]);
 
         await database.execute(
-            `UPDATE trainers SET ${setClause} WHERE trainerId = ?`,
-            [...result, trainerId]
+            `UPDATE trainers SET ${setClause} WHERE id = ?`,
+            [...result, id]
         );
 
         const updatedTrainer = await database.select(
-            `SELECT * FROM trainers WHERE trainerId = ?`,
-            [trainerId]
+            `SELECT * FROM trainers WHERE id = ?`,
+            [id]
         );
 
         return (updatedTrainer as trainer[])[0];
@@ -122,16 +122,16 @@ const trainersSlice = createSlice({
         });
 
         builde.addCase(deleteRowInTrainersTableById.fulfilled as any, (state: trainer[], action): any => {
-            return state.filter(ele => ele.trainerId != action.payload);
+            return state.filter(ele => ele.id != action.payload);
         });
 
         builde.addCase(updatePropertyInRowInTrainersTable.fulfilled as any, (state: trainer[], action): any => {
-            const result = state.filter(ele => ele.trainerId != action.payload.trainerId);
+            const result = state.filter(ele => ele.id != action.payload.id);
             return [...result, action.payload];
         });
 
         builde.addCase(updateSomePropertiesInRowInTrainersTable.fulfilled as any, (state: trainer[], action): any => {
-            const result = state.filter(ele => ele.trainerId != action.payload.trainerId);
+            const result = state.filter(ele => ele.id != action.payload.id);
             return [...result, action.payload];
         });
     }

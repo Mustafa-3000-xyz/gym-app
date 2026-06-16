@@ -75,7 +75,7 @@ export default function Search_Result(
                 :
                 arrayContainsTrainers.map(ele => (
                     <button
-                        key={ele.trainerId}
+                        key={ele.id}
                         onClick={() => showTrainer(ele)}
                         className="flex justify-between items-center w-full bg-slate-200 p-3 rounded-md cursor-pointer"
                     >
@@ -85,7 +85,7 @@ export default function Search_Result(
                                 {ele.firstName} {ele.lastName}
                             </h3>
                             <p className='underline'>
-                                {ele.trainerId}
+                                {ele.id}
                             </p>
                         </div>
 

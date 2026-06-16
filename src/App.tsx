@@ -19,15 +19,17 @@ import { getAllRowsInAccountsTable } from "./Rtk/Slices/Db-slices/accountsSlice"
 import { getAllRowsInSubscriptionsMenusTable } from "./Rtk/Slices/Db-slices/subscriptionsMenusSlice";
 import { removeTrainerDetails } from "./Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { changeLogInInfo, getLogInInfo } from "./Rtk/Slices/UI-slices/logInInfoSlice";
-import { accountsTable, daysDetailsTable, daysTable, subscriptionsMenusTable, trainerTable } from "./Lib/tables";
-import { getAllRowsInDaysTable } from "./Rtk/Slices/Db-slices/daysSlice";
+import { accountsTable, attendanceTable, subscriptionsMenusTable, trainerTable } from "./Lib/tables";
+import { getAllRowsInAttendanceTable } from "./Rtk/Slices/Db-slices/attendanceSlice";
+import Trainer_Details from "./Global-components/Trainer-details/Trainer_Details";
 // ========================================================== //
 function App() {
   const dispatch = useDispatch();
-  const state = useSelector(function(state: store_Type){
+  const state = useSelector(function (state: store_Type) {
     return {
       logInInfo: state.logInInfo,
       trainers: state.trainers,
+      trainerDetails: state.trainerDetails,
     }
   }, shallowEqual);
 
@@ -40,9 +42,8 @@ function App() {
   async function runTables() {
     await trainerTable()
     await accountsTable();
+    await attendanceTable();
     await subscriptionsMenusTable();
-    await daysTable();
-    await daysDetailsTable();
   }
 
   async function logOutWhenCloseApp() {
@@ -72,7 +73,7 @@ function App() {
         todayDate.getTime() >= new Date(ele.subscriptionStart as any).getTime()
       ) {
         dispatch(updatePropertyInRowInTrainersTable({
-          trainerId: ele.trainerId as any,
+          id: ele.id as any,
           column: "subscriptionState",
           value: stateIsActive
         }) as any);
@@ -84,7 +85,7 @@ function App() {
         (ele.subscriptionState == stateIsActive || ele.subscriptionState == stateIsPending)
       ) {
         dispatch(updatePropertyInRowInTrainersTable({
-          trainerId: ele.trainerId as any,
+          id: ele.id as any,
           column: "subscriptionState",
           value: stateIsFinished
         }) as any);
@@ -103,7 +104,7 @@ function App() {
     dispatch(getAllRowsInTrainersTable() as any);
     dispatch(getAllRowsInAccountsTable() as any);
     dispatch(getAllRowsInSubscriptionsMenusTable() as any);
-    dispatch(getAllRowsInDaysTable() as any);
+    dispatch(getAllRowsInAttendanceTable() as any);
   }, []);
 
   useEffect(function () {
@@ -154,6 +155,13 @@ function App() {
           <Route path={expalinAppPagePath} element={<Explain_App_Page />} />
         </Routes>
       </div>
+
+      {
+        state.trainerDetails ?
+          <Trainer_Details />
+          :
+          null
+      }
     </main>
     :
     <Authentication_Page />

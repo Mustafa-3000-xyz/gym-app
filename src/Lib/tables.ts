@@ -3,11 +3,12 @@ import Database from "@tauri-apps/plugin-sql";
 const db = await Database.load("sqlite:app-gym-db.db");
 
 
+
 export async function trainerTable() {
     try {
         await db.execute(`
             CREATE TABLE IF NOT EXISTS trainers (
-                trainerId INTEGER PRIMARY KEY AUTOINCREMENT, 
+                id INTEGER PRIMARY KEY AUTOINCREMENT, 
                 subscriptionState TEXT,
                 activeSessionsList JSON,
                 firstName TEXT,
@@ -68,31 +69,14 @@ export async function subscriptionsMenusTable() {
     }
 }
 
-export async function daysTable() {
+export async function attendanceTable() {
     try {
-        db.execute(`
-            CREATE TABLE IF NOT EXISTS days(
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                date TEXT
-            )
-        `);
-    }
-    catch (err) {
-        console.log(err);
-        throw err;
-    }
-}
-
-export async function daysDetailsTable() {
-    try {
-        await db.execute("PRAGMA foreign_keys = ON;");
         await db.execute(`
-            CREATE TABLE IF NOT EXISTS daysDetails (
+            CREATE TABLE IF NOT EXISTS attendance (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                dayId INTEGER,
+                date INTEGER,
                 accountId INTEGER,
-                trainers JSON,
-                FOREIGN KEY (dayId) REFERENCES days (id) ON DELETE CASCADE
+                trainers JSON
             )
         `);
     } catch (err) {

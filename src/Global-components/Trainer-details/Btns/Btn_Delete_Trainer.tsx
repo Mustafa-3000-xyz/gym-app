@@ -1,4 +1,5 @@
 import { alert } from '@/Lib/functions';
+import { getAllRowsInAttendanceTable } from '@/Rtk/Slices/Db-slices/attendanceSlice';
 import { deleteRowInTrainersTableById } from '@/Rtk/Slices/Db-slices/trainersSlice';
 import { removeAllSessions } from '@/Rtk/Slices/UI-slices/sessionsCountSlice';
 import { removeSubscriptionEnd } from '@/Rtk/Slices/UI-slices/subscriptionEndSlice';
@@ -9,7 +10,7 @@ import { Trash } from 'lucide-react'
 import { useDispatch } from 'react-redux';
 // ========================================================== //
 export default function Btn_Delete_Trainer(
-    { trainerId }: { trainerId: number }
+    { id }: { id: number }
 ) {
     const dispatch = useDispatch();
 
@@ -20,34 +21,50 @@ export default function Btn_Delete_Trainer(
             titleBeforeClickOnOk: "هل تريد حقا حذف ذلك المتدرب ؟",
             titleAfterClickOnOk: "ذلك المتدرب لم يعد موجود في الجدول",
             funRunWhenClickOnOk: function () {
-                dispatch(deleteRowInTrainersTableById(trainerId as any) as any);
+                dispatch(deleteRowInTrainersTableById(id as any) as any);
                 dispatch(removeTrainerDetails() as any);
                 dispatch(removeSubscriptionStart());
                 dispatch(removeSubscriptionEnd());
                 dispatch(removeAllSessions());
 
-                removeTrainerInAttendanceRecord(trainerId);
+                removeTrainerInAttendanceRecord(id);
             }
         });
     }
 
-    async function removeTrainerInAttendanceRecord(trainerId: number) {
+    async function removeTrainerInAttendanceRecord(id: number) {
         const database = await Database.load("sqlite:app-gym-db.db");
 
-        await database.execute(`
-                UPDATE daysDetails 
+        await database.execute("BEGIN TRANSACTION;");
+
+        try {
+            await database.execute(`
+                UPDATE attendance 
                 SET trainers = (
                     SELECT json_group_array(value) 
-                    FROM json_each(daysDetails.trainers) 
+                    FROM json_each(attendance.trainers) 
                     WHERE value != ?
                 )
-                WHERE daysDetails.id IN (
-                    SELECT daysDetails.id 
-                    FROM daysDetails, json_each(daysDetails.trainers) 
+                WHERE attendance.id IN (
+                    SELECT attendance.id 
+                    FROM attendance, json_each(attendance.trainers) 
                     WHERE json_each.value = ?
                 )
-        `, [trainerId, trainerId]);
+            `, [id, id]);
+
+            await database.execute(`
+                DELETE FROM attendance 
+                WHERE trainers = '[]' OR json_array_length(trainers) = 0;
+            `);
+
+            await database.execute("COMMIT;");
+            dispatch(getAllRowsInAttendanceTable() as any);
+        } catch (error) {
+            await database.execute("ROLLBACK;");
+            console.error(error);
+        }
     }
+
 
 
     return <button

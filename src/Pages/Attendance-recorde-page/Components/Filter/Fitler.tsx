@@ -26,22 +26,35 @@ export default function (
 
 
 
+    function parseTrainers(value: any) {
+        try {
+            const parsed = JSON.parse(value as any);
+            return Array.isArray(parsed) ? parsed : [parsed].filter(item => item != undefined && item != null);
+        } catch {
+            return [];
+        }
+    }
+
+
+
     // This for get all trainers ids 
     useEffect(function () {
+        if (dayDetails.length == 0) return;
         const arr: number[] = [];
 
         if (filterType == "allTrainers") {
             dayDetails.forEach(function (ele) {
-                const convertToArray = JSON.parse(ele.trainers as any);
+                const convertToArray = parseTrainers(ele.trainers);
 
                 arr.push(...convertToArray);
             });
         }
         else {
             const getRowByAccountId = dayDetails.find(ele => ele.accountId == filterType);
-            const convertToArray = JSON.parse(getRowByAccountId?.trainers as any);
-
-            arr.push(...convertToArray);
+            if (getRowByAccountId) {
+                const convertToArray = parseTrainers(getRowByAccountId.trainers);
+                arr.push(...convertToArray);
+            }
         }
 
         setTrainersIds(arr);
@@ -50,7 +63,7 @@ export default function (
     // This for get all trainers
     useEffect(function () {
         const result = trainersIds.map(function (id) {
-            return state.trainers?.find(ele => ele.trainerId == id);
+            return state.trainers?.find(ele => ele.id == id);
         }).filter(Boolean);
 
         onGetTrainers(result as any);

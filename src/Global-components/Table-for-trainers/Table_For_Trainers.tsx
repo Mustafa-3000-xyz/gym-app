@@ -1,6 +1,6 @@
 import { trainer } from "@/Pages/types";
 import { styleForSubscriptionState } from "@/Lib/functions";
-import { styleDate, trainerPagePath } from "@/Lib/constants";
+import { styleDate } from "@/Lib/constants";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
@@ -12,7 +12,6 @@ import Btn_Slide from "./Btn-slide/Btn_Slide";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { addTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { store_Type } from "@/Rtk/types";
-import { useNavigate } from "react-router-dom";
 // ========================================================== //
 export default function Table_For_Trainers(
     { trainersList }: { trainersList: trainer[] }
@@ -32,14 +31,12 @@ export default function Table_For_Trainers(
     const [slides, setSlides] = useState<trainer[][]>([]);
     const [currentSlide, setCurrentSlide] = useState<number>(0);
 
-    const navigation = useNavigate();
     const trainersCountInSlide = 6;
 
 
 
 
     function clickOnTrainer(trainer: trainer) {
-        navigation(trainerPagePath);
         dispath(addTrainerDetails(trainer));
     }
 
@@ -93,7 +90,7 @@ export default function Table_For_Trainers(
             {
                 slides[currentSlide].map(ele => (
                     <tr
-                        key={ele.trainerId}
+                        key={ele.id}
                         onClick={() => clickOnTrainer(ele as trainer)}
                         className={`
                             text-center bg-slate-100 cursor-pointer transition duration-100
@@ -101,7 +98,7 @@ export default function Table_For_Trainers(
                         `}
                     >
                         <td className="p-2 py-4">{ele.firstName} {ele.lastName}</td>
-                        <td className="font-bold underline">{ele.trainerId}</td>
+                        <td className="font-bold underline">{ele.id}</td>
                         <td className="p-2 py-4">{ele.subscriptionName}</td>
                         <td className="p-2 py-4">
                             {format(ele.subscriptionStart, styleDate)}

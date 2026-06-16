@@ -2,7 +2,6 @@ import { accounte } from "@/Pages/types";
 import { Shell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { profilePagePath } from "@/Lib/constants";
-import Password_Inp from "@/Global-components/Password-inp/Password_Inp";
 import { useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
@@ -10,6 +9,7 @@ import { logOutFromOldAccount } from "@/Lib/functions";
 import { Account_Card_Props } from "@/Global-components/types";
 import { store_Type } from "@/Rtk/types";
 import { changeLogInInfo } from "@/Rtk/Slices/UI-slices/logInInfoSlice";
+import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
 // ========================================================== //
 export default function Account_Card(
     { account, isShowAccountCard }: Account_Card_Props
@@ -132,19 +132,21 @@ export default function Account_Card(
             </div>
 
             {/* Set password */}
-            <div className="flex gap-1">
-                <Password_Inp
-                    removeValue={errorMessage != "" ? true : false}
+            <div className="flex items-end gap-2">
+                <Inp_With_Label
+                    valueOrDefaultValue="value"
+                    labelName="الرقم السري"
+                    inpType="password"
+                    inpValue={password}
                     onWriteInInput={(e) => setPassword(e.target.value)}
                 />
 
-
                 <button
                     className={`
-                    transition duration-300 whitespace-nowrap
-                    bg-neutral-500 text-white p-2 rounded-lg
-                    ${!password ? "opacity-45 cursor-not-allowed" : "opacity-100 cursor-pointer"}
-                `}
+                        bg-neutral-500 text-white p-2 pb-3 rounded-lg
+                        transition duration-300 whitespace-nowrap
+                        ${!password ? "opacity-45 cursor-not-allowed" : "opacity-100 cursor-pointer"}
+                    `}
                     disabled={!password}
                     onClick={(e) => clickOnLogInBtn(e as any, account as accounte)}
                 >

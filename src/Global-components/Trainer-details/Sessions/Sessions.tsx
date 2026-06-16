@@ -1,6 +1,6 @@
 import { stateIsActive, stateIsFinished, stateIsPending, styleDate } from "@/Lib/constants";
-import { alert, getAllDetailsForMainDay, incrementOrDecrementForTotalSessionsInAccount, theTodayDate } from "@/Lib/functions";
-import { activeSessionsList_Type, day, dayDetails, sessionListForRead } from "@/Pages/types";
+import { alert, getAllAttendanceInSpecificDate, incrementOrDecrementForTotalSessionsInAccount, theTodayDate } from "@/Lib/functions";
+import { activeSessionsList_Type, attendanceDetails, sessionListForRead } from "@/Pages/types";
 import { removeTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { updatePropertyInRowInTrainersTable, updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import { store_Type } from "@/Rtk/types";
@@ -11,8 +11,7 @@ import { format, addDays } from "date-fns";
 import { removeSubscriptionStart } from "@/Rtk/Slices/UI-slices/subscriptionStartSlice";
 import { removeSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSlice";
 import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
-import { addRowInDaysTable, deleteRowInDaysTableById } from "@/Rtk/Slices/Db-slices/daysSlice";
-import { addRowInDaysDetailsTable, deleteRowInDaysDetailsTableById, updatePropertyInRowInDaysDetailsTable } from "@/Rtk/Slices/Db-slices/daysDetailsSlice";
+import { addRowInAttendanceTable, deleteRowInAttendanceTableById, updatePropertyInRowInAttendanceTable } from "@/Rtk/Slices/Db-slices/attendanceSlice";
 // ========================================================== //
 export default function Sessions(
     { onGetActiveSessionsList }: { onGetActiveSessionsList: (x: activeSessionsList_Type[]) => void }
@@ -21,7 +20,7 @@ export default function Sessions(
     const state = useSelector(function (state: store_Type) {
         return {
             logInInfo: state.logInInfo,
-            days: state.days,
+            attendance: state.attendance,
             trainerDetails: state.trainerDetails,
             accountes: state.accountes,
         }
@@ -43,27 +42,28 @@ export default function Sessions(
 
 
 
-    function finishedSubscriptionUsingSessions() {
+    function finishedSubscriptionUsingLastSession() {
         alert({
             titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
-            titleAfterClickOnOk: `تم إنهاء الاشتراك للمتدرب رقم : ${state.trainerDetails?.trainerId}`,
+            titleAfterClickOnOk: `تم إنهاء الاشتراك للمتدرب رقم : ${state.trainerDetails?.id}`,
             funRunWhenClickOnOk: function () {
                 incrementOrDecrementForTotalSessionsInAccount(
                     Number(state.logInInfo?.id),
                     1,
                     "increment"
                 );
-                dispatch(removeSubscriptionStart());
-                dispatch(removeSubscriptionEnd());
-                dispatch(removeAllSessions());
-                dispatch(removeTrainerDetails());
+
                 dispatch(updateSomePropertiesInRowInTrainersTable({
-                    trainerId: state.trainerDetails?.trainerId as any,
+                    id: state.trainerDetails?.id as any,
                     values: {
                         activeSessionsList: JSON.stringify([]),
                         subscriptionState: stateIsFinished,
                     } as any
                 }) as any);
+                dispatch(removeSubscriptionStart());
+                dispatch(removeSubscriptionEnd());
+                dispatch(removeAllSessions());
+                dispatch(removeTrainerDetails());
             }
         });
     }
@@ -83,12 +83,13 @@ export default function Sessions(
         let copyActiveSessionsList: activeSessionsList_Type[] = [...activeSessionsList];
 
 
+        // If this sessions is last, so run finishedSubscriptionUsingLastSession
         if (
             copyActiveSessionsList.length + 1 == state.trainerDetails?.sessionsCount
             &&
             !findSession
         ) {
-            finishedSubscriptionUsingSessions();
+            finishedSubscriptionUsingLastSession();
             return;
         }
 
@@ -100,14 +101,17 @@ export default function Sessions(
                 activationDate: todayDate.toISOString()
             } as activeSessionsList_Type
 
-            copyActiveSessionsList.push(obj);
+
             attendance(true);
             incrementOrDecrementForTotalSessionsInAccount(
                 Number(state.logInInfo?.id),
                 1,
                 "increment"
             );
+
+            copyActiveSessionsList.push(obj);
         }
+
         // Remove session
         else if (
             findSession
@@ -118,53 +122,44 @@ export default function Sessions(
                 state.logInInfo?.type == "manager"
             )
         ) {
-            copyActiveSessionsList = copyActiveSessionsList.filter(ele => ele.sessionNumber != sessionNum);
-
             attendance(false);
             incrementOrDecrementForTotalSessionsInAccount(
                 Number(state.logInInfo?.id),
                 1,
                 "decrement"
             );
+
+            copyActiveSessionsList = copyActiveSessionsList.filter(ele => ele.sessionNumber != sessionNum);
         }
 
         setActiveSessionsList(copyActiveSessionsList);
         dispatch(updatePropertyInRowInTrainersTable({
-            trainerId: state.trainerDetails?.trainerId as any,
+            id: state.trainerDetails?.id as any,
             column: "activeSessionsList",
             value: JSON.stringify(copyActiveSessionsList),
         }) as any);
     }
 
     async function attendance(isAttend: boolean) {
-        const getMainDay = state.days?.find(ele => new Date(ele.date).getTime() == todayDate.getTime());
-        const getDayDetails = await getAllDetailsForMainDay(Number(getMainDay?.id)) as dayDetails[];
-        const trainerId = state.trainerDetails?.trainerId;
+        const trainerId = state.trainerDetails?.id;
+
+        const getAllAttendanceDetails = await getAllAttendanceInSpecificDate(todayDate) as attendanceDetails[];
+        const findTrainer = getAllAttendanceDetails.find(ele => ele.trainers.includes(trainerId as any));
+        const findAccount = getAllAttendanceDetails.find(ele => ele.accountId == state.logInInfo?.id);
 
 
         // Remove trainer from trainers array
         if (!isAttend) {
-            const findTrainer = getDayDetails.find(ele => ele.trainers.includes(trainerId as any));
             const convertToArray = JSON.parse(findTrainer?.trainers as any) as number[];
             const removeTrainer = convertToArray.filter(ele => ele != trainerId);
 
 
-            /*
-                After removed the trainer, if the trainers array is empty and day details is one row,
-                remove the main day
-            */
-            if (removeTrainer.length == 0 && getDayDetails.length == 1) {
-                dispatch(deleteRowInDaysTableById(Number(getMainDay?.id)) as any);
-            }
-            /*
-                After removed the trainer, if the trainers array is empty but the main day have many rows,
-                so remove this row contains trainers array is empty
-            */
-            else if (removeTrainer.length == 0) {
-                dispatch(deleteRowInDaysDetailsTableById(Number(findTrainer?.id)) as any);
+            // After removed the trainer in array, if the trainers array is empty, remove the row
+            if (removeTrainer.length == 0) {
+                dispatch(deleteRowInAttendanceTableById(Number(findTrainer?.id)) as any);
             }
             else {
-                dispatch(updatePropertyInRowInDaysDetailsTable({
+                dispatch(updatePropertyInRowInAttendanceTable({
                     id: Number(findTrainer?.id),
                     column: "trainers",
                     value: removeTrainer
@@ -175,44 +170,27 @@ export default function Sessions(
         }
 
         /*
-            If the trainer is attend and the main day is not exist, 
-            so add main day and create new row in dayDetails table
+            If the trainer is attend and the account not exsist in today date and the trainer not exsist in today date,
+            create new row
         */
-        if (isAttend && !getMainDay) {
-            const day = await dispatch(addRowInDaysTable(todayDate.toISOString()) as any).unwrap() as day;
-
-            dispatch(addRowInDaysDetailsTable({
-                dayId: Number(day.id), // link main day with this row for details
+        if (isAttend && !findAccount && !findTrainer) {
+            await dispatch(addRowInAttendanceTable({
+                date: todayDate.toISOString(),
                 accountId: Number(state.logInInfo?.id),
                 trainers: [Number(trainerId)]
             }) as any);
         }
 
         /*
-            If the trainer is attend and the main day is exist, 
-            we are check the account and trainer are exist in day details
+            If the trainer is attend and the account is exsist in today date and the trainer not exsist in today date,
+            add this trainer in trainers array
         */
-        else if (isAttend && getMainDay) {
-            const findTrainer = getDayDetails.find(ele => ele.trainers.includes(trainerId as any));
-            const findAccount = getDayDetails.find(ele => ele.accountId == state.logInInfo?.id);
-
-            if (findAccount && !findTrainer) {
-                const addTrainer = JSON.parse(findAccount?.trainers as any);
-                addTrainer.push(trainerId);
-
-                dispatch(updatePropertyInRowInDaysDetailsTable({
-                    id: Number(findAccount.id),
-                    column: "trainers",
-                    value: addTrainer
-                }) as any);
-            }
-            else if (!findAccount && !findTrainer) {
-                dispatch(addRowInDaysDetailsTable({
-                    dayId: Number(getMainDay.id),
-                    accountId: Number(state.logInInfo?.id),
-                    trainers: [Number(trainerId)]
-                }) as any)
-            }
+        else if (isAttend && findAccount && !findTrainer) {
+            dispatch(updatePropertyInRowInAttendanceTable({
+                id: Number(findAccount.id),
+                column: "trainers",
+                value: [...JSON.parse(findAccount.trainers as any), Number(trainerId)]
+            }) as any);
         }
     }
 
