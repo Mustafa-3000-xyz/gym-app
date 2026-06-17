@@ -50,8 +50,8 @@ export interface activeSessionsList_Type {
 }
 
 export interface Subscription_Info_Form_Props {
-    onGetSubscriptionName: (x: string) => void,
-    onGetPrice: (x: number) => void,
+    onGetSubscriptionName: (x: string | null) => void,
+    onGetPrice: (x: number | null) => void,
     onGetActiveSomeSessions?: (x: number) => void
 }
 
@@ -66,10 +66,10 @@ export interface End_Date_Picker_Props {
 }
 
 export interface Trainer_Info_Form_Props {
-    onGetFirstName: (x: string) => void,
-    onGetLastName: (x: string) => void,
-    onGetPhone: (x: string) => void,
-    onGetAddress: (x: string) => void,
+    onGetFirstName: (x: string | null) => void,
+    onGetLastName: (x: string | null) => void,
+    onGetPhone: (x: number | null) => void,
+    onGetAddress: (x: string | null) => void,
 }
 
 export interface Btn_Slide_Props {

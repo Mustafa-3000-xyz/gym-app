@@ -1,12 +1,11 @@
 import { Presentation, UserRound } from "lucide-react";
 import { useMemo, useState } from "react";
 import { addRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
-import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
-import { regexPhone } from "@/Lib/REGEX";
-import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
+import Trainer_Info_Form from "../Forms/Trainer_Info_Form";
+import Subscription_Info_Form from "../Forms/Subscription_Info_Form";
 import { incrementOrDecrementForTotalSessionsInAccount, normalAlert, theTodayDate } from "@/Lib/functions";
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
-import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
+import Date_Info_Form from "../Forms/Date_Info_Form";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { activeSessionsList_Type, trainer } from "@/Pages/types";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
@@ -31,14 +30,14 @@ export default function Add_Trainer(
 
 
     // Get trainer info
-    const [getFirstName, setGetFirstName] = useState("");
-    const [getLastName, setGetLastName] = useState("");
-    const [getPhone, setGetPhone] = useState<string | number>("");
-    const [getAddress, setGetAddress] = useState("");
+    const [getFirstName, setGetFirstName] = useState<string | null>(null);
+    const [getLastName, setGetLastName] = useState<string | null>(null);
+    const [getPhone, setGetPhone] = useState<number | null>(0);
+    const [getAddress, setGetAddress] = useState<string | null>(null);
 
     // Get subscription info
-    const [getSubscriptionName, setGetSubscriptionName] = useState<string>("");
-    const [getPrice, setGetPrice] = useState<number>(0);
+    const [getSubscriptionName, setGetSubscriptionName] = useState<string | null>(null);
+    const [getPrice, setGetPrice] = useState<number | null>(null);
     const [getActiveSomeSessions, setGetActiveSomeSessions] = useState<number>(0);
 
     const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
@@ -108,25 +107,25 @@ export default function Add_Trainer(
     }
 
 
-
+    // This check the trainer info is compolete or no
     const isAllInfoComplete = useMemo(function () {
-        // This check the trainer info is compolete or no
         if (
-            (getPhone == 0 || new String(getPhone).match(regexPhone))
-            &&
-            getFirstName &&
-            getLastName &&
-            getSubscriptionName &&
-            state.sessionsCount &&
-            getPrice &&
-            state.subscriptionStart && state.subscriptionEnd
+            getFirstName != null &&
+            getLastName != null &&
+            getPhone != null &&
+            getAddress != null &&
+            getSubscriptionName != null &&
+            state.sessionsCount != null &&
+            getPrice != null &&
+            state.subscriptionStart != null &&
+            state.subscriptionEnd != null
         ) {
             return true
         } else {
             return false;
         }
-    }, [getFirstName, getLastName, getSubscriptionName, state.sessionsCount,
-        getPrice, getPhone, state.subscriptionStart, state.subscriptionEnd
+    }, [getFirstName, getLastName, getPhone, getAddress, getSubscriptionName, state.sessionsCount,
+        getPrice, state.subscriptionStart, state.subscriptionEnd
     ]);
 
     const statusTheSubscription = useMemo(() => {
@@ -163,7 +162,7 @@ export default function Add_Trainer(
         clickOnSaveBtn={saveTrainerInfo}
     >
         {/* Trainer info */}
-        <div className="mb-5" >
+        <div>
             <div className="flex items-center gap-2 text-(--thirdColor) font-bold mb-2">
                 <UserRound size={23} />
                 <p className="leading-none pt-0.5">المعلومات الشخصيه</p>
@@ -178,7 +177,7 @@ export default function Add_Trainer(
         </div>
 
         {/* Subscription info */}
-        <div className="mb-5">
+        <div>
             <div className="flex items-center gap-2 text-(--thirdColor) font-bold mb-5">
                 <Presentation size={23} />
                 <p className="leading-none pt-0.5">تفاصيل الاشتراك</p>

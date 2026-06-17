@@ -234,7 +234,7 @@ export default function Sessions(
     useEffect(function () {
         if (activeSessionsList.length == 0) {
             onGetActiveSessionsList([]);
-            return
+            return;
         };
 
         const lastSession = activeSessionsList[activeSessionsList.length - 1];

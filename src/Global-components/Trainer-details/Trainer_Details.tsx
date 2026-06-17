@@ -6,7 +6,6 @@ import { Navigation } from "swiper/modules";
 import { updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import { alert, theTodayDate } from "@/Lib/functions";
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
-import { regexPhone } from "@/Lib/REGEX";
 import Btn_Delete_Trainer from "./Btns/Btn_Delete_Trainer";
 import Btn_Subscription_Renewal from "./Btns/Btn_Subscription_Renewal";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
@@ -18,9 +17,9 @@ import Sessions from "./Sessions/Sessions";
 import { removeSubscriptionStart } from "@/Rtk/Slices/UI-slices/subscriptionStartSlice";
 import { removeSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSlice";
 import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
-import Date_Info_Form from "@/Pages/Trainers-page/Components/Forms/Date-info-form/Date_Info_Form";
-import Subscription_Info_Form from "@/Pages/Trainers-page/Components/Forms/Subscription-info-form/Subscription_Info_Form";
-import Trainer_Info_Form from "@/Pages/Trainers-page/Components/Forms/Trainer-info-form/Trainer_Info_Form";
+import Date_Info_Form from "@/Pages/Trainers-page/Components/Forms/Date_Info_Form";
+import Subscription_Info_Form from "@/Pages/Trainers-page/Components/Forms/Subscription_Info_Form";
+import Trainer_Info_Form from "@/Pages/Trainers-page/Components/Forms/Trainer_Info_Form";
 import { activeSessionsList_Type } from "@/Pages/types";
 // ========================================================== //
 export default function Trainer_Details() {
@@ -34,25 +33,25 @@ export default function Trainer_Details() {
         }
     }, shallowEqual);
 
-    const [subscriptionState, setSubscriptionState] = useState(stateIsActive);
-    // These for swiper
+
     const [isBeginning, setIsBeginning] = useState(true);
     const [isEnd, setIsEnd] = useState(false);
 
     const [isActiveSubscriptionRenewal, setIsActiveSubscriptionRenewal] = useState(false);
-    // Check the [ trainer info ] or [ subscription info ] or [ date info ] are change
     const [isChangeInfo, setIsChangeInfo] = useState(false);
 
 
     // Trainer info & Subscription info & Date info
-    const [getFirstName, setGetFirstName] = useState<string>("");
-    const [getLastName, setGetLastName] = useState<string>("");
-    const [getPhone, setGetPhone] = useState<number | string>("");
-    const [getAddress, setGetAddress] = useState<string>("");
+    const [getFirstName, setGetFirstName] = useState<string | null>(null);
+    const [getLastName, setGetLastName] = useState<string | null>(null);
+    const [getPhone, setGetPhone] = useState<number | null>(0);
+    const [getAddress, setGetAddress] = useState<string | null>(null);
     const [getActiveSessionsList, setGetActiveSessionsList] = useState<activeSessionsList_Type[]>([]);
-    const [getSubscriptionName, setGetSubscriptionName] = useState<string | string>("");
-    const [getPrice, setGetPrice] = useState<number | string>("");
+    const [getSubscriptionName, setGetSubscriptionName] = useState<string | null>("");
+    const [getPrice, setGetPrice] = useState<number | null>(0);
 
+    const [newInfoForTrainer, setNewInfoForTrainer] = useState({});
+    const [subscriptionState, setSubscriptionState] = useState(stateIsActive);
     const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
 
 
@@ -68,10 +67,10 @@ export default function Trainer_Details() {
                 dispatch(updateSomePropertiesInRowInTrainersTable({
                     id: state.trainerDetails?.id as any,
                     values: {
-                        ...updateTheTrainer,
+                        ...newInfoForTrainer,
                         subscriptionState: statusTheSubscription,
                         activeSessionsList: state.trainerDetails?.sessionsCount != state.sessionsCount ?
-                            JSON.stringify([]) : state.trainerDetails?.activeSessionsList
+                            JSON.stringify([]) : getActiveSessionsList
                     } as any
                 }) as any);
 
@@ -81,6 +80,13 @@ export default function Trainer_Details() {
                 dispatch(removeAllSessions());
             }
         });
+    }
+
+    function clickOnCancel() {
+        dispatch(removeTrainerDetails())
+        dispatch(removeSubscriptionStart());
+        dispatch(removeSubscriptionEnd());
+        dispatch(removeAllSessions());
     }
 
 
@@ -102,17 +108,13 @@ export default function Trainer_Details() {
             setIsActiveSubscriptionRenewal(true);
         }
 
-
-
         if (
             !getFirstName || !getLastName || !getSubscriptionName || !getPrice ||
-            !state.sessionsCount || !state.subscriptionEnd || getPhone != 0 && !String(getPhone).match(regexPhone)
+            !state.sessionsCount || !state.subscriptionEnd || getPhone == null
         ) {
             setIsChangeInfo(false);
-            return;
         }
-
-        if (
+        else if (
             (getFirstName != state.trainerDetails?.firstName)
             ||
             (getLastName != state.trainerDetails?.lastName)
@@ -120,8 +122,8 @@ export default function Trainer_Details() {
             (getAddress != state.trainerDetails?.address)
             ||
             (
-                (getPhone == 0 || String(getPhone).match(regexPhone))
-                && getPhone != state.trainerDetails?.phone
+                getPhone != null &&
+                getPhone != state.trainerDetails?.phone as any
             )
             ||
             (getSubscriptionName != state.trainerDetails?.subscriptionName)
@@ -134,37 +136,29 @@ export default function Trainer_Details() {
             ||
             (new Date(state.subscriptionEnd as any).getTime() != new Date(state.trainerDetails?.subscriptionEnd as any).getTime())
         ) {
+            const obj = {
+                firstName: getFirstName != "" ? getFirstName : state.trainerDetails?.firstName,
+                lastName: getLastName != "" ? getLastName : state.trainerDetails?.lastName,
+                address: getAddress != "" ? getAddress : state.trainerDetails?.address,
+                phone: getPhone != 0 ? getPhone : state.trainerDetails?.phone,
+                subscriptionName: getSubscriptionName,
+                sessionsCount: state.sessionsCount,
+                price: getPrice,
+                subscriptionStart: state.subscriptionStart,
+                subscriptionEnd: state.subscriptionEnd,
+                activeSessionsList: JSON.stringify(getActiveSessionsList)
+            }
+
+            setNewInfoForTrainer(obj);
             setIsChangeInfo(true);
         } else {
             setIsChangeInfo(false);
         }
-
-
     }, [getFirstName, getLastName, getAddress, getPhone,
         getSubscriptionName, state.sessionsCount, getPrice,
         state.subscriptionStart, state.subscriptionEnd
     ]);
 
-
-    const updateTheTrainer = useMemo(() => {
-        return {
-            ...state.trainerDetails,
-            firstName: getFirstName != "" ? getFirstName : state.trainerDetails?.firstName,
-            lastName: getLastName != "" ? getLastName : state.trainerDetails?.lastName,
-            address: getAddress != "" ? getAddress : state.trainerDetails?.address,
-            phone: getPhone != "" ? getPhone : state.trainerDetails?.phone,
-            subscriptionName: getSubscriptionName,
-            sessionsCount: state.sessionsCount,
-            price: getPrice,
-            subscriptionStart: state.subscriptionStart,
-            subscriptionEnd: state.subscriptionEnd,
-            activeSessionsList: JSON.stringify(getActiveSessionsList)
-        };
-    }, [
-        state.trainerDetails, state.sessionsCount, , getFirstName, getLastName,
-        getAddress, getPhone, getSubscriptionName, getPrice,
-        state.subscriptionStart, state.subscriptionEnd, getActiveSessionsList
-    ]);
 
     const statusTheSubscription = useMemo(() => {
         if (
@@ -195,16 +189,11 @@ export default function Trainer_Details() {
         isSave={isChangeInfo}
         typeBtn="save change"
         isShowBtn={subscriptionState == stateIsFinished ? false : true}
-        clickOnCancel={() => {
-            dispatch(removeTrainerDetails())
-            dispatch(removeSubscriptionStart());
-            dispatch(removeSubscriptionEnd());
-            dispatch(removeAllSessions());
-        }}
+        clickOnCancel={clickOnCancel}
         clickOnSaveBtn={updateInfo}
     >
         {/* Sessions */}
-        < Sessions onGetActiveSessionsList={setGetActiveSessionsList}/>
+        <Sessions onGetActiveSessionsList={setGetActiveSessionsList} />
 
         {/* Title & arrowes */}
         <div className="mb-5 flex justify-between items-center">
@@ -288,7 +277,7 @@ export default function Trainer_Details() {
                         <Btn_Withdraw_Money id={state.trainerDetails.id as any} />
                         :
                         <Btn_Subscription_Renewal
-                            trainer={updateTheTrainer as any}
+                            trainer={newInfoForTrainer as any}
                             isInfoComplete={isActiveSubscriptionRenewal}
                         />
                 }

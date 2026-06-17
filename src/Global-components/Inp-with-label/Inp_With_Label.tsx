@@ -16,6 +16,7 @@ export default function Inp_With_Label(
 
 
 
+
     function clickOnEye(e: any) {
         e.stopPropagation()
 
@@ -30,6 +31,7 @@ export default function Inp_With_Label(
         if (!isChangeValue) return;
         onWriteInInput(e);
     }
+
 
 
 
@@ -63,12 +65,11 @@ export default function Inp_With_Label(
                 valueOrDefaultValue == "value" ?
                     <input
                         type={inpType}
-                        value={inpValue}
+                        value={inpValue ?? ""}
                         disabled={!isChangeValue}
                         className={`
-                            w-full
                             rounded-lg border border-black/20 p-2 px-3 focus:outline-none
-                            appearance-none text-center
+                            w-full text-center
                             [&::-webkit-inner-spin-button]:appearance-none
                             [&::-webkit-outer-spin-button]:appearance-none
                             ${!isChangeValue ? "cursor-not-allowed opacity-45" : ""}
@@ -80,9 +81,8 @@ export default function Inp_With_Label(
                         type={inpType}
                         disabled={!isChangeValue}
                         className={`
-                            w-full
                             rounded-lg border border-black/20 p-2 px-3 focus:outline-none
-                            appearance-none
+                            w-full text-center
                             [&::-webkit-inner-spin-button]:appearance-none
                             [&::-webkit-outer-spin-button]:appearance-none
                             ${!isChangeValue ? "cursor-not-allowed opacity-45" : ""}

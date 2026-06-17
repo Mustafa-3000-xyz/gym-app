@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 // ======================================= //
 const sessionsCountSlice = createSlice({
     name: "sessionsCountSlice",
-    initialState: 0 as number,
+    initialState: null as number | null,
 
     reducers: {
         getAllSessions: function (state) {
@@ -10,11 +10,11 @@ const sessionsCountSlice = createSlice({
         },
 
         addSessions: function (_, action) {
-            return action.payload as number;
+            return action.payload as number | null;
         },
 
         removeAllSessions: function(){
-            return 0;
+            return null;
         }
     }
 });

@@ -1,5 +1,5 @@
 import { Trainer_Info_Form_Props } from "@/Pages/types";
-import { regexFindSpacesInTranierName, regexPhone } from "@/Lib/REGEX";
+import { regexAddress, regexFindSpacesInTranierName, regexFirstName, regexLastName, regexPhone } from "@/Lib/REGEX";
 import { useEffect, useState } from "react";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
 import { shallowEqual, useSelector } from "react-redux";
@@ -19,67 +19,28 @@ export default function Trainer_Info_Form(
         }
     }, shallowEqual);
 
+
     const [firstName, setFirstName] = useState<string>("");
     const [lastName, setLastName] = useState<string>("");
-    const [phone, setPhone] = useState<string>("");
+    const [phone, setPhone] = useState<number>(0);
     const [address, setAddress] = useState<string>("");
-    const [messageError, setMessageError] = useState({
-        firstName: "",
-        lastName: "",
-        phone: ""
-    });
 
 
 
     function checkFirstName(value: string) {
-        let valueInp = "";
-
-
         if (value.match(regexFindSpacesInTranierName)) {
-            valueInp += value.replace(/\s/g, "");
-        } else {
-            valueInp += value
+            value = value.replace(/\s/g, "");
         }
 
-
-        setFirstName(valueInp);
+        setFirstName(value);
     }
 
     function checkLastName(value: string) {
-        let valueInp = "";
-
-
         if (value.match(regexFindSpacesInTranierName)) {
-            valueInp += value.replace(/\s/g, "");
-        } else {
-            valueInp += value
+            value = value.replace(/\s/g, "");
         }
 
-
-        setLastName(valueInp);
-    }
-
-    function checkPhoneNumber(input: HTMLInputElement) {
-        const parent = input.parentNode as HTMLDivElement;
-
-        if (input.value.match(regexPhone) || input.value == "") {
-            parent.classList.remove("!bg-red-600");
-
-            setMessageError(prev => ({
-                ...prev,
-                phone: ""
-            }));
-
-        } else {
-            parent.classList.add("!bg-red-600");
-
-            setMessageError(prev => ({
-                ...prev,
-                phone: "يجب ان يكون 10 ارقام فقط"
-            }));
-        }
-
-        setPhone(input.value);
+        setLastName(value);
     }
 
 
@@ -94,17 +55,35 @@ export default function Trainer_Info_Form(
         } else {
             setFirstName("");
             setLastName("");
-            setPhone("");
+            setPhone(0);
             setAddress("");
         }
     }, [state.trainerDetails]);
 
-
     useEffect(function () {
-        onGetFirstName(firstName);
-        onGetLastName(lastName);
-        onGetPhone(phone);
-        onGetAddress(address);
+        if (firstName?.match(regexFirstName)) {
+            onGetFirstName(firstName);
+        } else {
+            onGetFirstName(null);
+        }
+
+        if (lastName?.match(regexLastName)) {
+            onGetLastName(lastName);
+        } else {
+            onGetLastName(null);
+        }
+
+        if (phone?.toString().match(regexPhone) || phone == 0) {
+            onGetPhone(phone);
+        } else {
+            onGetPhone(null);
+        }
+
+        if (address?.match(regexAddress) || address?.length == 0) {
+            onGetAddress(address);
+        } else {
+            onGetAddress(null);
+        }
     }, [firstName, lastName, phone, address]);
 
 
@@ -112,7 +91,7 @@ export default function Trainer_Info_Form(
 
     return <div>
         {/* First name & Last name */}
-        <div className="flex justify-center gap-3 mb-5">
+        <div className="flex justify-center gap-3">
             <div className="w-4/12">
                 <Inp_With_Label
                     labelName="الاسم الاول"
@@ -120,6 +99,16 @@ export default function Trainer_Info_Form(
                     inpValue={firstName}
                     onWriteInInput={(e) => checkFirstName(e.target.value)}
                 />
+
+                <p className={`
+                        text-end m-1
+                        ${firstName?.length < 3
+                        ||
+                        firstName?.length > 13 ? "text-red-500" : "text-emerald-500"}
+                    `}
+                >
+                    13/{firstName.length}
+                </p>
             </div>
 
             <div className="w-4/12">
@@ -129,6 +118,16 @@ export default function Trainer_Info_Form(
                     inpValue={lastName}
                     onWriteInInput={(e) => checkLastName(e.target.value)}
                 />
+
+                <p className={`
+                        text-end m-1
+                        ${lastName.length < 3
+                        ||
+                        lastName?.length > 13 ? "text-red-500" : "text-emerald-500"}
+                    `}
+                >
+                    13/{lastName?.length || 0}
+                </p>
             </div>
         </div>
 
@@ -137,14 +136,20 @@ export default function Trainer_Info_Form(
             <div className="flex flex-col w-4/12">
                 <Inp_With_Label
                     labelName="رقم الموبايل (اختياري)"
-                    inpType="text"
-                    inpValue={phone}
-                    onWriteInInput={(e) => checkPhoneNumber(e.target)}
+                    inpType="number"
+                    inpValue={phone == 0 ? "" : phone}
+                    onWriteInInput={(e) => setPhone(Number(e.target.value))}
                 />
 
-                <span className="text-red-600">
-                    {messageError.phone}
-                </span>
+                <p className={`
+                        text-end m-1
+                        ${phone.toString().length > 10
+                        ||
+                        (phone.toString().length < 10 && phone != 0) ? "text-red-500" : "text-emerald-500"}
+                    `}
+                >
+                    10/{phone == 0 ? 0 : phone?.toString().length}
+                </p>
             </div>
 
             <div className="w-4/12">
@@ -154,6 +159,14 @@ export default function Trainer_Info_Form(
                     inpValue={address}
                     onWriteInInput={(e) => setAddress(e.target.value)}
                 />
+
+                <p className={`
+                        text-end m-1
+                        ${address?.length > 50 ? "text-red-500" : "text-emerald-500"}
+                    `}
+                >
+                    50/{address.length}
+                </p>
             </div>
         </div>
     </div>

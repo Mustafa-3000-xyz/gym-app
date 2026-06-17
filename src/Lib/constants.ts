@@ -1,4 +1,6 @@
 export const styleDate = "yyyy/MM/dd";
+export const maxSessions = 60;
+export const maxSubscriptionPrice = 999999;
 
 // These for subscription state
 export const stateIsActive = "active";

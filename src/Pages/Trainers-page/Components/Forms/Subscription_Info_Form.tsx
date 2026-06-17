@@ -5,11 +5,12 @@ import { Shell } from "lucide-react";
 import Discription from "@/Global-components/Description/Discription";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
-import { USING_ACTIVE_SOME_SESSIONS } from "@/Lib/constants";
+import { maxSessions, maxSubscriptionPrice, USING_ACTIVE_SOME_SESSIONS } from "@/Lib/constants";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
 import { addSessions, removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import { theTodayDate } from "@/Lib/functions";
 import { differenceInDays } from "date-fns";
+import { regexSubscriptionName } from "@/Lib/REGEX";
 // ========================================================== //
 export default function Subscription_Info_Form(
     {
@@ -31,14 +32,16 @@ export default function Subscription_Info_Form(
     }, shallowEqual);
 
 
-    const [activeSomeSessions, setActiveSomeSessions] = useState(0);
+    const [alertForActiveSomeSubscription, setAlertForActiveSomeSubscription] = useState<string | null>("");
+    const [maxForActiveSomeSessions, setMaxForActiveSomeSessions] = useState(0);
+    const [activeSomeSessions, setActiveSomeSessions] = useState<number>(0);
+
     const [subscriptionName, setSubscriptionName] = useState<string>("");
     const [price, setPrice] = useState<number>(0);
 
     const [isUsingTheActiveSomeSessions, setIsUsingTheActiveSomeSessions] = useState(false);
-    const [maxForActiveSomeSessions, setMaxForActiveSomeSessions] = useState(0);
-    const [alertForActiveSomeSubscription, setAlertForActiveSomeSubscription] = useState<string | null>("");
     const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
+
 
 
 
@@ -63,9 +66,33 @@ export default function Subscription_Info_Form(
         }
     }
 
+    function writeInSessionsInp(e: any) {
+        const value = Number(e.target.value);
+
+
+        if (value < maxSessions) {
+            dispatch(addSessions(value));
+        }
+        else if (value >= maxSessions) {
+            dispatch(addSessions(maxSessions));
+        }
+    }
+
+    function writeInPriceInp(e: any) {
+        const value = Number(e.target.value);
+
+
+        if (value < maxSubscriptionPrice) {
+            setPrice(value);
+        }
+        else if (value >= maxSubscriptionPrice) {
+            setPrice(maxSubscriptionPrice);
+        }
+    }
 
 
 
+    // This for check the account have permission using the activeSomeSessions
     useEffect(function () {
         const theAccount = state.accountes?.find(ele => ele.id == state.logInInfo?.id);
 
@@ -81,28 +108,34 @@ export default function Subscription_Info_Form(
         }
     }, [state.accountes]);
 
+    // When open state.trainerDetails details, i want show his values
     useEffect(() => {
-        // When open state.trainerDetails details, i want show his values
         if (state.trainerDetails) {
-            setSubscriptionName(state.trainerDetails.subscriptionName);
-            dispatch(addSessions(Number(state.trainerDetails.sessionsCount)))
-            setPrice(state.trainerDetails.price);
-
-            dispatch(addSessions(Number(state.trainerDetails.sessionsCount)));
+            setSubscriptionName(state.trainerDetails.subscriptionName ?? "");
+            dispatch(addSessions(state.trainerDetails.sessionsCount ?? 0));
+            setPrice(state.trainerDetails.price ?? 0);
         } else {
             setSubscriptionName("");
-            dispatch(addSessions(0));
-            setPrice(0);
-
             dispatch(removeAllSessions());
+            setPrice(0);
         }
     }, [state.trainerDetails]);
 
     useEffect(function () {
-        onGetSubscriptionName(subscriptionName);
-        onGetPrice(price);
+        if (subscriptionName?.match(regexSubscriptionName)) {
+            onGetSubscriptionName(subscriptionName);
+        } else {
+            onGetSubscriptionName(null);
+        }
+
+        if (price > 0) {
+            onGetPrice(price);
+        } else {
+            onGetPrice(null);
+        }
     }, [subscriptionName, price]);
 
+    // This for activeSomeSessions
     useEffect(() => {
         const subscriptionStart = new Date(state.subscriptionStart as any);
         const subscriptionEnd = new Date(state.subscriptionEnd as any);
@@ -150,35 +183,39 @@ export default function Subscription_Info_Form(
             {/* Inputs */}
             <div className="grid grid-cols-3 gap-2 mt-5">
                 {/* Subscription name */}
-                <Inp_With_Label
-                    labelName="اسم الاشتراك"
-                    inpType="text"
-                    inpValue={subscriptionName}
-                    onWriteInInput={(e) => setSubscriptionName(e.target.value)}
-                />
+                <div>
+                    <Inp_With_Label
+                        labelName="اسم الاشتراك"
+                        inpType="text"
+                        inpValue={subscriptionName}
+                        onWriteInInput={(e) => setSubscriptionName(e.target.value)}
+                    />
+
+                    <p className={`
+                        text-end m-1
+                        ${subscriptionName?.length < 3
+                            ||
+                            subscriptionName?.length > 11 ? "text-red-500" : "text-emerald-500"}
+                    `}
+                    >
+                        11/{subscriptionName.length}
+                    </p>
+                </div>
 
                 {/* Sessions count */}
                 <Inp_With_Label
                     labelName="عدد الحصص"
                     inpType="number"
-                    inpValue={state.sessionsCount}
-                    onWriteInInput={(e) => {
-                        const value = Number(e.target.value)
-                        if (value <= 60) {
-                            dispatch(addSessions(value));
-                        }
-                        else {
-                            dispatch(addSessions(60));
-                        }
-                    }}
+                    inpValue={state.sessionsCount == 0 ? "" : state.sessionsCount}
+                    onWriteInInput={(e) => writeInSessionsInp(e)}
                 />
 
                 {/* Price */}
                 <Inp_With_Label
                     labelName="السعر"
                     inpType="number"
-                    inpValue={price}
-                    onWriteInInput={(e) => setPrice(+e.target.value)}
+                    inpValue={price == 0 ? "" : price}
+                    onWriteInInput={(e) => writeInPriceInp(e)}
                 />
             </div>
         </div>
