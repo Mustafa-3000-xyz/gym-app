@@ -45,9 +45,9 @@ export default function Drop_Menu(
             const element = child as ReactElement | any;
 
 
-            if (element.type?.name == "Top_Content_For_The_Drop") {
+            if (element.type?.displayName == "Top_Content_For_The_Drop") {
                 setTopContent(child);
-            } else if (element.type?.name == "Bottom_Content_For_The_Drop") {
+            } else if (element.type?.displayName == "Bottom_Content_For_The_Drop") {
                 setBottomContent(child);
             }
         });
@@ -102,7 +102,7 @@ export default function Drop_Menu(
                     ref={menuRef}
                     className={`
                         absolute top-full mt-2 z-50
-                        shadow-2xl p-4 rounded-md select-none bg-slate-100 !cursor-default
+                        shadow-2xl p-4 rounded-md select-none bg-slate-100 cursor-default!
                         ${classNameForMenu}
                     `}
                     initial={{
