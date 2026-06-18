@@ -14,15 +14,15 @@ export const getAllRowsInDaysTable = createAsyncThunk(
 
 export const addRowInDaysTable = createAsyncThunk(
     "daysSlice/addRowInDaysTable",
-    async function (data: day) {
+    async function (date: string) {
         const query = "INSERT INTO days (date) VALUES (?)";
-        const value = [data.date];
+        const value = [date];
 
         const createRow = await database.execute(query, value);
 
         return {
             id: createRow.lastInsertId,
-            ...data
+            date
         }
     }
 )

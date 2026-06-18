@@ -3,15 +3,21 @@ import { format, differenceInDays } from "date-fns";
 import { stateIsFinished, styleDate } from "@/Lib/constants";
 import { Calendar } from 'primereact/calendar';
 import { normalAlert, theTodayDate } from "@/Lib/functions";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import { addSubscriptionStart } from "@/Rtk/Slices/UI-slices/subscriptionStartSlice";
 import { addSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSlice";
 // ========================================================== //
 export default function Date_Info_Form() {
     const dispatch = useDispatch();
-    const state = useSelector(state => state as store_Type);
-
+    const state = useSelector(function (state: store_Type) {
+        return {
+            trainerDetails: state.trainerDetails,
+            sessionsCount: state.sessionsCount,
+            subscriptionStart: state.subscriptionStart,
+            subscriptionEnd: state.subscriptionEnd,
+        }
+    }, shallowEqual);
 
     const [theDaysBetweenSubStartAndSubEnd, setTheDaysBetweenSubStartAndSubEnd] = useState(0);
     const [minDateInSubscriptionEnd, setMinDateInSubscriptionEnd] = useState<Date | null>(null);
@@ -102,7 +108,7 @@ export default function Date_Info_Form() {
         if (
             theDaysBetweenSubStartAndSubEnd != 0
             &&
-            theDaysBetweenSubStartAndSubEnd < state.sessionsCount
+            theDaysBetweenSubStartAndSubEnd < (state.sessionsCount as any)
         ) {
             dispatch(addSubscriptionEnd(null));
             normalAlert({

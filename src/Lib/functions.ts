@@ -4,6 +4,7 @@ import { alertType, normalAlert_Type } from "./types";
 import { stateIsActive, stateIsPending } from "./constants";
 import store from "@/Rtk/store";
 import { updatePropertyInRowInAccountsTable, updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
+import Database from "@tauri-apps/plugin-sql";
 // ========================================================== //
 export function styleForSubscriptionState(trainer: trainer) {
     /*
@@ -143,4 +144,13 @@ export function incrementOrDecrementForTotalSessionsInAccount(
             }) as any);
             break;
     }
+}
+
+export async function getAllDetailsForMainDay(dayId: number) {
+    const database = await Database.load("sqlite:app-gym-db.db");
+
+    return await database.select(
+        "SELECT * FROM daysDetails WHERE dayId = ?",
+        [dayId]
+    );
 }

@@ -3,7 +3,7 @@ import { Subscription_Info_Form_Props } from "@/Pages/types";
 import { useEffect, useMemo, useState } from "react";
 import { Shell } from "lucide-react";
 import Discription from "@/Global-components/Description/Discription";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import { USING_ACTIVE_SOME_SESSIONS } from "@/Lib/constants";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
@@ -19,7 +19,17 @@ export default function Subscription_Info_Form(
     }: Subscription_Info_Form_Props
 ) {
     const dispatch = useDispatch();
-    const state = useSelector(state => state as store_Type);
+    const state = useSelector(function (state: store_Type) {
+        return {
+            logInInfo: state.logInInfo,
+            accountes: state.accountes,
+            sessionsCount: state.sessionsCount,
+            trainerDetails: state.trainerDetails,
+            subscriptionEnd: state.subscriptionEnd,
+            subscriptionStart: state.subscriptionStart,
+        }
+    }, shallowEqual);
+
 
     const [activeSomeSessions, setActiveSomeSessions] = useState(0);
     const [subscriptionName, setSubscriptionName] = useState<string>("");
@@ -57,7 +67,7 @@ export default function Subscription_Info_Form(
 
 
     useEffect(function () {
-        const theAccount = state.accountes.find(ele => ele.id == state.logInInfo?.id);
+        const theAccount = state.accountes?.find(ele => ele.id == state.logInInfo?.id);
 
         if (
             theAccount?.permissions?.includes(USING_ACTIVE_SOME_SESSIONS)
@@ -95,15 +105,22 @@ export default function Subscription_Info_Form(
 
     useEffect(() => {
         const subscriptionStart = new Date(state.subscriptionStart as any);
+        const subscriptionEnd = new Date(state.subscriptionEnd as any);
 
         if (
             state.subscriptionStart && state.subscriptionEnd &&
             subscriptionStart.getTime() < todayDate.getTime() &&
-            new Date(state.subscriptionEnd as any).getTime() >= todayDate.getTime()
+            subscriptionEnd.getTime() >= todayDate.getTime()
         ) {
-            const diff = Math.abs(differenceInDays(todayDate, subscriptionStart)) + 1;
-            setMaxForActiveSomeSessions(diff);
-            onGetActiveSomeSessions?.(diff);
+            const diff = Math.abs(differenceInDays(todayDate, subscriptionStart));
+
+            setMaxForActiveSomeSessions(
+                diff >= Number(state.sessionsCount) ?
+                    Number(state.sessionsCount) - 1
+                    :
+                    subscriptionEnd.getTime() > todayDate.getTime() ?
+                        diff + 1 : diff
+            );
         } else {
             setMaxForActiveSomeSessions(0);
             onGetActiveSomeSessions?.(0);
@@ -150,7 +167,7 @@ export default function Subscription_Info_Form(
                         if (value <= 60) {
                             dispatch(addSessions(value));
                         }
-                        else{
+                        else {
                             dispatch(addSessions(60));
                         }
                     }}
@@ -197,6 +214,7 @@ export default function Subscription_Info_Form(
                                     value={activeSomeSessions ?? 0}
                                     onChange={(e) => {
                                         const result = Number(e.target.value) > Number(maxForActiveSomeSessions) ? maxForActiveSomeSessions : e.target.value;
+                                        onGetActiveSomeSessions?.(result as any);
                                         setActiveSomeSessions(Number(result));
                                     }}
                                     disabled={!isUsingTheActiveSomeSessions}

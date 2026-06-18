@@ -1,6 +1,6 @@
 import React, { ChangeEvent, ReactNode } from "react";
 import { TargetAndTransition, Transition } from "framer-motion";
-import { accounte } from "@/Pages/types";
+import { accounte, trainer } from "@/Pages/types";
 // ========================================================== //
 export interface Not_Found_Props {
     srcImg: string,
@@ -99,16 +99,20 @@ export interface Toggle_Btn_Props {
 }
 
 export interface Drop_Menu_Props {
-    title: string,
-    menuHeight?: "auto" | "fixed",
-    icon: any,
-    children?: ReactNode,
-    menuIsFullWidth?: boolean,
+    messageForNotAddChildren?: string,
+    classNameForMenu?: string,
     isShowTheMenu?: boolean,
+    children?: ReactNode,
     onGetCurrentIsShowMenu?: (x: boolean) => void
 }
 
-export interface Account_Card_Props{
+export interface Account_Card_Props {
     account: accounte,
     isShowAccountCard: boolean
+}
+
+export interface Search_Result_Props {
+    searchInpRef: HTMLInputElement,
+    arrayContainsTrainers: trainer[],
+    onIsShowSearchResult: (x: boolean) => void,
 }

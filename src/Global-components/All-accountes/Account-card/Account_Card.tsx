@@ -1,10 +1,10 @@
 import { accounte } from "@/Pages/types";
 import { Shell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { expalinAppPagePath, profilePagePath } from "@/Lib/constants";
+import { profilePagePath } from "@/Lib/constants";
 import Password_Inp from "@/Global-components/Password-inp/Password_Inp";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { logOutFromOldAccount } from "@/Lib/functions";
 import { Account_Card_Props } from "@/Global-components/types";
@@ -15,7 +15,12 @@ export default function Account_Card(
     { account, isShowAccountCard }: Account_Card_Props
 ) {
     const dispatch = useDispatch();
-    const logInInfo = useSelector(state => state as store_Type).logInInfo;
+    const state = useSelector(function (state: store_Type) {
+        return {
+            logInInfo: state.logInInfo,
+        }
+    }, shallowEqual);
+
 
     const navigate = useNavigate();
     const [password, setPassword] = useState("");
@@ -29,8 +34,8 @@ export default function Account_Card(
     ) {
         if (account.password == password) {
             // when switch another account, this action is log out from old account
-            if (logInInfo) {
-                logOutFromOldAccount(logInInfo.id);
+            if (state.logInInfo) {
+                logOutFromOldAccount(state.logInInfo.id);
             }
 
             // Set the new account id
@@ -47,7 +52,6 @@ export default function Account_Card(
 
 
             setErrorMessage("");
-            navigate(expalinAppPagePath);
         }
         else {
             setErrorMessage("كلمة المرور غير صحيحه");
@@ -57,7 +61,7 @@ export default function Account_Card(
     }
 
     function showAccountDetail() {
-        if (logInInfo) {
+        if (state.logInInfo) {
             navigate(profilePagePath.replace(":accountId", `${account.id}`));
         }
     }
@@ -70,16 +74,16 @@ export default function Account_Card(
                 transition-all duration-300
                 rounded-3xl shadow-xl p-8 relative
                 flex flex-col justify-between items-center w-96 gap-10 text-gray-900
-                ${logInInfo != null
+                ${state.logInInfo != null
                     &&
                     (
-                        logInInfo.type == "manager" && account.type == "captain"
+                        state.logInInfo.type == "manager" && account.type == "captain"
                         ||
-                        logInInfo.type == "captain" && account.type == "captain"
+                        state.logInInfo.type == "captain" && account.type == "captain"
                     ) ?
                     "group hover:bg-(--captainColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
                     :
-                    logInInfo?.type == "captain" && account.type == "manager" ?
+                    state.logInInfo?.type == "captain" && account.type == "manager" ?
                         "group hover:bg-(--managerColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
                         :
                         ""

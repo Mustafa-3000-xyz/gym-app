@@ -1,10 +1,10 @@
 import Account_Img from "@/Pages/Profile-page/Components/Account-img/Account_Img";
 import Box from "@/Global-components/Box/Box";
-import { allPermissions, trainerPagePath } from "@/Lib/constants";
+import { allPermissions, expalinAppPagePath } from "@/Lib/constants";
 import { deleteRowInAccountsTableById, updatePropertyInRowInAccountsTable, updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { BriefcaseBusiness, KeyRound, LogOut, Shell, Trash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { accounte } from "../types";
 import Permissions from "../../Global-components/Permissions/Permissions";
 import { alert, logOutFromOldAccount } from "@/Lib/functions";
@@ -16,7 +16,14 @@ import { changeLogInInfo } from "@/Rtk/Slices/UI-slices/logInInfoSlice";
 // ========================================================== //
 export default function Profile_Page() {
     const dispatch = useDispatch();
-    const state = useSelector(state => state as store_Type);
+    const state = useSelector(function (state: store_Type) {
+        return {
+            trainerDetails: state.trainerDetails,
+            accountes: state.accountes,
+            logInInfo: state.logInInfo,
+        }
+    }, shallowEqual);
+
 
     const [theAccount, setTheAccount] = useState<accounte | null>(null);
     const [permissionsList, setPermissionsList] = useState<string | string[]>("fullAccess");
@@ -48,7 +55,7 @@ export default function Profile_Page() {
             titleAfterClickOnOk: "تم حذف الحساب بنجاح",
             funRunWhenClickOnOk: function () {
                 dispatch(deleteRowInAccountsTableById(accountId as any) as any);
-                navigate(trainerPagePath);
+                navigate(expalinAppPagePath);
             }
         })
     }
@@ -110,7 +117,7 @@ export default function Profile_Page() {
     }, [theAccount?.permissions]);
 
     useEffect(function () {
-        const getAccount = state.accountes.find(ele => ele.id == (Number(accountId)));
+        const getAccount = state.accountes?.find(ele => ele.id == (Number(accountId)));
 
         setTheAccount(getAccount as accounte);
     }, [accountId, state.accountes]);

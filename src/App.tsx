@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import Trainers_Page from "./Pages/Trainers-page/Trainers_Page";
 import Settings_Page from "./Pages/Settings-page/Settings_Page";
 import SideBar from "./Global-components/Sidebar/SideBar";
@@ -12,7 +12,7 @@ import Explain_App_Page from "./Pages/Explain-app-page/Explain_App_Page";
 import Profile_Page from "./Pages/Profile-page/Profile_Page";
 import { logOutFromOldAccount, theTodayDate } from "./Lib/functions";
 import Subscriptions_Menu_Page from "./Pages/Subscriptions-menus-page/Subscriptions_Menus_Page";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { getAllRowsInTrainersTable, updatePropertyInRowInTrainersTable } from "./Rtk/Slices/Db-slices/trainersSlice";
 import { store_Type } from "./Rtk/types";
 import { getAllRowsInAccountsTable } from "./Rtk/Slices/Db-slices/accountsSlice";
@@ -21,11 +21,19 @@ import { removeTrainerDetails } from "./Rtk/Slices/UI-slices/trainerDetailsSlice
 import { changeLogInInfo, getLogInInfo } from "./Rtk/Slices/UI-slices/logInInfoSlice";
 import { accountsTable, daysDetailsTable, daysTable, subscriptionsMenusTable, trainerTable } from "./Lib/tables";
 import { getAllRowsInDaysTable } from "./Rtk/Slices/Db-slices/daysSlice";
-import { getAllRowsInDaysDetailsTable } from "./Rtk/Slices/Db-slices/daysDetailsSlice";
+import Trainer_Details from "./Pages/Trainers-page/Components/Trainer-details/Trainer_Details";
 // ========================================================== //
 function App() {
   const dispatch = useDispatch();
-  const state = useSelector(state => state as store_Type);
+  const state = useSelector(function(state: store_Type){
+    return {
+      logInInfo: state.logInInfo,
+      trainers: state.trainers,
+      trainerDetails: state.trainerDetails,
+    }
+  }, shallowEqual);
+
+  const navigate = useNavigate();
   const [todayDate, setTodayDate] = useState<Date>(theTodayDate({ startingIn12Houre: false }));
 
 
@@ -50,9 +58,9 @@ function App() {
   }
 
   function checkSubscriptionsStateForTrainers() {
-    if (state.trainers.length == 0 || state.trainers.includes(undefined as any)) return;
+    if (state.trainers?.length == 0 || state.trainers?.includes(undefined as any)) return;
 
-    state.trainers.forEach(function (ele) {
+    state.trainers?.forEach(function (ele) {
       const expirationDate = new Date(ele.subscriptionEnd);
       /*
         if the today date same subscription end date, so i don't want the finished,
@@ -88,9 +96,9 @@ function App() {
 
 
 
-
   useEffect(function () {
     runTables();
+    navigate(expalinAppPagePath);
     dispatch(changeLogInInfo(null));
 
     dispatch(getLogInInfo());
@@ -98,7 +106,6 @@ function App() {
     dispatch(getAllRowsInAccountsTable() as any);
     dispatch(getAllRowsInSubscriptionsMenusTable() as any);
     dispatch(getAllRowsInDaysTable() as any);
-    dispatch(getAllRowsInDaysDetailsTable() as any);
   }, []);
 
   useEffect(function () {
@@ -106,7 +113,7 @@ function App() {
   }, [state.logInInfo]);
 
   useEffect(() => {
-    if (state.trainers.length == 0) return;
+    if (state.trainers?.length == 0) return;
 
     const tomorrow = new Date();
 
@@ -149,6 +156,13 @@ function App() {
           <Route path={expalinAppPagePath} element={<Explain_App_Page />} />
         </Routes>
       </div>
+
+      {
+        state.trainerDetails ?
+          <Trainer_Details />
+          :
+          null
+      }
     </main>
     :
     <Authentication_Page />

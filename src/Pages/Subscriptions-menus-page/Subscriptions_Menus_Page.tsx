@@ -4,7 +4,7 @@ import { Captions, Users } from "lucide-react";
 import Subscription_Menu_Card from "./Components/Subscription_Menu_Card";
 import { useEffect, useMemo, useState } from "react";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import { addRowInSubscriptionsMenusTable } from "@/Rtk/Slices/Db-slices/subscriptionsMenusSlice";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
@@ -13,7 +13,12 @@ import { normalAlert } from "@/Lib/functions";
 // ========================================================== //
 export default function Subscriptions_Menu_Page() {
     const dispatch = useDispatch();
-    const state = useSelector(state => state as store_Type);
+    const state = useSelector(function (state: store_Type) {
+        return {
+            trainerDetails: state.trainerDetails,
+            subscriptionsMenus: state.subscriptionsMenus,
+        }
+    }, shallowEqual);
 
     const [isSaveData, setIsSaveData] = useState(false);
     const [isShowAddNewSubscriptionType, setIsShowAddNewSubscriptionType] = useState(false);
@@ -27,7 +32,7 @@ export default function Subscriptions_Menu_Page() {
 
 
     function addNewSubscriptionMenu() {
-        if (state.subscriptionsMenus.length == 6) {
+        if (state.subscriptionsMenus?.length == 6) {
             normalAlert({
                 title: "المعذره",
                 text: "لقد وصلت للحد الاقصى",
@@ -73,7 +78,7 @@ export default function Subscriptions_Menu_Page() {
 
 
     const totalActivesMenu = useMemo(function () {
-        return state.subscriptionsMenus.filter(ele => ele.isActive == "true" && ele).length;
+        return state.subscriptionsMenus?.filter(ele => ele.isActive == "true" && ele).length || 0;
     }, [state.subscriptionsMenus]);
 
 
@@ -86,14 +91,14 @@ export default function Subscriptions_Menu_Page() {
             <Box
                 icon={<Captions size={30} />}
                 title="مجموع قوائم الاشتراكات"
-                total={`${state.subscriptionsMenus.length} من اصل 6`}
+                total={`${state.subscriptionsMenus?.length} من اصل 6`}
                 styleIcon="bg-(--thirdColor)/10 text-(--thirdColor)"
             />
 
             <Box
                 icon={<Users size={30} />}
                 title="مجموع الاشتراكات المفعله"
-                total={totalActivesMenu}
+                total={totalActivesMenu as any}
                 styleIcon="bg-neutral-200 text-neutral-500"
             />
         </div>
@@ -110,13 +115,13 @@ export default function Subscriptions_Menu_Page() {
         {/* All subscriptions menu */}
         <div className="flex justify-center items-center flex-wrap gap-3">
             {
-                state.subscriptionsMenus.length == 0 ?
+                state.subscriptionsMenus?.length == 0 ?
                     <Not_Found
                         srcImg="not_found_in_subscription_menu.svg"
                         title="لا يوجد قوائم الان"
                     />
                     :
-                    state.subscriptionsMenus.map(ele => <Subscription_Menu_Card
+                    state.subscriptionsMenus?.map(ele => <Subscription_Menu_Card
                         key={ele.id}
                         id={ele.id}
                         subscriptionName={ele.subscriptionName}

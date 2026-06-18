@@ -6,13 +6,10 @@ import { Navigation } from "swiper/modules";
 import { updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import { alert, theTodayDate } from "@/Lib/functions";
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
-import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
-import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription_Info_Form";
-import Trainer_Info_Form from "../Forms/Trainer-info-form/Trainer_Info_Form";
 import { regexPhone } from "@/Lib/REGEX";
 import Btn_Delete_Trainer from "./Btns/Btn_Delete_Trainer";
 import Btn_Subscription_Renewal from "./Btns/Btn_Subscription_Renewal";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
 import { store_Type } from "@/Rtk/types";
 import { removeTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
@@ -21,11 +18,20 @@ import Sessions from "./Sessions/Sessions";
 import { removeSubscriptionStart } from "@/Rtk/Slices/UI-slices/subscriptionStartSlice";
 import { removeSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSlice";
 import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
+import Date_Info_Form from "@/Pages/Trainers-page/Components/Forms/Date-info-form/Date_Info_Form";
+import Subscription_Info_Form from "@/Pages/Trainers-page/Components/Forms/Subscription-info-form/Subscription_Info_Form";
+import Trainer_Info_Form from "@/Pages/Trainers-page/Components/Forms/Trainer-info-form/Trainer_Info_Form";
 // ========================================================== //
 export default function Trainer_Details() {
     const dispatch = useDispatch();
-    const state = useSelector(state => state as store_Type);
-
+    const state = useSelector(function (state: store_Type) {
+        return {
+            subscriptionStart: state.subscriptionStart,
+            subscriptionEnd: state.subscriptionEnd,
+            sessionsCount: state.sessionsCount,
+            trainerDetails: state.trainerDetails,
+        }
+    }, shallowEqual);
 
     const [subscriptionState, setSubscriptionState] = useState(stateIsActive);
     // These for swiper
@@ -177,6 +183,7 @@ export default function Trainer_Details() {
 
 
 
+
     if (!state.trainerDetails) return null;
 
     return <Popup_Form
@@ -197,7 +204,7 @@ export default function Trainer_Details() {
         < Sessions />
 
         {/* Title & arrowes */}
-        < div className="mb-5 flex justify-between items-center" >
+        <div className="mb-5 flex justify-between items-center">
             <div className="flex items-center gap-2 text-(--thirdColor)">
                 <SquarePen size={23} />
                 <h3 className="font-bold">
@@ -229,7 +236,7 @@ export default function Trainer_Details() {
         </div >
 
         {/* Trainer info & Subscription info & Date info */}
-        < div className="mb-16" >
+        <div className="mb-16">
             <Swiper
                 modules={[Navigation]}
                 allowTouchMove={false}
@@ -264,10 +271,10 @@ export default function Trainer_Details() {
                     <Date_Info_Form />
                 </SwiperSlide>
             </Swiper>
-        </div >
+        </div>
 
         {/* Warning zone */}
-        < div className="bg-red-100/50 p-3 rounded-lg border border-red-300" >
+        <div className="bg-red-100/50 p-3 rounded-lg border border-red-300" >
             <h3 className=" text-red-500 font-bold mb-3">
                 منطقة الإجراءات
             </h3>
@@ -285,6 +292,6 @@ export default function Trainer_Details() {
 
                 <Btn_Delete_Trainer trainerId={state.trainerDetails.trainerId as any} />
             </div>
-        </div >
+        </div>
     </Popup_Form >
 }

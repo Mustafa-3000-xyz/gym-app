@@ -2,7 +2,7 @@ import All_Accountes from "@/Global-components/All-accountes/All_Accountes";
 import { IdCardLanyard, Shell } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import Box from "@/Global-components/Box/Box";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
@@ -15,7 +15,13 @@ import { normalAlert } from "@/Lib/functions";
 // ========================================================== //
 export default function Accountes_Page() {
     const dispatch = useDispatch();
-    const state = useSelector(state => state as store_Type);
+    const state = useSelector(function (state: store_Type) {
+        return {
+            logInInfo: state.logInInfo,
+            accountes: state.accountes,
+        }
+    }, shallowEqual);
+
 
     const [isShowAddAccount, setIsShowAddAccount] = useState<boolean>(false);
     const [getName, setGetName] = useState("");
@@ -33,7 +39,7 @@ export default function Accountes_Page() {
             return;
         }
 
-        if (state.accountes.length == 4) {
+        if (state.accountes?.length == 4) {
             normalAlert({
                 title: "المعذره",
                 text: "لقد وصلت للحد الاقصى",
@@ -75,9 +81,8 @@ export default function Accountes_Page() {
     }, [getName, getAge, getPassword]);
 
 
-
     const theAccount = useMemo(function () {
-        return state.accountes.find(ele => ele.id == state.logInInfo?.id);
+        return state.accountes?.find(ele => ele.id == state.logInInfo?.id);
     }, [state.accountes]);
 
 
@@ -91,7 +96,7 @@ export default function Accountes_Page() {
                 title="مجموع الحسابات"
                 styleIcon="bg-(--thirdColor)/10 text-(--thirdColor)"
                 total={`
-                    ${state.accountes.length} من اصل 4
+                    ${state.accountes?.length} من اصل 4
                 `}
             />
 
@@ -99,9 +104,7 @@ export default function Accountes_Page() {
                 icon={<Shell size={25} />}
                 title="مجموع الحصص المفعله"
                 styleIcon="bg-neutral-200 text-neutral-500"
-                total={
-                    Math.trunc(state.accountes.reduce((sum, ele) => sum + Number(ele.totalActiveSubscriptions), 0))
-                }
+                total={Math.trunc(state.accountes?.reduce((sum, ele) => sum + Number(ele.totalActiveSubscriptions), 0) || 0)}
             />
         </div>
 

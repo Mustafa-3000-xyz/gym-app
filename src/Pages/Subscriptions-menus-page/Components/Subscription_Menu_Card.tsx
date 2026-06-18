@@ -17,10 +17,9 @@ export default function Subscription_Menu_Card(
 ) {
     const dispatch = useDispatch();
 
-    const [getValueForIsActive, setGetValueForIsActive] = useState(isActive);
-
     const [isEditing, setIsEditing] = useState(false);
     const [isSaveChanges, setIsSaveChanges] = useState(false);
+    const [getValueForIsActive, setGetValueForIsActive] = useState(isActive);
 
     const [nameVal, setNameVal] = useState(subscriptionName);
     const [sessionsVal, setSessionsVal] = useState(sessionsCount);
@@ -132,9 +131,9 @@ export default function Subscription_Menu_Card(
                 }
             </li>
 
-            <li>حالة الاشتراك :   
+            <li>حالة الاشتراك :
                 <span className={`${isActive ? "text-emerald-500" : "text-red-500"} ms-1`}>
-                    {isActive ? "مفعل" : "غير مفعل"} 
+                    {isActive ? "مفعل" : "غير مفعل"}
                 </span>
             </li>
         </ul>

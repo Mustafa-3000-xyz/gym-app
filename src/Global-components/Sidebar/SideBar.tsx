@@ -1,6 +1,6 @@
 import { Archive, Book, Captions, CircleUser, IdCardLanyard, Settings, Users, WalletMinimal } from "lucide-react";
 import Sidebar_Links from "./Sidebar-links/Sidebar_Links";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { store_Type } from "@/Rtk/types";
 import { accounte } from "@/Pages/types";
@@ -8,7 +8,12 @@ import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profi
 import { Link, useLocation } from "react-router-dom";
 // ========================================================== //
 export default function SideBar() {
-    const state = useSelector(state => state as store_Type);
+    const state = useSelector(function (state: store_Type) {
+        return {
+            logInInfo: state.logInInfo,
+            accountes: state.accountes,
+        }
+    }, shallowEqual);
 
     const [theAccount, setTheAccount] = useState<accounte | null>(null);
     const { pathname } = useLocation();
@@ -16,10 +21,8 @@ export default function SideBar() {
 
 
 
-
-
     useEffect(function () {
-        const result = state.accountes.find(ele => ele.id == state.logInInfo?.id);
+        const result = state.accountes?.find(ele => ele.id == state.logInInfo?.id);
 
         if (!result) {
             setTheAccount(null);

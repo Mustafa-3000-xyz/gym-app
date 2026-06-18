@@ -1,6 +1,6 @@
 import { trainer } from "@/Pages/types";
 import { styleForSubscriptionState } from "@/Lib/functions";
-import { styleDate } from "@/Lib/constants";
+import { styleDate, trainerPagePath } from "@/Lib/constants";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
@@ -9,15 +9,20 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Btn_Slide from "./Btn-slide/Btn_Slide";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { addTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { store_Type } from "@/Rtk/types";
+import { useNavigate } from "react-router-dom";
 // ========================================================== //
 export default function Table_For_Trainers(
     { trainersList }: { trainersList: trainer[] }
 ) {
     const dispath = useDispatch();
-    const logInInfo = useSelector(state => state as store_Type).logInInfo;
+    const state = useSelector(function (state: store_Type) {
+        return {
+            logInInfo: state.logInInfo,
+        }
+    }, shallowEqual);
 
 
 
@@ -26,38 +31,32 @@ export default function Table_For_Trainers(
 
     const [slides, setSlides] = useState<trainer[][]>([]);
     const [currentSlide, setCurrentSlide] = useState<number>(0);
+
+    const navigation = useNavigate();
     const trainersCountInSlide = 6;
 
 
 
 
     function clickOnTrainer(trainer: trainer) {
+        navigation(trainerPagePath);
         dispath(addTrainerDetails(trainer));
     }
 
 
-    // This for create slides, and each slides have 5 trainers or less
+    // This for create slides, and each slides have 6 trainers or less
     useEffect(function () {
-        let arr = [];
+        const arr: trainer[][] = [];
 
-        for (let i = 0; i < trainersList.length; i++) {
-            if (i == trainersCountInSlide - 1) {
-                const value = trainersList.slice(0, trainersCountInSlide);
-                arr.push(value);
-
-                trainersList.splice(0, trainersCountInSlide);
-                i = 0;
-            }
-        }
-
-        if (trainersList.length < trainersCountInSlide && trainersList.length != 0) {
-            arr.push(trainersList);
+        for (let i = 0; i < trainersList.length; i += trainersCountInSlide) {
+            const createSlice = trainersList.slice(i, i + trainersCountInSlide);
+            arr.push(createSlice);
         }
 
 
-        setSlides(arr as any);
+        setSlides(arr);
+        setCurrentSlide(0);
     }, [trainersList]);
-
 
     // Check the slides[currentSlide] return value or no
     useEffect(function () {
@@ -98,7 +97,7 @@ export default function Table_For_Trainers(
                         onClick={() => clickOnTrainer(ele as trainer)}
                         className={`
                             text-center bg-slate-100 cursor-pointer transition duration-100
-                            hover:text-white ${logInInfo?.type == "manager" ? "hover:bg-(--managerColor)" : "hover:bg-(--captainColor)"}
+                            hover:text-white ${state.logInInfo?.type == "manager" ? "hover:bg-(--managerColor)" : "hover:bg-(--captainColor)"}
                         `}
                     >
                         <td className="p-2 py-4">{ele.firstName} {ele.lastName}</td>

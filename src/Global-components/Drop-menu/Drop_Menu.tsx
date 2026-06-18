@@ -1,27 +1,29 @@
-import { useEffect, useRef, useState } from "react";
+import { ReactElement, useEffect, useRef, useState } from "react";
 import { Drop_Menu_Props } from "../types";
 import Animation from "../Animation/Animation";
 import Not_Found from "../Not-found/Not_Found";
+import { Children, isValidElement } from "react";
 // ========================================================== //
 export default function Drop_Menu(
     {
-        title,
-        icon,
-        menuIsFullWidth = false,
+        messageForNotAddChildren = "",
+        classNameForMenu = "",
         isShowTheMenu = false,
-        children = null,
-        menuHeight = "auto",
+        children,
         onGetCurrentIsShowMenu
     }: Drop_Menu_Props
 ) {
+    const [topContent, setTopContent] = useState<ReactElement | any>(null);
+    const [bottomContent, setBottomContent] = useState<ReactElement | any>(null);
+
     const [isShowMenu, setIsShowMenu] = useState(false);
-    const btnFilterRef = useRef<HTMLButtonElement>(null);
+    const topContentRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
 
 
 
-    function closemenu() {
+    function clickOnTopContnet() {
         if (!isShowMenu) {
             setIsShowMenu(true);
         }
@@ -31,26 +33,40 @@ export default function Drop_Menu(
     }
 
 
+
+
     useEffect(function () {
         onGetCurrentIsShowMenu?.(isShowMenu);
     }, [isShowMenu]);
 
+    useEffect(function () {
+        Children.forEach(children, (child) => {
+            if (!isValidElement(child)) return;
+            const element = child as ReactElement | any;
+
+
+            if (element.type?.name == "Top_Content_For_The_Drop") {
+                setTopContent(child);
+            } else if (element.type?.name == "Bottom_Content_For_The_Drop") {
+                setBottomContent(child);
+            }
+        });
+    }, [children]);
 
     useEffect(function () {
-        if (!isShowTheMenu) {
-            setIsShowMenu(false);
+        if (isShowTheMenu == false) {
+            setIsShowMenu(isShowTheMenu);
         }
     }, [isShowTheMenu]);
-
 
     useEffect(() => {
         function handleCloseMenu(e: MouseEvent) {
             if (
                 !menuRef.current?.contains(e.target as any)
                 &&
-                btnFilterRef.current != e.target
+                topContentRef.current != e.target
                 &&
-                !btnFilterRef.current?.contains(e.target as any)
+                !topContentRef.current?.contains(e.target as any)
             ) {
                 setIsShowMenu(false);
             }
@@ -58,26 +74,26 @@ export default function Drop_Menu(
 
         document.addEventListener("mousedown", handleCloseMenu);
         return () => document.removeEventListener("mousedown", handleCloseMenu);
-    }, [btnFilterRef, menuRef]);
+    }, [topContentRef, menuRef]);
+
+
 
 
 
     return <div
         className={`
-            relative w-full
             duration-500 cursor-pointer  
+            relative w-full h-full flex flex-col justify-center items-center
             bg-slate-100 border border-slate-300 rounded-lg
-            ${isShowMenu ? "bg-slate-200" : "hover:bg-slate-200"}
         `}
     >
-        <button
-            className="w-full h-full flex items-center justify-center gap-2 cursor-pointer py-2"
-            ref={btnFilterRef}
-            onClick={closemenu}
+        <div
+            className="w-full h-full flex items-center justify-center gap-2 cursor-pointer"
+            ref={topContentRef}
+            onClick={clickOnTopContnet}
         >
-            <span>{icon}</span>
-            <span>{title}</span>
-        </button>
+            {topContent}
+        </div>
 
 
         {
@@ -87,8 +103,7 @@ export default function Drop_Menu(
                     className={`
                         absolute top-full mt-2 z-50
                         shadow-2xl p-4 rounded-md select-none bg-slate-100 !cursor-default
-                        ${menuIsFullWidth ? "w-full" : "w-[340px]"}
-                        ${menuHeight == "fixed" ? "h-[409px] overflow-auto" : ""}
+                        ${classNameForMenu}
                     `}
                     initial={{
                         y: -30
@@ -99,16 +114,16 @@ export default function Drop_Menu(
                     }}
                 >
                     {
-                        children == null ?
+                        !bottomContent || !bottomContent.props.children ?
                             <div className="h-full flex justify-center">
                                 <Not_Found
-                                    title="لا يوجد قيم"
+                                    title={messageForNotAddChildren}
                                     srcImg="not_found_in_drop_menu.svg"
                                     className="w-30"
                                 />
                             </div>
                             :
-                            children
+                            bottomContent
                     }
                 </Animation>
                 :

@@ -43,7 +43,7 @@ export interface day {
 
 export interface dayDetails {
     id?: number,
-    dateId: number,
+    dayId: number,
     accountId: number,
     trainers: number[],
 }
@@ -101,14 +101,6 @@ export interface filter {
     subscriptionType: string,
 }
 
-export interface Search_Result_Props {
-    searchInpRef: React.RefObject<HTMLInputElement | null>,
-    searchResult: trainer[],
-    onIsShowSearchResult: (x: boolean) => void,
-    onGetSearchResult: (x: trainer[]) => void,
-    onGetSearchValue: (x: string) => void,
-}
-
 export interface Btn_Save_Change_Props {
     id: string | number,
     trainerState: any,
@@ -153,4 +145,28 @@ export interface sessionListForRead {
     session: number,
     date?: null | any,
     isActive: boolean
+}
+
+export interface box_Info_In_Trainers_Page {
+    name: string,
+    styleBgForIcon: string,
+    icon: any,
+    total: number,
+}
+
+export interface Filter_For_Attendance_Props {
+    filterType: number | "allTrainers",
+    dayDetails: dayDetails[],
+    onGetTrainers: (x: trainer[]) => void
+    onChangeFilterType: (x: number | "allTrainers") => void,
+}
+
+export interface Date_Box_Props {
+    onGetDayDetails: (x: dayDetails[]) => void,
+    onChangeFilterType: (x: number | "allTrainers") => void,
+}
+
+export interface Filter_For_Trainers_Props {
+    onGetTrainers: (x: trainer[]) => void,
+    onGetBoxInfo: (x: box_Info_In_Trainers_Page) => void,
 }

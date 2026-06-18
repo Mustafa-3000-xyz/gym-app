@@ -1,17 +1,35 @@
 import Box from "@/Global-components/Box/Box";
-import Input_Search from "@/Global-components/Input-search/Input_Search";
 import { BookUser, CalendarDays } from "lucide-react";
 import Date_Box from "./Components/Date-box/Date_Box";
-import Filter_Attendee from "./Components/Filter-attendee/Filter_Attendee";
 import Table_For_Trainers from "@/Global-components/Table-for-trainers/Table_For_Trainers";
+import { useState } from "react";
+import { dayDetails, trainer } from "../types";
+import Fitler from "./Components/Filter/Fitler";
+import { shallowEqual, useSelector } from "react-redux";
+import { store_Type } from "@/Rtk/types";
+import Search_Box_For_Trainers from "@/Global-components/Search-box-for-trainers/Search_Box_For_Trainers";
 // ========================================================== //
 export default function Attendance_Recorde_Page() {
+    const state = useSelector(function (state: store_Type) {
+        return {
+            days: state.days,
+        }
+    }, shallowEqual);
+
+
+    const [getTrainers, setGetTrainers] = useState<trainer[]>([]);
+    const [getDayDetails, setGetDayDetails] = useState<dayDetails[]>([]);
+    const [filterType, setFilterType] = useState<number | "allTrainers">("allTrainers");
+
+
+
+
     return <div>
         {/* Boxes */}
         <div className="mb-7 grid grid-cols-2 gap-3">
             <Box
                 title="مجموع الحضور"
-                total={34243}
+                total={getTrainers.length}
                 styleIcon="bg-(--thirdColor)/10 text-(--thirdColor)"
                 icon={<BookUser
                     size={33}
@@ -21,7 +39,7 @@ export default function Attendance_Recorde_Page() {
 
             <Box
                 title="مجموع الايام التي حضر فيها المتدربين"
-                total={34243}
+                total={state.days?.length || 0}
                 styleIcon="bg-neutral-200 text-neutral-500"
                 icon={<CalendarDays
                     size={33}
@@ -34,25 +52,26 @@ export default function Attendance_Recorde_Page() {
         <div className="bg-slate-100 p-3 py-7 rounded-lg grid grid-cols-4 gap-3">
             {/* Search */}
             <div className="col-span-2">
-                <Input_Search
-                    placeholder="البحث عن حاضر"
-                    onGetValue={() => null}
-                />
+                <Search_Box_For_Trainers arrayForSearch={getTrainers} />
             </div>
 
             {/* Date box & filter attendee */}
-            <div className="col-span-2 flex gap-3">
-                <div className="w-4/5">
-                    <Date_Box />
-                </div>
-                
-                <div className="w-2/7">
-                    <Filter_Attendee />
-                </div>
+            <div className="col-span-2 grid grid-cols-2 gap-3">
+                <Date_Box
+                    onChangeFilterType={setFilterType}
+                    onGetDayDetails={setGetDayDetails}
+                />
+
+                <Fitler
+                    filterType={filterType}
+                    dayDetails={getDayDetails}
+                    onChangeFilterType={setFilterType}
+                    onGetTrainers={setGetTrainers}
+                />
             </div>
         </div>
 
         {/* Table */}
-        <Table_For_Trainers trainersList={[]}/>
+        <Table_For_Trainers trainersList={getTrainers} />
     </div>
 }

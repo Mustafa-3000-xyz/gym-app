@@ -4,7 +4,7 @@ import { addSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import { store_Type } from "@/Rtk/types";
 import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 // ========================================================== //
 export default function Subscriptions_Menu(
     {
@@ -13,8 +13,12 @@ export default function Subscriptions_Menu(
     }: Subscriptions_Menu_Props
 ) {
     const dispatch = useDispatch();
-    const state = useSelector(state => state as store_Type);
-
+    const state = useSelector(function (state: store_Type) {
+        return {
+            trainerDetails: state.trainerDetails,
+            subscriptionsMenus: state.subscriptionsMenus,
+        }
+    }, shallowEqual);
 
     const [isShowMenu, setIsShowMenu] = useState(false);
     const [menusList, setMenusList] = useState<subscriptionsMenus[] | null>(null);
@@ -32,11 +36,11 @@ export default function Subscriptions_Menu(
 
 
     useEffect(function () {
-        if (state.subscriptionsMenus.length == 0) return;
+        if (state.subscriptionsMenus?.length == 0) return;
         const arr: subscriptionsMenus[] = [];
 
 
-        state.subscriptionsMenus.forEach(ele => ele.isActive == "true" && arr.push(ele));
+        state.subscriptionsMenus?.forEach(ele => ele.isActive == "true" && arr.push(ele));
         setMenusList(arr.length == 0 ? null : arr);
     }, [state.subscriptionsMenus]);
 
@@ -44,7 +48,8 @@ export default function Subscriptions_Menu(
 
     return <Drop_Menu
         title="قوائم الاشتراكات"
-        menuHeight="fixed"
+        messageForNotAddChildren="لا يوجد قوائم اشتراك"
+        menuHeight={Number(state.subscriptionsMenus?.length) >= 5 ? "fixed" : "auto"}
         menuIsFullWidth={true}
         isShowTheMenu={isShowMenu}
         icon={<Menu size={23} />}

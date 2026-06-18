@@ -17,7 +17,6 @@ export default function Cover_Img(
 
 
 
-
     function clickOnCover() {
         if (!isChangeCoverImg) return;
         inpRef.current?.click()
@@ -51,8 +50,6 @@ export default function Cover_Img(
             value: ""
         }) as any);
     }
-
-
 
 
 

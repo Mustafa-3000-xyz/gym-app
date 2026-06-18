@@ -7,7 +7,7 @@ import Subscription_Info_Form from "../Forms/Subscription-info-form/Subscription
 import { incrementOrDecrementForTotalSessionsInAccount, normalAlert, theTodayDate } from "@/Lib/functions";
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
 import Date_Info_Form from "../Forms/Date-info-form/Date_Info_Form";
-import { useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { activeSessionsList_Type, trainer } from "@/Pages/types";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
 import { store_Type } from "@/Rtk/types";
@@ -20,8 +20,14 @@ export default function Add_Trainer(
     { onIsShowAddTrainer }: { onIsShowAddTrainer: (x: boolean) => void }
 ) {
     const dispatch = useDispatch();
-    const state = useSelector(state => state as store_Type);
-
+    const state = useSelector(function (state: store_Type) {
+        return {
+            subscriptionStart: state.subscriptionStart,
+            subscriptionEnd: state.subscriptionEnd,
+            logInInfo: state.logInInfo,
+            sessionsCount: state.sessionsCount,
+        }
+    }, shallowEqual);
 
 
     // Get trainer info
@@ -36,6 +42,7 @@ export default function Add_Trainer(
     const [getActiveSomeSessions, setGetActiveSomeSessions] = useState<number>(0);
 
     const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
+
 
 
 
@@ -102,7 +109,6 @@ export default function Add_Trainer(
 
 
 
-
     const isAllInfoComplete = useMemo(function () {
         // This check the trainer info is compolete or no
         if (
@@ -149,7 +155,7 @@ export default function Add_Trainer(
         discription="الان, يمكنك إضافة متدرب جديد"
         isSave={isAllInfoComplete}
         clickOnCancel={() => {
-            onIsShowAddTrainer(false)
+            onIsShowAddTrainer(false);
             dispatch(removeSubscriptionStart());
             dispatch(removeSubscriptionEnd());
             dispatch(removeAllSessions());

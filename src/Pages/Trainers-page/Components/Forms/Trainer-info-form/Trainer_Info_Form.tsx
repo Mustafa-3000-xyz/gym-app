@@ -2,7 +2,7 @@ import { Trainer_Info_Form_Props } from "@/Pages/types";
 import { regexFindSpacesInTranierName, regexPhone } from "@/Lib/REGEX";
 import { useEffect, useState } from "react";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
-import { useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 // ========================================================== //
 export default function Trainer_Info_Form(
@@ -13,8 +13,11 @@ export default function Trainer_Info_Form(
         onGetAddress
     }: Trainer_Info_Form_Props
 ) {
-    const trainerDetails = useSelector(state => state as store_Type).trainerDetails;
-
+    const state = useSelector(function (state: store_Type) {
+        return {
+            trainerDetails: state.trainerDetails,
+        }
+    }, shallowEqual);
 
     const [firstName, setFirstName] = useState<string>("");
     const [lastName, setLastName] = useState<string>("");
@@ -83,18 +86,18 @@ export default function Trainer_Info_Form(
 
     // When open trainerDetails details, i want show his values
     useEffect(function () {
-        if (trainerDetails) {
-            setFirstName(trainerDetails?.firstName as any);
-            setLastName(trainerDetails?.lastName as any);
-            setPhone(trainerDetails?.phone as any);
-            setAddress(trainerDetails?.address as any);
+        if (state.trainerDetails) {
+            setFirstName(state.trainerDetails?.firstName as any);
+            setLastName(state.trainerDetails?.lastName as any);
+            setPhone(state.trainerDetails?.phone as any);
+            setAddress(state.trainerDetails?.address as any);
         } else {
             setFirstName("");
             setLastName("");
             setPhone("");
             setAddress("");
         }
-    }, [trainerDetails]);
+    }, [state.trainerDetails]);
 
 
     useEffect(function () {

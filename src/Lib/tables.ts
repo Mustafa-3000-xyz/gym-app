@@ -89,10 +89,10 @@ export async function daysDetailsTable() {
         await db.execute(`
             CREATE TABLE IF NOT EXISTS daysDetails (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                dateId INTEGER,
+                dayId INTEGER,
                 accountId INTEGER,
                 trainers JSON,
-                FOREIGN KEY (dateId) REFERENCES days (id) ON DELETE CASCADE
+                FOREIGN KEY (dayId) REFERENCES days (id) ON DELETE CASCADE
             )
         `);
     } catch (err) {
