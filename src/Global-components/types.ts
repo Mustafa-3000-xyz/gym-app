@@ -116,3 +116,13 @@ export interface Search_Result_Props {
     arrayContainsTrainers: trainer[],
     onIsShowSearchResult: (x: boolean) => void,
 }
+
+export interface Top_Content_For_The_Drop_Props{
+    children: ReactNode, 
+    className?: string
+}
+
+export interface Bottom_Content_For_The_Drop_Props{
+    children: ReactNode, 
+    className?: string
+}

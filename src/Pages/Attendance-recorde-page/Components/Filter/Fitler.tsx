@@ -71,8 +71,7 @@ export default function (
 
         {
             dayDetails.length != 0 ?
-                <Bottom_Content_For_The_Drop className={`${trainersIds.length >= 4 ? "h-[209px] overflow-auto p-3" : ""}`}
-                >
+                <Bottom_Content_For_The_Drop className={`${trainersIds.length >= 4 ? "h-[209px] overflow-auto p-3" : ""}`}>
                     {
                         dayDetails.map(ele => {
                             const getAccount = state.accountes?.find(acc => acc.id == ele.accountId);

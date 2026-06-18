@@ -21,6 +21,7 @@ import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import Date_Info_Form from "@/Pages/Trainers-page/Components/Forms/Date-info-form/Date_Info_Form";
 import Subscription_Info_Form from "@/Pages/Trainers-page/Components/Forms/Subscription-info-form/Subscription_Info_Form";
 import Trainer_Info_Form from "@/Pages/Trainers-page/Components/Forms/Trainer-info-form/Trainer_Info_Form";
+import { activeSessionsList_Type } from "@/Pages/types";
 // ========================================================== //
 export default function Trainer_Details() {
     const dispatch = useDispatch();
@@ -48,6 +49,7 @@ export default function Trainer_Details() {
     const [getLastName, setGetLastName] = useState<string>("");
     const [getPhone, setGetPhone] = useState<number | string>("");
     const [getAddress, setGetAddress] = useState<string>("");
+    const [getActiveSessionsList, setGetActiveSessionsList] = useState<activeSessionsList_Type[]>([]);
     const [getSubscriptionName, setGetSubscriptionName] = useState<string | string>("");
     const [getPrice, setGetPrice] = useState<number | string>("");
 
@@ -156,11 +158,12 @@ export default function Trainer_Details() {
             price: getPrice,
             subscriptionStart: state.subscriptionStart,
             subscriptionEnd: state.subscriptionEnd,
+            activeSessionsList: JSON.stringify(getActiveSessionsList)
         };
     }, [
         state.trainerDetails, state.sessionsCount, , getFirstName, getLastName,
         getAddress, getPhone, getSubscriptionName, getPrice,
-        state.subscriptionStart, state.subscriptionEnd
+        state.subscriptionStart, state.subscriptionEnd, getActiveSessionsList
     ]);
 
     const statusTheSubscription = useMemo(() => {
@@ -201,7 +204,7 @@ export default function Trainer_Details() {
         clickOnSaveBtn={updateInfo}
     >
         {/* Sessions */}
-        < Sessions />
+        < Sessions onGetActiveSessionsList={setGetActiveSessionsList}/>
 
         {/* Title & arrowes */}
         <div className="mb-5 flex justify-between items-center">

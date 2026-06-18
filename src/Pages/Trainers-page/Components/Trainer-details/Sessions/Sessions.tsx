@@ -14,7 +14,9 @@ import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import { addRowInDaysTable, deleteRowInDaysTableById } from "@/Rtk/Slices/Db-slices/daysSlice";
 import { addRowInDaysDetailsTable, deleteRowInDaysDetailsTableById, updatePropertyInRowInDaysDetailsTable } from "@/Rtk/Slices/Db-slices/daysDetailsSlice";
 // ========================================================== //
-export default function Sessions() {
+export default function Sessions(
+    { onGetActiveSessionsList }: { onGetActiveSessionsList: (x: activeSessionsList_Type[]) => void }
+) {
     const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
@@ -125,7 +127,6 @@ export default function Sessions() {
                 "decrement"
             );
         }
-
 
         setActiveSessionsList(copyActiveSessionsList);
         dispatch(updatePropertyInRowInTrainersTable({
@@ -253,7 +254,10 @@ export default function Sessions() {
 
     // This for alert
     useEffect(function () {
-        if (activeSessionsList.length == 0) return;
+        if (activeSessionsList.length == 0) {
+            onGetActiveSessionsList([]);
+            return
+        };
 
         const lastSession = activeSessionsList[activeSessionsList.length - 1];
         const sessionDate = new Date(lastSession?.activationDate);
@@ -265,6 +269,7 @@ export default function Sessions() {
         const formating = format(nextDayDate, styleDate);
 
         setNextDay(formating);
+        onGetActiveSessionsList(activeSessionsList);
     }, [activeSessionsList, todayDate]);
 
 
