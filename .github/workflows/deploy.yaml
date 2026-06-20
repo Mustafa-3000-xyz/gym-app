@@ -14,8 +14,8 @@ jobs:
         include:
           - platform: 'windows-latest'
             os_name: 'windows'
-          - platform: 'macos-latest'
-            os_name: 'macos'
+          - platform: 'ubuntu-latest'
+            os_name: 'linux'
 
     runs-on: ${{ matrix.platform }}
 
@@ -31,12 +31,19 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
+
+      - name: Install Linux Dependencies
+        if: matrix.os_name == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev build-essential curl wget libssl-dev libayatana-appindicator3-dev librsvg2-dev
+
       - name: Install Frontend Dependencies
         run: npm install
 
 
       - name: Build Tauri App
-        uses: tauri-apps/tauri-action@v2
+        uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -54,9 +61,10 @@ jobs:
             FILE_NAME="gym-app-${{ github.ref_name }}.msi"
             CONTENT_TYPE="application/octet-stream"
           else
-            FILE_PATH=$(ls src-tauri/target/release/bundle/dmg/*.dmg | head -n 1)
-            FILE_NAME="gym-app-${{ github.ref_name }}.dmg"
-            CONTENT_TYPE="application/x-apple-diskimage"
+            # هنا بنجيب ملف الـ .deb الخاص باللينكس
+            FILE_PATH=$(ls src-tauri/target/release/bundle/deb/*.deb | head -n 1)
+            FILE_NAME="gym-app-${{ github.ref_name }}.deb"
+            CONTENT_TYPE="application/vnd.debian.binary-package"
           fi
 
           echo "جاري رفع الملف $FILE_NAME إلى سوبابيز..."
