@@ -22,11 +22,10 @@ export default function Date_Box(
     const state = useSelector(function (state: store_Type) {
         return {
             days: state.days,
-            daysDetails: state.daysDetails,
         }
     }, shallowEqual);
 
-    const [positionDate, setPositionDate] = useState(Math.max(0, state.days?.length as any- 1));
+    const [positionDate, setPositionDate] = useState(Math.max(0, state.days?.length as any - 1));
     const [isBeginning, setIsBeginning] = useState(true);
     const [isEnd, setIsEnd] = useState(false);
 
@@ -62,20 +61,17 @@ export default function Date_Box(
 
 
 
-    // When select date, i want update the transaction the date in swiper
-    useEffect(() => {
+    useEffect(function () {
+        // When select date, i want update the transaction the date in swiper
         if (swiperRef.current) {
             swiperRef.current.slideTo(positionDate);
         }
-    }, [positionDate]);
 
-    useEffect(function () {
         const getDayId = state.days?.find((_, i) => i == positionDate)?.id;
 
         onChangeFilterType("allTrainers");
         catchDayDetails(Number(getDayId));
-    }, [state.days, state.daysDetails, positionDate]);
-
+    }, [state.days, positionDate]);
 
 
 

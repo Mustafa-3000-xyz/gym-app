@@ -11,6 +11,7 @@ import Table_For_Trainers from "@/Global-components/Table-for-trainers/Table_For
 import Search_Box_For_Trainers from "@/Global-components/Search-box-for-trainers/Search_Box_For_Trainers";
 import { getAllDetailsForMainDay, theTodayDate } from "@/Lib/functions";
 import Filter from "./Components/Filter/Filter";
+import Trainer_Details from "./Components/Trainer-details/Trainer_Details";
 // ========================================================== //
 export default function Trainers_Page() {
     const state = useSelector(function (state: store_Type) {
@@ -18,6 +19,7 @@ export default function Trainers_Page() {
             days: state.days,
             daysDetails: state.daysDetails,
             trainers: state.trainers,
+            trainerDetails: state.trainerDetails
         }
     }, shallowEqual);
 
@@ -168,6 +170,13 @@ export default function Trainers_Page() {
         {
             isShowAddTrainer ?
                 <Add_Trainer onIsShowAddTrainer={setIsShowAddTrainer} />
+                :
+                null
+        }
+
+        {
+            state.trainerDetails ?
+                <Trainer_Details />
                 :
                 null
         }
