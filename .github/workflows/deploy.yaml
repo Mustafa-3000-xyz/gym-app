@@ -48,6 +48,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
+          releaseName: 'Gym App ${{\ github.ref_name \}}'
+          releaseBody: 'New release update for Gym App version ${{\ github.ref_name \}}'
 
 
       - name: Upload Build to Supabase Storage
