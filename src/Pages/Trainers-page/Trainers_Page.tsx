@@ -23,7 +23,7 @@ export default function Trainers_Page() {
 
     const [getTrainersAfterFilter, setGetTrainersAfterFilter] = useState<trainer[]>([]);
     const [getBoxInfo, setGetBoxInfo] = useState<box_Info_In_Trainers_Page | null>(null);
-    const filterInLocalStorage = JSON.parse(localStorage.getItem("filter") as any);
+    const filterInLocalStorage = JSON.parse(localStorage.getItem("filter") || "{}" as any);
 
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
     const [attendanceTodayTotal, setAttendanceTodayTotal] = useState(0);
