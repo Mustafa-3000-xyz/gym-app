@@ -1,0 +1,67 @@
+name: Build gym app and upload to supabase storage
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-and-upload:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'windows-latest'
+            os_name: 'windows'
+          - platform: 'macos-latest'
+            os_name: 'macos'
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Frontend Dependencies
+        run: npm install
+
+
+      - name: Build Tauri App
+        uses: tauri-apps/tauri-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+
+
+      - name: Upload Build to Supabase Storage
+        shell: bash
+        env:
+          SUPABASE_URL: "https://alqlzackgkgirrtxdzku.supabase.co"
+          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [ "${{ matrix.os_name }}" = "windows" ]; then
+            FILE_PATH=$(ls src-tauri/target/release/bundle/msi/*.msi | head -n 1)
+            FILE_NAME="gym-app-${{ github.ref_name }}.msi"
+            CONTENT_TYPE="application/octet-stream"
+          else
+            FILE_PATH=$(ls src-tauri/target/release/bundle/dmg/*.dmg | head -n 1)
+            FILE_NAME="gym-app-${{ github.ref_name }}.dmg"
+            CONTENT_TYPE="application/x-apple-diskimage"
+          fi
+
+          echo "جاري رفع الملف $FILE_NAME إلى سوبابيز..."
+          
+          curl -X POST "${SUPABASE_URL}/storage/v1/object/apps/${FILE_NAME}" \
+            -H "Authorization: Bearer ${SUPABASE_KEY}" \
+            -H "Content-Type: ${CONTENT_TYPE}" \
+            --data-binary @"$FILE_PATH"
