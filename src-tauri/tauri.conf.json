@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Gym app",
-  "version": "0.1.1",
+  "version": "1.0.0",
   "identifier": "com.gymapp.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -22,6 +22,7 @@
     }
   },
   "bundle": {
+    "createUpdaterArtifacts": true,
     "active": true,
     "targets": "all",
     "icon": [
@@ -32,6 +33,12 @@
     ]
   },
   "plugins": {
-    "sql": {}
+    "sql": {},
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDE5NEU4RTY1OUM1OTA5RDgKUldUWUNWbWNaWTVPR1N1NHNreEZSZ2xBbXZJNDhkNkVoYlZxN1VnZzlsTFZycmtVazlyVGh6NGMK",
+      "endpoints": [
+        "https://alqlzackgkgirrtxdzku.supabase.co/storage/v1/object/public/apps/updater.json"
+      ]
+    }
   }
 }
