@@ -35,7 +35,7 @@
   "plugins": {
     "sql": {},
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDE5NEU4RTY1OUM1OTA5RDgKUldUWUNWbWNaWTVPR1N1NHNreEZSZ2xBbXZJNDhkNkVoYlZxN1VnZzlsTFZycmtVazlyVGh6NGMK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDk0M0YzNTZBRkY3MjlBMTIKUldRU21uTC9halUvbElKOXQvUlM5V0lVWjJnNnRjU2FNN1U4cVo0WHBmMUU1THhnYWtXT2RKUXIK",
       "endpoints": [
         "https://alqlzackgkgirrtxdzku.supabase.co/storage/v1/object/public/apps/updater.json"
       ]
