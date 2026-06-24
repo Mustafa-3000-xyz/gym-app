@@ -65,16 +65,33 @@ jobs:
             FILE_PATH=$(ls src-tauri/target/release/bundle/msi/*.msi | head -n 1)
             FILE_NAME="gym-app-${{ github.ref_name }}.msi"
             CONTENT_TYPE="application/octet-stream"
+            
+            # تحديد مسار الـ .sig للويندوز
+            SIG_PATH="${FILE_PATH}.sig"
+            SIG_NAME="${FILE_NAME}.sig"
           else
-            # هنا بنجيب ملف الـ .deb الخاص باللينكس
             FILE_PATH=$(ls src-tauri/target/release/bundle/deb/*.deb | head -n 1)
             FILE_NAME="gym-app-${{ github.ref_name }}.deb"
             CONTENT_TYPE="application/vnd.debian.binary-package"
+            
+            # تحديد مسار الـ .sig للينكس
+            SIG_PATH="${FILE_PATH}.sig"
+            SIG_NAME="${FILE_NAME}.sig"
           fi
 
-          echo "جاري رفع الملف $FILE_NAME إلى سوبابيز..."
-          
+          echo "جاري رفع ملف الأبليكيشن: $FILE_NAME إلى سوبابيز..."
           curl -X POST "${SUPABASE_URL}/storage/v1/object/apps/${FILE_NAME}" \
             -H "Authorization: Bearer ${SUPABASE_KEY}" \
             -H "Content-Type: ${CONTENT_TYPE}" \
             --data-binary @"$FILE_PATH"
+
+          # هنا بقى بنرفع ملف الـ .sig لو موجود
+          if [ -f "$SIG_PATH" ]; then
+            echo "جاري رفع ملف الإمضاء الزبون: $SIG_NAME إلى سوبابيز..."
+            curl -X POST "${SUPABASE_URL}/storage/v1/object/apps/${SIG_NAME}" \
+              -H "Authorization: Bearer ${SUPABASE_KEY}" \
+              -H "Content-Type: text/plain" \
+              --data-binary @"$SIG_PATH"
+          else
+            echo "تحذير: ملف الـ .sig مش موجود في المسار: $SIG_PATH"
+          fi
