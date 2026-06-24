@@ -47,6 +47,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          CARGO_HTTP_MULTIPLEXING: false
         with:
           tagName: ${{ github.ref_name }}
           releaseName: 'Gym App ${{ github.ref_name }}'
