@@ -38,8 +38,11 @@ export default function Trainer_Details() {
     const [isEnd, setIsEnd] = useState(false);
 
     const [isActiveSubscriptionRenewal, setIsActiveSubscriptionRenewal] = useState(false);
-    const [isChangeInfo, setIsChangeInfo] = useState(false);
+    const [isActiveBtnSave, setIsActiveBtnSave] = useState(false);
 
+    const [newInfoForTrainer, setNewInfoForTrainer] = useState({});
+    const [subscriptionState, setSubscriptionState] = useState(stateIsActive);
+    const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
 
     // Trainer info & Subscription info & Date info
     const [getFirstName, setGetFirstName] = useState<string | null>(null);
@@ -50,15 +53,13 @@ export default function Trainer_Details() {
     const [getSubscriptionName, setGetSubscriptionName] = useState<string | null>("");
     const [getPrice, setGetPrice] = useState<number | null>(0);
 
-    const [newInfoForTrainer, setNewInfoForTrainer] = useState({});
-    const [subscriptionState, setSubscriptionState] = useState(stateIsActive);
-    const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
+
 
 
 
 
     function updateInfo() {
-        if (!isChangeInfo) return;
+        if (!isActiveBtnSave) return;
 
         alert({
             titleBeforeClickOnOk: "هل انت متأكد من تعديل البيانات , في حالة تعديل عدد الحصص سوف يتم اعاده الحصص من الاول",
@@ -99,64 +100,87 @@ export default function Trainer_Details() {
 
     // This useEffect for check the any value in properties are change
     useEffect(function () {
-        // This conditional for subscription renewal
-        if (!getSubscriptionName || !getPrice || !state.sessionsCount ||
-            !state.subscriptionStart || !state.subscriptionEnd
-        ) {
-            setIsActiveSubscriptionRenewal(false);
-        } else {
-            setIsActiveSubscriptionRenewal(true);
+        const obj = {
+            id: state.trainerDetails?.id,
+            firstName: getFirstName == state.trainerDetails?.firstName ? getFirstName : state.trainerDetails?.firstName,
+            lastName: getLastName == state.trainerDetails?.lastName ? getLastName : state.trainerDetails?.lastName,
+            address: getAddress == state.trainerDetails?.address ? getAddress : state.trainerDetails?.address,
+            phone: getPhone == state.trainerDetails?.phone as any ? getPhone : state.trainerDetails?.phone,
+            subscriptionName: getSubscriptionName,
+            sessionsCount: state.sessionsCount,
+            price: getPrice,
+            subscriptionStart: state.subscriptionStart,
+            subscriptionEnd: state.subscriptionEnd,
+            activeSessionsList: JSON.stringify(getActiveSessionsList)
         }
 
+
+        // This conditional for subscription renewal
+        if (
+            subscriptionState == stateIsFinished &&
+            !getSubscriptionName ||
+            !getPrice ||
+            !state.sessionsCount ||
+            !state.subscriptionStart ||
+            !state.subscriptionEnd
+
+        ) {
+            setIsActiveSubscriptionRenewal(false);
+        }
+        else if (
+            subscriptionState == stateIsFinished &&
+            getSubscriptionName &&
+            getPrice &&
+            state.sessionsCount &&
+            state.subscriptionStart &&
+            state.subscriptionEnd
+        ) {
+            setNewInfoForTrainer(obj);
+            setIsActiveSubscriptionRenewal(true);
+            return;
+        }
+
+
+        /*
+            This conditional for update info for trainer, 
+            but the subscription state is active or pending
+        */
         if (
             !getFirstName || !getLastName || !getSubscriptionName || !getPrice ||
             !state.sessionsCount || !state.subscriptionEnd || getPhone == null
         ) {
-            setIsChangeInfo(false);
+            setIsActiveBtnSave(false);
         }
         else if (
-            (getFirstName != state.trainerDetails?.firstName)
+            getFirstName != state.trainerDetails?.firstName
             ||
-            (getLastName != state.trainerDetails?.lastName)
+            getLastName != state.trainerDetails?.lastName
             ||
-            (getAddress != state.trainerDetails?.address)
+            getAddress != state.trainerDetails?.address
             ||
             (
                 getPhone != null &&
                 getPhone != state.trainerDetails?.phone as any
             )
             ||
-            (getSubscriptionName != state.trainerDetails?.subscriptionName)
+            getSubscriptionName != state.trainerDetails?.subscriptionName
             ||
-            (state.sessionsCount != state.trainerDetails?.sessionsCount)
+            state.sessionsCount != state.trainerDetails?.sessionsCount
             ||
-            (getPrice != state.trainerDetails?.price)
+            getPrice != state.trainerDetails?.price
             ||
-            (new Date(state.subscriptionStart as any).getTime() != new Date(state.trainerDetails?.subscriptionStart as any).getTime())
+            new Date(state.subscriptionStart as any).getTime() != new Date(state.trainerDetails?.subscriptionStart as any).getTime()
             ||
-            (new Date(state.subscriptionEnd as any).getTime() != new Date(state.trainerDetails?.subscriptionEnd as any).getTime())
+            new Date(state.subscriptionEnd as any).getTime() != new Date(state.trainerDetails?.subscriptionEnd as any).getTime()
         ) {
-            const obj = {
-                firstName: getFirstName != "" ? getFirstName : state.trainerDetails?.firstName,
-                lastName: getLastName != "" ? getLastName : state.trainerDetails?.lastName,
-                address: getAddress != "" ? getAddress : state.trainerDetails?.address,
-                phone: getPhone != 0 ? getPhone : state.trainerDetails?.phone,
-                subscriptionName: getSubscriptionName,
-                sessionsCount: state.sessionsCount,
-                price: getPrice,
-                subscriptionStart: state.subscriptionStart,
-                subscriptionEnd: state.subscriptionEnd,
-                activeSessionsList: JSON.stringify(getActiveSessionsList)
-            }
-
             setNewInfoForTrainer(obj);
-            setIsChangeInfo(true);
+            setIsActiveBtnSave(true);
         } else {
-            setIsChangeInfo(false);
+            setIsActiveBtnSave(false);
         }
     }, [getFirstName, getLastName, getAddress, getPhone,
         getSubscriptionName, state.sessionsCount, getPrice,
-        state.subscriptionStart, state.subscriptionEnd
+        state.subscriptionStart, state.subscriptionEnd, subscriptionState
     ]);
 
 
@@ -186,7 +210,7 @@ export default function Trainer_Details() {
     return <Popup_Form
         titel="تفاصيل المتدرب"
         discription="تلك التفاصيل الخاصه بالمتدرب"
-        isSave={isChangeInfo}
+        isSave={isActiveBtnSave}
         typeBtn="save change"
         isShowBtn={subscriptionState == stateIsFinished ? false : true}
         clickOnCancel={clickOnCancel}
@@ -197,6 +221,7 @@ export default function Trainer_Details() {
 
         {/* Title & arrowes */}
         <div className="mb-5 flex justify-between items-center">
+            {/* Title */}
             <div className="flex items-center gap-2 text-(--thirdColor)">
                 <SquarePen size={23} />
                 <h3 className="font-bold">
@@ -204,6 +229,7 @@ export default function Trainer_Details() {
                 </h3>
             </div>
 
+            {/* Arrows */}
             <div className="flex justify-end gap-2">
                 {
                     subscriptionState != stateIsFinished && <>
@@ -228,7 +254,7 @@ export default function Trainer_Details() {
         </div >
 
         {/* Trainer info & Subscription info & Date info */}
-        <div className="mb-16">
+        <div>
             <Swiper
                 modules={[Navigation]}
                 allowTouchMove={false}

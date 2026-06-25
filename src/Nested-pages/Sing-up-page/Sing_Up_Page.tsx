@@ -12,9 +12,9 @@ export default function Sing_Up_Page() {
 
 
     const [isGetAllData, setIsGetAllData] = useState(false);
-    const [getName, setGetName] = useState("");
-    const [getAge, setGetAge] = useState("");
-    const [getPassword, setGetPassword] = useState("");
+    const [getName, setGetName] = useState<string | null>(null);
+    const [getAge, setGetAge] = useState<number | null>(null);
+    const [getPassword, setGetPassword] = useState<string | null>(null);
 
 
 

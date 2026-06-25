@@ -1,22 +1,36 @@
-import { alert } from '@/Lib/functions';
+import { REMOVE_TRAINERS } from '@/Lib/constants';
+import { alert, checkThePermissionIsHere } from '@/Lib/functions';
 import { getAllRowsInAttendanceTable } from '@/Rtk/Slices/Db-slices/attendanceSlice';
 import { deleteRowInTrainersTableById } from '@/Rtk/Slices/Db-slices/trainersSlice';
 import { removeAllSessions } from '@/Rtk/Slices/UI-slices/sessionsCountSlice';
 import { removeSubscriptionEnd } from '@/Rtk/Slices/UI-slices/subscriptionEndSlice';
 import { removeSubscriptionStart } from '@/Rtk/Slices/UI-slices/subscriptionStartSlice';
 import { removeTrainerDetails } from '@/Rtk/Slices/UI-slices/trainerDetailsSlice';
+import { store_Type } from '@/Rtk/types';
 import Database from '@tauri-apps/plugin-sql';
 import { Trash } from 'lucide-react'
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 // ========================================================== //
 export default function Btn_Delete_Trainer(
     { id }: { id: number }
 ) {
     const dispatch = useDispatch();
+    const state = useSelector(function (state: store_Type) {
+        return {
+            logInInfo: state.logInInfo
+        }
+    }, shallowEqual);
+
+    const checkDeletePermission = checkThePermissionIsHere({
+        accountId: Number(state.logInInfo?.id), 
+        permissionType: REMOVE_TRAINERS
+    });
 
 
 
     function deleteTrainer() {
+        if (!checkDeletePermission) return;
+
         alert({
             titleBeforeClickOnOk: "هل تريد حقا حذف ذلك المتدرب ؟",
             titleAfterClickOnOk: "ذلك المتدرب لم يعد موجود في الجدول",
@@ -69,7 +83,10 @@ export default function Btn_Delete_Trainer(
 
     return <button
         type='button'
-        className="flex items-center gap-2 font-bold px-6 py-3 cursor-pointer rounded-lg bg-red-300/40 text-amber-700"
+        className={`
+            flex items-center gap-2 font-bold px-6 py-3  rounded-lg bg-red-300/40 text-amber-700
+            ${!checkDeletePermission ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
+        `}
         onClick={deleteTrainer}
     >
         <span>

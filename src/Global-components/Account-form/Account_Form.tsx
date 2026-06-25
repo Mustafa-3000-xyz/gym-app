@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { Account_Form_Props } from "../types";
-import { regexAccountName } from "@/Lib/REGEX";
+import { regexAccountName, regexAccountPassword } from "@/Lib/REGEX";
 import Inp_With_Label from "../Inp-with-label/Inp_With_Label";
+import Max_Min_Length from "../Max-min-length/Max_Min_Length";
 // ========================================================== //
 export default function Account_Form(
     {
@@ -20,11 +21,6 @@ export default function Account_Form(
 
 
 
-    function writeInAccountNameInp(value: string) {
-        if (value.match(regexAccountName)) {
-            setTheName(value);
-        }
-    }
 
     function writeInAccountAgeInp(value: number) {
         if (value >= 100) {
@@ -37,11 +33,29 @@ export default function Account_Form(
 
 
 
+
     useEffect(function () {
-        onGetName(theName);
-        onGetAge(theAge);
-        onGetPassword(thePassword);
+        if (theName.match(regexAccountName)) {
+            onGetName(theName);
+        } else {
+            onGetName(null);
+        }
+
+        if (theAge > 0) {
+            onGetAge(theAge);
+        }
+        else {
+            onGetAge(null);
+        }
+
+        if (thePassword.match(regexAccountPassword)) {
+            onGetPassword(thePassword);
+        }
+        else {
+            onGetPassword(null);
+        }
     }, [theName, theAge, thePassword])
+
 
 
 
@@ -52,7 +66,13 @@ export default function Account_Form(
                 <Inp_With_Label
                     labelName="الاسم"
                     inpValue={theName}
-                    onWriteInInput={(e) => writeInAccountNameInp(e.target.value)}
+                    onWriteInInput={(e) => setTheName(e.target.value)}
+                />
+
+                <Max_Min_Length
+                    isGreenFlag={theName.match(regexAccountName) ? true : false}
+                    maxLength={15}
+                    minLength={theName.length}
                 />
             </div>
 
@@ -60,7 +80,7 @@ export default function Account_Form(
                 <Inp_With_Label
                     labelName="العمر"
                     inpType="number"
-                    inpValue={theAge as any}
+                    inpValue={theAge == 0 ? "" : theAge}
                     onWriteInInput={(e) => writeInAccountAgeInp(+e.target.value)}
                 />
             </div>
@@ -75,6 +95,12 @@ export default function Account_Form(
                     inpType="password"
                     inpValue={thePassword}
                     onWriteInInput={(e) => setThePassword(e.target.value)}
+                />
+
+                <Max_Min_Length
+                    isGreenFlag={thePassword.match(regexAccountPassword) ? true : false}
+                    maxLength={25}
+                    minLength={thePassword.length}
                 />
             </div>
 

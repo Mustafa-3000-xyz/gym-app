@@ -15,10 +15,7 @@ export default function Popup_Form(
         clickOnSaveBtn,
     }: Popup_Form_Props
 ) {
-    return <form 
-        className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none z-50"
-        onSubmit={(e)=> e.preventDefault()}
-    >
+    return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none z-50">
         <Animation
             className={`
                 absolute top-1/2 end-1/2 -translate-x-1/2 -translate-y-1/2
@@ -74,5 +71,5 @@ export default function Popup_Form(
                 </button>
             </div>
         </Animation>
-    </form>
+    </div>
 }

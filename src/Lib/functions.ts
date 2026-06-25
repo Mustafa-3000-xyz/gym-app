@@ -1,6 +1,6 @@
 import { accounte, trainer } from "@/Pages/types";
 import Swal from "sweetalert2";
-import { alertType, normalAlert_Type } from "./types";
+import { alertType, checkThePermissionIsHere_Type, normalAlert_Type } from "./types";
 import { stateIsActive, stateIsPending } from "./constants";
 import store from "@/Rtk/store";
 import { updatePropertyInRowInAccountsTable, updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
@@ -143,6 +143,33 @@ export function incrementOrDecrementForTotalSessionsInAccount(
                 value: result2
             }) as any);
             break;
+    }
+}
+
+export function checkThePermissionIsHere(
+    {
+        accountId,
+        permissionType,
+        isGetAllPermissions
+    }: checkThePermissionIsHere_Type
+) {
+    const allAccounts = store.getState().accountes as accounte[];
+    const getPermissionsList = allAccounts.find(ele => ele.id == accountId)?.permissions;
+
+    try {
+        if (isGetAllPermissions) {
+            return getPermissionsList == "fullAccess" ? "fullAccess" : JSON.parse(getPermissionsList as any);
+        }
+
+        if (getPermissionsList == "fullAccess") {
+            return true;
+        }
+        else {
+            return getPermissionsList?.includes(permissionType as any) ? true : false;
+        }
+    }
+    catch (err) {
+        console.log(err);
     }
 }
 

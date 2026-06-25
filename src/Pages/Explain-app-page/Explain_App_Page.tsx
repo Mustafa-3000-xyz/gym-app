@@ -1,4 +1,6 @@
 // ========================================================== //
 export default function Explain_App_Page() {
-    return <div>قريبا</div>
+    return <section>
+        صفحة شرح البرنامج, قريبا
+    </section>
 }

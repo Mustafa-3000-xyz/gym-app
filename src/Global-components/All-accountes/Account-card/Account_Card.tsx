@@ -51,9 +51,11 @@ export default function Account_Card(
             }) as any);
 
 
+            setPassword("");
             setErrorMessage("");
         }
         else {
+            setPassword("");
             setErrorMessage("كلمة المرور غير صحيحه");
         }
 

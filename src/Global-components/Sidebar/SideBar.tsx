@@ -1,41 +1,29 @@
 import { Archive, Book, Captions, CircleUser, IdCardLanyard, Settings, Users, WalletMinimal } from "lucide-react";
 import Sidebar_Links from "./Sidebar-links/Sidebar_Links";
 import { shallowEqual, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
 import { store_Type } from "@/Rtk/types";
-import { accounte } from "@/Pages/types";
 import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profilePagePath, profitsAndExpensesPagePath, settingsPagePath, subscriptionsMenuPath, trainerPagePath } from "@/Lib/constants";
 import { Link, useLocation } from "react-router-dom";
+import { checkThePermissionIsHere } from "@/Lib/functions";
 // ========================================================== //
 export default function SideBar() {
     const state = useSelector(function (state: store_Type) {
         return {
             logInInfo: state.logInInfo,
-            accountes: state.accountes,
         }
     }, shallowEqual);
 
-    const [theAccount, setTheAccount] = useState<accounte | null>(null);
     const { pathname } = useLocation();
 
 
+    const getAllPermissions = checkThePermissionIsHere({
+        accountId: Number(state.logInInfo?.id),
+        isGetAllPermissions: true
+    }) as string[] | "fullAccess";
 
 
-    useEffect(function () {
-        const result = state.accountes?.find(ele => ele.id == state.logInInfo?.id);
 
-        if (!result) {
-            setTheAccount(null);
-            return;
-        }
 
-        const obj = {
-            ...result,
-            permissions: result.permissions == "fullAccess" ? "fullAccess" : JSON.parse(result.permissions as any)
-        } as accounte
-
-        setTheAccount(obj);
-    }, [state.accountes, state.logInInfo]);
 
 
 
@@ -57,7 +45,7 @@ export default function SideBar() {
         {/* Links */}
         <ul className="flex flex-col gap-2 select-none h-full">
             <Sidebar_Links
-                isShowTheLink={theAccount?.permissions?.includes(trainerPagePath) as boolean || theAccount?.permissions == "fullAccess"}
+                isShowTheLink={getAllPermissions == "fullAccess" || getAllPermissions?.includes(trainerPagePath)}
                 linkName="المتدربين"
                 path={trainerPagePath}
                 icon={<Users
@@ -67,7 +55,7 @@ export default function SideBar() {
             />
 
             <Sidebar_Links
-                isShowTheLink={theAccount?.permissions?.includes(attendanceRecordePagePath) as boolean || theAccount?.permissions == "fullAccess"}
+                isShowTheLink={getAllPermissions == "fullAccess" || getAllPermissions?.includes(attendanceRecordePagePath)}
                 linkName="سجل الحضور"
                 path={attendanceRecordePagePath}
                 icon={<Archive
@@ -77,7 +65,7 @@ export default function SideBar() {
             />
 
             <Sidebar_Links
-                isShowTheLink={theAccount?.permissions?.includes(subscriptionsMenuPath) as boolean || theAccount?.permissions == "fullAccess"}
+                isShowTheLink={getAllPermissions == "fullAccess" || getAllPermissions?.includes(subscriptionsMenuPath)}
                 linkName="قائمة الاشتراكات"
                 path={subscriptionsMenuPath}
                 icon={<Captions
@@ -89,7 +77,7 @@ export default function SideBar() {
             <hr />
 
             <Sidebar_Links
-                isShowTheLink={theAccount?.permissions?.includes(accountesPagePath) as boolean || theAccount?.permissions == "fullAccess"}
+                isShowTheLink={getAllPermissions == "fullAccess" || getAllPermissions?.includes(accountesPagePath)}
                 linkName="الحسابات"
                 path={accountesPagePath}
                 icon={<IdCardLanyard
@@ -109,7 +97,7 @@ export default function SideBar() {
             />
 
             <Sidebar_Links
-                isShowTheLink={theAccount?.permissions?.includes(profitsAndExpensesPagePath) as boolean || theAccount?.permissions == "fullAccess"}
+                isShowTheLink={getAllPermissions == "fullAccess" || getAllPermissions?.includes(profitsAndExpensesPagePath)}
                 linkName="الارباح والمصروفات"
                 path={profitsAndExpensesPagePath}
                 icon={<WalletMinimal
@@ -130,7 +118,7 @@ export default function SideBar() {
             </h2>
 
             {
-                theAccount?.permissions == "fullAccess" || theAccount?.permissions?.includes(settingsPagePath) ?
+                getAllPermissions == "fullAccess" || getAllPermissions?.includes(settingsPagePath) ?
                     <Link
                         className={`
                         flex gap-2 mb-1 hover:underline

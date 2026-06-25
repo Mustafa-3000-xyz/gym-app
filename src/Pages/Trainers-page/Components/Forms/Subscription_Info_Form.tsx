@@ -8,9 +8,10 @@ import { store_Type } from "@/Rtk/types";
 import { maxSessions, maxSubscriptionPrice, USING_ACTIVE_SOME_SESSIONS } from "@/Lib/constants";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
 import { addSessions, removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
-import { theTodayDate } from "@/Lib/functions";
+import { checkThePermissionIsHere, theTodayDate } from "@/Lib/functions";
 import { differenceInDays } from "date-fns";
 import { regexSubscriptionName } from "@/Lib/REGEX";
+import Max_Min_Length from "@/Global-components/Max-min-length/Max_Min_Length";
 // ========================================================== //
 export default function Subscription_Info_Form(
     {
@@ -23,7 +24,6 @@ export default function Subscription_Info_Form(
     const state = useSelector(function (state: store_Type) {
         return {
             logInInfo: state.logInInfo,
-            accountes: state.accountes,
             sessionsCount: state.sessionsCount,
             trainerDetails: state.trainerDetails,
             subscriptionEnd: state.subscriptionEnd,
@@ -39,8 +39,12 @@ export default function Subscription_Info_Form(
     const [subscriptionName, setSubscriptionName] = useState<string>("");
     const [price, setPrice] = useState<number>(0);
 
-    const [isUsingTheActiveSomeSessions, setIsUsingTheActiveSomeSessions] = useState(false);
     const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
+
+    const checkActiveSomeSessionsPermission = checkThePermissionIsHere({
+        accountId: Number(state.logInInfo?.id), 
+        permissionType: USING_ACTIVE_SOME_SESSIONS
+    });
 
 
 
@@ -92,21 +96,6 @@ export default function Subscription_Info_Form(
 
 
 
-    // This for check the account have permission using the activeSomeSessions
-    useEffect(function () {
-        const theAccount = state.accountes?.find(ele => ele.id == state.logInInfo?.id);
-
-        if (
-            theAccount?.permissions?.includes(USING_ACTIVE_SOME_SESSIONS)
-            ||
-            theAccount?.permissions == "fullAccess"
-        ) {
-            setIsUsingTheActiveSomeSessions(true);
-        }
-        else {
-            setIsUsingTheActiveSomeSessions(false);
-        }
-    }, [state.accountes]);
 
     // When open state.trainerDetails details, i want show his values
     useEffect(() => {
@@ -191,41 +180,50 @@ export default function Subscription_Info_Form(
                         onWriteInInput={(e) => setSubscriptionName(e.target.value)}
                     />
 
-                    <p className={`
-                        text-end m-1
-                        ${subscriptionName?.length < 3
-                            ||
-                            subscriptionName?.length > 11 ? "text-red-500" : "text-emerald-500"}
-                    `}
-                    >
-                        11/{subscriptionName.length}
-                    </p>
+                    <Max_Min_Length
+                        isGreenFlag={subscriptionName?.length < 3 || subscriptionName?.length > 11}
+                        maxLength={11}
+                        minLength={subscriptionName.length}
+                    />
                 </div>
 
                 {/* Sessions count */}
-                <Inp_With_Label
-                    labelName="عدد الحصص"
-                    inpType="number"
-                    inpValue={state.sessionsCount == 0 ? "" : state.sessionsCount}
-                    onWriteInInput={(e) => writeInSessionsInp(e)}
-                />
+                <div>
+                    <Inp_With_Label
+                        labelName="عدد الحصص"
+                        inpType="number"
+                        inpValue={state.sessionsCount == 0 ? "" : state.sessionsCount}
+                        onWriteInInput={(e) => writeInSessionsInp(e)}
+                    />
+
+                    <p className="font-bold">
+                        الحد الاقصى : {maxSessions}
+                    </p>
+                </div>
 
                 {/* Price */}
-                <Inp_With_Label
-                    labelName="السعر"
-                    inpType="number"
-                    inpValue={price == 0 ? "" : price}
-                    onWriteInInput={(e) => writeInPriceInp(e)}
-                />
+                <div>
+                    <Inp_With_Label
+                        labelName="السعر"
+                        inpType="number"
+                        inpValue={price == 0 ? "" : price}
+                        onWriteInInput={(e) => writeInPriceInp(e)}
+                    />
+
+                    <p className="font-bold">
+                        الحد الاقصى : {maxSubscriptionPrice}
+                    </p>
+                </div>
             </div>
         </div>
 
 
+        {/* Active some sessions */}
         {
             !state.trainerDetails &&
             <div className={`
                     w-full border border-slate-300 p-4 rounded-lg flex flex-col justify-between
-                    ${!isUsingTheActiveSomeSessions && "cursor-not-allowed opacity-40"}
+                    ${!checkActiveSomeSessionsPermission ? "cursor-not-allowed opacity-40" : ""}
                 `}
             >
                 {/* Title and discription*/}
@@ -254,13 +252,13 @@ export default function Subscription_Info_Form(
                                         onGetActiveSomeSessions?.(result as any);
                                         setActiveSomeSessions(Number(result));
                                     }}
-                                    disabled={!isUsingTheActiveSomeSessions}
+                                    disabled={!checkActiveSomeSessionsPermission}
                                     className={`
                                         bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0
                                         appearance-none w-full text-center
                                         [&::-webkit-inner-spin-button]:appearance-none
                                         [&::-webkit-outer-spin-button]:appearance-none
-                                        ${!isUsingTheActiveSomeSessions && "cursor-not-allowed"}
+                                        ${!checkActiveSomeSessionsPermission && "cursor-not-allowed"}
                                     `}
                                 />
 

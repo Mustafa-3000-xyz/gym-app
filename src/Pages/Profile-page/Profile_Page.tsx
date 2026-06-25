@@ -30,9 +30,9 @@ export default function Profile_Page() {
     const [isShowEditingAccount, setIsShowEditingAccount] = useState(false);
 
     const [isSaveChange, setIsSaveChange] = useState(false);
-    const [getName, setGetName] = useState("");
-    const [getAge, setGetAge] = useState(0);
-    const [getPassword, setGetPassword] = useState("");
+    const [getName, setGetName] = useState<string | null>(null);
+    const [getAge, setGetAge] = useState<number | null>(null);
+    const [getPassword, setGetPassword] = useState<string | null>(null);
 
     const navigate = useNavigate();
     const { accountId } = useParams();
@@ -76,9 +76,9 @@ export default function Profile_Page() {
         dispatch(updateSomePropertiesInRowInAccountsTable({
             id: theAccount?.id as any,
             values: {
-                name: getName,
-                age: getAge,
-                password: getPassword
+                name: getName as any,
+                age: getAge as any,
+                password: getPassword as any
             }
         }) as any)
 

@@ -106,6 +106,15 @@ export default function Add_Trainer(
         );
     }
 
+    function clickOnCancel() {
+        onIsShowAddTrainer(false);
+        dispatch(removeSubscriptionStart());
+        dispatch(removeSubscriptionEnd());
+        dispatch(removeAllSessions());
+    }
+
+
+
 
     // This check the trainer info is compolete or no
     const isAllInfoComplete = useMemo(function () {
@@ -153,12 +162,7 @@ export default function Add_Trainer(
         titel="إضافة متدرب"
         discription="الان, يمكنك إضافة متدرب جديد"
         isSave={isAllInfoComplete}
-        clickOnCancel={() => {
-            onIsShowAddTrainer(false);
-            dispatch(removeSubscriptionStart());
-            dispatch(removeSubscriptionEnd());
-            dispatch(removeAllSessions());
-        }}
+        clickOnCancel={clickOnCancel}
         clickOnSaveBtn={saveTrainerInfo}
     >
         {/* Trainer info */}

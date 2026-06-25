@@ -19,3 +19,9 @@ export interface normalAlert_Type {
     text?: string,
     icon: "success" | "error" | "question" | "info"
 }
+
+export interface checkThePermissionIsHere_Type {
+    accountId: number,
+    permissionType?: string,
+    isGetAllPermissions?: boolean
+}

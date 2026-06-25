@@ -9,12 +9,16 @@ import { store_Type } from "@/Rtk/types";
 import { addRowInSubscriptionsMenusTable } from "@/Rtk/Slices/Db-slices/subscriptionsMenusSlice";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
-import { normalAlert } from "@/Lib/functions";
+import { checkThePermissionIsHere, normalAlert } from "@/Lib/functions";
+import { regexSubscriptionName } from "@/Lib/REGEX";
+import Max_Min_Length from "@/Global-components/Max-min-length/Max_Min_Length";
+import { ADD_NEW_SUBSCRIPTION_MENU, maxSessions, maxSubscriptionPrice } from "@/Lib/constants";
 // ========================================================== //
 export default function Subscriptions_Menu_Page() {
     const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
+            logInInfo: state.logInInfo,
             trainerDetails: state.trainerDetails,
             subscriptionsMenus: state.subscriptionsMenus,
         }
@@ -24,31 +28,48 @@ export default function Subscriptions_Menu_Page() {
     const [isShowAddNewSubscriptionType, setIsShowAddNewSubscriptionType] = useState(false);
 
 
-    const [getSubscriptionName, setGetSubscriptionName] = useState("");
-    const [getSessionCount, setGetSessionCount] = useState(0);
-    const [getPrice, setGetPrice] = useState(0);
+    const [getSubscriptionName, setGetSubscriptionName] = useState<string>("");
+    const [getSessionCount, setGetSessionCount] = useState<number>(0);
+    const [getPrice, setGetPrice] = useState<number>(0);
 
+    const checkAddMenuPermission = checkThePermissionIsHere({
+        accountId: Number(state.logInInfo?.id),
+        permissionType: ADD_NEW_SUBSCRIPTION_MENU
+    });
 
 
 
     function addNewSubscriptionMenu() {
-        if (state.subscriptionsMenus?.length == 6) {
+        if (checkAddMenuPermission && Number(state.subscriptionsMenus?.length) < 6) {
+            setIsShowAddNewSubscriptionType(true);
+        }
+        else if (checkAddMenuPermission && Number(state.subscriptionsMenus?.length) >= 6) {
             normalAlert({
                 title: "المعذره",
                 text: "لقد وصلت للحد الاقصى",
                 icon: "error"
             });
+
+            setIsShowAddNewSubscriptionType(false);
         }
         else {
-            setIsShowAddNewSubscriptionType(true);
+            normalAlert({
+                title: "المعذره",
+                text: "ليس لديك الصلاحيه لإضافة قائمة اشتراك جديده",
+                icon: "error"
+            });
+
+            setIsShowAddNewSubscriptionType(false);
         }
     }
 
     function saveData() {
+        if (!isSaveData) return;
+
         dispatch(addRowInSubscriptionsMenusTable({
-            subscriptionName: getSubscriptionName,
-            sessionsCount: getSessionCount,
-            price: getPrice,
+            subscriptionName: getSubscriptionName!,
+            sessionsCount: getSessionCount!,
+            price: getPrice!,
             isActive: "true"
         }) as any);
 
@@ -63,16 +84,24 @@ export default function Subscriptions_Menu_Page() {
 
 
 
+    useEffect(function () {
+        if (!isShowAddNewSubscriptionType) {
+            setGetSubscriptionName("");
+            setGetSessionCount(0);
+            setGetPrice(0);
+        }
+    }, [isShowAddNewSubscriptionType]);
 
     useEffect(function () {
-        if (!getSubscriptionName || getSessionCount == 0 || getPrice == 0) {
+        if (
+            !getSubscriptionName?.match(regexSubscriptionName) ||
+            getSessionCount == 0 ||
+            getPrice == 0
+        ) {
             setIsSaveData(false);
-        }
-        else if (getSubscriptionName && getSessionCount > 0 && getPrice > 0) {
-            setIsSaveData(true);
         }
         else {
-            setIsSaveData(false);
+            setIsSaveData(true);
         }
     }, [getSubscriptionName, getSessionCount, getPrice]);
 
@@ -133,6 +162,7 @@ export default function Subscriptions_Menu_Page() {
         </div>
 
 
+        {/* Add new subscription menu */}
         {
             isShowAddNewSubscriptionType ?
                 <Popup_Form
@@ -143,26 +173,61 @@ export default function Subscriptions_Menu_Page() {
                     clickOnCancel={() => setIsShowAddNewSubscriptionType(false)}
                 >
                     <div className="grid grid-cols-2 gap-3 mb-5 px-10">
-                        <Inp_With_Label
-                            valueOrDefaultValue="default value"
-                            labelName="اسم الاشتراك"
-                            onWriteInInput={(e) => setGetSubscriptionName(e.target.value)}
-                        />
+                        <div>
+                            <Inp_With_Label
+                                valueOrDefaultValue="value"
+                                labelName="اسم الاشتراك"
+                                inpValue={getSubscriptionName}
+                                onWriteInInput={(e) => setGetSubscriptionName(e.target.value)}
+                            />
 
-                        <Inp_With_Label
-                            valueOrDefaultValue="default value"
-                            labelName="عدد الحصص"
-                            onWriteInInput={(e) => setGetSessionCount(+e.target.value)}
-                        />
+                            <Max_Min_Length
+                                isGreenFlag={getSubscriptionName?.length < 3 || getSubscriptionName?.length > 11}
+                                maxLength={11}
+                                minLength={getSubscriptionName?.length}
+                            />
+                        </div>
+
+                        <div>
+                            <Inp_With_Label
+                                valueOrDefaultValue="value"
+                                labelName="عدد الحصص"
+                                inpType="number"
+                                inpValue={getSessionCount == 0 ? "" : getSessionCount}
+                                onWriteInInput={(e) => {
+                                    if (+e.target.value >= maxSessions) {
+                                        setGetSessionCount(maxSessions);
+                                    } else {
+                                        setGetSessionCount(+e.target.value);
+                                    }
+                                }}
+                            />
+
+                            <p className="font-bold">
+                                الحد الاقصى : {maxSessions}
+                            </p>
+                        </div>
                     </div>
 
                     <div className="flex justify-center">
                         <div className="w-2/5">
                             <Inp_With_Label
-                                valueOrDefaultValue="default value"
+                                valueOrDefaultValue="value"
                                 labelName="السعر"
-                                onWriteInInput={(e) => setGetPrice(+e.target.value)}
+                                inpType="number"
+                                inpValue={getPrice == 0 ? "" : getPrice}
+                                onWriteInInput={(e) => {
+                                    if (+e.target.value >= maxSubscriptionPrice) {
+                                        setGetPrice(maxSubscriptionPrice);
+                                    } else {
+                                        setGetPrice(+e.target.value)
+                                    }
+                                }}
                             />
+
+                            <p className="font-bold">
+                                الحد الاقصى : {maxSubscriptionPrice}
+                            </p>
                         </div>
                     </div>
                 </Popup_Form>

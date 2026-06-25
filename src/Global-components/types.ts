@@ -62,9 +62,9 @@ export interface Account_Form_Props {
     age: number,
     password: string,
     accountType: "manager" | "captain"
-    onGetName: (x: string) => void;
-    onGetAge: (x: number) => void;
-    onGetPassword: (x: string) => void;
+    onGetName: (x: string | null) => void;
+    onGetAge: (x: number | null) => void;
+    onGetPassword: (x: string | null) => void;
 }
 
 export interface Title_And_Discription_For_Pages_Props {
@@ -95,6 +95,7 @@ export interface Inp_With_Label_Props {
 
 export interface Toggle_Btn_Props {
     value: boolean,
+    disabled?: boolean,
     onGetValue: (x: boolean) => void
 }
 
@@ -117,12 +118,18 @@ export interface Search_Result_Props {
     onIsShowSearchResult: (x: boolean) => void,
 }
 
-export interface Top_Content_For_The_Drop_Props{
-    children: ReactNode, 
+export interface Top_Content_For_The_Drop_Props {
+    children: ReactNode,
     className?: string
 }
 
-export interface Bottom_Content_For_The_Drop_Props{
-    children: ReactNode, 
+export interface Bottom_Content_For_The_Drop_Props {
+    children: ReactNode,
     className?: string
+}
+
+export interface Max_Min_Length_Props {
+    isGreenFlag: boolean,
+    maxLength: number,
+    minLength: number
 }

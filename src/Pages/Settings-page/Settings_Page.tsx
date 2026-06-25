@@ -1,4 +1,6 @@
 // ========================================================== //
 export default function Settings_Page() {
-    return <div>قريبا</div>
+    return <section>
+        صفحة الاعدادات, قريبا
+    </section>
 }

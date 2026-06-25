@@ -143,9 +143,17 @@ export default function Date_Info_Form() {
                 placeholder="اليوم / الشهر / السنه"
                 clearButtonClassName="clear-btn-in-calendar"
                 todayButtonClassName="today-btn-in-calendar"
-                inputClassName="text-right input-date-in-calendar"
+                inputClassName="text-right input-date-in-calendar font-bold!"
                 onChange={(e) => dispatch(addSubscriptionStart(new Date(e.value as Date).toISOString()))}
             />
+
+            <p className={`
+                    text-end mt-3 font-bold
+                    ${state.subscriptionStart ? "text-emerald-500" : "text-red-500"}
+                `}
+            >
+                {state.subscriptionStart ? "تم اختيار التاريخ" : "لم يتم اختيار التاريخ"}
+            </p>
         </div>
 
         {/* Days */}
@@ -172,15 +180,23 @@ export default function Date_Info_Form() {
                 minDate={minDateInSubscriptionEnd as any}
                 showOtherMonths={false}
                 disabled={state.subscriptionStart ? false : true}
-                inputClassName="text-right input-date-in-calendar"
+                inputClassName="text-right input-date-in-calendar opacity-100! font-bold!"
                 dateFormat="yy/mm/dd"
-                className={`w-full ${state.subscriptionStart ? "opacity-100" : "opacity-55"}`}
+                className="w-full"
                 placeholder={!state.subscriptionStart
                     ? "اختر تاريخ بداية الاشتراك اولا"
                     : "اليوم / الشهر / السنه"
                 }
                 onChange={(e) => dispatch(addSubscriptionEnd(new Date(e.value as Date).toISOString()))}
             />
+
+            <p className={`
+                    text-end mt-3 font-bold
+                    ${state.subscriptionEnd ? "text-emerald-500" : "text-red-500"}
+                `}
+            >
+                {state.subscriptionEnd ? "تم اختيار التاريخ" : "لم يتم اختيار التاريخ"}
+            </p>
         </div>
     </div>
 }
