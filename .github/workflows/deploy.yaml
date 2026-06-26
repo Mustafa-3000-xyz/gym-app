@@ -31,7 +31,6 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
-
       - name: Install Linux Dependencies
         if: matrix.os_name == 'linux'
         run: |
@@ -40,7 +39,6 @@ jobs:
 
       - name: Install Frontend Dependencies
         run: npm install
-
 
       - name: Build Tauri App
         uses: tauri-apps/tauri-action@v0
@@ -54,7 +52,6 @@ jobs:
           releaseName: 'Gym App ${{ github.ref_name }}'
           releaseBody: 'New release update for Gym App version ${{ github.ref_name }}'
 
-
       - name: Upload Build to Supabase Storage
         shell: bash
         env:
@@ -65,18 +62,10 @@ jobs:
             FILE_PATH=$(ls src-tauri/target/release/bundle/msi/*.msi | head -n 1)
             FILE_NAME="gym-app-${{ github.ref_name }}.msi"
             CONTENT_TYPE="application/octet-stream"
-            
-            # تحديد مسار الـ .sig للويندوز
-            SIG_PATH="${FILE_PATH}.sig"
-            SIG_NAME="${FILE_NAME}.sig"
           else
             FILE_PATH=$(ls src-tauri/target/release/bundle/deb/*.deb | head -n 1)
             FILE_NAME="gym-app-${{ github.ref_name }}.deb"
             CONTENT_TYPE="application/vnd.debian.binary-package"
-            
-            # تحديد مسار الـ .sig للينكس
-            SIG_PATH="${FILE_PATH}.sig"
-            SIG_NAME="${FILE_NAME}.sig"
           fi
 
           echo "جاري رفع ملف الأبليكيشن: $FILE_NAME إلى سوبابيز..."
@@ -84,14 +73,3 @@ jobs:
             -H "Authorization: Bearer ${SUPABASE_KEY}" \
             -H "Content-Type: ${CONTENT_TYPE}" \
             --data-binary @"$FILE_PATH"
-
-          # هنا بقى بنرفع ملف الـ .sig لو موجود
-          if [ -f "$SIG_PATH" ]; then
-            echo "جاري رفع ملف الإمضاء الزبون: $SIG_NAME إلى سوبابيز..."
-            curl -X POST "${SUPABASE_URL}/storage/v1/object/apps/${SIG_NAME}" \
-              -H "Authorization: Bearer ${SUPABASE_KEY}" \
-              -H "Content-Type: text/plain" \
-              --data-binary @"$SIG_PATH"
-          else
-            echo "تحذير: ملف الـ .sig مش موجود في المسار: $SIG_PATH"
-          fi

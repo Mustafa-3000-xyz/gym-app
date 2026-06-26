@@ -22,7 +22,6 @@
     }
   },
   "bundle": {
-    "createUpdaterArtifacts": true,
     "active": true,
     "targets": "all",
     "icon": [
@@ -30,14 +29,15 @@
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.ico"
-    ]
+    ],
+    "createUpdaterArtifacts": true
   },
   "plugins": {
     "sql": {},
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDk0M0YzNTZBRkY3MjlBMTIKUldRU21uTC9halUvbElKOXQvUlM5V0lVWjJnNnRjU2FNN1U4cVo0WHBmMUU1THhnYWtXT2RKUXIK",
       "endpoints": [
-        "https://alqlzackgkgirrtxdzku.supabase.co/storage/v1/object/public/apps/updater.json"
+        "https://alqlzackgkgirrtxdzku.supabase.co/storage/v1/object/public/apps/latest.json"
       ]
     }
   }

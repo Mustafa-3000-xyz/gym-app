@@ -62,3 +62,18 @@ body {
     cursor: not-allowed !important;
     pointer-events: all !important;
 }
+
+/* These codes for hidden the eye in input password */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none !important;
+}
+
+input[type="password"]::-webkit-contacts-auto-fill-button,
+input[type="password"]::-webkit-credentials-auto-fill-button {
+    display: none !important;
+}
+
+input[type="password"] {
+    -webkit-text-security: disk;
+}

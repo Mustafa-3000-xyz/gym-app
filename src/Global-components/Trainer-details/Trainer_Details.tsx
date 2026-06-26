@@ -293,7 +293,7 @@ export default function Trainer_Details() {
 
         {/* Warning zone */}
         <div className="bg-red-100/50 p-3 rounded-lg border border-red-300" >
-            <h3 className=" text-red-500 font-bold mb-3">
+            <h3 className="text-red-500 font-bold mb-3">
                 منطقة الإجراءات
             </h3>
 

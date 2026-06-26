@@ -169,7 +169,7 @@ export function checkThePermissionIsHere(
         }
     }
     catch (err) {
-        console.log(err);
+        
     }
 }
 
