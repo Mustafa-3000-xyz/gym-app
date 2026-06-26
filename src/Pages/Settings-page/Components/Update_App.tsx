@@ -56,7 +56,7 @@ export default function Update_App() {
                 setVersionAppValue("newVersion");
 
                 try {
-                    await update.download(function (event) {
+                    await update.downloadAndInstall(function (event) {
                         switch (event.event) {
                             case 'Started':
                                 setUpdateSize(Number(event.data.contentLength));
@@ -67,7 +67,7 @@ export default function Update_App() {
                         }
                     });
 
-                    await update.install();
+
                     await relaunch();
                 }
                 catch (err) {
@@ -140,7 +140,7 @@ export default function Update_App() {
                     </button>
 
                     <p className='font-bold'>
-                        الاصدار الحالي : (1.0.1)
+                        الاصدار الحالي : (1.0.0)
                     </p>
 
                     {

@@ -19,7 +19,8 @@ export default function Popup_Form(
         <Animation
             className={`
                 absolute top-1/2 end-1/2 -translate-x-1/2 -translate-y-1/2
-                bg-slate-100 border border-slate-200 rounded-lg w-[80vw]
+                bg-slate-200 border border-slate-200 rounded-lg
+                w-[80vw] h-[86.3vh] overflow-auto
             `}
             initial={{
                 scale: 0.5,
@@ -29,7 +30,7 @@ export default function Popup_Form(
             }}
         >
             {/* Title & x */}
-            <div className="px-5 flex justify-between items-center mb-5 bg-black/5 p-5 border-b border-b-slate-300">
+            <div className="p-5 flex justify-between items-center bg-black/5 border-b border-b-slate-300">
                 <div>
                     <h3 className=" font-bold text-lg">
                         {titel}
@@ -40,12 +41,12 @@ export default function Popup_Form(
                 <X size={23} onClick={clickOnCancel} className="cursor-pointer text-red-500" />
             </div>
 
-            <div className="p-3 relative">
+            <div className="p-3 mt-5 relative">
                 {children}
             </div>
 
             {/* Btn save and cancel */}
-            <div className="bg-black/5 p-5 border-t border-t-slate-300 flex gap-3 mt-5">
+            <div className="bg-black/5 border-t border-t-slate-300 flex gap-3 mt-5 p-6">
                 {
                     isShowBtn != false &&
                     <button
