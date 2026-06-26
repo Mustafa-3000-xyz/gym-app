@@ -21,7 +21,6 @@ import { removeTrainerDetails } from "./Rtk/Slices/UI-slices/trainerDetailsSlice
 import { changeLogInInfo, getLogInInfo } from "./Rtk/Slices/UI-slices/logInInfoSlice";
 import { accountsTable, attendanceTable, subscriptionsMenusTable, trainerTable } from "./Lib/tables";
 import { getAllRowsInAttendanceTable } from "./Rtk/Slices/Db-slices/attendanceSlice";
-import Trainer_Details from "./Global-components/Trainer-details/Trainer_Details";
 // ========================================================== //
 function App() {
   const dispatch = useDispatch();
@@ -29,7 +28,6 @@ function App() {
     return {
       logInInfo: state.logInInfo,
       trainers: state.trainers,
-      trainerDetails: state.trainerDetails,
     }
   }, shallowEqual);
 
@@ -155,13 +153,6 @@ function App() {
           <Route path={expalinAppPagePath} element={<Explain_App_Page />} />
         </Routes>
       </div>
-
-      {
-        state.trainerDetails ?
-          <Trainer_Details />
-          :
-          null
-      }
     </main>
     :
     <Authentication_Page />

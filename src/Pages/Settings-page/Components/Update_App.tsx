@@ -129,7 +129,7 @@ export default function Update_App() {
                     </button>
 
                     <p className='font-bold'>
-                        الاصدار الحالي : (1.0.0)
+                        الاصدار الحالي : (1.0.1)
                     </p>
 
                     {

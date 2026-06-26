@@ -150,7 +150,7 @@ export function checkThePermissionIsHere(
     {
         accountId,
         permissionType,
-        isGetAllPermissions
+        isGetAllPermissions = false
     }: checkThePermissionIsHere_Type
 ) {
     const allAccounts = store.getState().accountes as accounte[];
@@ -162,6 +162,7 @@ export function checkThePermissionIsHere(
         }
 
         if (getPermissionsList == "fullAccess") {
+            
             return true;
         }
         else {

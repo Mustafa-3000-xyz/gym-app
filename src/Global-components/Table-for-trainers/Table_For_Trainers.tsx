@@ -1,6 +1,6 @@
 import { trainer } from "@/Pages/types";
-import { styleForSubscriptionState } from "@/Lib/functions";
-import { styleDate } from "@/Lib/constants";
+import { checkThePermissionIsHere, normalAlert, styleForSubscriptionState } from "@/Lib/functions";
+import { styleDate, trainerPagePath } from "@/Lib/constants";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
@@ -12,6 +12,7 @@ import Btn_Slide from "./Btn-slide/Btn_Slide";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { addTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { store_Type } from "@/Rtk/types";
+import { useNavigate } from "react-router-dom";
 // ========================================================== //
 export default function Table_For_Trainers(
     { trainersList }: { trainersList: trainer[] }
@@ -31,13 +32,29 @@ export default function Table_For_Trainers(
     const [slides, setSlides] = useState<trainer[][]>([]);
     const [currentSlide, setCurrentSlide] = useState<number>(0);
 
+    const navigation = useNavigate();
     const trainersCountInSlide = 6;
 
+    const checkTrainerPagePermission = checkThePermissionIsHere({
+        accountId: Number(state.logInInfo?.id),
+        permissionType: trainerPagePath,
+    })
 
 
 
     function clickOnTrainer(trainer: trainer) {
         dispath(addTrainerDetails(trainer));
+
+        if (checkTrainerPagePermission) {
+            navigation(trainerPagePath);
+        }
+        else{
+            normalAlert({
+                title: "المعذره",
+                text: "ليس لديك الصلاحيه للوصول الى صفحة المتدربين  لمعرفة تفاصيل المتدرب",
+                icon: "error"
+            });
+        }
     }
 
 
