@@ -2,7 +2,7 @@ import { check, Update } from '@tauri-apps/plugin-updater';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { useEffect, useState } from 'react';
 import { HardDriveDownload, RefreshCcw } from 'lucide-react';
-import { alert } from '@/Lib/functions';
+import { alert, normalAlert } from '@/Lib/functions';
 // ========================================================== //
 export default function Update_App() {
     const [versionAppValue, setVersionAppValue] = useState<null | "error" | "stable" | "newVersion">(null);
@@ -38,6 +38,11 @@ export default function Update_App() {
             }
         }
         catch (err) {
+            normalAlert({
+                title: "خطا اثناء جلب التحديث",
+                text: String(err),
+                icon: "error"
+            });
             setVersionAppValue("error");
             setStartRotateAnimation(false);
         }
@@ -64,7 +69,12 @@ export default function Update_App() {
 
                     await relaunch();
                 }
-                catch {
+                catch (err) {
+                    normalAlert({
+                        title: "خطا اثناء تحميل وثبيت التحديث",
+                        text: String(err),
+                        icon: "error"
+                    });
                     setVersionAppValue("error");
                 }
             }
