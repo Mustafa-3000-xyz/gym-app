@@ -161,6 +161,7 @@ export default function Add_Trainer(
     return <Popup_Form
         titel="إضافة متدرب"
         discription="الان, يمكنك إضافة متدرب جديد"
+        className="h-[84vh] flex flex-col justify-between"
         isSave={isAllInfoComplete}
         clickOnCancel={clickOnCancel}
         clickOnSaveBtn={saveTrainerInfo}

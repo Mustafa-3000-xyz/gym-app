@@ -94,12 +94,6 @@ export default function Date_Box(
     }
 
 
-    // This for when the state.attendance is empty
-    useEffect(function(){
-        if (state.attendance.length == 0) {
-            setAllDates([]);
-        }
-    }, [state.attendance]);
 
     useEffect(function () {
         getAllDates();

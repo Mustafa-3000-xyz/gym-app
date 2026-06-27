@@ -11,16 +11,17 @@ export default function Popup_Form(
         isSave = false,
         isShowBtn = true,
         typeBtn = "save data",
+        className,
         clickOnCancel,
         clickOnSaveBtn,
     }: Popup_Form_Props
 ) {
-    return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none z-50">
+    return <div className="w-screen h-screen fixed bg-black/65 top-0 end-0 select-none z-50 flex justify-center items-center">
         <Animation
             className={`
-                absolute top-1/2 end-1/2 -translate-x-1/2 -translate-y-1/2
                 bg-slate-200 border border-slate-200 rounded-lg
-                w-[80vw] h-[86.3vh] overflow-auto
+                w-[90vw] overflow-y-auto
+                ${className}
             `}
             initial={{
                 scale: 0.5,
@@ -41,12 +42,12 @@ export default function Popup_Form(
                 <X size={23} onClick={clickOnCancel} className="cursor-pointer text-red-500" />
             </div>
 
-            <div className="p-3 mt-5 relative">
+            <div className="p-5">
                 {children}
             </div>
 
             {/* Btn save and cancel */}
-            <div className="bg-black/5 border-t border-t-slate-300 flex gap-3 mt-5 p-6">
+            <div className="bg-black/5 border-t border-t-slate-300 flex gap-3 p-5">
                 {
                     isShowBtn != false &&
                     <button

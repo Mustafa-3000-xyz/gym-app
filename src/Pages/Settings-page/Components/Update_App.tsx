@@ -140,7 +140,7 @@ export default function Update_App() {
                     </button>
 
                     <p className='font-bold'>
-                        الاصدار الحالي : (1.0.1)
+                        الاصدار الحالي : (1.0.0)
                     </p>
 
                     {
@@ -168,7 +168,7 @@ export default function Update_App() {
                         `}
                         >
                             <span>
-                                انت الان على احدث اصدار : {`1.0.1`}
+                                انت الان على احدث اصدار : {`1.0.0`}
                             </span>
                         </p>
                     </div>

@@ -38,6 +38,7 @@ export interface Popup_Form_Props {
     children: ReactNode,
     isSave?: boolean,
     isShowBtn?: boolean,
+    className?: string,
     typeBtn?: "save data" | "save change",
     clickOnCancel: () => void,
     clickOnSaveBtn: () => void,

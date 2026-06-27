@@ -181,7 +181,7 @@ export default function Subscription_Info_Form(
                     />
 
                     <Max_Min_Length
-                        isGreenFlag={subscriptionName?.length < 3 || subscriptionName?.length > 11}
+                        isGreenFlag={subscriptionName?.length >= 3 && subscriptionName?.length <= 11}
                         maxLength={11}
                         minLength={subscriptionName.length}
                     />

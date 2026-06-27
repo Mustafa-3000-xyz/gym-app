@@ -138,6 +138,7 @@ export default function Accountes_Page() {
                 <Popup_Form
                     titel={"إنشاء حساب"}
                     discription="يمكنك الان إنشاء حساب جديد"
+                    className="h-[70vh] flex flex-col justify-between"
                     isSave={isAllDataComplete}
                     clickOnCancel={() => setIsCreateNewAccount(false)}
                     clickOnSaveBtn={saveData}

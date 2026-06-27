@@ -127,10 +127,18 @@ export default function Date_Info_Form() {
 
 
 
-    return <div className="flex justify-center items-center gap-7">
+    return <div className="flex justify-center items-end-safe gap-5 mt-10">
         {/* Start subscription */}
-        <div dir="ltr" className="w-3/4 mt-2">
-            <h4 className="font-bold mb-2 text-right">تاريخ بدا الاشتراك</h4>
+        <div dir="ltr" className="w-3/4">
+            <h4 className="mb-2 flex justify-end gap-2">
+                <span className={`${state.subscriptionStart ? "text-emerald-500" : "text-red-500"}`}>
+                    ({state.subscriptionStart ? "تم اختيار التاريخ" : "لم يتم اختيار التاريخ"})
+                </span>
+
+                <span>
+                    تاريخ بداية الاشتراك
+                </span>
+            </h4>
 
             <Calendar
                 showIcon
@@ -146,18 +154,10 @@ export default function Date_Info_Form() {
                 inputClassName="text-right input-date-in-calendar font-bold!"
                 onChange={(e) => dispatch(addSubscriptionStart(new Date(e.value as Date).toISOString()))}
             />
-
-            <p className={`
-                    text-end mt-3 font-bold
-                    ${state.subscriptionStart ? "text-emerald-500" : "text-red-500"}
-                `}
-            >
-                {state.subscriptionStart ? "تم اختيار التاريخ" : "لم يتم اختيار التاريخ"}
-            </p>
         </div>
 
         {/* Days */}
-        <div className="mt-8 flex gap-1">
+        <div className="flex gap-1 mb-3.5">
             <span className="leading-7">
                 {
                     theDaysBetweenSubStartAndSubEnd ?? 0
@@ -171,7 +171,15 @@ export default function Date_Info_Form() {
 
         {/* End subscription */}
         <div dir="ltr" className="w-3/4">
-            <h4 className="font-bold mb-2 text-right">تاريخ نهاية الاشتراك</h4>
+            <h4 className="mb-2 text-right flex justify-end gap-2">
+                <span className={`${state.subscriptionEnd ? "text-emerald-500" : "text-red-500"}`}>
+                    ({state.subscriptionStart ? "تم اختيار التاريخ" : "لم يتم اختيار التاريخ"})
+                </span>
+
+                <span>
+                    تاريخ نهاية الاشتراك
+                </span>
+            </h4>
 
             <Calendar
                 showIcon
@@ -189,14 +197,6 @@ export default function Date_Info_Form() {
                 }
                 onChange={(e) => dispatch(addSubscriptionEnd(new Date(e.value as Date).toISOString()))}
             />
-
-            <p className={`
-                    text-end mt-3 font-bold
-                    ${state.subscriptionEnd ? "text-emerald-500" : "text-red-500"}
-                `}
-            >
-                {state.subscriptionEnd ? "تم اختيار التاريخ" : "لم يتم اختيار التاريخ"}
-            </p>
         </div>
     </div>
 }

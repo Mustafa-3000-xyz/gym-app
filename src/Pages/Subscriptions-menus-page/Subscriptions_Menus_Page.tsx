@@ -168,6 +168,7 @@ export default function Subscriptions_Menu_Page() {
                 <Popup_Form
                     titel="إضافة قائمة اشتراك جديد"
                     discription="الان, يمكنك إضافة قائمة اشتراك جديد"
+                    className="h-[50vh] flex flex-col justify-between"
                     isSave={isSaveData}
                     clickOnSaveBtn={saveData}
                     clickOnCancel={() => setIsShowAddNewSubscriptionType(false)}

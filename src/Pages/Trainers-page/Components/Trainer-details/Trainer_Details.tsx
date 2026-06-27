@@ -56,8 +56,6 @@ export default function Trainer_Details() {
 
 
 
-
-
     function updateInfo() {
         if (!isActiveBtnSave) return;
 
@@ -212,6 +210,7 @@ export default function Trainer_Details() {
         discription="تلك التفاصيل الخاصه بالمتدرب"
         isSave={isActiveBtnSave}
         typeBtn="save change"
+        className="h-[87vh] flex flex-col justify-between"
         isShowBtn={subscriptionState == stateIsFinished ? false : true}
         clickOnCancel={clickOnCancel}
         clickOnSaveBtn={updateInfo}

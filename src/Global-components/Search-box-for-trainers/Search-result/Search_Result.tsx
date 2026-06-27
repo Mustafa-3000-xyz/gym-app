@@ -1,11 +1,14 @@
 import Animation from "@/Global-components/Animation/Animation";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 import { Search_Result_Props } from "@/Global-components/types";
-import { styleForSubscriptionState } from "@/Lib/functions";
+import { trainerPagePath } from "@/Lib/constants";
+import { checkThePermissionIsHere, normalAlert, styleForSubscriptionState } from "@/Lib/functions";
 import { trainer } from "@/Pages/types";
 import { addTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
+import { store_Type } from "@/Rtk/types";
 import { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 // ========================================================== //
 export default function Search_Result(
     {
@@ -15,13 +18,36 @@ export default function Search_Result(
     }: Search_Result_Props
 ) {
     const dispatch = useDispatch();
+    const state = useSelector(function (state: store_Type) {
+        return {
+            logInInfo: state.logInInfo,
+        }
+    }, shallowEqual);
+
+
+    const navigation = useNavigate();
     const searchResultRef = useRef<HTMLDivElement>(null);
 
+    const checkTrainerPagePermission = checkThePermissionIsHere({
+        accountId: Number(state.logInInfo?.id),
+        permissionType: trainerPagePath,
+    });
 
 
     function showTrainer(trainer: trainer) {
         onIsShowSearchResult(false);
-        dispatch(addTrainerDetails(trainer))
+        dispatch(addTrainerDetails(trainer));
+
+        if (checkTrainerPagePermission) {
+            navigation(trainerPagePath);
+        }
+        else {
+            normalAlert({
+                title: "المعذره",
+                text: "ليس لديك الصلاحيه للوصول الى صفحة المتدربين  لمعرفة تفاصيل المتدرب",
+                icon: "error"
+            });
+        }
     }
 
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Gym app",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "identifier": "com.gymapp.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -36,9 +36,6 @@
     "sql": {},
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDk0M0YzNTZBRkY3MjlBMTIKUldRU21uTC9halUvbElKOXQvUlM5V0lVWjJnNnRjU2FNN1U4cVo0WHBmMUU1THhnYWtXT2RKUXIK",
-      "linux": {
-        "installMode": "basic"
-      },
       "windows": {
         "installMode": "basicUi"
       },
