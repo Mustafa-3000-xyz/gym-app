@@ -118,8 +118,6 @@ export default function Subscription_Menu_Card(
 
 
 
-
-
     return <div className="w-105 p-10 rounded-lg select-none bg-slate-100 shadow-md">
         <div className="flex flex-col justify-center mb-5 px-4 w-full">
             {isEditing ?
@@ -132,7 +130,7 @@ export default function Subscription_Menu_Card(
                     />
 
                     <Max_Min_Length
-                        isGreenFlag={!nameVal.match(regexSubscriptionName)}
+                        isGreenFlag={nameVal.match(regexSubscriptionName) ? true : false}
                         maxLength={11}
                         minLength={nameVal.length}
                     />

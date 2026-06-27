@@ -1,5 +1,5 @@
 import { REMOVE_TRAINERS } from '@/Lib/constants';
-import { alert, checkThePermissionIsHere } from '@/Lib/functions';
+import { alert, checkThePermissionIsHere, normalAlert } from '@/Lib/functions';
 import { getAllRowsInAttendanceTable } from '@/Rtk/Slices/Db-slices/attendanceSlice';
 import { deleteRowInTrainersTableById } from '@/Rtk/Slices/Db-slices/trainersSlice';
 import { removeAllSessions } from '@/Rtk/Slices/UI-slices/sessionsCountSlice';
@@ -22,28 +22,35 @@ export default function Btn_Delete_Trainer(
     }, shallowEqual);
 
     const checkDeletePermission = checkThePermissionIsHere({
-        accountId: Number(state.logInInfo?.id), 
+        accountId: Number(state.logInInfo?.id),
         permissionType: REMOVE_TRAINERS
     });
 
 
 
     function deleteTrainer() {
-        if (!checkDeletePermission) return;
+        if (checkDeletePermission) {
+            alert({
+                titleBeforeClickOnOk: "هل تريد حقا حذف ذلك المتدرب ؟",
+                titleAfterClickOnOk: "ذلك المتدرب لم يعد موجود في الجدول",
+                funRunWhenClickOnOk: function () {
+                    dispatch(deleteRowInTrainersTableById(id as any) as any);
+                    dispatch(removeTrainerDetails() as any);
+                    dispatch(removeSubscriptionStart());
+                    dispatch(removeSubscriptionEnd());
+                    dispatch(removeAllSessions());
 
-        alert({
-            titleBeforeClickOnOk: "هل تريد حقا حذف ذلك المتدرب ؟",
-            titleAfterClickOnOk: "ذلك المتدرب لم يعد موجود في الجدول",
-            funRunWhenClickOnOk: function () {
-                dispatch(deleteRowInTrainersTableById(id as any) as any);
-                dispatch(removeTrainerDetails() as any);
-                dispatch(removeSubscriptionStart());
-                dispatch(removeSubscriptionEnd());
-                dispatch(removeAllSessions());
-
-                removeTrainerInAttendanceRecord(id);
-            }
-        });
+                    removeTrainerInAttendanceRecord(id);
+                }
+            });
+        }
+        else{
+            normalAlert({
+                title: "المعذره",
+                text: "ليس لديك الصلاحية لحذف المتدربين",
+                icon: "error"
+            });
+        }
     }
 
     async function removeTrainerInAttendanceRecord(id: number) {
@@ -83,10 +90,7 @@ export default function Btn_Delete_Trainer(
 
     return <button
         type='button'
-        className={`
-            flex items-center gap-2 font-bold px-6 py-3  rounded-lg bg-red-300/40 text-amber-700
-            ${!checkDeletePermission ? "cursor-not-allowed opacity-50" : "cursor-pointer"}
-        `}
+        className="flex items-center gap-2 font-bold px-6 py-3  cursor-pointer rounded-lg bg-red-300/40 text-amber-700"
         onClick={deleteTrainer}
     >
         <span>

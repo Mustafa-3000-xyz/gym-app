@@ -1,4 +1,4 @@
-import { alert, checkThePermissionIsHere } from "@/Lib/functions";
+import { alert, checkThePermissionIsHere, normalAlert } from "@/Lib/functions";
 import { stateIsFinished, WITHDRAW_SUBSCRIPTION } from "@/Lib/constants";
 import { updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import { removeTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
@@ -27,36 +27,40 @@ export default function Btn_Withdraw_Money(
 
 
     function finishedSubscriptionUsingBtn() {
-        if (!checkWithDrawPermission) return;
+        if (checkWithDrawPermission) {
+            alert({
+                titleBeforeClickOnOk: "هل تريد بالفعل سحب اشتراك ذلك المتدرب ؟؟",
+                titleAfterClickOnOk: `تم سحب الاشتراك للمتدرب رقم : ${id}`,
+                funRunWhenClickOnOk: function () {
+                    dispatch(updateSomePropertiesInRowInTrainersTable({
+                        id: id as any,
+                        values: {
+                            activeSessionsList: JSON.stringify([]),
+                            subscriptionState: stateIsFinished,
+                        } as any
+                    }) as any);
 
-        alert({
-            titleBeforeClickOnOk: "هل تريد بالفعل سحب اشتراك ذلك المتدرب ؟؟",
-            titleAfterClickOnOk: `تم سحب الاشتراك للمتدرب رقم : ${id}`,
-            funRunWhenClickOnOk: function () {
-                dispatch(updateSomePropertiesInRowInTrainersTable({
-                    id: id as any,
-                    values: {
-                        activeSessionsList: JSON.stringify([]),
-                        subscriptionState: stateIsFinished,
-                    } as any
-                }) as any);
-
-                dispatch(removeTrainerDetails());
-                dispatch(removeSubscriptionStart());
-                dispatch(removeSubscriptionEnd());
-                dispatch(removeAllSessions());
-            }
-        });
+                    dispatch(removeTrainerDetails());
+                    dispatch(removeSubscriptionStart());
+                    dispatch(removeSubscriptionEnd());
+                    dispatch(removeAllSessions());
+                }
+            });
+        }
+        else {
+            normalAlert({
+                title: "المعذره",
+                text: "ليس لديك الصلاحية لسحب اشتراكات المتدربين",
+                icon: "error"
+            });
+        }
     }
 
 
 
     return <button
         type='button'
-        className={`
-            flex items-center gap-2 font-bold px-6 py-3  rounded-lg bg-amber-300/40 text-amber-700
-            ${checkWithDrawPermission ? "cursor-pointer" : "cursor-not-allowed opacity-50"}
-        `}
+        className="flex items-center gap-2 font-bold px-6 py-3 cursor-pointer rounded-lg bg-amber-300/40 text-amber-700"
         onClick={finishedSubscriptionUsingBtn}
     >
         <span>

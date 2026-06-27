@@ -114,7 +114,7 @@ export default function Table_For_Trainers(
                             hover:text-white ${state.logInInfo?.type == "manager" ? "hover:bg-(--managerColor)" : "hover:bg-(--captainColor)"}
                         `}
                     >
-                        <td className="p-2 py-4">{ele.firstName} {ele.lastName}</td>
+                        <td className="p-2 py-4">{ele.firstName.slice(0,4)} {ele.lastName.slice(0,4)}</td>
                         <td className="font-bold underline">{ele.id}</td>
                         <td className="p-2 py-4">{ele.subscriptionName}</td>
                         <td className="p-2 py-4">

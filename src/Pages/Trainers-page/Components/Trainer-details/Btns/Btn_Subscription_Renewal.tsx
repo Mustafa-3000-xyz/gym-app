@@ -1,4 +1,4 @@
-import { alert, checkThePermissionIsHere } from '@/Lib/functions';
+import { alert, checkThePermissionIsHere, normalAlert } from '@/Lib/functions';
 import { Btn_Subscription_Renewal_Props } from "@/Pages/types";
 import { updateSomePropertiesInRowInTrainersTable } from '@/Rtk/Slices/Db-slices/trainersSlice';
 import { removeTrainerDetails } from '@/Rtk/Slices/UI-slices/trainerDetailsSlice';
@@ -21,35 +21,43 @@ export default function Btn_Subscription_Renewal(
     }, shallowEqual);
 
     const checkRenewalPermission = checkThePermissionIsHere({
-        accountId: Number(state.logInInfo?.id), 
+        accountId: Number(state.logInInfo?.id),
         permissionType: RENEWAL_SUBSCRIPTION
     });
 
 
 
     function subscriptionRenewal() {
-        if (!isInfoComplete || !checkRenewalPermission) return;
+        if (!isInfoComplete) return;
 
+        if (checkRenewalPermission) {
+            alert({
+                titleBeforeClickOnOk: "هل تريد تجديد الاشتراك ؟؟",
+                titleAfterClickOnOk: `تم تجديد الاشتراك للمتدرب رقم : ${trainer?.id}`,
+                funRunWhenClickOnOk: function () {
+                    dispatch(updateSomePropertiesInRowInTrainersTable({
+                        id: trainer?.id as any,
+                        values: {
+                            ...trainer,
+                            subscriptionState: stateIsActive,
+                            activeSessionsList: JSON.stringify([]) as any
+                        }
+                    }) as any);
 
-        alert({
-            titleBeforeClickOnOk: "هل تريد تجديد الاشتراك ؟؟",
-            titleAfterClickOnOk: `تم تجديد الاشتراك للمتدرب رقم : ${trainer?.id}`,
-            funRunWhenClickOnOk: function () {
-                dispatch(updateSomePropertiesInRowInTrainersTable({
-                    id: trainer?.id as any,
-                    values: {
-                        ...trainer,
-                        subscriptionState: stateIsActive,
-                        activeSessionsList: JSON.stringify([]) as any
-                    }
-                }) as any);
-
-                dispatch(removeTrainerDetails() as any);
-                dispatch(removeSubscriptionStart());
-                dispatch(removeSubscriptionEnd());
-                dispatch(removeAllSessions());
-            }
-        });
+                    dispatch(removeTrainerDetails() as any);
+                    dispatch(removeSubscriptionStart());
+                    dispatch(removeSubscriptionEnd());
+                    dispatch(removeAllSessions());
+                }
+            });
+        }
+        else {
+            normalAlert({
+                title: "المعذره",
+                text: "ليس لديك الصلاحية لتجديد اشتراكات المتدربين",
+                icon: "error"
+            });
+        }
     }
 
 
@@ -59,7 +67,7 @@ export default function Btn_Subscription_Renewal(
         className={`
             duration-300 
             bg-amber-300/40 text-amber-700 rounded-lg px-6 py-3 flex items-center gap-2 font-bold
-            ${isInfoComplete && checkRenewalPermission ? "opacity-100 cursor-pointer" : "opacity-50 cursor-not-allowed"}
+            ${isInfoComplete ? "opacity-100 cursor-pointer" : "opacity-50 cursor-not-allowed"}
         `}
         onClick={subscriptionRenewal}
     >

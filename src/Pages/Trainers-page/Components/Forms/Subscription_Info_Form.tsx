@@ -34,7 +34,6 @@ export default function Subscription_Info_Form(
 
     const [alertForActiveSomeSubscription, setAlertForActiveSomeSubscription] = useState<string | null>("");
     const [maxForActiveSomeSessions, setMaxForActiveSomeSessions] = useState(0);
-    const [activeSomeSessions, setActiveSomeSessions] = useState<number>(0);
 
     const [subscriptionName, setSubscriptionName] = useState<string>("");
     const [price, setPrice] = useState<number>(0);
@@ -42,7 +41,7 @@ export default function Subscription_Info_Form(
     const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
 
     const checkActiveSomeSessionsPermission = checkThePermissionIsHere({
-        accountId: Number(state.logInInfo?.id), 
+        accountId: Number(state.logInInfo?.id),
         permissionType: USING_ACTIVE_SOME_SESSIONS
     });
 
@@ -50,7 +49,7 @@ export default function Subscription_Info_Form(
 
 
     function makeAlertForActiveSomeSubscription() {
-        if (state.sessionsCount == 0) {
+        if (!state.sessionsCount) {
             setAlertForActiveSomeSubscription("قم بكتابة عدد الحصص");
         }
         else if (!state.subscriptionStart) {
@@ -124,13 +123,15 @@ export default function Subscription_Info_Form(
         }
     }, [subscriptionName, price]);
 
-    // This for activeSomeSessions
+    // This for active some sessions
     useEffect(() => {
         const subscriptionStart = new Date(state.subscriptionStart as any);
         const subscriptionEnd = new Date(state.subscriptionEnd as any);
 
         if (
-            state.subscriptionStart && state.subscriptionEnd &&
+            state.sessionsCount &&
+            state.subscriptionStart &&
+            state.subscriptionEnd &&
             subscriptionStart.getTime() < todayDate.getTime() &&
             subscriptionEnd.getTime() >= todayDate.getTime()
         ) {
@@ -155,8 +156,8 @@ export default function Subscription_Info_Form(
 
 
     return <div className={`
-            mb-5 gap-3
-            ${!state.trainerDetails ? "grid grid-cols-2" : ""}
+            mb-5 gap-3 grid
+            ${!state.trainerDetails && checkActiveSomeSessionsPermission ? "grid-cols-2 " : "grid-cols-1"}
         `}
     >
         <div className={`
@@ -220,64 +221,63 @@ export default function Subscription_Info_Form(
 
         {/* Active some sessions */}
         {
-            !state.trainerDetails &&
-            <div className={`
-                    w-full border border-slate-300 p-4 rounded-lg flex flex-col justify-between
-                    ${!checkActiveSomeSessionsPermission ? "cursor-not-allowed opacity-40" : ""}
-                `}
-            >
-                {/* Title and discription*/}
-                <div className="mb-5">
-                    <div className="flex items-center gap-1">
-                        <Shell className="text-neutral-500 mt-1" />
+            !state.trainerDetails && checkActiveSomeSessionsPermission ?
+                <div className="w-full border border-slate-300 p-4 rounded-lg flex flex-col justify-between">
+                    {/* Title and discription*/}
+                    <div>
+                        <div className="flex items-center gap-1">
+                            <Shell className="text-neutral-500 mt-1" />
 
-                        <h3 className="text-lg  font-bold">
-                            تفعيل بعض الحصص
-                        </h3>
+                            <h3 className="text-lg  font-bold">
+                                تفعيل بعض الحصص (اختياري)
+                            </h3>
+                        </div>
+
+                        <Discription discription="هذا الخيار يُمكنك من تفعيل بعض الحصص للاشتراكات القديمه التي لم تنتهي بعد" />
                     </div>
 
-                    <Discription discription="هذا الخيار يُمكنك من تفعيل بعض الحصص للاشتراكات القديمه التي لم تنتهي بعد" />
-                </div>
+                    {/* Active some session inp */}
+                    <div>
+                        {
+                            alertForActiveSomeSubscription == null ?
+                                <>
+                                    <input
+                                        type="number"
+                                        onChange={(e) => {
+                                            if (Number(e.target.value) > Number(maxForActiveSomeSessions)) {
+                                                e.target.value = Number(maxForActiveSomeSessions) as any;
+                                                onGetActiveSomeSessions?.(maxForActiveSomeSessions);
+                                            }
+                                            else {
+                                                onGetActiveSomeSessions?.(Number(e.target.value));
+                                            }
+                                        }}
+                                        className={`
+                                            bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0
+                                            appearance-none w-full text-center
+                                            [&::-webkit-inner-spin-button]:appearance-none
+                                            [&::-webkit-outer-spin-button]:appearance-none
+                                        `}
+                                    />
 
-                {/* Active some session inp */}
-                <div>
-                    {
-                        alertForActiveSomeSubscription == null ?
-                            <>
-                                <input
-                                    type="number"
-                                    value={activeSomeSessions ?? 0}
-                                    onChange={(e) => {
-                                        const result = Number(e.target.value) > Number(maxForActiveSomeSessions) ? maxForActiveSomeSessions : e.target.value;
-                                        onGetActiveSomeSessions?.(result as any);
-                                        setActiveSomeSessions(Number(result));
-                                    }}
-                                    disabled={!checkActiveSomeSessionsPermission}
-                                    className={`
-                                        bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0
-                                        appearance-none w-full text-center
-                                        [&::-webkit-inner-spin-button]:appearance-none
-                                        [&::-webkit-outer-spin-button]:appearance-none
-                                        ${!checkActiveSomeSessionsPermission && "cursor-not-allowed"}
-                                    `}
-                                />
-
-                                {
-                                    maxForActiveSomeSessions ?
-                                        <p className="font-bold mt-3">
-                                            الحد الاقصى للتفعيل : {maxForActiveSomeSessions}
-                                        </p>
-                                        :
-                                        null
-                                }
-                            </>
-                            :
-                            <p className="bg-slate-200 border border-slate-300 p-2 rounded-lg focus:outline-0 w-full cursor-not-allowed text-center">
-                                {alertForActiveSomeSubscription}
-                            </p>
-                    }
+                                    {
+                                        maxForActiveSomeSessions ?
+                                            <p className="font-bold mt-3">
+                                                الحد الاقصى للتفعيل : {maxForActiveSomeSessions}
+                                            </p>
+                                            :
+                                            null
+                                    }
+                                </>
+                                :
+                                <p className="bg-red-500 font-bold border border-slate-300 p-2 rounded-lg focus:outline-0 w-full cursor-not-allowed text-center">
+                                    {alertForActiveSomeSubscription}
+                                </p>
+                        }
+                    </div>
                 </div>
-            </div>
+                :
+                null
         }
     </div>
 }
