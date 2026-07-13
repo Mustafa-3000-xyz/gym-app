@@ -5,10 +5,11 @@ export default function Box(
         icon,
         styleIcon,
         title,
-        total
+        total,
+        className
     }: Box_Props
 ) {
-    return <div className="bg-slate-100 rounded-lg h-40 p-5 select-none">
+    return <div className={`bg-slate-100 rounded-lg h-40 p-5 select-none ${className}`}>
         <div>
             <div className={`${styleIcon} p-3 rounded-lg w-fit mb-1`}>
                 {icon}

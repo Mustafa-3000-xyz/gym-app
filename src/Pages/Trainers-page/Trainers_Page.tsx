@@ -152,8 +152,7 @@ export default function Trainers_Page() {
                 />
 
                 <Add_Btn
-                    styleBtn="cursor-pointer"
-                    paddingY="py-2"
+                className="cursor-pointer py-2"
                     title="إضافة متدرب جديد"
                     onClick={clickOnAddTrainerBtn}
                 />

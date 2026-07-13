@@ -123,7 +123,7 @@ export default function Accountes_Page() {
         {/* Create new account */}
         <Add_Btn
             title="إنشاء حساب جديد"
-            styleBtn="bg-emerald-500 border-emerald-600"
+            className="bg-emerald-500 border-emerald-600"
             onClick={clickOnCreateAccount}
         />
 

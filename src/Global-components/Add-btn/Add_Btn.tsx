@@ -3,9 +3,8 @@ import { Add_Btn_Props } from "../types";
 // ========================================================== //
 export default function Add_Btn(
     {
-        styleBtn,
-        paddingY = "py-6",
         title,
+        className,
         onClick
     }: Add_Btn_Props
 ) {
@@ -13,7 +12,7 @@ export default function Add_Btn(
         <button
             onClick={onClick}
             className={`
-                ${styleBtn} px-6 ${paddingY}
+                ${className} p-6
                 whitespace-nowrap !bg-emerald-500 !border-emerald-600
                 w-full flex gap-2 justify-center items-center transition-all !text-white rounded-lg border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px] active:border-b-[2px] active:brightness-90 active:translate-y-[2px]
             `}

@@ -28,6 +28,7 @@ export interface Animation_Props {
 export interface Box_Props {
     icon: any,
     styleIcon: string,
+    className?: string,
     title: string,
     total: string | number,
 }
@@ -52,9 +53,8 @@ export interface Account_Img_Props {
 }
 
 export interface Add_Btn_Props {
-    styleBtn?: string,
-    paddingY?: string,
     title: string,
+    className?: string,
     onClick?: () => void,
 }
 

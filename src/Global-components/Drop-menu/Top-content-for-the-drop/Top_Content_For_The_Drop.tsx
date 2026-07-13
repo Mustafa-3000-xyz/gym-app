@@ -3,7 +3,11 @@ import { Top_Content_For_The_Drop_Props } from "@/Global-components/types";
 function Top_Content_For_The_Drop(
     { children, className }: Top_Content_For_The_Drop_Props
 ) {
-    return <div className={className}>
+    return <div className={`
+        ${className}
+        flex items-center justify-center gap-2 w-full h-full select-none
+    `}
+    >
         {children}
     </div>
 }

@@ -136,7 +136,7 @@ export default function Subscriptions_Menu_Page() {
         <div className="mb-20">
             <Add_Btn
                 title="إضافة قائمة اشتراك"
-                styleBtn="cursor-pointer"
+                className="cursor-pointer"
                 onClick={addNewSubscriptionMenu}
             />
         </div>

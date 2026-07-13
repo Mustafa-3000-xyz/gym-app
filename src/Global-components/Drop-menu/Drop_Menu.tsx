@@ -44,7 +44,6 @@ export default function Drop_Menu(
             if (!isValidElement(child)) return;
             const element = child as ReactElement | any;
 
-
             if (element.type?.displayName == "Top_Content_For_The_Drop") {
                 setTopContent(child);
             } else if (element.type?.displayName == "Bottom_Content_For_The_Drop") {
@@ -80,15 +79,9 @@ export default function Drop_Menu(
 
 
 
-    return <div
-        className={`
-            duration-500 cursor-pointer  
-            relative w-full h-full flex flex-col justify-center items-center
-            bg-slate-100 border border-slate-300 rounded-lg
-        `}
-    >
+    return <div className="relative w-full h-full flex flex-col justify-center items-center">
         <div
-            className="w-full h-full flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full h-full bg-slate-100 border border-slate-300 rounded-lg"
             ref={topContentRef}
             onClick={clickOnTopContnet}
         >
