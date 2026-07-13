@@ -8,16 +8,7 @@ on:
 
 jobs:
   build-and-upload:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: 'windows-latest'
-            os_name: 'windows'
-          - platform: 'ubuntu-latest'
-            os_name: 'linux'
-
-    runs-on: ${{ matrix.platform }}
+    runs-on: windows-latest
 
     steps:
       - name: Checkout Code
@@ -30,12 +21,6 @@ jobs:
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
-
-      - name: Install Linux Dependencies
-        if: matrix.os_name == 'linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.1-dev build-essential curl wget libssl-dev libayatana-appindicator3-dev librsvg2-dev
 
       - name: Install Frontend Dependencies
         run: npm install
@@ -58,15 +43,9 @@ jobs:
           SUPABASE_URL: "https://alqlzackgkgirrtxdzku.supabase.co"
           SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          if [ "${{ matrix.os_name }}" = "windows" ]; then
-            FILE_PATH=$(ls src-tauri/target/release/bundle/msi/*.msi | head -n 1)
-            FILE_NAME="gym-app-${{ github.ref_name }}.msi"
-            CONTENT_TYPE="application/octet-stream"
-          else
-            FILE_PATH=$(ls src-tauri/target/release/bundle/deb/*.deb | head -n 1)
-            FILE_NAME="gym-app-${{ github.ref_name }}.deb"
-            CONTENT_TYPE="application/vnd.debian.binary-package"
-          fi
+          FILE_PATH=$(ls src-tauri/target/release/bundle/msi/*.msi | head -n 1)
+          FILE_NAME="gym-app-${{ github.ref_name }}.msi"
+          CONTENT_TYPE="application/octet-stream"
 
           echo "جاري رفع ملف الأبليكيشن: $FILE_NAME إلى سوبابيز..."
           curl -X POST "${SUPABASE_URL}/storage/v1/object/apps/${FILE_NAME}" \
