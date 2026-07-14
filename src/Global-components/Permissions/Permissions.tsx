@@ -1,20 +1,43 @@
 import { allPermissions } from "@/Lib/constants";
+import { normalAlert } from "@/Lib/functions";
 import { Permissions_Props } from "@/Pages/types";
+import { store_Type } from "@/Rtk/types";
 import { KeyRound } from "lucide-react";
+import { shallowEqual, useSelector } from "react-redux";
 // ========================================================== //
 export default function Permissions(
     {
         permissionsList,
-        changePermissions,
         onGetPermissionsList
     }: Permissions_Props
 ) {
+    const state = useSelector(function (state: store_Type) {
+        return {
+            logInInfo: state.logInInfo,
+        }
+    }, shallowEqual);
+
+
     function clickOnPermission(key: string) {
-        if (
-            permissionsList == "fullAccess"
-            ||
-            changePermissions == false
-        ) return;
+        if (state.logInInfo?.type == "captain") {
+            normalAlert({
+                title: "!! مهلا يا فتى",
+                text: "المدير هو الوحيد القادر على تعديل الصلاحيات",
+                icon: "error"
+            });
+
+            return;
+        }
+
+        if (permissionsList == "fullAccess") {
+            normalAlert({
+                title: "!! مهلا يا مدير",
+                text: "لا يمكنك تعديل الصلاحيات الخاصه بك",
+                icon: "error"
+            });
+
+            return;
+        }
 
         let arr = [...permissionsList as string[]];
 
@@ -53,9 +76,8 @@ export default function Permissions(
                         key={i}
                         type="button"
                         className={`
-                            border py-2 pb-3 px-5 rounded-full flex gap-2 items-center
+                            border py-2 pb-3 px-5 rounded-full flex gap-2 items-center cursor-pointer
                             ${isInclude || permissionsList == "fullAccess" ? "bg-(--thirdColor) text-white" : "border-slate-300"}
-                            ${!changePermissions ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
                         `}
                         onClick={() => clickOnPermission(ele.key as any)}
                     >

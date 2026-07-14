@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
-import { alert, theTodayDate } from "@/Lib/functions";
+import { alert, deleteRowsInActiveSessionsLinkedToTrainer, theTodayDate } from "@/Lib/functions";
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
 import Btn_Delete_Trainer from "./Btns/Btn_Delete_Trainer";
 import Btn_Subscription_Renewal from "./Btns/Btn_Subscription_Renewal";
@@ -20,7 +20,6 @@ import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import Date_Info_Form from "@/Pages/Trainers-page/Components/Forms/Date_Info_Form";
 import Subscription_Info_Form from "@/Pages/Trainers-page/Components/Forms/Subscription_Info_Form";
 import Trainer_Info_Form from "@/Pages/Trainers-page/Components/Forms/Trainer_Info_Form";
-import { activeSessionsList_Type } from "@/Pages/types";
 // ========================================================== //
 export default function Trainer_Details() {
     const dispatch = useDispatch();
@@ -49,12 +48,16 @@ export default function Trainer_Details() {
     const [getLastName, setGetLastName] = useState<string | null>(null);
     const [getPhone, setGetPhone] = useState<number | null>(0);
     const [getAddress, setGetAddress] = useState<string | null>(null);
-    const [getActiveSessionsList, setGetActiveSessionsList] = useState<activeSessionsList_Type[]>([]);
     const [getSubscriptionName, setGetSubscriptionName] = useState<string | null>("");
     const [getPrice, setGetPrice] = useState<number | null>(0);
 
 
 
+    function checkTheSessionsIsChanges() {
+        if (state.sessionsCount == state.trainerDetails?.sessionsCount) return;
+
+        deleteRowsInActiveSessionsLinkedToTrainer(Number(state.trainerDetails?.id));
+    }
 
     function updateInfo() {
         if (!isActiveBtnSave) return;
@@ -68,11 +71,10 @@ export default function Trainer_Details() {
                     values: {
                         ...newInfoForTrainer,
                         subscriptionState: statusTheSubscription,
-                        activeSessionsList: state.trainerDetails?.sessionsCount != state.sessionsCount ?
-                            JSON.stringify([]) : getActiveSessionsList
                     } as any
                 }) as any);
 
+                checkTheSessionsIsChanges();
                 dispatch(removeTrainerDetails());
                 dispatch(removeSubscriptionStart());
                 dispatch(removeSubscriptionEnd());
@@ -109,7 +111,6 @@ export default function Trainer_Details() {
             price: getPrice,
             subscriptionStart: state.subscriptionStart,
             subscriptionEnd: state.subscriptionEnd,
-            activeSessionsList: JSON.stringify(getActiveSessionsList)
         }
 
 
@@ -216,7 +217,7 @@ export default function Trainer_Details() {
         clickOnSaveBtn={updateInfo}
     >
         {/* Sessions */}
-        <Sessions onGetActiveSessionsList={setGetActiveSessionsList} />
+        <Sessions />
 
         {/* Title & arrowes */}
         <div className="mb-5 flex justify-between items-center">

@@ -36,11 +36,11 @@ export const addRowInAccountsTable = createAsyncThunk(
             data.permissions
         ];
 
-        const createRow = (await database.execute(query, values)).lastInsertId;
+        const getId = (await database.execute(query, values)).lastInsertId;
 
 
         return {
-            id: createRow,
+            id: getId,
             ...data
         };
     }

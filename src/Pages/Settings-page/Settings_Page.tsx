@@ -8,6 +8,6 @@ export default function Settings_Page() {
 
         <hr />
 
-    <Update_App />
+        <Update_App />
     </section>
 }

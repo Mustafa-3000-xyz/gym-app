@@ -18,15 +18,14 @@ export const addRowInTrainersTable = createAsyncThunk(
     async function (data: trainer) {
         const query = `
             INSERT INTO trainers (
-                subscriptionState, activeSessionsList, firstName, lastName, 
+                subscriptionState, firstName, lastName, 
                 phone, address, subscriptionName, sessionsCount, 
                 price, subscriptionStart, subscriptionEnd, dateAdded
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const values = [
             data.subscriptionState,
-            data.activeSessionsList,
             data.firstName,
             data.lastName,
             data.phone,

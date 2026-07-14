@@ -1,6 +1,6 @@
 import { alert, checkThePermissionIsHere, normalAlert } from "@/Lib/functions";
 import { stateIsFinished, WITHDRAW_SUBSCRIPTION } from "@/Lib/constants";
-import { updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
+import { updatePropertyInRowInTrainersTable, updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import { removeTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { BanknoteX } from "lucide-react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
@@ -32,12 +32,10 @@ export default function Btn_Withdraw_Money(
                 titleBeforeClickOnOk: "هل تريد بالفعل سحب اشتراك ذلك المتدرب ؟؟",
                 titleAfterClickOnOk: `تم سحب الاشتراك للمتدرب رقم : ${id}`,
                 funRunWhenClickOnOk: function () {
-                    dispatch(updateSomePropertiesInRowInTrainersTable({
+                    dispatch(updatePropertyInRowInTrainersTable({
                         id: id as any,
-                        values: {
-                            activeSessionsList: JSON.stringify([]),
-                            subscriptionState: stateIsFinished,
-                        } as any
+                        column: "subscriptionState",
+                        value: stateIsFinished
                     }) as any);
 
                     dispatch(removeTrainerDetails());

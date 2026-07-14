@@ -17,7 +17,8 @@ export interface allPermissions_Type {
 export interface normalAlert_Type {
     title: string,
     text?: string,
-    icon: "success" | "error" | "question" | "info"
+    toast?: boolean,
+    icon: "success" | "error" | "question" | "info",
 }
 
 export interface checkThePermissionIsHere_Type {

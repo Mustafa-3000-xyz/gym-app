@@ -40,7 +40,6 @@ export default function Btn_Subscription_Renewal(
                         values: {
                             ...trainer,
                             subscriptionState: stateIsActive,
-                            activeSessionsList: JSON.stringify([]) as any
                         }
                     }) as any);
 

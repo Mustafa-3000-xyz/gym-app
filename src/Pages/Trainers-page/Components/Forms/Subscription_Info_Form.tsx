@@ -136,14 +136,9 @@ export default function Subscription_Info_Form(
             subscriptionEnd.getTime() >= todayDate.getTime()
         ) {
             const diff = Math.abs(differenceInDays(todayDate, subscriptionStart));
+            const result = diff >= Number(state.sessionsCount) ? Number(state.sessionsCount) - 1 : diff
 
-            setMaxForActiveSomeSessions(
-                diff >= Number(state.sessionsCount) ?
-                    Number(state.sessionsCount) - 1
-                    :
-                    subscriptionEnd.getTime() > todayDate.getTime() ?
-                        diff + 1 : diff
-            );
+            setMaxForActiveSomeSessions(result);
         } else {
             setMaxForActiveSomeSessions(0);
             onGetActiveSomeSessions?.(0);

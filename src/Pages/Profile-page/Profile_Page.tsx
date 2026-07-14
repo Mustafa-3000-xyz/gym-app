@@ -1,6 +1,6 @@
 import Account_Img from "@/Pages/Profile-page/Components/Account-img/Account_Img";
 import Box from "@/Global-components/Box/Box";
-import { allPermissions, expalinAppPagePath } from "@/Lib/constants";
+import { accountesPagePath, allPermissions } from "@/Lib/constants";
 import { deleteRowInAccountsTableById, updatePropertyInRowInAccountsTable, updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { BriefcaseBusiness, KeyRound, LogOut, Shell, Trash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -55,7 +55,7 @@ export default function Profile_Page() {
             titleAfterClickOnOk: "تم حذف الحساب بنجاح",
             funRunWhenClickOnOk: function () {
                 dispatch(deleteRowInAccountsTableById(accountId as any) as any);
-                navigate(expalinAppPagePath);
+                navigate(accountesPagePath);
             }
         })
     }
@@ -116,12 +116,14 @@ export default function Profile_Page() {
         }
     }, [theAccount?.permissions]);
 
+    // Get account
     useEffect(function () {
         const getAccount = state.accountes?.find(ele => ele.id == (Number(accountId)));
 
         setTheAccount(getAccount as accounte);
     }, [accountId, state.accountes]);
 
+    // Check values is changes or no
     useEffect(function () {
         if (!getName || !getAge || !getPassword) {
             setIsSaveChange(false);
@@ -238,7 +240,6 @@ export default function Profile_Page() {
         {/* Permissions */}
         <div className="mt-6 flex gap-3">
             <Permissions
-                changePermissions={state.logInInfo?.type == "manager" && theAccount?.type == "captain" as any}
                 permissionsList={permissionsList as any}
                 onGetPermissionsList={setPermissionsList as any}
             />

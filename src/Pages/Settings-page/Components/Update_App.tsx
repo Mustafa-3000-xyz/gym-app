@@ -1,13 +1,11 @@
+import { RefreshCcw } from "lucide-react";
+import { useState } from "react";
 import { check, Update } from '@tauri-apps/plugin-updater';
+import { alert, normalAlert } from "@/Lib/functions";
 import { relaunch } from '@tauri-apps/plugin-process';
-import { useEffect, useState } from 'react';
-import { HardDriveDownload, RefreshCcw } from 'lucide-react';
-import { alert, normalAlert } from '@/Lib/functions';
 // ========================================================== //
 export default function Update_App() {
-    const [versionAppValue, setVersionAppValue] = useState<null | "error" | "stable" | "newVersion">(null);
-
-    const [timer, setTimer] = useState(1);
+    const [versionAppValue, setVersionAppValue] = useState<null | "stable" | "newVersion">(null);
     const [startRotateAnimation, setStartRotateAnimation] = useState(false);
 
     const [updateSize, setUpdateSize] = useState(0);
@@ -15,9 +13,7 @@ export default function Update_App() {
 
 
 
-    async function clickOnSearchForNewUpdateBtn() {
-        if (versionAppValue == "error" || versionAppValue == "stable" || versionAppValue == "newVersion") return;
-
+    async function clickOnSearchUpdateBtn() {
         setStartRotateAnimation(true);
 
         try {
@@ -31,7 +27,7 @@ export default function Update_App() {
 
             if (update) {
                 setStartRotateAnimation(false);
-                checkForDownloadAndInstallUpdate(update);
+                downloadAndInstallVersion(update);
             } else {
                 setStartRotateAnimation(false);
                 setVersionAppValue("stable");
@@ -43,12 +39,12 @@ export default function Update_App() {
                 text: String(err),
                 icon: "error"
             });
-            setVersionAppValue("error");
             setStartRotateAnimation(false);
+            setVersionAppValue(null);
         }
     }
 
-    function checkForDownloadAndInstallUpdate(update: Update) {
+    function downloadAndInstallVersion(update: Update) {
         alert({
             titleBeforeClickOnOk: `هل تريد تحديث البرنامج لاصدار : ${update.version}`,
             titleAfterClickOnOk: "يتم التحديث الان",
@@ -67,7 +63,6 @@ export default function Update_App() {
                         }
                     });
 
-
                     await relaunch();
                 }
                 catch (err) {
@@ -76,7 +71,7 @@ export default function Update_App() {
                         text: String(err),
                         icon: "error"
                     });
-                    setVersionAppValue("error");
+                    setVersionAppValue(null);
                 }
             }
         })
@@ -84,135 +79,46 @@ export default function Update_App() {
 
 
 
-
-    // Reset versionAppValue after 30 seconds if the versionAppValue is error
-    useEffect(function () {
-        if (versionAppValue != "error") return;
-
-        let total = 1;
-
-        const clearMyInterval = setInterval(function () {
-            if (total == 30) {
-                clearInterval(clearMyInterval);
-                setVersionAppValue(null);
-                setTimer(0);
-
-                total = 0;
-            }
-
-            total += 1;
-            setTimer(total);
-        }, 1000);
-
-
-        return () => clearInterval(clearMyInterval);
-    }, [versionAppValue]);
-
-
-
-
-    return <div>
+    return <div className="m-5">
         {
-            versionAppValue == null || versionAppValue == "error" ?
-                <div className='flex flex-col items-start m-5 gap-3'>
-                    <button
-                        className={`
-                            border-blue-600 bg-blue-500 text-white
-                            flex justify-center items-center gap-3
-                            transition-all px-6 py-2 rounded-lg
-                            active:border-b-[2px] active:brightness-90 active:translate-y-[2px]
-                            border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
-                            ${versionAppValue == "error" ? "cursor-not-allowed opacity-45" : "cursor-pointer"}
-                        `}
-                        disabled={versionAppValue == "error" ? true : false}
-                        onClick={clickOnSearchForNewUpdateBtn}
-                    >
-                        <RefreshCcw
-                            size={23}
-                            className={`
-                                ${startRotateAnimation ? "animate-spin" : ""}
-                            `}
-                        />
+            versionAppValue == null ?
+                <button
+                    className={`
+                        transition-all px-6 py-2 rounded-lg
+                        flex justify-center items-center gap-3
+                        border-blue-600 bg-blue-500 text-white cursor-pointer
+                        active:border-b-[2px] active:brightness-90 active:translate-y-[2px]
+                        border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
+                    `}
+                    onClick={clickOnSearchUpdateBtn}
+                >
+                    <RefreshCcw
+                        size={23}
+                        className={` ${startRotateAnimation ? "animate-spin" : ""} `}
+                    />
 
-                        <span className='text-lg'>
-                            البحث عن تحديث
-                        </span>
-                    </button>
-
-                    <p className='font-bold'>
-                        الاصدار الحالي : (1.0.0)
-                    </p>
-
-                    {
-                        versionAppValue == "error" ?
-                            <p className='text-white border-red-500 bg-red-500 rounded-lg px-6 py-2 text-lg font-bold'>
-                                <span>
-                                    حدث خطا, انتظر 30 ثانية :
-                                </span>
-
-                                <span>
-                                    {timer}
-                                </span>
-                            </p>
-                            :
-                            null
-                    }
-                </div>
+                    <span className='text-lg'>
+                        البحث عن تحديث
+                    </span>
+                </button>
                 :
                 versionAppValue == "stable" ?
-                    <div className='flex justify-start'>
-                        <p className={`
-                            transition-all rounded-lg select-none font-bold
-                            border-neutral-600 bg-neutral-600 text-white px-6 py-2 m-5
-                            flex justify-center items-center gap-3 border-b-[4px]
-                        `}
-                        >
-                            <span>
-                                انت الان على احدث اصدار : {`1.0.0`}
-                            </span>
-                        </p>
+                    <div>
+                        انت الان على احدث اصدار من التطبيق
                     </div>
                     :
-                    <div className='flex flex-col items-start'>
-                        <div className={`
-                                animate-bounce transition-all rounded-lg select-none font-bold
-                                border-emerald-600 bg-emerald-500 text-white px-6 py-2 m-5
-                                flex justify-center items-center gap-3 
-                                border-b-[4px]
-                            `}
-                        >
-                            <HardDriveDownload
-                                size={23}
-                                className=''
-                            />
+                    <div>
+                        <h3>
+                            جاري التحديث
+                        </h3>
 
-                            <span className='text-lg'>
-                                جاري التحديث
-                            </span>
-                        </div>
+                        <p>
+                            {updateSize} MP
+                        </p>
 
-                        {/* Version size & downloaded */}
-                        <div>
-                            <p className='font-bold'>
-                                حجم التحديث : {Number(updateSize / 1024 / 1024).toFixed(2)} ميجا
-                            </p>
-
-                            <p className='font-bold underline'>
-                                تم تحميل : {Number(downloaded / 1024 / 1024).toFixed(2)} ميجا
-                            </p>
-                        </div>
-
-                        {/* Warning zone */}
-                        <div className="bg-red-100/50 p-3 rounded-lg border border-red-300 mt-10">
-                            <h3 className='text-red-500 font-bold mb-3'>
-                                تحذير
-                            </h3>
-
-                            <p>
-                                برجاء عدم عمل إعادة تحميل للصفحه (Reload)
-                                او الذهاب لأي صفحة اخرى لتفادي الاخطاء
-                            </p>
-                        </div>
+                        <p>
+                            {downloaded} MP
+                        </p>
                     </div>
         }
     </div>

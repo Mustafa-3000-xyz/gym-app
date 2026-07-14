@@ -10,7 +10,6 @@ export async function trainerTable() {
             CREATE TABLE IF NOT EXISTS trainers (
                 id INTEGER PRIMARY KEY AUTOINCREMENT, 
                 subscriptionState TEXT,
-                activeSessionsList JSON,
                 firstName TEXT,
                 lastName TEXT,
                 phone INTEGER,
@@ -21,6 +20,25 @@ export async function trainerTable() {
                 subscriptionStart TEXT,
                 subscriptionEnd TEXT,
                 dateAdded TEXT
+            )
+        `);
+    } catch (err) {
+        console.error("DB Error:", err);
+        throw err;
+    }
+}
+
+export async function activeSessionsTable() {
+    try {
+        await db.execute("PRAGMA foreign_keys = ON;");
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS activeSessions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                linkWithTrainer INTEGER,
+                accountId INTEGER,
+                sessionNumber INTEGER,
+                activationDate TEXT,
+                FOREIGN KEY (linkWithTrainer) REFERENCES trainers(id) ON DELETE CASCADE
             )
         `);
     } catch (err) {

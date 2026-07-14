@@ -1,8 +1,7 @@
-import { accounte, activeSessionsList_Type, attendanceDetails, subscriptionsMenus, trainer } from "@/Pages/types";
+import { accounte, attendanceDetails, subscriptionsMenus, trainer } from "@/Pages/types";
 // ========================================================== //
 type updateOneColumnInTrainer =
     | "subscriptionState"
-    | "activeSessionsList"
     | "firstName"
     | "lastName"
     | "phone"
@@ -51,7 +50,6 @@ export interface updateSomePropertiesInTrainer_Type {
         subscriptionStart?: string,
         subscriptionEnd?: string,
         subscriptionState?: string,
-        activeSessionsList?: activeSessionsList_Type[],
         workingHours?: number,
         loginDate?: Date | string,
     }

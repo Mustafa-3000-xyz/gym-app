@@ -7,13 +7,14 @@ import { incrementOrDecrementForTotalSessionsInAccount, normalAlert, theTodayDat
 import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
 import Date_Info_Form from "../Forms/Date_Info_Form";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { activeSessionsList_Type, trainer } from "@/Pages/types";
+import { trainer } from "@/Pages/types";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
 import { store_Type } from "@/Rtk/types";
 import { removeSubscriptionStart } from "@/Rtk/Slices/UI-slices/subscriptionStartSlice";
 import { removeSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSlice";
 import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import { addDays } from "date-fns";
+import Database from "@tauri-apps/plugin-sql";
 // ========================================================== //
 export default function Add_Trainer(
     { onIsShowAddTrainer }: { onIsShowAddTrainer: (x: boolean) => void }
@@ -45,37 +46,37 @@ export default function Add_Trainer(
 
 
 
-    function makeObjectsInActiceSessionsList(): activeSessionsList_Type[] | [] {
-        if (getActiveSomeSessions) {
-            let date = new Date(state.subscriptionStart as string);
-            const arr: activeSessionsList_Type[] = [];
+    async function activeSomeSessions(trainerId: number) {
+        if (!getActiveSomeSessions) return;
 
-            for (let i = 0; i < getActiveSomeSessions; i++) {
-                const obj = {
-                    accountId: state.logInInfo?.id,
-                    sessionNumber: i,
-                    activationDate: new Date(date as Date).toISOString()
-                } as activeSessionsList_Type
+        const database = await Database.load("sqlite:app-gym-db.db");
+        let dateNow: any = state.subscriptionStart;
 
-                arr.push(obj);
 
-                const nextDay = addDays(date, 1);
-                date = nextDay;
-            }
+        for (let i = 0; i < getActiveSomeSessions; i++) {
+            const query = `
+                INSERT INTO activeSessions(
+                    linkWithTrainer, accountId, sessionNumber, activationDate
+                ) VALUES (?, ?, ?, ?)
+            `;
 
-            incrementOrDecrementForTotalSessionsInAccount(
-                Number(state.logInInfo?.id),
-                getActiveSomeSessions,
-                "increment"
-            );
-            return arr;
+            const values = [
+                trainerId,
+                state.logInInfo?.id,
+                i,
+                dateNow
+            ];
+
+            await database.execute(query, values);
+
+            dateNow = addDays(dateNow, 1);
         }
-        else {
-            return [];
-        }
+
+
+        incrementOrDecrementForTotalSessionsInAccount(Number(state.logInInfo?.id), getActiveSomeSessions, "increment");
     }
 
-    function saveTrainerInfo() {
+    async function saveTrainerInfo() {
         if (!isAllInfoComplete) return
         onIsShowAddTrainer(false);
         normalAlert({
@@ -88,10 +89,9 @@ export default function Add_Trainer(
         dispatch(removeSubscriptionStart());
         dispatch(removeSubscriptionEnd());
         dispatch(removeAllSessions());
-        dispatch(
+        const getTraineInfos = await dispatch(
             addRowInTrainersTable({
                 subscriptionState: statusTheSubscription,
-                activeSessionsList: JSON.stringify(makeObjectsInActiceSessionsList()) as any,
                 firstName: getFirstName,
                 lastName: getLastName,
                 phone: String(getPhone),
@@ -103,7 +103,9 @@ export default function Add_Trainer(
                 subscriptionEnd: state.subscriptionEnd,
                 dateAdded: new Date().toISOString()
             } as trainer) as any
-        );
+        ).unwrap();
+
+        await activeSomeSessions(getTraineInfos.id);
     }
 
     function clickOnCancel() {

@@ -156,7 +156,6 @@ export default function Accountes_Page() {
                     <div className="mt-5">
                         <Permissions
                             permissionsList={permissionsList}
-                            changePermissions={state.logInInfo?.type == "manager"}
                             onGetPermissionsList={setPermissionsList as any}
                         />
 

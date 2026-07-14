@@ -1,7 +1,6 @@
 export interface trainer {
     id?: number;
     subscriptionState: string;
-    activeSessionsList: activeSessionsList_Type[] | [];
     firstName: string;
     lastName: string;
     phone: string;
@@ -12,6 +11,14 @@ export interface trainer {
     subscriptionStart: string;
     subscriptionEnd: string;
     dateAdded: string;
+}
+
+export interface activeSession {
+    id?: number,
+    linkWithTrainer: number,
+    accountId: number,
+    sessionNumber: number,
+    activationDate: Date | string,
 }
 
 export interface accounte {
@@ -41,12 +48,6 @@ export interface attendanceDetails {
     date: Date | string,
     accountId: number,
     trainers: number[],
-}
-
-export interface activeSessionsList_Type {
-    accountId: number,
-    sessionNumber: number,
-    activationDate: Date | string,
 }
 
 export interface Subscription_Info_Form_Props {
@@ -120,7 +121,6 @@ export interface Data_Inputs_Props {
 
 export interface Permissions_Props {
     permissionsList?: string[] | "fullAccess",
-    changePermissions: boolean,
     onGetPermissionsList: (x: string[]) => void,
 }
 
@@ -165,4 +165,12 @@ export interface Date_Box_Props {
 export interface Filter_For_Trainers_Props {
     onGetTrainers: (x: trainer[]) => void,
     onGetBoxInfo: (x: box_Info_In_Trainers_Page) => void,
+}
+
+export interface readSessions_Type {
+    id?: number | null,
+    sessionNumber: number,
+    account: "removed" | accounte | null,
+    activationDate: string | null,
+    usingThisSession: boolean
 }

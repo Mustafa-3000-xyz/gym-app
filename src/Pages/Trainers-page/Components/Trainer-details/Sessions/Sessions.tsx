@@ -1,21 +1,20 @@
 import { stateIsActive, stateIsFinished, stateIsPending, styleDate } from "@/Lib/constants";
-import { alert, getAllAttendanceInSpecificDate, incrementOrDecrementForTotalSessionsInAccount, theTodayDate } from "@/Lib/functions";
-import { activeSessionsList_Type, attendanceDetails, sessionListForRead } from "@/Pages/types";
+import { alert, deleteRowsInActiveSessionsLinkedToTrainer, getAllAttendanceInSpecificDate, incrementOrDecrementForTotalSessionsInAccount, theTodayDate } from "@/Lib/functions";
+import { activeSession, attendanceDetails, readSessions_Type } from "@/Pages/types";
+import { addRowInAttendanceTable, deleteRowInAttendanceTableById, updatePropertyInRowInAttendanceTable } from "@/Rtk/Slices/Db-slices/attendanceSlice";
+import { updatePropertyInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
+import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
+import { removeSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSlice";
+import { removeSubscriptionStart } from "@/Rtk/Slices/UI-slices/subscriptionStartSlice";
 import { removeTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
-import { updatePropertyInRowInTrainersTable, updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import { store_Type } from "@/Rtk/types";
+import Database from "@tauri-apps/plugin-sql";
+import { format } from "date-fns";
 import { Presentation } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { format } from "date-fns";
-import { removeSubscriptionStart } from "@/Rtk/Slices/UI-slices/subscriptionStartSlice";
-import { removeSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSlice";
-import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
-import { addRowInAttendanceTable, deleteRowInAttendanceTableById, updatePropertyInRowInAttendanceTable } from "@/Rtk/Slices/Db-slices/attendanceSlice";
 // ========================================================== //
-export default function Sessions(
-    { onGetActiveSessionsList }: { onGetActiveSessionsList: (x: activeSessionsList_Type[]) => void }
-) {
+export default function Sessions() {
     const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
@@ -26,115 +25,130 @@ export default function Sessions(
         }
     }, shallowEqual);
 
+    const [readSessions, setReadSessions] = useState<readSessions_Type[]>([]);
+    const [activeSessionsCount, setActiveSessionsCount] = useState(0);
 
-    const [activeSessionsList, setActiveSessionsList] = useState<activeSessionsList_Type[]>([]);
-
-    const [popoverInfo, setPopoverInfo] = useState({ date: null, name: "" as string | "removed" });
     const [popoverCoords, setPopoverCoords] = useState({ top: 0, left: 0 });
     const [showPopover, setShowPopover] = useState(false);
+    const [popoverInfo, setPopoverInfo] = useState({
+        name: "",
+        accountType: "" as "manager" | "captain" | "removed",
+        date: "",
+    });
 
     const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
 
 
 
 
-    function finishedSubscriptionUsingLastSession() {
-        alert({
-            titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
-            titleAfterClickOnOk: `تم إنهاء الاشتراك للمتدرب رقم : ${state.trainerDetails?.id}`,
-            funRunWhenClickOnOk: function () {
-                incrementOrDecrementForTotalSessionsInAccount(
-                    Number(state.logInInfo?.id),
-                    1,
-                    "increment"
-                );
 
-                dispatch(updateSomePropertiesInRowInTrainersTable({
-                    id: state.trainerDetails?.id as any,
-                    values: {
-                        activeSessionsList: JSON.stringify([]),
-                        subscriptionState: stateIsFinished,
-                    } as any
-                }) as any);
-                dispatch(removeSubscriptionStart());
-                dispatch(removeSubscriptionEnd());
-                dispatch(removeAllSessions());
-                dispatch(removeTrainerDetails());
-            }
-        });
+    async function getActiveSessionsForTrainer(trainerId: number) {
+        const database = await Database.load("sqlite:app-gym-db.db");
+        const query = "SELECT * FROM activeSessions WHERE linkWithTrainer = ?";
+        const value = [trainerId];
+
+        return await database.select(query, value);
     }
 
-    function clickOnSession(sessionNum: number | null) {
+    async function handleSessionsForRead() {
+        const activeSessions = await getActiveSessionsForTrainer(Number(state.trainerDetails?.id)) as activeSession[];
+        let isSessionUsed = false;
+        const arr = [];
+
+
+        // Handle active sessions
+        for (let i = 0; i < activeSessions.length; i++) {
+            const sessionObj = {
+                id: activeSessions[i].id,
+                sessionNumber: i,
+                account: state.accountes?.find(ele => ele.id == activeSessions[i].accountId) ?? "removed",
+                activationDate: activeSessions[i].activationDate,
+                usingThisSession: todayDate.getTime() == new Date(activeSessions[i].activationDate).getTime()
+            }
+
+            isSessionUsed = todayDate.getTime() == new Date(activeSessions[i].activationDate).getTime();
+            arr.push(sessionObj);
+        }
+
+        // Handle for not active sessions
+        for (let i = activeSessions.length; i < Number(state.trainerDetails?.sessionsCount); i++) {
+            const sessionObj = {
+                id: null,
+                sessionNumber: i,
+                account: null,
+                activationDate: null,
+                usingThisSession: isSessionUsed ? false : true
+            }
+
+            isSessionUsed = true;
+            arr.push(sessionObj);
+        }
+
+        setActiveSessionsCount(activeSessions.length);
+        setReadSessions(arr as readSessions_Type[]);
+    }
+
+    async function clickOnSession(sessionNum: number) {
         if (
-            sessionNum == null
+            state.trainerDetails?.subscriptionState == stateIsPending
             ||
-            (
-                state.trainerDetails?.subscriptionState == stateIsPending
-                ||
-                state.trainerDetails?.subscriptionState == stateIsFinished
-            )
+            state.trainerDetails?.subscriptionState == stateIsFinished
         ) return;
 
-        const findSession = activeSessionsList.find(ele => ele.sessionNumber == sessionNum);
-        let copyActiveSessionsList: activeSessionsList_Type[] = [...activeSessionsList];
 
-
-        // If this sessions is last, so run finishedSubscriptionUsingLastSession
-        if (
-            copyActiveSessionsList.length + 1 == state.trainerDetails?.sessionsCount
-            &&
-            !findSession
-        ) {
+        if (readSessions[readSessions.length - 1].usingThisSession == true) {
             finishedSubscriptionUsingLastSession();
             return;
         }
 
-        // Add session
-        if (!findSession) {
-            const obj = {
-                accountId: state.logInInfo?.id,
-                sessionNumber: sessionNum,
-                activationDate: todayDate.toISOString()
-            } as activeSessionsList_Type
+
+        const database = await Database.load("sqlite:app-gym-db.db");
+        const getSession = readSessions.find(ele => ele.sessionNumber == sessionNum);
 
 
+        // Add session if the session is not active
+        if (getSession?.account == null) {
+            const query = `
+                INSERT INTO activeSessions (
+                    linkWithTrainer, accountId, sessionNumber, activationDate
+                ) VALUES(?, ?, ?, ?)
+            `;
+
+            const values = [
+                state.trainerDetails?.id,
+                state.logInInfo?.id,
+                sessionNum,
+                todayDate.toISOString()
+            ]
+
+            await database.execute(query, values);
             attendance(true);
+            handleSessionsForRead();
             incrementOrDecrementForTotalSessionsInAccount(
                 Number(state.logInInfo?.id),
                 1,
                 "increment"
             );
-
-            copyActiveSessionsList.push(obj);
         }
 
         // Remove session
         else if (
-            findSession
-            &&
-            (
-                findSession.accountId == state.logInInfo?.id
-                ||
-                state.logInInfo?.type == "manager"
-            )
+            (getSession?.account != "removed" && getSession?.account.id == state.logInInfo?.id)
+            ||
+            (getSession?.account == "removed" && state.logInInfo?.type == "manager")
         ) {
-            setShowPopover(false);
+            const query = "DELETE FROM activeSessions WHERE id = ?";
+            const value = [getSession.id];
+
+            await database.execute(query, value);
             attendance(false);
+            handleSessionsForRead();
             incrementOrDecrementForTotalSessionsInAccount(
                 Number(state.logInInfo?.id),
                 1,
                 "decrement"
             );
-
-            copyActiveSessionsList = copyActiveSessionsList.filter(ele => ele.sessionNumber != sessionNum);
         }
-
-        setActiveSessionsList(copyActiveSessionsList);
-        dispatch(updatePropertyInRowInTrainersTable({
-            id: state.trainerDetails?.id as any,
-            column: "activeSessionsList",
-            value: JSON.stringify(copyActiveSessionsList),
-        }) as any);
     }
 
     async function attendance(isAttend: boolean) {
@@ -191,21 +205,48 @@ export default function Sessions(
         }
     }
 
-    function hoverOnSession(e: React.MouseEvent<HTMLParagraphElement>, sessionInfo: sessionListForRead) {
+    function finishedSubscriptionUsingLastSession() {
+        alert({
+            titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
+            titleAfterClickOnOk: `تم إنهاء الاشتراك للمتدرب رقم : ${state.trainerDetails?.id}`,
+            funRunWhenClickOnOk: async function () {
+                attendance(true);
+                incrementOrDecrementForTotalSessionsInAccount(
+                    Number(state.logInInfo?.id),
+                    1,
+                    "increment"
+                );
+
+                dispatch(updatePropertyInRowInTrainersTable({
+                    id: Number(state.trainerDetails?.id),
+                    column: "subscriptionState",
+                    value: stateIsFinished
+                }) as any);
+
+
+                deleteRowsInActiveSessionsLinkedToTrainer(Number(state.trainerDetails?.id));
+                dispatch(removeSubscriptionStart());
+                dispatch(removeSubscriptionEnd());
+                dispatch(removeAllSessions());
+                dispatch(removeTrainerDetails());
+            }
+        });
+    }
+
+    function hoverOnSession(e: React.MouseEvent<HTMLParagraphElement>, sessionInfo: readSessions_Type) {
         const target = e.currentTarget;
         const rect = target.getBoundingClientRect();
 
-
         setPopoverCoords({
-            top: rect.top - 78 ,
-            left:rect.left + 28
+            top: rect.top - 78,
+            left: rect.left + 28
         });
-
 
         setShowPopover(true);
         setPopoverInfo({
-            date: sessionInfo.date,
-            name: sessionInfo.account != "removed" ? sessionInfo.account.name : "removed"
+            name: sessionInfo.account != "removed" ? sessionInfo.account?.name.slice(0, 7) : "الحساب محذوف" as any,
+            accountType: sessionInfo.account != "removed" ? sessionInfo.account?.type : "removed" as any,
+            date: sessionInfo.activationDate as any
         });
     }
 
@@ -219,208 +260,110 @@ export default function Sessions(
 
 
 
-
     useEffect(function () {
-        if (!state.trainerDetails) return;
-
-        setActiveSessionsList(JSON.parse(state.trainerDetails?.activeSessionsList as any));
+        handleSessionsForRead();
     }, [state.trainerDetails]);
 
-    useEffect(function () {
-        if (activeSessionsList.length == 0) {
-            onGetActiveSessionsList([]);
-            return;
-        }
-
-        onGetActiveSessionsList(activeSessionsList);
-    }, [activeSessionsList]);
-
-
-    const readSessions = useMemo(() => {
-        const sessionsList: sessionListForRead[] = [];
-
-
-        if (activeSessionsList.length != 0) {
-            const lastSession = activeSessionsList.length - 1;
-
-
-            activeSessionsList.forEach((ele, i) => {
-                const getAccount = state.accountes?.find(acc => acc.id == ele?.accountId);
-                const theAccount = getAccount ? getAccount : "removed";
-
-                // If the ele is before the lastSession, so this is not active
-                if (i != lastSession) {
-                    const oldSession = {
-                        account: theAccount,
-                        session: ele.sessionNumber,
-                        date: ele.activationDate,
-                        isActive: false
-                    }
-
-                    sessionsList.push(oldSession as any);
-                }
-
-                /*
-                    If the ele is the last session and today's date is after the activation date,
-                    make the next session is active.
-                */
-                else if (
-                    i == lastSession
-                    &&
-                    new Date(ele.activationDate).getTime() < todayDate.getTime()
-                ) {
-                    const oldSession = {
-                        account: theAccount,
-                        session: ele.sessionNumber,
-                        date: ele.activationDate,
-                        isActive: false
-                    }
-
-                    const sessionNow = {
-                        account: null,
-                        session: ele.sessionNumber + 1,
-                        date: null,
-                        isActive: true
-                    }
-
-                    sessionsList.push(oldSession as any, sessionNow as any);
-                }
-
-                /*
-                    If the ele is the last session but  today's date is equal the activation date,
-                    so this session will be active
-                */
-                else if (
-                    i == lastSession
-                    &&
-                    new Date(ele.activationDate).getTime() == todayDate.getTime()
-                ) {
-                    const sessionNow = {
-                        account: theAccount,
-                        session: ele.sessionNumber,
-                        date: ele.activationDate,
-                        isActive: true
-                    }
-
-                    sessionsList.push(sessionNow as any);
-                }
-            });
-        }
-
-
-        // Add the remaining unactivated sessions to the sessionsList
-        for (let i = sessionsList.length; i < (state.trainerDetails?.sessionsCount as number); i++) {
-            if (activeSessionsList.length == 0) {
-                const session = {
-                    account: null,
-                    session: i,
-                    date: null,
-                    isActive: i == 0 ? true : false
-                }
-
-                sessionsList.push(session as any);
-            }
-            else {
-                const unactivatedSession = {
-                    account: null,
-                    session: i,
-                    date: null,
-                    isActive: false,
-                }
-
-                sessionsList.push(unactivatedSession as any);
-            }
-        }
-
-        return sessionsList;
-    }, [state.trainerDetails?.sessionsCount, state.accountes, activeSessionsList, todayDate]);
 
 
 
+    return <div className="mb-5">
+        <div className="flex items-center gap-2 text-(--thirdColor)">
+            <Presentation
+                strokeWidth={1.75}
+                size={23}
+            />
+            <h3 className="font-bold mb-1">الحصص</h3>
+        </div>
 
-
-    return <div>
-        {/* Title for sessions */}
-        <div className="mb-1">
-            <div className="flex items-center gap-2 text-(--thirdColor)">
-                <Presentation strokeWidth={1.75} size={23} />
-                <h3 className="font-bold mb-1">الحصص</h3>
-            </div>
-
-            <div className="opacity-60 mb-4">
-                {
-                    state.trainerDetails?.subscriptionState == stateIsActive ?
+        <div className="opacity-60 mb-7">
+            {
+                state.trainerDetails?.subscriptionState == stateIsActive ?
+                    <p>
+                        <span> تم إكمال </span>
+                        <span className="font-bold me-1">
+                            {activeSessionsCount}
+                        </span>
+                        <span>  من اصل </span>
+                        <span className="font-bold">
+                            {state.trainerDetails?.sessionsCount}
+                        </span>
+                    </p>
+                    :
+                    state.trainerDetails?.subscriptionState == stateIsPending ?
                         <p>
-                            <span> تم إكمال </span>
-                            <span className="font-bold me-1">
-                                {activeSessionsList.length}
-                            </span>
-                            <span>  من اصل </span>
-                            <span className="font-bold">
-                                {state.trainerDetails?.sessionsCount}
-                            </span>
+                            الاشتراك معلق
                         </p>
                         :
-                        state.trainerDetails?.subscriptionState == stateIsPending ?
-                            <p>
-                                الاشتراك معلق
-                            </p>
-                            :
-                            <p>
-                                تم إنتهاء الاشتراك
-                            </p>
-                }
-            </div>
+                        <p>
+                            تم إنتهاء الاشتراك
+                        </p>
+            }
         </div>
 
         {/* Session info */}
         <div
             className={`
                 opacity-0 -z-50
+                absolute p-3 rounded-2xl rounded-bl-none text-center
                 ${showPopover ? "opacity-100 z-50" : "opacity-0 -z-50"}
-                absolute bg-gray-300 p-3 rounded-2xl rounded-bl-none text-center
+                ${popoverInfo.accountType == "manager" ? "bg-(--managerColor) text-white font-bold" : ""}
+                ${popoverInfo.accountType == "captain" || popoverInfo.accountType == "removed" ? "bg-(--captainColor) text-white" : ""}
             `}
             style={{
                 top: `${popoverCoords.top}px`,
                 left: `${popoverCoords.left}px`
             }}
         >
-            <p className="font-bold whitespace-nowrap">
-                {
-                    popoverInfo.name != "removed" ?
-                        popoverInfo.name.slice(0, 7)
-                        :
-                        "الحساب محذوف"
-                }
+            <p className="whitespace-nowrap">
+                {popoverInfo.name}
             </p>
 
-            <p>
-                {format(new Date(popoverInfo.date as any), styleDate)}
-            </p>
+            {
+                popoverInfo.date ?
+                    <p>
+                        {format(new Date(popoverInfo.date as string), styleDate)}
+                    </p>
+                    :
+                    null
+            }
         </div>
 
         {/* Sessions */}
-        <div className="transition duration-500 my-6 flex gap-3 flex-wrap overflow-auto h-20">
+        <div className="flex gap-3 flex-wrap overflow-auto h-20">
             {
-                readSessions.map((ele, i) => {
+                readSessions.map(function (ele, i) {
                     return <div
                         key={i}
                         className={`
                             duration-300
                             flex justify-center items-center border border-neutral-300 w-12 h-12 rounded-full
-                            ${ele.isActive ? "cursor-pointer opacity-100" : "cursor-not-allowed opacity-20"}
+                            ${!ele.usingThisSession ? "opacity-40" : ""}
+                            ${
+                                (ele.account == null && ele.usingThisSession)
+                                ||
+                                (ele.account != "removed" && ele.account?.id == state.logInInfo?.id && ele.usingThisSession)
+                                ||
+                                (ele?.account == "removed" && state.logInInfo?.type == "manager" && ele.usingThisSession)
+                                ? "cursor-pointer" : "cursor-not-allowed"
+                            }
                             ${ele.account != "removed" && ele.account?.type == "manager" ? "bg-(--managerColor) text-white border-0! font-bold" : ""}
-                            ${(ele.account != "removed" && ele.account?.type == "captain") || ele.account == "removed" ? "bg-(--captainColor) text-white border-0!" : ""}
-                            ${ele.account != "removed" && ele.account?.type == "manager" && state.logInInfo?.type == "captain" ? "cursor-not-allowed!" : ""}
+                            ${(ele.account != "removed" && ele.account?.type == "captain") || ele.account == "removed" ? "bg-(--captainColor) text-white border-0! font-bold" : ""}
 
                             ${state.trainerDetails?.subscriptionState == stateIsFinished ? "bg-red-500! text-white! cursor-not-allowed! opacity-100!" : ""}
                             ${state.trainerDetails?.subscriptionState == stateIsPending ? "bg-amber-500! text-white! cursor-not-allowed! opacity-100!" : ""}
                         `}
-                        onClick={() => clickOnSession(ele.isActive ? ele.session : null)}
-                        onMouseMove={ele.date ? (e) => hoverOnSession(e, ele) : () => null}
+
+                        onClick={() => {
+                            if (ele.usingThisSession) {
+                                clickOnSession(ele.sessionNumber);
+                            }
+                        }}
+
+                        onMouseMove={ele.activationDate ? (e) => hoverOnSession(e, ele) : () => null}
                         onMouseLeave={outOnSession}
                     >
-                        {i + 1}
+                        {ele.sessionNumber + 1}
                     </div>
                 })
             }

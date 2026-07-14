@@ -19,7 +19,7 @@ import { getAllRowsInAccountsTable } from "./Rtk/Slices/Db-slices/accountsSlice"
 import { getAllRowsInSubscriptionsMenusTable } from "./Rtk/Slices/Db-slices/subscriptionsMenusSlice";
 import { removeTrainerDetails } from "./Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { changeLogInInfo, getLogInInfo } from "./Rtk/Slices/UI-slices/logInInfoSlice";
-import { accountsTable, attendanceTable, subscriptionsMenusTable, trainerTable } from "./Lib/tables";
+import { accountsTable, activeSessionsTable, attendanceTable, subscriptionsMenusTable, trainerTable } from "./Lib/tables";
 import { getAllRowsInAttendanceTable } from "./Rtk/Slices/Db-slices/attendanceSlice";
 // ========================================================== //
 function App() {
@@ -39,6 +39,7 @@ function App() {
 
   async function runTables() {
     await trainerTable()
+    await activeSessionsTable();
     await accountsTable();
     await attendanceTable();
     await subscriptionsMenusTable();
@@ -109,6 +110,7 @@ function App() {
     logOutWhenCloseApp();
   }, [state.logInInfo]);
 
+  // Check the subscription state for all trainers
   useEffect(() => {
     if (state.trainers?.length == 0) return;
 
@@ -116,8 +118,6 @@ function App() {
 
     tomorrow.setDate(todayDate.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
-
-
 
     const timeUntilMidnight = tomorrow.getTime() - todayDate.getTime();
     const timer = setTimeout(() => {

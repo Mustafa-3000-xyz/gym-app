@@ -39,13 +39,15 @@ export function normalAlert(
     {
         title,
         text = "",
-        icon
+        toast = false,
+        icon,
     }: normalAlert_Type
 ) {
     Swal.fire({
         title: title,
         text: text,
         icon: icon,
+        toast: toast,
         confirmButtonText: "تمام"
     } as any);
 }
@@ -162,7 +164,7 @@ export function checkThePermissionIsHere(
         }
 
         if (getPermissionsList == "fullAccess") {
-            
+
             return true;
         }
         else {
@@ -170,7 +172,7 @@ export function checkThePermissionIsHere(
         }
     }
     catch (err) {
-        
+
     }
 }
 
@@ -181,4 +183,13 @@ export async function getAllAttendanceInSpecificDate(date: Date | string) {
         "SELECT * FROM attendance WHERE date = ?",
         [date]
     );
+}
+
+export async function deleteRowsInActiveSessionsLinkedToTrainer(trainerId: number) {
+    const database = await Database.load("sqlite:app-gym-db.db");
+
+    const query = "DELETE FROM activeSessions WHERE linkWithTrainer = ?";
+    const value = [trainerId];
+
+    await database.execute(query, value);
 }
