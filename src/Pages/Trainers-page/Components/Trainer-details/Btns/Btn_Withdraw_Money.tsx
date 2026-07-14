@@ -1,6 +1,6 @@
 import { alert, checkThePermissionIsHere, normalAlert } from "@/Lib/functions";
 import { stateIsFinished, WITHDRAW_SUBSCRIPTION } from "@/Lib/constants";
-import { updatePropertyInRowInTrainersTable, updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
+import { updatePropertyInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import { removeTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { BanknoteX } from "lucide-react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
