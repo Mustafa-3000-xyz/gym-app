@@ -302,32 +302,38 @@ export default function Sessions() {
         </div>
 
         {/* Session info */}
-        <div
-            className={`
-                opacity-0 -z-50
-                absolute p-3 rounded-2xl rounded-bl-none text-center
-                ${showPopover ? "opacity-100 z-50" : "opacity-0 -z-50"}
-                ${popoverInfo.accountType == "manager" ? "bg-(--managerColor) text-white font-bold" : ""}
-                ${popoverInfo.accountType == "captain" || popoverInfo.accountType == "removed" ? "bg-(--captainColor) text-white" : ""}
-            `}
-            style={{
-                top: `${popoverCoords.top}px`,
-                left: `${popoverCoords.left}px`
-            }}
-        >
-            <p className="whitespace-nowrap">
-                {popoverInfo.name}
-            </p>
-
-            {
-                popoverInfo.date ?
-                    <p>
-                        {format(new Date(popoverInfo.date as string), styleDate)}
+        {
+            state.trainerDetails?.subscriptionState == stateIsActive ?
+                <div
+                    className={`
+                        opacity-0 -z-50
+                        absolute p-3 rounded-2xl rounded-bl-none text-center
+                        ${showPopover ? "opacity-100 z-50" : "opacity-0 -z-50"}
+                        ${popoverInfo.accountType == "manager" ? "bg-(--managerColor) text-white font-bold" : ""}
+                        ${popoverInfo.accountType == "captain" || popoverInfo.accountType == "removed" ? "bg-(--captainColor) text-white" : ""}
+                    `}
+                    style={{
+                        top: `${popoverCoords.top}px`,
+                        left: `${popoverCoords.left}px`
+                    }}
+                >
+                    <p className="whitespace-nowrap">
+                        {popoverInfo.name}
                     </p>
-                    :
-                    null
-            }
-        </div>
+
+                    {
+                        popoverInfo.date ?
+                            <p>
+                                {format(new Date(popoverInfo.date as string), styleDate)}
+                            </p>
+                            :
+                            null
+                    }
+                </div>
+                :
+                null
+        }
+
 
         {/* Sessions */}
         <div className="flex gap-3 flex-wrap overflow-auto h-20">
@@ -339,8 +345,7 @@ export default function Sessions() {
                             duration-300
                             flex justify-center items-center border border-neutral-300 w-12 h-12 rounded-full
                             ${!ele.usingThisSession ? "opacity-40" : ""}
-                            ${
-                                (ele.account == null && ele.usingThisSession)
+                            ${(ele.account == null && ele.usingThisSession)
                                 ||
                                 (ele.account != "removed" && ele.account?.id == state.logInInfo?.id && ele.usingThisSession)
                                 ||

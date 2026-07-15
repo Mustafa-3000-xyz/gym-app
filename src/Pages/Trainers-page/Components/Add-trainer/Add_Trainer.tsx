@@ -51,7 +51,7 @@ export default function Add_Trainer(
         if (!getActiveSomeSessions) return;
 
         const database = await Database.load("sqlite:app-gym-db.db");
-        let dateNow: any = state.subscriptionStart;
+        let dateNow: any = new Date(state.subscriptionStart as string).toISOString();
 
 
         for (let i = 0; i < getActiveSomeSessions; i++) {
@@ -75,7 +75,7 @@ export default function Add_Trainer(
             }) as any);
 
             await database.execute(query, values);
-            dateNow = addDays(dateNow, 1);
+            dateNow = new Date(addDays(dateNow, 1)).toISOString();
         }
 
 

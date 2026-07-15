@@ -1,4 +1,4 @@
-import { alert, checkThePermissionIsHere, normalAlert } from "@/Lib/functions";
+import { alert, checkThePermissionIsHere, deleteRowsInActiveSessionsLinkedToTrainer, normalAlert } from "@/Lib/functions";
 import { stateIsFinished, WITHDRAW_SUBSCRIPTION } from "@/Lib/constants";
 import { updatePropertyInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import { removeTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
@@ -10,7 +10,7 @@ import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import { store_Type } from "@/Rtk/types";
 // ========================================================== //
 export default function Btn_Withdraw_Money(
-    { id }: { id: number }
+    { trainerId }: { trainerId: number }
 ) {
     const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
@@ -30,10 +30,10 @@ export default function Btn_Withdraw_Money(
         if (checkWithDrawPermission) {
             alert({
                 titleBeforeClickOnOk: "هل تريد بالفعل سحب اشتراك ذلك المتدرب ؟؟",
-                titleAfterClickOnOk: `تم سحب الاشتراك للمتدرب رقم : ${id}`,
-                funRunWhenClickOnOk: function () {
+                titleAfterClickOnOk: `تم سحب الاشتراك للمتدرب رقم : ${trainerId}`,
+                funRunWhenClickOnOk: async function () {
                     dispatch(updatePropertyInRowInTrainersTable({
-                        id: id as any,
+                        id: trainerId as any,
                         column: "subscriptionState",
                         value: stateIsFinished
                     }) as any);
@@ -42,6 +42,8 @@ export default function Btn_Withdraw_Money(
                     dispatch(removeSubscriptionStart());
                     dispatch(removeSubscriptionEnd());
                     dispatch(removeAllSessions());
+
+                    await deleteRowsInActiveSessionsLinkedToTrainer(trainerId);
                 }
             });
         }

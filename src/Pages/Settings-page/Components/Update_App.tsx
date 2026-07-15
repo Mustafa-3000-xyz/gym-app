@@ -16,7 +16,7 @@ export default function Update_App() {
     const [theVersionSize, setTheVersionSize] = useState(0);
     const [theDownloaded, setTheDownloaded] = useState(0);
 
-    const versionAppNow = "1.0.2";
+    const versionAppNow = "1.0.3";
 
 
 

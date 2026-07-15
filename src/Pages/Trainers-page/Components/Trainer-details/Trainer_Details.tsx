@@ -102,10 +102,10 @@ export default function Trainer_Details() {
     useEffect(function () {
         const obj = {
             id: state.trainerDetails?.id,
-            firstName: getFirstName == state.trainerDetails?.firstName ? getFirstName : state.trainerDetails?.firstName,
-            lastName: getLastName == state.trainerDetails?.lastName ? getLastName : state.trainerDetails?.lastName,
-            address: getAddress == state.trainerDetails?.address ? getAddress : state.trainerDetails?.address,
-            phone: getPhone == state.trainerDetails?.phone as any ? getPhone : state.trainerDetails?.phone,
+            firstName: getFirstName == state.trainerDetails?.firstName || !getFirstName ? state.trainerDetails?.firstName : getFirstName,
+            lastName: getLastName == state.trainerDetails?.lastName || !getLastName ? state.trainerDetails?.lastName : getLastName,
+            address: getAddress == state.trainerDetails?.address || !getAddress ? state.trainerDetails?.address : getAddress,
+            phone: getPhone == Number(state.trainerDetails?.phone) || !getPhone ? state.trainerDetails?.phone : getPhone,
             subscriptionName: getSubscriptionName,
             sessionsCount: state.sessionsCount,
             price: getPrice,
@@ -300,7 +300,7 @@ export default function Trainer_Details() {
             <div className="flex gap-2">
                 {
                     subscriptionState != stateIsFinished ?
-                        <Btn_Withdraw_Money id={state.trainerDetails.id as any} />
+                        <Btn_Withdraw_Money trainerId={state.trainerDetails.id as any} />
                         :
                         <Btn_Subscription_Renewal
                             trainer={newInfoForTrainer as any}

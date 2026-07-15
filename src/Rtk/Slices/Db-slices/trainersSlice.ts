@@ -63,7 +63,7 @@ export const updatePropertyInRowInTrainersTable = createAsyncThunk(
         id,
         column,
         value
-    }: updatePropertyInTrainer_Type) {
+    }: updatePropertyInTrainer_Type) {        
         const query = `UPDATE trainers SET ${column} = ? WHERE id = ?`;
 
         await database.execute(query, [value, id]);
