@@ -10,7 +10,7 @@ import { hiddenOrShowSideBar } from "@/Rtk/Slices/UI-slices/sideBarSlice";
 export default function Update_App() {
     const dispatch = useDispatch();
 
-    const [versionAppValue, setVersionAppValue] = useState<"stable" | "error" | "newVersion">("stable");
+    const [versionAppValue, setVersionAppValue] = useState<"stable" | "error" | "updating">("stable");
     const [startRotateAnimation, setStartRotateAnimation] = useState(false);
 
     const [theVersionSize, setTheVersionSize] = useState(0);
@@ -63,7 +63,7 @@ export default function Update_App() {
             titleAfterClickOnOk: "يتم التحديث الان",
             funRunWhenClickOnOk: async function () {
                 dispatch(hiddenOrShowSideBar("hidden"));
-                setVersionAppValue("newVersion");
+                setVersionAppValue("updating");
 
                 try {
                     await update.downloadAndInstall(function (event) {
@@ -107,7 +107,7 @@ export default function Update_App() {
 
     return <div className="m-5 flex flex-col gap-3 items-center">
         {
-            versionAppValue == "newVersion" ?
+            versionAppValue == "updating" ?
                 <div className="bg-emerald-500 text-white px-6 py-2 pb-3 rounded-full text-lg font-bold flex items-center gap-3">
                     <Download size={23} />
 
@@ -148,7 +148,7 @@ export default function Update_App() {
         </div>
 
         {
-            versionAppValue == "newVersion" ?
+            versionAppValue == "updating" ?
                 <Popup_Download_Version
                     versionSize={theVersionSize}
                     downloaded={theDownloaded}

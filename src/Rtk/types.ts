@@ -107,7 +107,7 @@ export interface store_Type {
     trainers?: trainer[],
     accountes?: accounte[],
     subscriptionsMenus?: subscriptionsMenus[],
-    attendance?: attendanceDetails[],
+    attendance: attendanceDetails[],
 
     // Ui
     trainerDetails?: trainer | null,
