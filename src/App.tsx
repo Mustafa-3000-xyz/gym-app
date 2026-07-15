@@ -28,6 +28,7 @@ function App() {
     return {
       logInInfo: state.logInInfo,
       trainers: state.trainers,
+      sideBar: state.sideBar
     }
   }, shallowEqual);
 
@@ -135,7 +136,12 @@ function App() {
 
   return state.logInInfo ?
     <main dir="rtl" className="flex">
-      <SideBar />
+      {
+        state.sideBar as any == "show" ?
+          <SideBar />
+          :
+          null
+      }
 
       <div className="mt-7 w-full px-10">
         <Routes>

@@ -15,6 +15,7 @@ import { removeSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSli
 import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import { addDays } from "date-fns";
 import Database from "@tauri-apps/plugin-sql";
+import { addRowInAttendanceTable } from "@/Rtk/Slices/Db-slices/attendanceSlice";
 // ========================================================== //
 export default function Add_Trainer(
     { onIsShowAddTrainer }: { onIsShowAddTrainer: (x: boolean) => void }
@@ -67,8 +68,13 @@ export default function Add_Trainer(
                 dateNow
             ];
 
-            await database.execute(query, values);
+            dispatch(addRowInAttendanceTable({
+                date: dateNow,
+                accountId: Number(state.logInInfo?.id),
+                trainers: [trainerId]
+            }) as any);
 
+            await database.execute(query, values);
             dateNow = addDays(dateNow, 1);
         }
 

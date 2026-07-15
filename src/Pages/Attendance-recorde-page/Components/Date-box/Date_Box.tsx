@@ -121,15 +121,16 @@ export default function Date_Box(
             `}
         >
             {
-                allDates?.length as any >= 2 ?
-                    <ArrowRight
-                        size={50}
-                        className={`
-                            arrow-btn duration-300
-                            ${isBeginning ? "cursor-not-allowed opacity-35" : "cursor-pointer hover:scale-150"}
-                        `}
-                        onClick={handlePrev}
-                    />
+                allDates?.length >= 2 ?
+                    <button onClick={handlePrev}>
+                        <ArrowRight
+                            size={25}
+                            className={`
+                                arrow-btn duration-300
+                                ${isBeginning ? "cursor-not-allowed opacity-35" : "cursor-pointer hover:scale-150"}
+                            `}
+                        />
+                    </button>
                     :
                     null
             }
@@ -161,15 +162,16 @@ export default function Date_Box(
             </Swiper>
 
             {
-                allDates?.length as any >= 2 ?
-                    <ArrowLeft
-                        size={50}
-                        className={`
-                            arrow-btn duration-300
-                            ${isEnd ? "cursor-not-allowed opacity-35" : "cursor-pointer hover:scale-150"}
-                        `}
-                        onClick={handleNext}
-                    />
+                allDates?.length >= 2 ?
+                    <button onClick={handleNext}>
+                        <ArrowLeft
+                            size={25}
+                            className={`
+                                arrow-btn duration-300
+                                ${isEnd ? "cursor-not-allowed opacity-35" : "cursor-pointer hover:scale-150"}
+                            `}
+                        />
+                    </button>
                     :
                     null
             }

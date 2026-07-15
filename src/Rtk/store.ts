@@ -8,6 +8,7 @@ import logInInfoSlice from "./Slices/UI-slices/logInInfoSlice";
 import sessionsCountSlice from "./Slices/UI-slices/sessionsCountSlice";
 import subscriptionStartSlice from "./Slices/UI-slices/subscriptionStartSlice";
 import subscriptionEndSlice from "./Slices/UI-slices/subscriptionEndSlice";
+import sideBarSlice from "./Slices/UI-slices/sideBarSlice";
 // ======================================= //
 const store = configureStore({
     reducer: {
@@ -22,7 +23,8 @@ const store = configureStore({
         logInInfo: logInInfoSlice,
         sessionsCount: sessionsCountSlice,
         subscriptionStart: subscriptionStartSlice,
-        subscriptionEnd: subscriptionEndSlice
+        subscriptionEnd: subscriptionEndSlice,
+        sideBar: sideBarSlice
     },
 });
 

@@ -135,7 +135,7 @@ export default function Subscription_Info_Form(
             subscriptionStart.getTime() < todayDate.getTime() &&
             subscriptionEnd.getTime() >= todayDate.getTime()
         ) {
-            const diff = Math.abs(differenceInDays(todayDate, subscriptionStart));
+            const diff = Math.abs(differenceInDays(todayDate, subscriptionStart)) + 1;
             const result = diff >= Number(state.sessionsCount) ? Number(state.sessionsCount) - 1 : diff
 
             setMaxForActiveSomeSessions(result);

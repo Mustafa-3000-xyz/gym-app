@@ -107,14 +107,15 @@ export interface store_Type {
     trainers?: trainer[],
     accountes?: accounte[],
     subscriptionsMenus?: subscriptionsMenus[],
-    attendance: attendanceDetails[],
+    attendance?: attendanceDetails[],
 
     // Ui
     trainerDetails?: trainer | null,
     logInInfo?: logInInfoSlice_Type | null,
     sessionsCount?: number,
     subscriptionStart?: string | null,
-    subscriptionEnd?: string | null
+    subscriptionEnd?: string | null,
+    sideBar?: boolean
 }
 
 export interface logInInfoSlice_Type {

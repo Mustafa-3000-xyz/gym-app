@@ -134,3 +134,8 @@ export interface Max_Min_Length_Props {
     maxLength: number,
     minLength: number
 }
+
+export interface Popup_Download_Version_Props{
+    versionSize: number,
+    downloaded: number
+}
