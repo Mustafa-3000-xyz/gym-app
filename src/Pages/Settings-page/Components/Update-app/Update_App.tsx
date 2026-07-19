@@ -4,8 +4,8 @@ import { check, Update } from '@tauri-apps/plugin-updater';
 import { alert, normalAlert } from "@/Lib/functions";
 import { relaunch } from '@tauri-apps/plugin-process';
 import { useDispatch } from "react-redux";
-import Popup_Download_Version from "@/Global-components/Popup-download-version/Popup_Download_Version";
 import { hiddenOrShowSideBar } from "@/Rtk/Slices/UI-slices/sideBarSlice";
+import Popup_Download_Version from "../Popup-download-version/Popup_Download_Version";
 // ========================================================== //
 export default function Update_App() {
     const dispatch = useDispatch();

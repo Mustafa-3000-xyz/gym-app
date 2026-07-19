@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import Animation from "../Animation/Animation";
-import { Popup_Download_Version_Props } from "../types";
+import Animation from "@/Global-components/Animation/Animation";
+import Progress from "@/Global-components/Progress/Progress";
+import { Popup_Download_Version_Props } from "@/Global-components/types";
 // ========================================================== //
 export default function Popup_Download_Version(
     { versionSize, downloaded }: Popup_Download_Version_Props
@@ -30,18 +31,9 @@ export default function Popup_Download_Version(
             حجم التحديث : <span>{totalSize} MP</span>
         </h3>
 
-        {/* Progress */}
-        <div className="border-2 border-black/30 w-full h-[30px] mt-3 rounded-full">
-            <div
-                className="bg-emerald-400 h-full rounded-full"
-                style={{
-                    width: `${checkIsNan}%`
-                }}
-            ></div>
-        </div>
-
-        <h3 className="text-end mt-2 font-bold">
-            {checkIsNan}%
-        </h3>
+        <Progress
+            widthChild={checkIsNan}
+            percentage={checkIsNan}
+        />
     </Animation>
 }

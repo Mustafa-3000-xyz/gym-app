@@ -183,7 +183,7 @@ export default function Subscriptions_Menu_Page() {
                             />
 
                             <Max_Min_Length
-                                isGreenFlag={getSubscriptionName?.length < 3 || getSubscriptionName?.length > 11}
+                                isGreenFlag={getSubscriptionName.match(regexSubscriptionName) ? true : false}
                                 maxLength={11}
                                 minLength={getSubscriptionName?.length}
                             />

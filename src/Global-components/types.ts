@@ -135,7 +135,13 @@ export interface Max_Min_Length_Props {
     minLength: number
 }
 
-export interface Popup_Download_Version_Props{
+export interface Popup_Download_Version_Props {
     versionSize: number,
     downloaded: number
+}
+
+export interface Progress_Props {
+    classNameForParent?: string,
+    widthChild?: number,
+    percentage?: number | null
 }

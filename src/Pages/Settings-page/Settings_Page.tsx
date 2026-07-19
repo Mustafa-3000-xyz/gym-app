@@ -1,4 +1,4 @@
-import Update_App from "./Components/Update_App";
+import Update_App from "./Components/Update-app/Update_App";
 // ========================================================== //
 export default function Settings_Page() {
     return <section>
