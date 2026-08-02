@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 import Discription from "../Description/Discription";
-import { Popup_Form_Props } from "../types";
+import { Popup_Form_Props } from "../typesProps";
 import Animation from "../Animation/Animation";
 // ========================================================== //
 export default function Popup_Form(
@@ -11,7 +11,8 @@ export default function Popup_Form(
         isSave = false,
         isShowBtn = true,
         typeBtn = "save data",
-        className,
+        classNameForParent,
+        classNameForContainer,
         clickOnCancel,
         clickOnSaveBtn,
     }: Popup_Form_Props
@@ -21,7 +22,8 @@ export default function Popup_Form(
             className={`
                 bg-slate-200 border border-slate-200 rounded-lg
                 w-[90vw] overflow-y-auto
-                ${className}
+                flex flex-col justify-between
+                ${classNameForParent}
             `}
             initial={{
                 scale: 0.5,
@@ -42,7 +44,7 @@ export default function Popup_Form(
                 <X size={23} onClick={clickOnCancel} className="cursor-pointer text-red-500" />
             </div>
 
-            <div className="p-5">
+            <div className={`p-5 ${classNameForContainer}`}>
                 {children}
             </div>
 

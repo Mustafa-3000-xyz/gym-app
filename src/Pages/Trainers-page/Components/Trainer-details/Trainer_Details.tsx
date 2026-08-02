@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
-import { alert, deleteRowsInActiveSessionsLinkedToTrainer, theTodayDate } from "@/Lib/functions";
-import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
+import { alert, theTodayDate } from "@/Lib/functions";
+import { addNewTrainer, statusIsActive, statusIsFinished, statusIsPending } from "@/Lib/constants";
 import Btn_Delete_Trainer from "../Btns/Btn_Delete_Trainer";
 import Btn_Subscription_Renewal from "../Btns/Btn_Subscription_Renewal";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
@@ -20,6 +20,10 @@ import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import Date_Info_Form from "@/Pages/Trainers-page/Components/Forms/Date_Info_Form";
 import Subscription_Info_Form from "@/Pages/Trainers-page/Components/Forms/Subscription_Info_Form";
 import Trainer_Info_Form from "@/Pages/Trainers-page/Components/Forms/Trainer_Info_Form";
+import { arithmeticOperatorsWithProfitsAndExpenses, deleteRowsInActiveSessionsLinkedToTrainer } from "@/Lib/functionsWithDb";
+import Database from "@tauri-apps/plugin-sql";
+import { daysProfitsAndExpenses_Type, item_Type, monthsProfitsAndExpenses_Type, yearsProfitsAndExpenses_Type } from "@/Pages/types";
+import { updateSomePropertiesInRowInItemsTable } from "@/Rtk/Slices/Db-slices/itemsSlice";
 // ========================================================== //
 export default function Trainer_Details() {
     const dispatch = useDispatch();
@@ -40,7 +44,7 @@ export default function Trainer_Details() {
     const [isActiveBtnSave, setIsActiveBtnSave] = useState(false);
 
     const [newInfoForTrainer, setNewInfoForTrainer] = useState({});
-    const [subscriptionState, setSubscriptionState] = useState(stateIsActive);
+    const [subscriptionStatus, setSubscriptionStatus] = useState(statusIsActive);
     const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
 
     // Trainer info & Subscription info & Date info
@@ -70,7 +74,7 @@ export default function Trainer_Details() {
                     id: state.trainerDetails?.id as any,
                     values: {
                         ...newInfoForTrainer,
-                        subscriptionState: statusTheSubscription,
+                        subscriptionStatus: statusTheSubscription,
                     } as any
                 }) as any);
 
@@ -79,8 +83,69 @@ export default function Trainer_Details() {
                 dispatch(removeSubscriptionStart());
                 dispatch(removeSubscriptionEnd());
                 dispatch(removeAllSessions());
+
+                if (getPrice != state.trainerDetails?.price) {
+                    editingItemPrice();
+                }
             }
         });
+    }
+
+    async function editingItemPrice() {
+        const database = await Database.load("sqlite:app-gym-db.db");
+        const oldPrice = Number(state.trainerDetails?.price || 0);
+        const date = new Date(state.trainerDetails?.lastRenewalSubscription as string);
+
+        const [getYear] = await database.select(`
+            SELECT * from yearsProfitsAndExpenses WHERE yearNumber = ${date.getFullYear()}
+        `) as yearsProfitsAndExpenses_Type[];
+
+        const [getMonth] = await database.select(`
+            SELECT * from monthsProfitsAndExpenses WHERE linkWithYear = ${getYear.id} 
+            AND monthNumber = ${date.getMonth() + 1}
+        `) as monthsProfitsAndExpenses_Type[];
+
+        const [getDay] = await database.select(`
+            SELECT * from daysProfitsAndExpenses WHERE linkWithMonth = ${getMonth.id} 
+            AND dayNumber = ${date.getDate()}
+        `) as daysProfitsAndExpenses_Type[];
+
+        const getItem = await database.select(`
+            SELECT * from items WHERE linkWithDay = ${getDay.id} 
+            AND itemName = '${addNewTrainer}' AND price = ${oldPrice}
+        `) as item_Type[];
+
+        const theItem = getItem[0];
+
+
+        arithmeticOperatorsWithProfitsAndExpenses({
+            updateOneColumn: {
+                year: {
+                    yearId: Number(getYear.id),
+                    column: "profitsTotal",
+                    value: ((getYear.profitsTotal || 0) - oldPrice) + Number(getPrice || 0)
+                },
+                month: {
+                    monthId: Number(getMonth.id),
+                    column: "profitsTotal",
+                    value: ((getMonth.profitsTotal || 0) - oldPrice) + Number(getPrice || 0)
+                },
+                day: {
+                    dayId: Number(getDay.id),
+                    column: "profitsTotal",
+                    value: ((getDay.profitsTotal || 0) - oldPrice) + Number(getPrice || 0)
+                }
+            }
+        });
+
+        dispatch(updateSomePropertiesInRowInItemsTable({
+            id: Number(theItem.id),
+            values: {
+                itemName: addNewTrainer,
+                category: "profit",
+                price: Number(getPrice || 0)
+            }
+        }) as any);
     }
 
     function clickOnCancel() {
@@ -95,7 +160,7 @@ export default function Trainer_Details() {
     useEffect(function () {
         if (!state.trainerDetails) return;
 
-        setSubscriptionState(state.trainerDetails.subscriptionState);
+        setSubscriptionStatus(state.trainerDetails.subscriptionStatus);
     }, [state.trainerDetails]);
 
     // This useEffect for check the any value in properties are change
@@ -116,7 +181,7 @@ export default function Trainer_Details() {
 
         // This conditional for subscription renewal
         if (
-            subscriptionState == stateIsFinished &&
+            subscriptionStatus == statusIsFinished &&
             !getSubscriptionName ||
             !getPrice ||
             !state.sessionsCount ||
@@ -127,7 +192,7 @@ export default function Trainer_Details() {
             setIsActiveSubscriptionRenewal(false);
         }
         else if (
-            subscriptionState == stateIsFinished &&
+            subscriptionStatus == statusIsFinished &&
             getSubscriptionName &&
             getPrice &&
             state.sessionsCount &&
@@ -179,7 +244,7 @@ export default function Trainer_Details() {
         }
     }, [getFirstName, getLastName, getAddress, getPhone,
         getSubscriptionName, state.sessionsCount, getPrice,
-        state.subscriptionStart, state.subscriptionEnd, subscriptionState
+        state.subscriptionStart, state.subscriptionEnd, subscriptionStatus
     ]);
 
 
@@ -189,15 +254,15 @@ export default function Trainer_Details() {
             &&
             todayDate.getTime() <= new Date(state.subscriptionEnd as any).getTime()
         ) {
-            return stateIsActive;
+            return statusIsActive;
         }
         else if (
             todayDate.getTime() < new Date(state.subscriptionStart as any).getTime()
         ) {
-            return stateIsPending;
+            return statusIsPending;
         }
         else {
-            return stateIsFinished;
+            return statusIsFinished;
         }
     }, [state.subscriptionStart, state.subscriptionEnd, todayDate]);
 
@@ -211,8 +276,8 @@ export default function Trainer_Details() {
         discription="تلك التفاصيل الخاصه بالمتدرب"
         isSave={isActiveBtnSave}
         typeBtn="save change"
-        className="h-[87vh] flex flex-col justify-between"
-        isShowBtn={subscriptionState == stateIsFinished ? false : true}
+        classNameForParent="h-[87vh] flex flex-col justify-between"
+        isShowBtn={subscriptionStatus == statusIsFinished ? false : true}
         clickOnCancel={clickOnCancel}
         clickOnSaveBtn={updateInfo}
     >
@@ -232,7 +297,7 @@ export default function Trainer_Details() {
             {/* Arrows */}
             <div className="flex justify-end gap-2">
                 {
-                    subscriptionState != stateIsFinished && <>
+                    subscriptionStatus != statusIsFinished && <>
                         <ArrowRight
                             size={18}
                             className={`
@@ -269,7 +334,7 @@ export default function Trainer_Details() {
                 }}
             >
                 {
-                    subscriptionState != stateIsFinished && <SwiperSlide>
+                    subscriptionStatus != statusIsFinished && <SwiperSlide>
                         <Trainer_Info_Form
                             onGetFirstName={setGetFirstName}
                             onGetLastName={setGetLastName}
@@ -299,7 +364,7 @@ export default function Trainer_Details() {
 
             <div className="flex gap-2">
                 {
-                    subscriptionState != stateIsFinished ?
+                    subscriptionStatus != statusIsFinished ?
                         <Btn_Withdraw_Money trainerId={state.trainerDetails.id as any} />
                         :
                         <Btn_Subscription_Renewal

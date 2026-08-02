@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Animation_Props } from "../types";
+import { Animation_Props } from "../typesProps";
 // ========================================================== //
 export default function Animation(
     {

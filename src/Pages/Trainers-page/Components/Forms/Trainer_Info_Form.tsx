@@ -1,4 +1,4 @@
-import { Trainer_Info_Form_Props } from "@/Pages/types";
+import { Trainer_Info_Form_Props } from "@/Pages/typesProps";
 import { regexAddress, regexFindSpacesInTranierName, regexFirstName, regexLastName, regexPhone } from "@/Lib/REGEX";
 import { useEffect, useState } from "react";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";

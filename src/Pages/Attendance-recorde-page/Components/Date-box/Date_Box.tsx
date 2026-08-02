@@ -6,7 +6,7 @@ import { shallowEqual, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import { format } from "date-fns";
 import { styleDate } from "@/Lib/constants";
-import { Date_Box_Props } from "@/Pages/types";
+import { Date_Box_Props } from "@/Pages/typesProps";
 import Drop_Menu from "@/Global-components/Drop-menu/Drop_Menu";
 import Bottom_Content_For_The_Drop from "@/Global-components/Drop-menu/Bottom-content-for-the-drop/Bottom_Content_For_The_Drop";
 import Top_Content_For_The_Drop from "@/Global-components/Drop-menu/Top-content-for-the-drop/Top_Content_For_The_Drop";

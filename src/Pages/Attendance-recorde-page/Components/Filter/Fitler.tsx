@@ -1,7 +1,7 @@
 import Bottom_Content_For_The_Drop from "@/Global-components/Drop-menu/Bottom-content-for-the-drop/Bottom_Content_For_The_Drop";
 import Drop_Menu from "@/Global-components/Drop-menu/Drop_Menu";
 import Top_Content_For_The_Drop from "@/Global-components/Drop-menu/Top-content-for-the-drop/Top_Content_For_The_Drop";
-import { Filter_For_Attendance_Props } from "@/Pages/types";
+import { Filter_For_Attendance_Props } from "@/Pages/typesProps";
 import { store_Type } from "@/Rtk/types";
 import { ArrowDownWideNarrow } from "lucide-react";
 import { useEffect, useState } from "react";

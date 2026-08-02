@@ -9,7 +9,6 @@ export async function trainerTable() {
         await db.execute(`
             CREATE TABLE IF NOT EXISTS trainers (
                 id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                subscriptionState TEXT,
                 firstName TEXT,
                 lastName TEXT,
                 phone INTEGER,
@@ -19,7 +18,8 @@ export async function trainerTable() {
                 price INTEGER,
                 subscriptionStart TEXT,
                 subscriptionEnd TEXT,
-                dateAdded TEXT
+                subscriptionStatus TEXT,
+                lastRenewalSubscription TEXT
             )
         `);
     } catch (err) {
@@ -30,15 +30,13 @@ export async function trainerTable() {
 
 export async function activeSessionsTable() {
     try {
-        await db.execute("PRAGMA foreign_keys = ON;");
         await db.execute(`
             CREATE TABLE IF NOT EXISTS activeSessions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT, 
                 linkWithTrainer INTEGER,
                 accountId INTEGER,
                 sessionNumber INTEGER,
-                activationDate TEXT,
-                FOREIGN KEY (linkWithTrainer) REFERENCES trainers(id) ON DELETE CASCADE
+                activationDate TEXT
             )
         `);
     } catch (err) {
@@ -100,5 +98,76 @@ export async function attendanceTable() {
     } catch (err) {
         console.log(err);
         throw err;
+    }
+}
+
+export async function yearsProfitsAndExpensesTable() {
+    try {
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS yearsProfitsAndExpenses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                yearNumber INTEGER,
+                profitsTotal INTEGER,
+                expensesTotal INTEGER,
+                target INTEGER
+            )
+        `)
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function monthsProfitsAndExpensesTable() {
+    try {
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS monthsProfitsAndExpenses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                linkWithYear INTEGER,
+                monthName TEXT,
+                monthNumber INTEGER,
+                profitsTotal INTEGER,
+                expensesTotal INTEGER,
+                target INTEGER
+            )
+        `)
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function daysProfitsAndExpensesTable() {
+    try {
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS daysProfitsAndExpenses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                linkWithMonth INTEGER,
+                dayNumber INTEGER,
+                profitsTotal INTEGER,
+                expensesTotal INTEGER,
+                target INTEGER
+            )
+        `)
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function itemsTable() {
+    try {
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                linkWithDay INTEGER,
+                itemName TEXT,
+                category TEXT,
+                price INTEGER
+            )
+        `)
+
+    } catch (error) {
+        console.log(error);
     }
 }

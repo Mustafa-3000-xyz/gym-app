@@ -1,6 +1,5 @@
-export interface trainer {
+export interface trainer_Type {
     id?: number;
-    subscriptionState: string;
     firstName: string;
     lastName: string;
     phone: string;
@@ -10,10 +9,11 @@ export interface trainer {
     price: number;
     subscriptionStart: string;
     subscriptionEnd: string;
-    dateAdded: string;
+    subscriptionStatus: string;
+    lastRenewalSubscription: string;
 }
 
-export interface activeSession {
+export interface activeSession_Type {
     id?: number,
     linkWithTrainer: number,
     accountId: number,
@@ -21,7 +21,7 @@ export interface activeSession {
     activationDate: Date | string,
 }
 
-export interface accounte {
+export interface accounte_Type {
     id?: number,
     name: string,
     age: number,
@@ -35,7 +35,7 @@ export interface accounte {
     permissions?: string[] | "fullAccess",
 }
 
-export interface subscriptionsMenus {
+export interface subscriptionsMenus_Type {
     id?: number,
     subscriptionName: string,
     sessionsCount: number,
@@ -43,134 +43,136 @@ export interface subscriptionsMenus {
     isActive: "true" | "false"
 }
 
-export interface attendanceDetails {
+export interface attendanceDetails_Type {
     id?: number,
     date: Date | string,
     accountId: number,
     trainers: number[],
 }
 
-export interface Subscription_Info_Form_Props {
-    onGetSubscriptionName: (x: string | null) => void,
-    onGetPrice: (x: number | null) => void,
-    onGetActiveSomeSessions?: (x: number) => void
-}
-
-export interface Date_Info_Props {
-    onGetSubscriptionStart: (x: Date) => void,
-    onGetSubscriptionEnd: (x: Date) => void,
-}
-
-export interface End_Date_Picker_Props {
-    dateStart: Date,
-    getDate: (x: Date | null) => void
-}
-
-export interface Trainer_Info_Form_Props {
-    onGetFirstName: (x: string | null) => void,
-    onGetLastName: (x: string | null) => void,
-    onGetPhone: (x: number | null) => void,
-    onGetAddress: (x: string | null) => void,
-}
-
-export interface Btn_Slide_Props {
-    index: number,
-    currentSlide: number,
-    onGetIndexBtn: (x: number) => void
-}
-
-export interface Btn_Filter_Props {
-    trainersList: trainer[],
-    onGetFilter: (x: filter) => void,
-    onGetTrainerListAfterFilter: (x: trainer[]) => void,
-}
-
-export interface Menu_Props {
-    btnFilterEle: HTMLButtonElement | null,
-    filterObj: filter,
-    onIsShowMenu: (x: boolean) => void
-    onGetFilterResult: (x: filter) => void
-}
-
-export interface filter {
+export interface filter_Type {
     arrange: string,
     subscriptionType: string,
 }
 
-export interface Btn_Save_Change_Props {
-    id: string | number,
-    trainerState: any,
-    isChangeInfo: boolean,
-    closeWindow: () => void
-}
-
-export interface Btn_Subscription_Renewal_Props {
-    trainer: trainer,
-    isInfoComplete: boolean,
-}
-
-export interface Btn_Finished_Subscription_Props {
-    id: string | number,
-    onGetSubscriptionState: (x: string) => void,
-}
-
-export interface Data_Inputs_Props {
-    onIsShowEndMessage: (x: boolean) => void,
-    onGetManagerInfo: (x: any) => void,
-}
-
-export interface Permissions_Props {
-    permissionsList?: string[] | "fullAccess",
-    onGetPermissionsList: (x: string[]) => void,
-}
-
-export interface Subscriptions_Menu_Props {
-    onGetSubscriptionName: (x: string) => void,
-    onGetPrice: (x: number) => void
-}
-
-export interface Cover_Img_Props {
-    accountId: number,
-    coverImgSrc: string,
-    isChangeCoverImg: boolean
-}
-
-export interface sessionListForRead {
-    account: accounte | "removed",
+export interface sessionListForRead_Type {
+    account: accounte_Type | "removed",
     session: number,
     date?: null | any,
     isActive: boolean
 }
 
-export interface box_Info_In_Trainers_Page {
+export interface boxInfoInTrainersPage_Type {
     name: string,
     styleBgForIcon: string,
     icon: any,
     total: number,
 }
 
-export interface Filter_For_Attendance_Props {
-    filterType: number | "allTrainers",
-    dayDetails: attendanceDetails[],
-    onGetTrainers: (x: trainer[]) => void
-    onChangeFilterType: (x: number | "allTrainers") => void,
-}
-
-export interface Date_Box_Props {
-    onGetDatesTotal: (x: number) => void,
-    onGetDayDetails: (x: attendanceDetails[]) => void,
-    onChangeFilterType: (x: number | "allTrainers") => void
-}
-
-export interface Filter_For_Trainers_Props {
-    onGetTrainers: (x: trainer[]) => void,
-    onGetBoxInfo: (x: box_Info_In_Trainers_Page) => void,
-}
-
 export interface readSessions_Type {
     id?: number | null,
     sessionNumber: number,
-    account: "removed" | accounte | null,
+    account: "removed" | accounte_Type | null,
     activationDate: string | null,
     usingThisSession: boolean
+}
+
+export interface yearsProfitsAndExpenses_Type {
+    id?: number,
+    yearNumber: number,
+    profitsTotal: number,
+    expensesTotal: number,
+    target: number
+}
+
+export interface monthsProfitsAndExpenses_Type {
+    id?: number,
+    linkWithYear: number,
+    monthName: string,
+    monthNumber: number,
+    profitsTotal: number,
+    expensesTotal: number,
+    target: number
+}
+
+export interface daysProfitsAndExpenses_Type {
+    id?: number,
+    linkWithMonth: number,
+    dayNumber: number,
+    profitsTotal: number,
+    expensesTotal: number,
+    target: number
+}
+
+export interface item_Type {
+    id?: number,
+    linkWithDay: number,
+    itemName: string,
+    category: "profit" | "expense",
+    price: number
+}
+
+export interface arithmeticOperatorsIds_Type {
+    yearId: number,
+    monthId: number,
+    dayId: number
+}
+
+export interface arithmeticOperatorsWithOneColumn_Type {
+    year: any,
+    month: any,
+    day: any
+}
+
+export interface arithmeticOperatorsWithSomeColumns_Type {
+    year: {
+        profitsTotal?: any,
+        expensesTotal?: any
+    },
+    month: {
+        profitsTotal?: any,
+        expensesTotal?: any
+    },
+    day: {
+        profitsTotal?: any,
+        expensesTotal?: any
+    }
+}
+
+export interface arithmeticOperatorsWithProfitsAndExpenses_Type {
+    updateOneColumn?: {
+        year?: {
+            yearId: number,
+            column: "profitsTotal" | "expensesTotal",
+            value: number,
+        },
+        month?: {
+            monthId: number,
+            column: "profitsTotal" | "expensesTotal",
+            value: number,
+        },
+        day?: {
+            dayId: number
+            column: "profitsTotal" | "expensesTotal",
+            value: number,
+        },
+    }
+
+    updateSomeColumns?: {
+        year: {
+            yearId: number,
+            profitsTotal: number,
+            expensesTotal: number
+        },
+        month: {
+            monthId: number,
+            profitsTotal: number,
+            expensesTotal: number
+        },
+        day: {
+            dayId: number
+            profitsTotal: number,
+            expensesTotal: number
+        }
+    }
 }

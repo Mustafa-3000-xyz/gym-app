@@ -1,5 +1,5 @@
 import { Plus } from "lucide-react";
-import { Add_Btn_Props } from "../types";
+import { Add_Btn_Props } from "../typesProps";
 // ========================================================== //
 export default function Add_Btn(
     {

@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { subscriptionsMenus } from "@/Pages/types";
+import { subscriptionsMenus_Type } from "@/Pages/types";
 import { updatePropertyInSubscriptionsMenu_Type, updateSomePropertiesInSubscriptionsMenu_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
@@ -15,7 +15,7 @@ export const getAllRowsInSubscriptionsMenusTable = createAsyncThunk(
 
 export const addRowInSubscriptionsMenusTable = createAsyncThunk(
     "subscriptionsMenusSlice/addRowInSubscriptionsMenusTable",
-    async function (data: subscriptionsMenus) {
+    async function (data: subscriptionsMenus_Type) {
         const query = `
             INSERT INTO subscriptionsMenus (
                 subscriptionName, sessionsCount, price, isActive
@@ -65,12 +65,12 @@ export const updatePropertyInRowInSubscriptionsMenusTable = createAsyncThunk(
 
         await database.execute(query, [value, id]);
 
-        const result = await database.select(
+        const getMenuAfterUpdate = await database.select(
             `SELECT * FROM subscriptionsMenus WHERE id = ?`,
             [id]
         );
 
-        return (result as subscriptionsMenus[])[0];
+        return (getMenuAfterUpdate as subscriptionsMenus_Type[])[0];
     }
 );
 
@@ -89,19 +89,19 @@ export const updateSomePropertiesInRowInSubscriptionsMenusTable = createAsyncThu
             [...result, id]
         );
 
-        const updatedSubscription = await database.select(
+        const getMenuAfterUpdate = await database.select(
             `SELECT * FROM subscriptionsMenus WHERE id = ?`,
             [id]
         );
 
-        return (updatedSubscription as subscriptionsMenus[])[0];
+        return (getMenuAfterUpdate as subscriptionsMenus_Type[])[0];
     }
 );
 
 
 const subscriptionsMenusSlice = createSlice({
     name: "subscriptionsMenuSlice",
-    initialState: [] as subscriptionsMenus[],
+    initialState: [] as subscriptionsMenus_Type[],
     reducers: {},
 
     extraReducers: function (builder) {
@@ -113,16 +113,16 @@ const subscriptionsMenusSlice = createSlice({
             return [...state, action.payload];
         });
 
-        builder.addCase(deleteRowInSubscriptionsMenusTableById.fulfilled as any, (state: subscriptionsMenus[], action): any => {
+        builder.addCase(deleteRowInSubscriptionsMenusTableById.fulfilled as any, (state: subscriptionsMenus_Type[], action): any => {
             return state.filter((ele) => ele.id != action.payload);
         });
 
-        builder.addCase(updatePropertyInRowInSubscriptionsMenusTable.fulfilled as any, (state: subscriptionsMenus[], action): any => {
+        builder.addCase(updatePropertyInRowInSubscriptionsMenusTable.fulfilled as any, (state: subscriptionsMenus_Type[], action): any => {
             const filter = state.filter((ele) => ele.id != action.payload.id);
             return [...filter, action.payload].sort((a, b) => Number(a.id) - Number(b.id));
         });
 
-        builder.addCase(updateSomePropertiesInRowInSubscriptionsMenusTable.fulfilled as any, (state: subscriptionsMenus[], action): any => {
+        builder.addCase(updateSomePropertiesInRowInSubscriptionsMenusTable.fulfilled as any, (state: subscriptionsMenus_Type[], action): any => {
             const filter = state.filter((ele) => ele.id != action.payload.id);
             return [...filter, action.payload].sort((a, b) => Number(a.id) - Number(b.id));
         });

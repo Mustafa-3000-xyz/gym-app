@@ -1,4 +1,4 @@
-import { Account_Img_Props } from "@/Global-components/types";
+import { Account_Img_Props } from "@/Global-components/typesProps";
 import { updatePropertyInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { Camera, ImageOff } from "lucide-react";
 import { useRef } from "react";

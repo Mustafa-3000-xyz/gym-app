@@ -1,4 +1,4 @@
-import { Cover_Img_Props } from "@/Pages/types";
+import { Cover_Img_Props } from "@/Pages/typesProps";
 import { updatePropertyInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { Trash } from "lucide-react";
 import React, { useRef } from "react";

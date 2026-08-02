@@ -1,6 +1,7 @@
-import { stateIsActive, stateIsFinished, stateIsPending, styleDate } from "@/Lib/constants";
-import { alert, deleteRowsInActiveSessionsLinkedToTrainer, getAllAttendanceInSpecificDate, incrementOrDecrementForTotalSessionsInAccount, theTodayDate } from "@/Lib/functions";
-import { activeSession, attendanceDetails, readSessions_Type } from "@/Pages/types";
+import { statusIsActive, statusIsFinished, statusIsPending, styleDate } from "@/Lib/constants";
+import { alert, incrementOrDecrementForTotalSessionsInAccount, theTodayDate } from "@/Lib/functions";
+import { deleteRowsInActiveSessionsLinkedToTrainer, getAllAttendanceInSpecificDate } from "@/Lib/functionsWithDb";
+import { activeSession_Type, attendanceDetails_Type, readSessions_Type } from "@/Pages/types";
 import { addRowInAttendanceTable, deleteRowInAttendanceTableById, updatePropertyInRowInAttendanceTable } from "@/Rtk/Slices/Db-slices/attendanceSlice";
 import { updatePropertyInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
@@ -51,7 +52,7 @@ export default function Sessions() {
     }
 
     async function handleSessionsForRead() {
-        const activeSessions = await getActiveSessionsForTrainer(Number(state.trainerDetails?.id)) as activeSession[];
+        const activeSessions = await getActiveSessionsForTrainer(Number(state.trainerDetails?.id)) as activeSession_Type[];
         let isSessionUsed = false;
         const arr = [];
 
@@ -90,9 +91,9 @@ export default function Sessions() {
 
     async function clickOnSession(sessionNum: number) {
         if (
-            state.trainerDetails?.subscriptionState == stateIsPending
+            state.trainerDetails?.subscriptionStatus == statusIsPending
             ||
-            state.trainerDetails?.subscriptionState == stateIsFinished
+            state.trainerDetails?.subscriptionStatus == statusIsFinished
         ) return;
 
 
@@ -154,7 +155,7 @@ export default function Sessions() {
     async function attendance(isAttend: boolean) {
         const trainerId = state.trainerDetails?.id;
 
-        const getAllAttendanceDetails = await getAllAttendanceInSpecificDate(todayDate) as attendanceDetails[];
+        const getAllAttendanceDetails = await getAllAttendanceInSpecificDate(todayDate) as attendanceDetails_Type[];
         const findTrainer = getAllAttendanceDetails.find(ele => ele.trainers.includes(trainerId as any));
         const findAccount = getAllAttendanceDetails.find(ele => ele.accountId == state.logInInfo?.id);
 
@@ -219,8 +220,8 @@ export default function Sessions() {
 
                 dispatch(updatePropertyInRowInTrainersTable({
                     id: Number(state.trainerDetails?.id),
-                    column: "subscriptionState",
-                    value: stateIsFinished
+                    column: "subscriptionStatus",
+                    value: statusIsFinished
                 }) as any);
 
 
@@ -278,7 +279,7 @@ export default function Sessions() {
 
         <div className="opacity-60 mb-7">
             {
-                state.trainerDetails?.subscriptionState == stateIsActive ?
+                state.trainerDetails?.subscriptionStatus == statusIsActive ?
                     <p>
                         <span> تم إكمال </span>
                         <span className="font-bold me-1">
@@ -290,7 +291,7 @@ export default function Sessions() {
                         </span>
                     </p>
                     :
-                    state.trainerDetails?.subscriptionState == stateIsPending ?
+                    state.trainerDetails?.subscriptionStatus == statusIsPending ?
                         <p>
                             الاشتراك معلق
                         </p>
@@ -303,7 +304,7 @@ export default function Sessions() {
 
         {/* Session info */}
         {
-            state.trainerDetails?.subscriptionState == stateIsActive ?
+            state.trainerDetails?.subscriptionStatus == statusIsActive ?
                 <div
                     className={`
                         opacity-0 -z-50
@@ -355,8 +356,8 @@ export default function Sessions() {
                             ${ele.account != "removed" && ele.account?.type == "manager" ? "bg-(--managerColor) text-white border-0! font-bold" : ""}
                             ${(ele.account != "removed" && ele.account?.type == "captain") || ele.account == "removed" ? "bg-(--captainColor) text-white border-0! font-bold" : ""}
 
-                            ${state.trainerDetails?.subscriptionState == stateIsFinished ? "bg-red-500! text-white! cursor-not-allowed! opacity-100!" : ""}
-                            ${state.trainerDetails?.subscriptionState == stateIsPending ? "bg-amber-500! text-white! cursor-not-allowed! opacity-100!" : ""}
+                            ${state.trainerDetails?.subscriptionStatus == statusIsFinished ? "bg-red-500! text-white! cursor-not-allowed! opacity-100!" : ""}
+                            ${state.trainerDetails?.subscriptionStatus == statusIsPending ? "bg-amber-500! text-white! cursor-not-allowed! opacity-100!" : ""}
                         `}
 
                         onClick={() => {

@@ -1,11 +1,23 @@
 export const styleDate = "yyyy/MM/dd";
+
+// Maxes
 export const maxSessions = 60;
 export const maxSubscriptionPrice = 999999;
+export const maxTargetInYear = 2700000;
+export const maxTargetInMonth = maxTargetInYear / 12;
+export const maxTargetInDay = maxTargetInMonth / 30;
+export const maxPriceInOneItem = 9999999;
+export const maxForCreateItems = 25;
 
-// These for subscription state
-export const stateIsActive = "active";
-export const stateIsPending = "pending";
-export const stateIsFinished = "finished";
+// These for profits and expenses page
+export const addNewTrainer = "إضافة متدرب جديد";
+export const withDrawSubscription = "سحب اشتراك";
+export const renewalSubscription = "تجديد اشتراك";
+
+// These for subscription status
+export const statusIsActive = "active";
+export const statusIsPending = "pending";
+export const statusIsFinished = "finished";
 
 // These for filter
 export const fromOldToNew = "fromOldToNew";
@@ -90,5 +102,68 @@ export const allPermissions = [
     {
         title: "إنشاء حسابات جديده",
         key: CREATE_NEW_ACCOUNTS
+    }
+];
+
+export const monthsWithHisDays = [
+    {
+        monthNumber: 1,
+        month: "يناير",
+        days: 31
+    },
+    {
+        monthNumber: 2,
+        month: "فبراير",
+        days: new Date(new Date().getFullYear(), 2, 0).getDate()
+    },
+    {
+        monthNumber: 3,
+        month: "مارس",
+        days: 31
+    },
+    {
+        monthNumber: 4,
+        month: "ابريل",
+        days: 30
+    },
+    {
+        monthNumber: 5,
+        month: "مايو",
+        days: 31
+    },
+    {
+        monthNumber: 6,
+        month: "يونيو",
+        days: 30
+    },
+    {
+        monthNumber: 7,
+        month: "يوليو",
+        days: 31
+    },
+    {
+        monthNumber: 8,
+        month: "اغسطس",
+        days: 31
+    },
+    {
+        monthNumber: 9,
+        month: "سبتمبر",
+        days: 30
+    },
+    {
+        monthNumber: 10,
+        month: "اكتوبر",
+        days: 31
+    },
+    {
+        monthNumber: 11,
+        month: "نوفمبر",
+        days: 30
+    },
+    {
+        monthNumber: 12,
+        month: "ديسمبر",
+        days: 31
     }
 ];

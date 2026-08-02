@@ -1,42 +1,28 @@
-import { accounte, attendanceDetails, subscriptionsMenus, trainer } from "@/Pages/types";
+import { accounte_Type, attendanceDetails_Type, daysProfitsAndExpenses_Type, item_Type, monthsProfitsAndExpenses_Type, subscriptionsMenus_Type, trainer_Type, yearsProfitsAndExpenses_Type } from "@/Pages/types";
 // ========================================================== //
-type updateOneColumnInTrainer =
-    | "subscriptionState"
-    | "firstName"
-    | "lastName"
-    | "phone"
-    | "address"
-    | "subscriptionName"
-    | "sessionsCount"
-    | "price"
-    | "subscriptionStart"
-    | "subscriptionEnd"
+export interface store_Type {
+    // Db
+    trainers?: trainer_Type[],
+    accountes?: accounte_Type[],
+    subscriptionsMenus?: subscriptionsMenus_Type[],
+    attendance: attendanceDetails_Type[],
+    yearsProfitsAndExpenses: yearsProfitsAndExpenses_Type[],
+    monthsProfitsAndExpenses: monthsProfitsAndExpenses_Type[],
+    daysProfitsAndExpenses: daysProfitsAndExpenses_Type[],
+    items: item_Type[],
 
-type updateOneColumnInAccount =
-    | "name"
-    | "age"
-    | "password"
-    | "type"
-    | "permissions"
-    | "profileImg"
-    | "coverImg"
-    | "totalActiveSubscriptions"
-    | "workingHours"
-    | "loginDate"
-
-type updateOneColumnInSubscriptionsMenu =
-    | "subscriptionName"
-    | "sessionsCount"
-    | "price"
-    | "isActive"
-
-
-export interface updatePropertyInTrainer_Type {
-    id: string | number,
-    column: updateOneColumnInTrainer,
-    value: any
+    // Ui
+    trainerDetails?: trainer_Type | null,
+    logInInfo?: logInInfoSlice_Type | null,
+    sessionsCount?: number,
+    subscriptionStart?: string | null,
+    subscriptionEnd?: string | null,
+    sideBar?: boolean
 }
 
+// ============================ //
+// UPDATE SOME PROPERTIES //
+// ============================ //
 export interface updateSomePropertiesInTrainer_Type {
     id: number,
     values: {
@@ -49,17 +35,9 @@ export interface updateSomePropertiesInTrainer_Type {
         price?: number,
         subscriptionStart?: string,
         subscriptionEnd?: string,
-        subscriptionState?: string,
-        workingHours?: number,
-        loginDate?: Date | string,
+        subscriptionStatus?: string,
+        lastRenewalSubscription?: Date | string
     }
-}
-
-
-export interface updatePropertyInAccount_Type {
-    id: string | number,
-    column: updateOneColumnInAccount,
-    value: any
 }
 
 export interface updateSomePropertiesInAccount_Type {
@@ -78,12 +56,6 @@ export interface updateSomePropertiesInAccount_Type {
     }
 }
 
-export interface updatePropertyInSubscriptionsMenu_Type {
-    id: string | number,
-    column: updateOneColumnInSubscriptionsMenu,
-    value: any
-}
-
 export interface updateSomePropertiesInSubscriptionsMenu_Type {
     id: number,
     values: {
@@ -94,30 +66,89 @@ export interface updateSomePropertiesInSubscriptionsMenu_Type {
     }
 }
 
+export interface updateSomePropertiesInRowInItemsTable_Type {
+    id: number,
+    values: {
+        itemName?: string,
+        category?: "profit" | "expense",
+        price?: number,
+    }
+}
+
+export interface updateSomePropertiesInRowInYearsProfitsAndExpensesTable_Type {
+    id: number,
+    values: {
+        profitsTotal: number,
+        expensesTotal: number
+    }
+}
+
+export interface updateSomePropertiesInRowInMonthsProfitsAndExpensesTable_Type {
+    id: number,
+    values: {
+        profitsTotal: number,
+        expensesTotal: number
+    }
+}
+
+export interface updateSomePropertiesInRowInDaysProfitsAndExpensesTable_Type {
+    id: number,
+    values: {
+        profitsTotal: number,
+        expensesTotal: number
+    }
+}
+
+// ============================ //
+// UPDATE PROPERTY //
+// ============================ //
+export interface updatePropertyInTrainer_Type {
+    id: string | number,
+    column: "firstName" | "lastName" | "phone" | "address" | "subscriptionName" |
+    "sessionsCount" | "price" | "subscriptionStart" | "subscriptionEnd" | "subscriptionStatus" |"lastRenewalSubscription",
+    value: any
+}
+
+export interface updatePropertyInAccount_Type {
+    id: string | number,
+    column: | "name" | "age" | "password" | "type" | "permissions" | "profileImg" | "coverImg" |
+    "totalActiveSubscriptions" | "workingHours" | "loginDate",
+    value: any
+}
+
+export interface updatePropertyInSubscriptionsMenu_Type {
+    id: string | number,
+    column: | "subscriptionName" | "sessionsCount" | "price" | "isActive",
+    value: any
+}
+
 export interface updatePropertyInAttendance_Type {
     id: number,
     column: "trainers",
     value: number[]
 }
 
-
-
-export interface store_Type {
-    // Db
-    trainers?: trainer[],
-    accountes?: accounte[],
-    subscriptionsMenus?: subscriptionsMenus[],
-    attendance: attendanceDetails[],
-
-    // Ui
-    trainerDetails?: trainer | null,
-    logInInfo?: logInInfoSlice_Type | null,
-    sessionsCount?: number,
-    subscriptionStart?: string | null,
-    subscriptionEnd?: string | null,
-    sideBar?: boolean
+export interface updatePropertyInRowYearsProfetsAndExpensesTable_Type {
+    id: number,
+    column: "target" | "profitsTotal" | "expensesTotal",
+    value: number
 }
 
+export interface updatePropertyInRowInMonthsProfetsAndExpensesTable_Type {
+    id: number,
+    column: "target" | "profitsTotal" | "expensesTotal",
+    value: number
+}
+
+export interface updatePropertyInRowInDaysProfetsAndExpensesTable_Type {
+    id: number,
+    column: "target" | "profitsTotal" | "expensesTotal",
+    value: number
+}
+
+// ============================ //
+// ANOTHER TYPES //
+// ============================ //
 export interface logInInfoSlice_Type {
     id: number,
     type: "manager" | "captain",

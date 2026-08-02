@@ -1,5 +1,5 @@
 import { ReactElement, useEffect, useRef, useState } from "react";
-import { Drop_Menu_Props } from "../types";
+import { Drop_Menu_Props } from "../typesProps";
 import Animation from "../Animation/Animation";
 import Not_Found from "../Not-found/Not_Found";
 import { Children, isValidElement } from "react";
@@ -111,7 +111,7 @@ export default function Drop_Menu(
                             <div className="h-full flex justify-center">
                                 <Not_Found
                                     title={messageForNotAddChildren}
-                                    srcImg="not_found_in_drop_menu.svg"
+                                    srcImg="/not_found_in_drop_menu.svg"
                                     className="w-30"
                                 />
                             </div>

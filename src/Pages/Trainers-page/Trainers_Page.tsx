@@ -1,17 +1,18 @@
 import { BicepsFlexed, ShieldCheck, ShieldOff, ShieldQuestionMark, Users } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { attendanceDetails, box_Info_In_Trainers_Page, trainer } from "@/Pages/types";
+import { attendanceDetails_Type, boxInfoInTrainersPage_Type, trainer_Type } from "@/Pages/types";
 import Add_Trainer from "./Components/Add-trainer/Add_Trainer";
 import { shallowEqual, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import Box from "@/Global-components/Box/Box";
-import { allSubscriptions, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
+import { allSubscriptions, statusIsActive, statusIsFinished, statusIsPending } from "@/Lib/constants";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import Table_For_Trainers from "@/Global-components/Table-for-trainers/Table_For_Trainers";
 import Search_Box_For_Trainers from "@/Global-components/Search-box-for-trainers/Search_Box_For_Trainers";
-import { getAllAttendanceInSpecificDate, theTodayDate } from "@/Lib/functions";
+import { theTodayDate } from "@/Lib/functions";
 import Filter from "./Components/Filter/Filter";
 import Trainer_Details from "./Components/Trainer-details/Trainer_Details";
+import { getAllAttendanceInSpecificDate } from "@/Lib/functionsWithDb";
 // ========================================================== //
 export default function Trainers_Page() {
     const state = useSelector(function (state: store_Type) {
@@ -22,8 +23,8 @@ export default function Trainers_Page() {
         }
     }, shallowEqual);
 
-    const [getTrainersAfterFilter, setGetTrainersAfterFilter] = useState<trainer[]>([]);
-    const [getBoxInfo, setGetBoxInfo] = useState<box_Info_In_Trainers_Page | null>(null);
+    const [getTrainersAfterFilter, setGetTrainersAfterFilter] = useState<trainer_Type[]>([]);
+    const [getBoxInfo, setGetBoxInfo] = useState<boxInfoInTrainersPage_Type | null>(null);
     const filterInLocalStorage = JSON.parse(localStorage.getItem("filter") || "{}" as any);
 
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
@@ -41,7 +42,7 @@ export default function Trainers_Page() {
     // I want when open trainers page, get attendance total
     useEffect(function () {
         async function x() {
-            const dayDetails = await getAllAttendanceInSpecificDate(theTodayDate({ startingIn12Houre: true })) as attendanceDetails[];
+            const dayDetails = await getAllAttendanceInSpecificDate(theTodayDate({ startingIn12Houre: true })) as attendanceDetails_Type[];
             let total = 0;
 
             if (!dayDetails) return 0;
@@ -66,9 +67,9 @@ export default function Trainers_Page() {
             return [0, 0, 0]
         }
         else {
-            const allActiveSubscriptions = state.trainers?.filter(ele => ele.subscriptionState == stateIsActive).length;
-            const allPendingSubscriptions = state.trainers?.filter(ele => ele.subscriptionState == stateIsPending).length;
-            const allFinishedSubscriptions = state.trainers?.filter(ele => ele.subscriptionState == stateIsFinished).length;
+            const allActiveSubscriptions = state.trainers?.filter(ele => ele.subscriptionStatus == statusIsActive).length;
+            const allPendingSubscriptions = state.trainers?.filter(ele => ele.subscriptionStatus == statusIsPending).length;
+            const allFinishedSubscriptions = state.trainers?.filter(ele => ele.subscriptionStatus == statusIsFinished).length;
 
 
             return [allActiveSubscriptions, allPendingSubscriptions, allFinishedSubscriptions];
@@ -97,7 +98,7 @@ export default function Trainers_Page() {
 
             {
                 filterInLocalStorage.subscriptionType == allSubscriptions ?
-                    <div className="flex justify-center items-center gap-10 bg-slate-100 rounded-lg h-40 select-none">
+                    <div className="flex justify-center items-center gap-5 bg-slate-100 rounded-lg h-40 select-none">
                         <div className="flex flex-col items-center">
                             <ShieldCheck
                                 size={60}
@@ -136,16 +137,15 @@ export default function Trainers_Page() {
             }
         </div>
 
-        {/* Search & filter & add trainer */}
+        {/* Search & filter & add trainer_Type */}
         <div className="grid grid-cols-4 gap-2 mb-7 bg-slate-100 rounded-lg py-5 px-3">
             {/* Search */}
-            <div className="col-span-3">
-                {/* Fixed bug here */}
+            <div className="col-span-4 sm:col-span-2 xl:col-span-3">
                 <Search_Box_For_Trainers arrayForSearch={getTrainersAfterFilter} />
             </div>
 
-            {/* filter & add trainer */}
-            <div className="flex justify-end gap-1 col-span-1">
+            {/* filter & add trainer_Type */}
+            <div className="flex justify-end gap-1 col-span-4 sm:col-span-2 xl:col-span-1">
                 <Filter
                     onGetTrainers={setGetTrainersAfterFilter}
                     onGetBoxInfo={setGetBoxInfo}

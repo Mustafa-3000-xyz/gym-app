@@ -1,7 +1,8 @@
 import Bottom_Content_For_The_Drop from "@/Global-components/Drop-menu/Bottom-content-for-the-drop/Bottom_Content_For_The_Drop";
 import Drop_Menu from "@/Global-components/Drop-menu/Drop_Menu";
 import Top_Content_For_The_Drop from "@/Global-components/Drop-menu/Top-content-for-the-drop/Top_Content_For_The_Drop";
-import { Subscriptions_Menu_Props, subscriptionsMenus } from "@/Pages/types";
+import { subscriptionsMenus_Type } from "@/Pages/types";
+import { Subscriptions_Menu_Props } from "@/Pages/typesProps";
 import { addSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import { store_Type } from "@/Rtk/types";
 import { Menu } from "lucide-react";
@@ -23,11 +24,11 @@ export default function Subscriptions_Menu(
     }, shallowEqual);
 
     const [isShowMenu, setIsShowMenu] = useState(false);
-    const [menusList, setMenusList] = useState<subscriptionsMenus[] | null>(null);
+    const [menusList, setMenusList] = useState<subscriptionsMenus_Type[] | null>(null);
 
 
 
-    function clickOnSubscriptionMenu(subscriptionInfo: subscriptionsMenus) {
+    function clickOnSubscriptionMenu(subscriptionInfo: subscriptionsMenus_Type) {
         onGetSubscriptionName(subscriptionInfo.subscriptionName);
         onGetPrice(subscriptionInfo.price);
 
@@ -39,7 +40,7 @@ export default function Subscriptions_Menu(
 
     useEffect(function () {
         if (state.subscriptionsMenus?.length == 0) return;
-        const arr: subscriptionsMenus[] = [];
+        const arr: subscriptionsMenus_Type[] = [];
 
 
         state.subscriptionsMenus?.forEach(ele => ele.isActive == "true" && arr.push(ele));

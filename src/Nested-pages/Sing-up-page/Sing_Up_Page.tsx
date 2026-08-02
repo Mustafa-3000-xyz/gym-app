@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Welcome_Message from "./Components/Welcome-message/Welcome_Message";
 import End_Message from "./Components/End-message/End_Message";
-import { accounte } from "@/Pages/types";
+import { accounte_Type } from "@/Pages/types";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
 import Animation from "@/Global-components/Animation/Animation";
 // ========================================================== //
@@ -80,7 +80,7 @@ export default function Sing_Up_Page() {
 
         {
             isWelcomeMessegeFinished && isShowEndMessage ?
-                <End_Message managerInfo={managerInfo as accounte} />
+                <End_Message managerInfo={managerInfo as accounte_Type} />
                 :
                 null
         }

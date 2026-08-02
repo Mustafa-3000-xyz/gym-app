@@ -3,11 +3,11 @@ import { useMemo, useState } from "react";
 import { addRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import Trainer_Info_Form from "../Forms/Trainer_Info_Form";
 import Subscription_Info_Form from "../Forms/Subscription_Info_Form";
-import { incrementOrDecrementForTotalSessionsInAccount, normalAlert, theTodayDate } from "@/Lib/functions";
-import { stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
+import { alert, incrementOrDecrementForTotalSessionsInAccount, theTodayDate } from "@/Lib/functions";
+import { addNewTrainer, maxTargetInDay, maxTargetInMonth, maxTargetInYear, monthsWithHisDays, statusIsActive, statusIsFinished, statusIsPending } from "@/Lib/constants";
 import Date_Info_Form from "../Forms/Date_Info_Form";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { trainer } from "@/Pages/types";
+import { daysProfitsAndExpenses_Type, monthsProfitsAndExpenses_Type, trainer_Type, yearsProfitsAndExpenses_Type } from "@/Pages/types";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
 import { store_Type } from "@/Rtk/types";
 import { removeSubscriptionStart } from "@/Rtk/Slices/UI-slices/subscriptionStartSlice";
@@ -16,6 +16,11 @@ import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import { addDays } from "date-fns";
 import Database from "@tauri-apps/plugin-sql";
 import { addRowInAttendanceTable } from "@/Rtk/Slices/Db-slices/attendanceSlice";
+import { addRowInItemsTable } from "@/Rtk/Slices/Db-slices/itemsSlice";
+import { arithmeticOperatorsWithProfitsAndExpenses } from "@/Lib/functionsWithDb";
+import { addRowInDaysProfitsAndExpensesTable } from "@/Rtk/Slices/Db-slices/daysProfitsAndExpensesSlice";
+import { addRowInMonthsProfitsAndExpensesTable } from "@/Rtk/Slices/Db-slices/monthsProfitsAndExpensesSlice";
+import { addRowInYearsProfitsAndExpensesTable } from "@/Rtk/Slices/Db-slices/yearsProfitsAndExpensesSlice";
 // ========================================================== //
 export default function Add_Trainer(
     { onIsShowAddTrainer }: { onIsShowAddTrainer: (x: boolean) => void }
@@ -26,12 +31,12 @@ export default function Add_Trainer(
             subscriptionStart: state.subscriptionStart,
             subscriptionEnd: state.subscriptionEnd,
             logInInfo: state.logInInfo,
-            sessionsCount: state.sessionsCount,
+            sessionsCount: state.sessionsCount
         }
     }, shallowEqual);
 
 
-    // Get trainer info
+    // Get trainer_Type info
     const [getFirstName, setGetFirstName] = useState<string | null>(null);
     const [getLastName, setGetLastName] = useState<string | null>(null);
     const [getPhone, setGetPhone] = useState<number | null>(0);
@@ -48,7 +53,7 @@ export default function Add_Trainer(
 
 
     async function activeSomeSessions(trainerId: number) {
-        if (!getActiveSomeSessions) return;
+        if (!getActiveSomeSessions || !trainerId) return;
 
         const database = await Database.load("sqlite:app-gym-db.db");
         let dateNow: any = new Date(state.subscriptionStart as string).toISOString();
@@ -83,35 +88,187 @@ export default function Add_Trainer(
     }
 
     async function saveTrainerInfo() {
-        if (!isAllInfoComplete) return
-        onIsShowAddTrainer(false);
-        normalAlert({
-            title: "تمت العمليه بنجاح",
-            text: "إضافة متدرب جديد",
-            icon: "success"
-        });
+        if (!isAllInfoComplete) return;
+        alert({
+            titleBeforeClickOnOk: "هل تريد بالفعل إضافة ذلك المتدرب ؟",
+            titleAfterClickOnOk: "تمت إضافة المتدرب بنجاح",
+            funRunWhenClickOnOk: async function () {
+                dispatch(removeSubscriptionStart());
+                dispatch(removeSubscriptionEnd());
+                dispatch(removeAllSessions());
+
+                const getTraineInfos = await dispatch(
+                    addRowInTrainersTable({
+                        firstName: getFirstName,
+                        lastName: getLastName,
+                        phone: String(getPhone),
+                        address: getAddress,
+                        subscriptionName: getSubscriptionName,
+                        sessionsCount: Number(state.sessionsCount),
+                        price: Number(getPrice),
+                        subscriptionStart: state.subscriptionStart,
+                        subscriptionEnd: state.subscriptionEnd,
+                        subscriptionStatus: statusTheSubscription,
+                        lastRenewalSubscription: new Date().toISOString()
+                    } as trainer_Type) as any
+                ).unwrap();
 
 
-        dispatch(removeSubscriptionStart());
-        dispatch(removeSubscriptionEnd());
-        dispatch(removeAllSessions());
-        const getTraineInfos = await dispatch(
-            addRowInTrainersTable({
-                subscriptionState: statusTheSubscription,
-                firstName: getFirstName,
-                lastName: getLastName,
-                phone: String(getPhone),
-                address: getAddress,
-                subscriptionName: getSubscriptionName,
-                sessionsCount: Number(state.sessionsCount),
-                price: Number(getPrice),
-                subscriptionStart: state.subscriptionStart,
-                subscriptionEnd: state.subscriptionEnd,
-                dateAdded: new Date().toISOString()
-            } as trainer) as any
-        ).unwrap();
+                onIsShowAddTrainer(false);
+                subscriptionPriceIsProfit();
+                await activeSomeSessions(getTraineInfos.id);
+            }
+        })
 
-        await activeSomeSessions(getTraineInfos.id);
+    }
+
+    async function subscriptionPriceIsProfit() {
+        const database = await Database.load("sqlite:app-gym-db.db");
+        const price = Number(getPrice || 0);
+
+        const [getYear] = await database.select(`
+            SELECT * from yearsProfitsAndExpenses WHERE yearNumber = ${todayDate.getFullYear()}
+        `) as yearsProfitsAndExpenses_Type[];
+
+        const [getMonth] = await database.select(`
+            SELECT * from monthsProfitsAndExpenses WHERE linkWithYear = ${getYear ? getYear.id : -1} 
+            AND monthNumber = ${todayDate.getMonth() + 1}
+        `) as monthsProfitsAndExpenses_Type[];
+
+        const [getDay] = await database.select(`
+            SELECT * from daysProfitsAndExpenses WHERE linkWithMonth = ${getMonth ? getMonth.id : -1} 
+            AND dayNumber = ${todayDate.getDate()}
+        `) as daysProfitsAndExpenses_Type[];
+
+
+        if (getYear && getMonth && getDay) {
+            arithmeticOperatorsWithProfitsAndExpenses({
+                updateOneColumn: {
+                    year: {
+                        yearId: Number(getYear.id),
+                        column: "profitsTotal",
+                        value: (getYear.profitsTotal || 0) + price
+                    },
+                    month: {
+                        monthId: Number(getMonth.id),
+                        column: "profitsTotal",
+                        value: (getMonth.profitsTotal || 0) + price
+                    },
+                    day: {
+                        dayId: Number(getDay.id),
+                        column: "profitsTotal",
+                        value: (getDay.profitsTotal || 0) + price
+                    }
+                }
+            });
+
+            dispatch(addRowInItemsTable({
+                linkWithDay: Number(getDay.id),
+                itemName: addNewTrainer,
+                category: "profit",
+                price: price
+            }) as any);
+        }
+        else if (getYear && getMonth && !getDay) {
+            const getDayId = await dispatch(addRowInDaysProfitsAndExpensesTable({
+                linkWithMonth: Number(getMonth.id),
+                dayNumber: todayDate.getDate(),
+                profitsTotal: price,
+                expensesTotal: 0,
+                target: maxTargetInDay
+            }) as any).unwrap() as daysProfitsAndExpenses_Type;
+
+
+            arithmeticOperatorsWithProfitsAndExpenses({
+                updateOneColumn: {
+                    year: {
+                        yearId: Number(getYear.id),
+                        column: "profitsTotal",
+                        value: (getYear.profitsTotal || 0) + price
+                    },
+                    month: {
+                        monthId: Number(getMonth.id),
+                        column: "profitsTotal",
+                        value: (getMonth.profitsTotal || 0) + price
+                    }
+                }
+            });
+            dispatch(addRowInItemsTable({
+                linkWithDay: Number(getDayId.id),
+                itemName: addNewTrainer,
+                category: "profit",
+                price: price
+            }) as any);
+        }
+        else if (getYear && !getMonth && !getDay) {
+            const monthName = monthsWithHisDays.find(ele => ele.monthNumber == todayDate.getMonth() + 1)?.month;
+            const getMonthId = await dispatch(addRowInMonthsProfitsAndExpensesTable({
+                linkWithYear: Number(getYear.id),
+                monthName: monthName as string,
+                monthNumber: todayDate.getMonth() + 1,
+                profitsTotal: price,
+                expensesTotal: 0,
+                target: maxTargetInMonth
+            }) as any).unwrap() as monthsProfitsAndExpenses_Type;
+
+            const getDayId = await dispatch(addRowInDaysProfitsAndExpensesTable({
+                linkWithMonth: Number(getMonthId.id),
+                dayNumber: todayDate.getDate(),
+                profitsTotal: price,
+                expensesTotal: 0,
+                target: maxTargetInDay
+            }) as any).unwrap() as daysProfitsAndExpenses_Type;
+
+
+            arithmeticOperatorsWithProfitsAndExpenses({
+                updateOneColumn: {
+                    year: {
+                        yearId: Number(getYear.id),
+                        column: "profitsTotal",
+                        value: (getYear.profitsTotal || 0) + price
+                    }
+                }
+            });
+            dispatch(addRowInItemsTable({
+                linkWithDay: Number(getDayId.id),
+                itemName: addNewTrainer,
+                category: "profit",
+                price: price
+            }) as any);
+        }
+        else {
+            const getYearId = await dispatch(addRowInYearsProfitsAndExpensesTable({
+                yearNumber: Number(todayDate.getFullYear()),
+                profitsTotal: price,
+                expensesTotal: 0,
+                target: maxTargetInYear
+            }) as any).unwrap() as yearsProfitsAndExpenses_Type;
+
+            const monthName = monthsWithHisDays.find(ele => ele.monthNumber == todayDate.getMonth() + 1)?.month;
+            const getMonthId = await dispatch(addRowInMonthsProfitsAndExpensesTable({
+                linkWithYear: Number(getYearId.id),
+                monthName: monthName as string,
+                monthNumber: todayDate.getMonth() + 1,
+                profitsTotal: price,
+                expensesTotal: 0,
+                target: maxTargetInMonth
+            }) as any).unwrap() as monthsProfitsAndExpenses_Type;
+
+            const getDayId = await dispatch(addRowInDaysProfitsAndExpensesTable({
+                linkWithMonth: Number(getMonthId.id),
+                dayNumber: todayDate.getDate(),
+                profitsTotal: price,
+                expensesTotal: 0,
+                target: maxTargetInDay
+            }) as any).unwrap() as daysProfitsAndExpenses_Type;
+
+            dispatch(addRowInItemsTable({
+                linkWithDay: Number(getDayId.id),
+                itemName: addNewTrainer,
+                category: "profit",
+                price: price
+            }) as any);
+        }
     }
 
     function clickOnCancel() {
@@ -124,7 +281,8 @@ export default function Add_Trainer(
 
 
 
-    // This check the trainer info is compolete or no
+
+    // This check the trainer_Type info is compolete or no
     const isAllInfoComplete = useMemo(function () {
         if (
             getFirstName != null &&
@@ -151,15 +309,15 @@ export default function Add_Trainer(
             &&
             todayDate.getTime() <= new Date(state.subscriptionEnd as any).getTime()
         ) {
-            return stateIsActive;
+            return statusIsActive;
         }
         else if (
             todayDate.getTime() < new Date(state.subscriptionStart as any).getTime()
         ) {
-            return stateIsPending;
+            return statusIsPending;
         }
         else {
-            return stateIsFinished;
+            return statusIsFinished;
         }
     }, [state.subscriptionStart, state.subscriptionEnd, todayDate]);
 
@@ -169,7 +327,7 @@ export default function Add_Trainer(
     return <Popup_Form
         titel="إضافة متدرب"
         discription="الان, يمكنك إضافة متدرب جديد"
-        className="h-[84vh] flex flex-col justify-between"
+        classNameForParent="h-[84vh] flex flex-col justify-between"
         isSave={isAllInfoComplete}
         clickOnCancel={clickOnCancel}
         clickOnSaveBtn={saveTrainerInfo}

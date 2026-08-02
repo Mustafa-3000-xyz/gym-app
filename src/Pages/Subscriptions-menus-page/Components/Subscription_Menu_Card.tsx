@@ -3,10 +3,10 @@ import Toggle_Btn from "@/Global-components/Toggle-btn/Toggle_Btn";
 import { EDITING_SUBSCRIPTION_MENU, maxSessions, maxSubscriptionPrice } from "@/Lib/constants";
 import { alert, checkThePermissionIsHere } from "@/Lib/functions";
 import { regexSubscriptionName } from "@/Lib/REGEX";
-import { subscriptionsMenus } from "@/Pages/types";
+import { subscriptionsMenus_Type } from "@/Pages/types";
 import { deleteRowInSubscriptionsMenusTableById, updatePropertyInRowInSubscriptionsMenusTable, updateSomePropertiesInRowInSubscriptionsMenusTable } from "@/Rtk/Slices/Db-slices/subscriptionsMenusSlice";
 import { store_Type } from "@/Rtk/types";
-import { ArrowDownToLine, Pen, Trash, X } from "lucide-react";
+import { Pen, Save, Trash, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 // ========================================================== //
@@ -17,7 +17,7 @@ export default function Subscription_Menu_Card(
         sessionsCount,
         price,
         isActive
-    }: subscriptionsMenus
+    }: subscriptionsMenus_Type
 ) {
     const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
@@ -36,7 +36,7 @@ export default function Subscription_Menu_Card(
     const [priceVal, setPriceVal] = useState(price);
 
     const checkEditingTheMenuPermission = checkThePermissionIsHere({
-        accountId: Number(state.logInInfo?.id), 
+        accountId: Number(state.logInInfo?.id),
         permissionType: EDITING_SUBSCRIPTION_MENU
     });
 
@@ -206,18 +206,18 @@ export default function Subscription_Menu_Card(
             <div className="flex items-center gap-2">
                 {isEditing ?
                     <>
-                        <ArrowDownToLine
+                        <X
+                            className="duration-300 cursor-pointer hover:scale-125 text-red-500"
+                            onClick={clickOnCancel}
+                        />
+
+                        <Save
                             size={25}
                             className={`
                                 duration-300 
                                 ${isSaveChanges ? "text-emerald-500 cursor-pointer hover:scale-125" : "text-gray-400 cursor-not-allowed"}
                             `}
                             onClick={clickOnSaveBtn}
-                        />
-
-                        <X
-                            className="duration-300 cursor-pointer hover:scale-125 text-red-500"
-                            onClick={clickOnCancel}
                         />
                     </>
                     :

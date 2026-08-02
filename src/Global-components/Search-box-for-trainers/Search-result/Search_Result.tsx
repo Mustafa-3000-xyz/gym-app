@@ -1,9 +1,9 @@
 import Animation from "@/Global-components/Animation/Animation";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
-import { Search_Result_Props } from "@/Global-components/types";
+import { Search_Result_Props } from "@/Global-components/typesProps";
 import { trainerPagePath } from "@/Lib/constants";
 import { checkThePermissionIsHere, normalAlert, styleForSubscriptionState } from "@/Lib/functions";
-import { trainer } from "@/Pages/types";
+import { trainer_Type } from "@/Pages/types";
 import { addTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { store_Type } from "@/Rtk/types";
 import { useEffect, useRef } from "react";
@@ -34,9 +34,9 @@ export default function Search_Result(
     });
 
 
-    function showTrainer(trainer: trainer) {
+    function showTrainer(trainer_Type: trainer_Type) {
         onIsShowSearchResult(false);
-        dispatch(addTrainerDetails(trainer));
+        dispatch(addTrainerDetails(trainer_Type));
 
         if (checkTrainerPagePermission) {
             navigation(trainerPagePath);
@@ -94,7 +94,7 @@ export default function Search_Result(
         {
             arrayContainsTrainers.length == 0 ?
                 <Not_Found
-                    srcImg='not_found_in_drop_menu.svg'
+                    srcImg='/not_found_in_drop_menu.svg'
                     title=' لا يوجد نتائج'
                     className='w-28'
                 />

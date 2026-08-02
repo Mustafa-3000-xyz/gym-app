@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { accounte } from "@/Pages/types";
+import { accounte_Type } from "@/Pages/types";
 import { updatePropertyInAccount_Type, updateSomePropertiesInAccount_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
@@ -15,7 +15,7 @@ export const getAllRowsInAccountsTable = createAsyncThunk(
 
 export const addRowInAccountsTable = createAsyncThunk(
     "accountsSlice/addRowInAccountsTable",
-    async function (data: accounte) {
+    async function (data: accounte_Type) {
         const query = `
             INSERT INTO accounts (
                 name, age, password, type, profileImg, coverImg, 
@@ -76,7 +76,7 @@ export const updatePropertyInRowInAccountsTable = createAsyncThunk(
         );
 
 
-        return (getAccountAfterUpdate as accounte[])[0];
+        return (getAccountAfterUpdate as accounte_Type[])[0];
     }
 );
 
@@ -98,12 +98,12 @@ export const updateSomePropertiesInRowInAccountsTable = createAsyncThunk(
             [...result, id]
         );
 
-        const updatedTrainer = await database.select(
+        const getAccountAfterUpdate = await database.select(
             `SELECT * FROM accounts WHERE id = ?`,
             [id]
         );
 
-        return (updatedTrainer as accounte[])[0];
+        return (getAccountAfterUpdate as accounte_Type[])[0];
     }
 );
 
@@ -122,16 +122,16 @@ const accountsSlice = createSlice({
             return [...state, action.payload];
         });
 
-        builde.addCase(deleteRowInAccountsTableById.fulfilled as any, (state: accounte[], action): any => {
+        builde.addCase(deleteRowInAccountsTableById.fulfilled as any, (state: accounte_Type[], action): any => {
             return state.filter(ele => ele.id != action.payload);
         });
 
-        builde.addCase(updatePropertyInRowInAccountsTable.fulfilled as any, (state: accounte[], action): any => {
+        builde.addCase(updatePropertyInRowInAccountsTable.fulfilled as any, (state: accounte_Type[], action): any => {
             const filter = state.filter(ele => ele.id != action.payload.id);
             return [...filter, action.payload].sort((a, b) => a.id - b.id);
         });
 
-        builde.addCase(updateSomePropertiesInRowInAccountsTable.fulfilled as any, (state: accounte[], action): any => {
+        builde.addCase(updateSomePropertiesInRowInAccountsTable.fulfilled as any, (state: accounte_Type[], action): any => {
             const filter = state.filter(ele => ele.id != action.payload.id);
             return [...filter, action.payload].sort((a, b) => a.id - b.id);;
         });

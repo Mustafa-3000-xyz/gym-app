@@ -7,7 +7,7 @@ import Profits_And_Expenses_Page from "./Pages/Profits-and-expenses-page/Profits
 import Accountes_Page from "./Pages/Accountes-page/Accountes_Page";
 import Authentication_Page from "./Pages/Authentication-page/Authentication_Page";
 import { useEffect, useState } from "react";
-import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profilePagePath, profitsAndExpensesPagePath, settingsPagePath, stateIsActive, stateIsFinished, stateIsPending, subscriptionsMenuPath, trainerPagePath } from "./Lib/constants";
+import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profilePagePath, profitsAndExpensesPagePath, settingsPagePath, statusIsActive, statusIsFinished, statusIsPending, subscriptionsMenuPath, trainerPagePath } from "./Lib/constants";
 import Explain_App_Page from "./Pages/Explain-app-page/Explain_App_Page";
 import Profile_Page from "./Pages/Profile-page/Profile_Page";
 import { logOutFromOldAccount, theTodayDate } from "./Lib/functions";
@@ -19,8 +19,9 @@ import { getAllRowsInAccountsTable } from "./Rtk/Slices/Db-slices/accountsSlice"
 import { getAllRowsInSubscriptionsMenusTable } from "./Rtk/Slices/Db-slices/subscriptionsMenusSlice";
 import { removeTrainerDetails } from "./Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { changeLogInInfo, getLogInInfo } from "./Rtk/Slices/UI-slices/logInInfoSlice";
-import { accountsTable, activeSessionsTable, attendanceTable, subscriptionsMenusTable, trainerTable } from "./Lib/tables";
+import { accountsTable, activeSessionsTable, attendanceTable, daysProfitsAndExpensesTable, itemsTable, monthsProfitsAndExpensesTable, subscriptionsMenusTable, trainerTable, yearsProfitsAndExpensesTable } from "./Lib/tables";
 import { getAllRowsInAttendanceTable } from "./Rtk/Slices/Db-slices/attendanceSlice";
+import { getAllRowsInYearsProfitsAndExpensesTable } from "./Rtk/Slices/Db-slices/yearsProfitsAndExpensesSlice";
 // ========================================================== //
 function App() {
   const dispatch = useDispatch();
@@ -44,6 +45,10 @@ function App() {
     await accountsTable();
     await attendanceTable();
     await subscriptionsMenusTable();
+    await yearsProfitsAndExpensesTable();
+    await monthsProfitsAndExpensesTable();
+    await daysProfitsAndExpensesTable();
+    await itemsTable();
   }
 
   async function logOutWhenCloseApp() {
@@ -68,26 +73,26 @@ function App() {
       expirationDate.setHours(23, 59, 59, 999);
 
       if (
-        ele.subscriptionState == stateIsPending
+        ele.subscriptionStatus == statusIsPending
         &&
         todayDate.getTime() >= new Date(ele.subscriptionStart as any).getTime()
       ) {
         dispatch(updatePropertyInRowInTrainersTable({
           id: ele.id as any,
-          column: "subscriptionState",
-          value: stateIsActive
+          column: "subscriptionStatus",
+          value: statusIsActive
         }) as any);
       }
 
       else if (
         todayDate.getTime() > expirationDate.getTime()
         &&
-        (ele.subscriptionState == stateIsActive || ele.subscriptionState == stateIsPending)
+        (ele.subscriptionStatus == statusIsActive || ele.subscriptionStatus == statusIsPending)
       ) {
         dispatch(updatePropertyInRowInTrainersTable({
           id: ele.id as any,
-          column: "subscriptionState",
-          value: stateIsFinished
+          column: "subscriptionStatus",
+          value: statusIsFinished
         }) as any);
       }
     });
@@ -105,6 +110,7 @@ function App() {
     dispatch(getAllRowsInAccountsTable() as any);
     dispatch(getAllRowsInSubscriptionsMenusTable() as any);
     dispatch(getAllRowsInAttendanceTable() as any);
+    dispatch(getAllRowsInYearsProfitsAndExpensesTable() as any);
   }, []);
 
   useEffect(function () {

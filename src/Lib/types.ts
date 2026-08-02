@@ -1,9 +1,9 @@
-export interface alertSuccessType {
+export interface alertSuccess_Type {
     mainTitle: string,
     text?: string,
 }
 
-export interface alertType {
+export interface alert_Type {
     titleBeforeClickOnOk: string,
     titleAfterClickOnOk?: string,
     funRunWhenClickOnOk: Function,

@@ -1,4 +1,4 @@
-import { Bottom_Content_For_The_Drop_Props } from "@/Global-components/types";
+import { Bottom_Content_For_The_Drop_Props } from "@/Global-components/typesProps";
 // ========================================================== //
 function Bottom_Content_For_The_Drop(
     { children, className }: Bottom_Content_For_The_Drop_Props

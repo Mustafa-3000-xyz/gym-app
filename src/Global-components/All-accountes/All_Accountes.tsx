@@ -14,7 +14,7 @@ export default function All_Accountes() {
 
     if (state.accountes?.length == 1 && state.logInInfo != null) {
         return <Not_Found
-            srcImg="/not_found_in_accounts.svg"
+            srcImg="/not_found_for_boxes.svg"
             title="لايوجد حسابات كباتن"
         />
     }

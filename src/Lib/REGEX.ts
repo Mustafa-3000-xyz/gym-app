@@ -8,3 +8,6 @@ export const regexLastName = /^.{3,13}$/g;
 export const regexPhone = /^[0-9]{10,10}$/g;
 export const regexAddress = /^.{0,50}$/g;
 export const regexSubscriptionName = /^.{3,11}$/g;
+export const regexItemName = /^.{3,11}$/g;
+
+export const regexYear = /^[0-9]{4}$/g;

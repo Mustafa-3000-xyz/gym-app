@@ -1,8 +1,9 @@
 import Bottom_Content_For_The_Drop from "@/Global-components/Drop-menu/Bottom-content-for-the-drop/Bottom_Content_For_The_Drop";
 import Drop_Menu from "@/Global-components/Drop-menu/Drop_Menu";
 import Top_Content_For_The_Drop from "@/Global-components/Drop-menu/Top-content-for-the-drop/Top_Content_For_The_Drop";
-import { activeSubscriptions, allSubscriptions, finishedSubscriptions, fromNewToOld, fromOldToNew, pendingSubscriptions, stateIsActive, stateIsFinished, stateIsPending } from "@/Lib/constants";
-import { box_Info_In_Trainers_Page, filter, Filter_For_Trainers_Props, trainer } from "@/Pages/types";
+import { activeSubscriptions, allSubscriptions, finishedSubscriptions, fromNewToOld, fromOldToNew, pendingSubscriptions, statusIsActive, statusIsFinished, statusIsPending } from "@/Lib/constants";
+import { boxInfoInTrainersPage_Type, filter_Type, trainer_Type } from "@/Pages/types";
+import { Filter_For_Trainers_Props } from "@/Pages/typesProps";
 import { store_Type } from "@/Rtk/types";
 import { ArrowDown, ArrowUp, ListFilter, ShieldCheck, ShieldOff, ShieldQuestionMark, Users } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -16,7 +17,7 @@ export default function Filter(
             trainers: state.trainers
         }
     }, shallowEqual);
-    const [filterObj, setFilterObj] = useState<filter>({
+    const [filterObj, setFilterObj] = useState<filter_Type>({
         arrange: JSON.parse(localStorage.getItem("filter") as any ?? "{}").arrange ?? fromOldToNew,
         subscriptionType: JSON.parse(localStorage.getItem("filter") as any ?? "{}").subscriptionType ?? allSubscriptions
     });
@@ -24,7 +25,7 @@ export default function Filter(
 
 
 
-    function makeBoxInfo(): box_Info_In_Trainers_Page | undefined {
+    function makeBoxInfo(): boxInfoInTrainersPage_Type | undefined {
         if (!filterObj) return;
 
         const obj = {
@@ -37,19 +38,19 @@ export default function Filter(
         if (filterObj.subscriptionType == allSubscriptions || filterObj.subscriptionType == activeSubscriptions) {
             obj.name = "مجموع الاشتراكات المفعله";
             obj.styleBgForIcon = "bg-emerald-100 text-emerald-500";
-            obj.total = state.trainers?.filter(ele => ele.subscriptionState == stateIsActive).length;
+            obj.total = state.trainers?.filter(ele => ele.subscriptionStatus == statusIsActive).length;
             obj.icon = <ShieldCheck size={30} />;
         }
         else if (filterObj.subscriptionType == pendingSubscriptions) {
             obj.name = "مجموع الاشتراكات المُعلقه";
             obj.styleBgForIcon = "bg-amber-100 text-amber-500";
-            obj.total = state.trainers?.filter(ele => ele.subscriptionState == stateIsPending).length;
+            obj.total = state.trainers?.filter(ele => ele.subscriptionStatus == statusIsPending).length;
             obj.icon = <ShieldQuestionMark size={30} />;
         }
         else {
             obj.name = "مجموع الاشتراكات المنتهيه";
             obj.styleBgForIcon = "bg-red-100 text-red-500";
-            obj.total = state.trainers?.filter(ele => ele.subscriptionState == stateIsFinished).length;
+            obj.total = state.trainers?.filter(ele => ele.subscriptionStatus == statusIsFinished).length;
             obj.icon = <ShieldOff size={30} />;
         }
 
@@ -61,7 +62,7 @@ export default function Filter(
         const obj = {
             ...filterObj,
             arrange: type
-        } as filter
+        } as filter_Type
 
         setFilterObj(obj);
     }
@@ -70,13 +71,13 @@ export default function Filter(
         const obj = {
             ...filterObj,
             subscriptionType: type
-        } as filter
+        } as filter_Type
 
         setFilterObj(obj);
     }
 
-    function makeTrainersFilter(): trainer[] {
-        let arr: trainer[] = [];
+    function makeTrainersFilter(): trainer_Type[] {
+        let arr: trainer_Type[] = [];
         const resultArrange = [...state.trainers as any].sort(function (a, b) {
             if (filterObj.arrange == fromOldToNew) {
                 return Number(a.id) - Number(b.id);
@@ -92,13 +93,13 @@ export default function Filter(
             arr = resultArrange;
         }
         else if (filterObj.subscriptionType == activeSubscriptions) {
-            resultArrange.forEach(ele => ele.subscriptionState == stateIsActive && arr.push(ele));
+            resultArrange.forEach(ele => ele.subscriptionStatus == statusIsActive && arr.push(ele));
         }
         else if (filterObj.subscriptionType == pendingSubscriptions) {
-            resultArrange.forEach(ele => ele.subscriptionState == stateIsPending && arr.push(ele));
+            resultArrange.forEach(ele => ele.subscriptionStatus == statusIsPending && arr.push(ele));
         }
         else {
-            resultArrange.forEach(ele => ele.subscriptionState == stateIsFinished && arr.push(ele));
+            resultArrange.forEach(ele => ele.subscriptionStatus == statusIsFinished && arr.push(ele));
         }
 
         return arr;

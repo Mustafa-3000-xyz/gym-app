@@ -1,4 +1,4 @@
-import { trainer } from "@/Pages/types";
+import { trainer_Type } from "@/Pages/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { updatePropertyInTrainer_Type, updateSomePropertiesInTrainer_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
@@ -15,17 +15,16 @@ export const getAllRowsInTrainersTable = createAsyncThunk(
 
 export const addRowInTrainersTable = createAsyncThunk(
     "trainersSlice/addRowInTrainersTable",
-    async function (data: trainer) {
+    async function (data: trainer_Type) {
         const query = `
             INSERT INTO trainers (
-                subscriptionState, firstName, lastName, 
-                phone, address, subscriptionName, sessionsCount, 
-                price, subscriptionStart, subscriptionEnd, dateAdded
+                firstName, lastName, phone, address, 
+                subscriptionName, sessionsCount, price, 
+                subscriptionStart, subscriptionEnd, subscriptionStatus, lastRenewalSubscription
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const values = [
-            data.subscriptionState,
             data.firstName,
             data.lastName,
             data.phone,
@@ -35,7 +34,8 @@ export const addRowInTrainersTable = createAsyncThunk(
             data.price,
             data.subscriptionStart,
             data.subscriptionEnd,
-            data.dateAdded
+            data.subscriptionStatus,
+            data.lastRenewalSubscription
         ];
 
         const createRow = await database.execute(query, values);
@@ -63,7 +63,7 @@ export const updatePropertyInRowInTrainersTable = createAsyncThunk(
         id,
         column,
         value
-    }: updatePropertyInTrainer_Type) {        
+    }: updatePropertyInTrainer_Type) {
         const query = `UPDATE trainers SET ${column} = ? WHERE id = ?`;
 
         await database.execute(query, [value, id]);
@@ -74,17 +74,14 @@ export const updatePropertyInRowInTrainersTable = createAsyncThunk(
         );
 
 
-        return (getTrainerAfterUpdate as trainer[])[0];
+        return (getTrainerAfterUpdate as trainer_Type[])[0];
     }
 );
 
 export const updateSomePropertiesInRowInTrainersTable = createAsyncThunk(
     "trainersSlice/updateSomePropertiesInRowInTrainersTable",
-    async function (
-        { id, values }: updateSomePropertiesInTrainer_Type
-    ) {
+    async function ({ id, values }: updateSomePropertiesInTrainer_Type) {
         const keys = Object.keys(values);
-
 
         if (keys.length === 0) return;
 
@@ -96,12 +93,12 @@ export const updateSomePropertiesInRowInTrainersTable = createAsyncThunk(
             [...result, id]
         );
 
-        const updatedTrainer = await database.select(
+        const getTrainerAfterUpdate = await database.select(
             `SELECT * FROM trainers WHERE id = ?`,
             [id]
         );
 
-        return (updatedTrainer as trainer[])[0];
+        return (getTrainerAfterUpdate as trainer_Type[])[0];
     }
 );
 
@@ -120,16 +117,16 @@ const trainersSlice = createSlice({
             return [...state, action.payload];
         });
 
-        builde.addCase(deleteRowInTrainersTableById.fulfilled as any, (state: trainer[], action): any => {
+        builde.addCase(deleteRowInTrainersTableById.fulfilled as any, (state: trainer_Type[], action): any => {
             return state.filter(ele => ele.id != action.payload);
         });
 
-        builde.addCase(updatePropertyInRowInTrainersTable.fulfilled as any, (state: trainer[], action): any => {
+        builde.addCase(updatePropertyInRowInTrainersTable.fulfilled as any, (state: trainer_Type[], action): any => {
             const result = state.filter(ele => ele.id != action.payload.id);
             return [...result, action.payload];
         });
 
-        builde.addCase(updateSomePropertiesInRowInTrainersTable.fulfilled as any, (state: trainer[], action): any => {
+        builde.addCase(updateSomePropertiesInRowInTrainersTable.fulfilled as any, (state: trainer_Type[], action): any => {
             const result = state.filter(ele => ele.id != action.payload.id);
             return [...result, action.payload];
         });

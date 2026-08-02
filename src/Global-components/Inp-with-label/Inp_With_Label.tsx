@@ -1,5 +1,5 @@
 import { ChangeEvent, useState } from "react";
-import { Inp_With_Label_Props } from "../types";
+import { Inp_With_Label_Props } from "../typesProps";
 import { Eye, EyeClosed } from "lucide-react";
 // ========================================================== //
 export default function Inp_With_Label(
@@ -68,12 +68,14 @@ export default function Inp_With_Label(
                         value={inpValue ?? ""}
                         disabled={!isChangeValue}
                         className={`
-                            rounded-lg border border-black/20 p-2 px-3 focus:outline-none
-                            w-full text-center
-                            [&::-webkit-inner-spin-button]:appearance-none
-                            [&::-webkit-outer-spin-button]:appearance-none
+                            rounded-lg border border-black/20 p-2 px-3 focus:outline-none w-full text-center
                             ${!isChangeValue ? "cursor-not-allowed opacity-45" : ""}
                         `}
+                        onKeyDown={(e) => {
+                            if (inpType == "number" && ["e", "E", "+", "-"].includes(e.key)) {
+                                e.preventDefault();
+                            }
+                        }}
                         onChange={writeInInp}
                     />
                     :
@@ -81,12 +83,14 @@ export default function Inp_With_Label(
                         type={inpType}
                         disabled={!isChangeValue}
                         className={`
-                            rounded-lg border border-black/20 p-2 px-3 focus:outline-none
-                            w-full text-center
-                            [&::-webkit-inner-spin-button]:appearance-none
-                            [&::-webkit-outer-spin-button]:appearance-none
+                            rounded-lg border border-black/20 p-2 px-3 focus:outline-none w-full text-center
                             ${!isChangeValue ? "cursor-not-allowed opacity-45" : ""}
                         `}
+                        onKeyDown={(e) => {
+                            if (inpType == "number" && ["e", "E", "+", "-"].includes(e.key)) {
+                                e.preventDefault();
+                            }
+                        }}
                         onChange={writeInInp}
                     />
         }

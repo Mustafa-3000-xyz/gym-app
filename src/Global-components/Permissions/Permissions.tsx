@@ -1,6 +1,6 @@
 import { allPermissions } from "@/Lib/constants";
 import { normalAlert } from "@/Lib/functions";
-import { Permissions_Props } from "@/Pages/types";
+import { Permissions_Props } from "@/Pages/typesProps";
 import { store_Type } from "@/Rtk/types";
 import { KeyRound } from "lucide-react";
 import { shallowEqual, useSelector } from "react-redux";

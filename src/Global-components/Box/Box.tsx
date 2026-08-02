@@ -1,4 +1,4 @@
-import { Box_Props } from "../types";
+import { Box_Props } from "../typesProps";
 // ========================================================== //
 export default function Box(
     {

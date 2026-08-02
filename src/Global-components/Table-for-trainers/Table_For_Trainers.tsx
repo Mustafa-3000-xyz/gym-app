@@ -1,4 +1,4 @@
-import { trainer } from "@/Pages/types";
+import { trainer_Type } from "@/Pages/types";
 import { checkThePermissionIsHere, normalAlert, styleForSubscriptionState } from "@/Lib/functions";
 import { styleDate, trainerPagePath } from "@/Lib/constants";
 import { format } from "date-fns";
@@ -15,7 +15,7 @@ import { store_Type } from "@/Rtk/types";
 import { useNavigate } from "react-router-dom";
 // ========================================================== //
 export default function Table_For_Trainers(
-    { trainersList }: { trainersList: trainer[] }
+    { trainersList }: { trainersList: trainer_Type[] }
 ) {
     const dispath = useDispatch();
     const state = useSelector(function (state: store_Type) {
@@ -29,7 +29,7 @@ export default function Table_For_Trainers(
     const [isBeginning, setIsBeginning] = useState(true);
     const [isEnd, setIsEnd] = useState(false);
 
-    const [slides, setSlides] = useState<trainer[][]>([]);
+    const [slides, setSlides] = useState<trainer_Type[][]>([]);
     const [currentSlide, setCurrentSlide] = useState<number>(0);
 
     const navigation = useNavigate();
@@ -42,8 +42,8 @@ export default function Table_For_Trainers(
 
 
 
-    function clickOnTrainer(trainer: trainer) {
-        dispath(addTrainerDetails(trainer));
+    function clickOnTrainer(trainer_Type: trainer_Type) {
+        dispath(addTrainerDetails(trainer_Type));
 
         if (checkTrainerPagePermission) {
             navigation(trainerPagePath);
@@ -60,7 +60,7 @@ export default function Table_For_Trainers(
 
     // This for create slides, and each slides have 6 trainers or less
     useEffect(function () {
-        const arr: trainer[][] = [];
+        const arr: trainer_Type[][] = [];
 
         for (let i = 0; i < trainersList.length; i += trainersCountInSlide) {
             const createSlice = trainersList.slice(i, i + trainersCountInSlide);
@@ -85,7 +85,7 @@ export default function Table_For_Trainers(
         return <div className="mt-20">
             <Not_Found
                 srcImg="/not_found_in_table.svg"
-                title="لا يوجد متدربين الان"
+                title="لا يوجد بيانات"
             />
         </div>
     }
@@ -108,7 +108,7 @@ export default function Table_For_Trainers(
                 slides[currentSlide].map(ele => (
                     <tr
                         key={ele.id}
-                        onClick={() => clickOnTrainer(ele as trainer)}
+                        onClick={() => clickOnTrainer(ele as trainer_Type)}
                         className={`
                             text-center bg-slate-100 cursor-pointer transition duration-100
                             hover:text-white ${state.logInInfo?.type == "manager" ? "hover:bg-(--managerColor)" : "hover:bg-(--captainColor)"}

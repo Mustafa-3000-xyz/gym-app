@@ -3,6 +3,10 @@ import trainersSlice from "../Rtk/Slices/Db-slices/trainersSlice";
 import accountsSlice from "../Rtk/Slices/Db-slices/accountsSlice";
 import subscriptionsMenuSlice from "./Slices/Db-slices/subscriptionsMenusSlice";
 import attendanceSlice from "./Slices/Db-slices/attendanceSlice";
+import yearsProfitsAndExpensesSlice from "./Slices/Db-slices/yearsProfitsAndExpensesSlice";
+import monthsProfitsAndExpensesSlice from "./Slices/Db-slices/monthsProfitsAndExpensesSlice";
+import daysProfitsAndExpensesSlice from "./Slices/Db-slices/daysProfitsAndExpensesSlice";
+import itemsSlice from "./Slices/Db-slices/itemsSlice";
 import trainerDetailsSlice from "./Slices/UI-slices/trainerDetailsSlice";
 import logInInfoSlice from "./Slices/UI-slices/logInInfoSlice";
 import sessionsCountSlice from "./Slices/UI-slices/sessionsCountSlice";
@@ -17,6 +21,10 @@ const store = configureStore({
         accountes: accountsSlice,
         subscriptionsMenus: subscriptionsMenuSlice,
         attendance: attendanceSlice,
+        yearsProfitsAndExpenses: yearsProfitsAndExpensesSlice,
+        monthsProfitsAndExpenses: monthsProfitsAndExpensesSlice,
+        daysProfitsAndExpenses: daysProfitsAndExpensesSlice,
+        items: itemsSlice,
 
         // Ui slices
         trainerDetails: trainerDetailsSlice,

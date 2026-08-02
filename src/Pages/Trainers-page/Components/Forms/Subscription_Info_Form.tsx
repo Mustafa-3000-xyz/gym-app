@@ -1,5 +1,5 @@
 import Subscriptions_Menu from "@/Pages/Trainers-page/Components/Subscriptions-menus/Subscriptions_Menus";
-import { Subscription_Info_Form_Props } from "@/Pages/types";
+import { Subscription_Info_Form_Props } from "@/Pages/typesProps";
 import { useEffect, useMemo, useState } from "react";
 import { Shell } from "lucide-react";
 import Discription from "@/Global-components/Description/Discription";
@@ -203,8 +203,7 @@ export default function Subscription_Info_Form(
                         labelName="السعر"
                         inpType="number"
                         inpValue={price == 0 ? "" : price}
-                        onWriteInInput={(e) => writeInPriceInp(e)}
-                    />
+                        onWriteInInput={(e) => writeInPriceInp(e)} />
 
                     <p className="font-bold">
                         الحد الاقصى : {maxSubscriptionPrice}

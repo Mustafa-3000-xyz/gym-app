@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 /* ====== */
 :root {
     --managerColor: #0B0F19;
@@ -76,4 +77,16 @@ input[type="password"]::-webkit-credentials-auto-fill-button {
 
 input[type="password"] {
     -webkit-text-security: disk;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* بالنسبة لمتصفح Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
 }

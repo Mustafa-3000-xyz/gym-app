@@ -1,11 +1,11 @@
 import Animation from "@/Global-components/Animation/Animation";
-import { accounte } from "@/Pages/types";
+import { accounte_Type } from "@/Pages/types";
 import { addRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 // ========================================================== //
 export default function End_Message(
-    { managerInfo }: { managerInfo: accounte }
+    { managerInfo }: { managerInfo: accounte_Type }
 ) {
     const dispatch = useDispatch();
 

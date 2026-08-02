@@ -1,4 +1,4 @@
-import { Max_Min_Length_Props } from "../types";
+import { Max_Min_Length_Props } from "../typesProps";
 // ========================================================== //
 export default function Max_Min_Length(
     {

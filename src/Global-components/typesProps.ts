@@ -1,6 +1,6 @@
 import React, { ChangeEvent, ReactNode } from "react";
 import { TargetAndTransition, Transition } from "framer-motion";
-import { accounte, trainer } from "@/Pages/types";
+import { accounte_Type, trainer_Type } from "@/Pages/types";
 // ========================================================== //
 export interface Not_Found_Props {
     srcImg: string,
@@ -39,7 +39,8 @@ export interface Popup_Form_Props {
     children: ReactNode,
     isSave?: boolean,
     isShowBtn?: boolean,
-    className?: string,
+    classNameForParent?: string,
+    classNameForContainer?: string,
     typeBtn?: "save data" | "save change",
     clickOnCancel: () => void,
     clickOnSaveBtn: () => void,
@@ -68,18 +69,13 @@ export interface Account_Form_Props {
     onGetPassword: (x: string | null) => void;
 }
 
-export interface Title_And_Discription_For_Pages_Props {
-    title: string,
-    discription: string,
-}
-
-export interface Input_Search_Props {
+export interface InputSearch_Props {
     placeholder: string,
     ref?: HTMLInputElement,
     onGetValue: (x: string) => void
 }
 
-export interface Password_Inp_Props {
+export interface PasswordInp_Props {
     removeValue?: boolean,
     password?: string,
     onWriteInInput?: (e: ChangeEvent<HTMLInputElement>) => void,
@@ -109,13 +105,13 @@ export interface Drop_Menu_Props {
 }
 
 export interface Account_Card_Props {
-    account: accounte,
+    account: accounte_Type,
     isShowAccountCard: boolean
 }
 
 export interface Search_Result_Props {
     searchInpRef: HTMLInputElement,
-    arrayContainsTrainers: trainer[],
+    arrayContainsTrainers: trainer_Type[],
     onIsShowSearchResult: (x: boolean) => void,
 }
 

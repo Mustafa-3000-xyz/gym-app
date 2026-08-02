@@ -1,15 +1,15 @@
 import { useRef, useState } from "react";
 import Search_Result from "./Search-result/Search_Result";
 import { Search } from "lucide-react";
-import { trainer } from "@/Pages/types";
+import { trainer_Type } from "@/Pages/types";
 // ========================================================== //
 export default function Search_Box_For_Trainers(
-    { arrayForSearch }: { arrayForSearch: trainer[] }
+    { arrayForSearch }: { arrayForSearch: trainer_Type[] }
 ) {
     const searchInpRef = useRef<HTMLInputElement | null>(null);
 
     const [searchValue, setSearchValue] = useState("");
-    const [trainersList, setTrainersList] = useState<trainer[]>([]);
+    const [trainersList, setTrainersList] = useState<trainer_Type[]>([]);
     const [isShowSearchResult, setIsShowSearchResult] = useState(false);
 
 
@@ -46,7 +46,7 @@ export default function Search_Box_For_Trainers(
                     ${arrayForSearch.length == 0 ? "cursor-not-allowed opacity-45" : ""}
                 `}
                 placeholder={`
-                    ${arrayForSearch.length == 0 ?"لا يوجد متدربين للبحث" : "البحث عن المتدرب من خلال الاسم او الرقم الخاص به"}
+                    ${arrayForSearch.length == 0 ?"لا يوجد متدربين للبحث" : "البحث عن المتدرب"}
                 `}
                 onChange={(e) => setSearchValue(e.target.value)}
                 onKeyDown={(e) => clickOnEnter(e as any)}

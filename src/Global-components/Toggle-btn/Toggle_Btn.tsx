@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Toggle_Btn_Props } from "../types";
+import { Toggle_Btn_Props } from "../typesProps";
 // ========================================================== //
 export default function Toggle_Btn(
     { 

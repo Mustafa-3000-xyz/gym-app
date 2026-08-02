@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Account_Form_Props } from "../types";
+import { Account_Form_Props } from "../typesProps";
 import { regexAccountName, regexAccountPassword } from "@/Lib/REGEX";
 import Inp_With_Label from "../Inp-with-label/Inp_With_Label";
 import Max_Min_Length from "../Max-min-length/Max_Min_Length";

@@ -1,12 +1,11 @@
-import { accounte, trainer } from "@/Pages/types";
+import { accounte_Type, trainer_Type } from "@/Pages/types";
 import Swal from "sweetalert2";
-import { alertType, checkThePermissionIsHere_Type, normalAlert_Type } from "./types";
-import { stateIsActive, stateIsPending } from "./constants";
+import { alert_Type, checkThePermissionIsHere_Type, normalAlert_Type } from "./types";
+import { statusIsActive, statusIsPending } from "./constants";
 import store from "@/Rtk/store";
 import { updatePropertyInRowInAccountsTable, updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
-import Database from "@tauri-apps/plugin-sql";
 // ========================================================== //
-export function styleForSubscriptionState(trainer: trainer) {
+export function styleForSubscriptionState(trainer: trainer_Type) {
     /*
         This function his jop is take trainer and return style subscription state,
         please look in [Search_Result] file or [All_Trainers] file
@@ -18,11 +17,11 @@ export function styleForSubscriptionState(trainer: trainer) {
     }
 
 
-    if (trainer.subscriptionState == stateIsActive) {
+    if (trainer.subscriptionStatus == statusIsActive) {
         styleObj.style = "bg-emerald-100 text-emerald-500";
         styleObj.title = "مفعل";
     }
-    else if (trainer.subscriptionState == stateIsPending) {
+    else if (trainer.subscriptionStatus == statusIsPending) {
         styleObj.style = "bg-amber-100 text-amber-500";
         styleObj.title = "معلق";
     }
@@ -56,7 +55,7 @@ export function alert({
     titleBeforeClickOnOk,
     titleAfterClickOnOk,
     funRunWhenClickOnOk,
-}: alertType): void {
+}: alert_Type): void {
     Swal.fire({
         title: "!! تحذير",
         text: titleBeforeClickOnOk,
@@ -82,7 +81,7 @@ export function alert({
 }
 
 export function logOutFromOldAccount(oldAccountId: number) {
-    const state = store.getState().accountes as accounte[];
+    const state = store.getState().accountes as accounte_Type[];
     const theAccount = state.find(ele => ele.id == oldAccountId);
 
 
@@ -121,7 +120,7 @@ export function incrementOrDecrementForTotalSessionsInAccount(
     sessionsCount: number,
     type: "increment" | "decrement",
 ) {
-    const accountes = store.getState().accountes as accounte[];
+    const accountes = store.getState().accountes as accounte_Type[];
     const getAccount = accountes.find(ele => ele.id == accountId);
 
 
@@ -155,7 +154,7 @@ export function checkThePermissionIsHere(
         isGetAllPermissions = false
     }: checkThePermissionIsHere_Type
 ) {
-    const allAccounts = store.getState().accountes as accounte[];
+    const allAccounts = store.getState().accountes as accounte_Type[];
     const getPermissionsList = allAccounts.find(ele => ele.id == accountId)?.permissions;
 
     try {
@@ -174,22 +173,4 @@ export function checkThePermissionIsHere(
     catch (err) {
 
     }
-}
-
-export async function getAllAttendanceInSpecificDate(date: Date | string) {
-    const database = await Database.load("sqlite:app-gym-db.db");
-
-    return await database.select(
-        "SELECT * FROM attendance WHERE date = ?",
-        [date]
-    );
-}
-
-export async function deleteRowsInActiveSessionsLinkedToTrainer(trainerId: number) {
-    const database = await Database.load("sqlite:app-gym-db.db");
-
-    const query = "DELETE FROM activeSessions WHERE linkWithTrainer = ?";
-    const value = [trainerId];
-
-    await database.execute(query, value);
 }

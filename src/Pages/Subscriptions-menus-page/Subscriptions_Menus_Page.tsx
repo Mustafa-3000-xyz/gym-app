@@ -146,8 +146,8 @@ export default function Subscriptions_Menu_Page() {
             {
                 state.subscriptionsMenus?.length == 0 ?
                     <Not_Found
-                        srcImg="not_found_in_subscription_menu.svg"
-                        title="لا يوجد قوائم الان"
+                        srcImg="/not_found_for_boxes.svg"
+                        title="لا يوجد قوائم"
                     />
                     :
                     state.subscriptionsMenus?.map(ele => <Subscription_Menu_Card
@@ -168,7 +168,7 @@ export default function Subscriptions_Menu_Page() {
                 <Popup_Form
                     titel="إضافة قائمة اشتراك جديد"
                     discription="الان, يمكنك إضافة قائمة اشتراك جديد"
-                    className="h-[50vh] flex flex-col justify-between"
+                    classNameForContainer="h-fit"
                     isSave={isSaveData}
                     clickOnSaveBtn={saveData}
                     clickOnCancel={() => setIsShowAddNewSubscriptionType(false)}

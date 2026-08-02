@@ -1,4 +1,4 @@
-import { accounte } from "@/Pages/types";
+import { accounte_Type } from "@/Pages/types";
 import { Shell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { profilePagePath } from "@/Lib/constants";
@@ -6,7 +6,7 @@ import { useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { logOutFromOldAccount } from "@/Lib/functions";
-import { Account_Card_Props } from "@/Global-components/types";
+import { Account_Card_Props } from "@/Global-components/typesProps";
 import { store_Type } from "@/Rtk/types";
 import { changeLogInInfo } from "@/Rtk/Slices/UI-slices/logInInfoSlice";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
@@ -30,7 +30,7 @@ export default function Account_Card(
 
     function clickOnLogInBtn(
         e: React.MouseEvent<HTMLButtonElement>,
-        account: accounte
+        account: accounte_Type
     ) {
         if (account.password == password) {
             // when switch another account, this action is log out from old account
@@ -150,7 +150,7 @@ export default function Account_Card(
                         ${!password ? "opacity-45 cursor-not-allowed" : "opacity-100 cursor-pointer"}
                     `}
                     disabled={!password}
-                    onClick={(e) => clickOnLogInBtn(e as any, account as accounte)}
+                    onClick={(e) => clickOnLogInBtn(e as any, account as accounte_Type)}
                 >
                     استخدام
                 </button>

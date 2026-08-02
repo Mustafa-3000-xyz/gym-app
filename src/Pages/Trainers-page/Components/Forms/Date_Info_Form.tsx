@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { format, differenceInDays } from "date-fns";
-import { stateIsFinished, styleDate } from "@/Lib/constants";
+import { statusIsFinished, styleDate } from "@/Lib/constants";
 import { Calendar } from 'primereact/calendar';
 import { normalAlert, theTodayDate } from "@/Lib/functions";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
@@ -30,7 +30,7 @@ export default function Date_Info_Form() {
         if (!state.trainerDetails) return;
 
         if (
-            state.trainerDetails?.subscriptionState == stateIsFinished
+            state.trainerDetails?.subscriptionStatus == statusIsFinished
             &&
             state.subscriptionStart
             &&
@@ -81,9 +81,9 @@ export default function Date_Info_Form() {
     useEffect(function () {
         /* 
             When show trainer info, i want see the subscriptionStart and subscriptionEnd
-            if the subscriptionState is not stateIsFinished
+            if the subscriptionStatus is not statusIsFinished
         */
-        if (state.trainerDetails && state.trainerDetails?.subscriptionState != stateIsFinished) {
+        if (state.trainerDetails && state.trainerDetails?.subscriptionStatus != statusIsFinished) {
             dispatch(addSubscriptionStart(new Date(state.trainerDetails?.subscriptionStart as string).toISOString()));
             dispatch(addSubscriptionEnd(new Date(state.trainerDetails?.subscriptionEnd as string).toISOString()));
         } else {
@@ -123,7 +123,7 @@ export default function Date_Info_Form() {
         renewalSubscription();
         firstDateForSubscriptionEnd();
         getDaysBetweenSubscriptionStartAndSubscriptionDate();
-    }, [state.subscriptionStart, state.subscriptionEnd, state.trainerDetails?.subscriptionState]);
+    }, [state.subscriptionStart, state.subscriptionEnd, state.trainerDetails?.subscriptionStatus]);
 
 
 

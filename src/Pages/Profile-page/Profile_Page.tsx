@@ -5,7 +5,7 @@ import { deleteRowInAccountsTableById, updatePropertyInRowInAccountsTable, updat
 import { BriefcaseBusiness, KeyRound, LogOut, Shell, Trash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { accounte } from "../types";
+import { accounte_Type } from "../types";
 import Permissions from "../../Global-components/Permissions/Permissions";
 import { alert, logOutFromOldAccount } from "@/Lib/functions";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
@@ -25,7 +25,7 @@ export default function Profile_Page() {
     }, shallowEqual);
 
 
-    const [theAccount, setTheAccount] = useState<accounte | null>(null);
+    const [theAccount, setTheAccount] = useState<accounte_Type | null>(null);
     const [permissionsList, setPermissionsList] = useState<string | string[]>("fullAccess");
     const [isShowEditingAccount, setIsShowEditingAccount] = useState(false);
 
@@ -120,7 +120,7 @@ export default function Profile_Page() {
     useEffect(function () {
         const getAccount = state.accountes?.find(ele => ele.id == (Number(accountId)));
 
-        setTheAccount(getAccount as accounte);
+        setTheAccount(getAccount as accounte_Type);
     }, [accountId, state.accountes]);
 
     // Check values is changes or no

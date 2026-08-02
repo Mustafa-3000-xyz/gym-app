@@ -1,4 +1,4 @@
-import { Sidebar_Linsk_Props } from "@/Global-components/types";
+import { Sidebar_Linsk_Props } from "@/Global-components/typesProps";
 import { store_Type } from "@/Rtk/types";
 import { shallowEqual, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom"

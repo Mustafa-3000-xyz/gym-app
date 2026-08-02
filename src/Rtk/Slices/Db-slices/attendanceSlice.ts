@@ -1,4 +1,4 @@
-import { attendanceDetails } from "@/Pages/types";
+import { attendanceDetails_Type } from "@/Pages/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Database from "@tauri-apps/plugin-sql";
 import { updatePropertyInAttendance_Type } from "../../types";
@@ -16,7 +16,7 @@ export const getAllRowsInAttendanceTable = createAsyncThunk(
 
 export const addRowInAttendanceTable = createAsyncThunk(
     " attendanceSlice/addRowInAttendanceTable",
-    async function (data: attendanceDetails) {
+    async function (data: attendanceDetails_Type) {
         const query = "INSERT INTO attendance (date, accountId, trainers) VALUES (?, ?, ?)";
         const values = [
             data.date,
@@ -33,7 +33,7 @@ export const addRowInAttendanceTable = createAsyncThunk(
 );
 
 export const deleteRowInAttendanceTableById = createAsyncThunk(
-    "attendanceSlice/removeRowInAttendanceTable",
+    "attendanceSlice/deleteRowInAttendanceTableById",
     async function (id: number) {
         const query = "DELETE FROM attendance WHERE id = ?";
         const value = [id];
@@ -58,9 +58,9 @@ export const updatePropertyInRowInAttendanceTable = createAsyncThunk(
 
         await database.execute(query, [theValue, id]);
 
-        const result = await database.select("SELECT * FROM attendance WHERE id = ?", [id]);
+        const getDayAfterUpdate = await database.select("SELECT * FROM attendance WHERE id = ?", [id]);
 
-        return (result as any)[0];
+        return (getDayAfterUpdate as any)[0];
     }
 );
 
@@ -80,11 +80,11 @@ const attendanceSlice = createSlice({
             return [...state, action.payload] as any;
         });
 
-        builder.addCase(deleteRowInAttendanceTableById.fulfilled, function (state: attendanceDetails[], action) {
+        builder.addCase(deleteRowInAttendanceTableById.fulfilled, function (state: attendanceDetails_Type[], action) {
             return state.filter(ele => ele.id != action.payload) as any;
         });
 
-        builder.addCase(updatePropertyInRowInAttendanceTable.fulfilled, function (state: attendanceDetails[], action) {
+        builder.addCase(updatePropertyInRowInAttendanceTable.fulfilled, function (state: attendanceDetails_Type[], action) {
             const removeOldRow = state.filter(ele => ele.id != action.payload.id);
             return [...removeOldRow, action.payload] as any;
         });

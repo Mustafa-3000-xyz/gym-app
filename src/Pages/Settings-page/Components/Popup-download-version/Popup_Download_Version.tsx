@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Animation from "@/Global-components/Animation/Animation";
 import Progress from "@/Global-components/Progress/Progress";
-import { Popup_Download_Version_Props } from "@/Global-components/types";
+import { Popup_Download_Version_Props } from "@/Global-components/typesProps";
 // ========================================================== //
 export default function Popup_Download_Version(
     { versionSize, downloaded }: Popup_Download_Version_Props

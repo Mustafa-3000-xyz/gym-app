@@ -7,7 +7,7 @@ import { store_Type } from "@/Rtk/types";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
 import { addRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
-import { accounte } from "../types";
+import { accounte_Type } from "../types";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
 import Permissions from "@/Global-components/Permissions/Permissions";
 import { CREATE_NEW_ACCOUNTS, REMOVE_TRAINERS, RENEWAL_SUBSCRIPTION, trainerPagePath, WITHDRAW_SUBSCRIPTION } from "@/Lib/constants";
@@ -74,7 +74,7 @@ export default function Accountes_Page() {
             workingHours: 0,
             totalActiveSubscriptions: 0,
             permissions: JSON.stringify(permissionsList),
-        } as accounte;
+        } as accounte_Type;
 
 
         normalAlert({
@@ -83,7 +83,7 @@ export default function Accountes_Page() {
             icon: "success"
         });
         setIsCreateNewAccount(false);
-        dispatch(addRowInAccountsTable(data as accounte) as any);
+        dispatch(addRowInAccountsTable(data as accounte_Type) as any);
     }
 
 
@@ -138,7 +138,7 @@ export default function Accountes_Page() {
                 <Popup_Form
                     titel={"إنشاء حساب"}
                     discription="يمكنك الان إنشاء حساب جديد"
-                    className="h-[75vh] flex flex-col justify-between"
+                    classNameForParent="h-[70vh]"
                     isSave={isAllDataComplete}
                     clickOnCancel={() => setIsCreateNewAccount(false)}
                     clickOnSaveBtn={saveData}
