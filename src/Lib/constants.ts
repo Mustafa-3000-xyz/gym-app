@@ -36,7 +36,6 @@ export const accountesPagePath = "/accountes-page";
 export const profilePagePath = "/profile-page/:accountId";
 export const profitsAndExpensesPagePath = "/profits-and-expenses-page";
 export const settingsPagePath = "/settings-page";
-export const expalinAppPagePath = "/explain-app-page";
 
 
 // Permissions

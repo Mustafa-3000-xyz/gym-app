@@ -4,10 +4,10 @@ import { Eye, EyeClosed } from "lucide-react";
 // ========================================================== //
 export default function Inp_With_Label(
     {
-        valueOrDefaultValue = "value",
         labelName,
         inpType = "text",
         inpValue = "",
+        classNameForInput = "",
         isChangeValue = true,
         onWriteInInput
     }: Inp_With_Label_Props
@@ -41,7 +41,10 @@ export default function Inp_With_Label(
             inpType == "password" ?
                 <div className="relative">
                     <input
-                        className="w-full border border-black/20 p-2 pr-10 rounded-lg focus:outline-0 group-hover:placeholder:!text-white/50 group-hover:border-white"
+                        className={`
+                            w-full border border-black/20 p-2 pr-10 rounded-lg focus:outline-0
+                            ${classNameForInput}
+                        `}
                         type={isShowPassword ? "text" : "password"}
                         dir={"ltr"}
                         value={inpValue ?? ""}
@@ -62,37 +65,22 @@ export default function Inp_With_Label(
                     }
                 </div>
                 :
-                valueOrDefaultValue == "value" ?
-                    <input
-                        type={inpType}
-                        value={inpValue ?? ""}
-                        disabled={!isChangeValue}
-                        className={`
-                            rounded-lg border border-black/20 p-2 px-3 focus:outline-none w-full text-center
-                            ${!isChangeValue ? "cursor-not-allowed opacity-45" : ""}
-                        `}
-                        onKeyDown={(e) => {
-                            if (inpType == "number" && ["e", "E", "+", "-"].includes(e.key)) {
-                                e.preventDefault();
-                            }
-                        }}
-                        onChange={writeInInp}
-                    />
-                    :
-                    <input
-                        type={inpType}
-                        disabled={!isChangeValue}
-                        className={`
-                            rounded-lg border border-black/20 p-2 px-3 focus:outline-none w-full text-center
-                            ${!isChangeValue ? "cursor-not-allowed opacity-45" : ""}
-                        `}
-                        onKeyDown={(e) => {
-                            if (inpType == "number" && ["e", "E", "+", "-"].includes(e.key)) {
-                                e.preventDefault();
-                            }
-                        }}
-                        onChange={writeInInp}
-                    />
+                <input
+                    type={inpType}
+                    value={inpValue ?? ""}
+                    disabled={!isChangeValue}
+                    className={`
+                        rounded-lg border border-black/20 p-2 px-3 focus:outline-none w-full text-center
+                        ${!isChangeValue ? "cursor-not-allowed opacity-45" : ""}
+                        ${classNameForInput}
+                    `}
+                    onKeyDown={(e) => {
+                        if (inpType == "number" && ["e", "E", "+", "-"].includes(e.key)) {
+                            e.preventDefault();
+                        }
+                    }}
+                    onChange={writeInInp}
+                />
         }
     </div>
 }

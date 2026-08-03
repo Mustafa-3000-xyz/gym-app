@@ -9,7 +9,7 @@ import { store_Type } from "@/Rtk/types";
 import { addRowInSubscriptionsMenusTable } from "@/Rtk/Slices/Db-slices/subscriptionsMenusSlice";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
-import { checkThePermissionIsHere, normalAlert } from "@/Lib/functions";
+import { checkPermissionesInAccount, normalAlert } from "@/Lib/functions";
 import { regexSubscriptionName } from "@/Lib/REGEX";
 import Max_Min_Length from "@/Global-components/Max-min-length/Max_Min_Length";
 import { ADD_NEW_SUBSCRIPTION_MENU, maxSessions, maxSubscriptionPrice } from "@/Lib/constants";
@@ -32,7 +32,7 @@ export default function Subscriptions_Menu_Page() {
     const [getSessionCount, setGetSessionCount] = useState<number>(0);
     const [getPrice, setGetPrice] = useState<number>(0);
 
-    const checkAddMenuPermission = checkThePermissionIsHere({
+    const checkAddMenuPermission = checkPermissionesInAccount({
         accountId: Number(state.logInInfo?.id),
         permissionType: ADD_NEW_SUBSCRIPTION_MENU
     });
@@ -176,7 +176,6 @@ export default function Subscriptions_Menu_Page() {
                     <div className="grid grid-cols-2 gap-3 mb-5 px-10">
                         <div>
                             <Inp_With_Label
-                                valueOrDefaultValue="value"
                                 labelName="اسم الاشتراك"
                                 inpValue={getSubscriptionName}
                                 onWriteInInput={(e) => setGetSubscriptionName(e.target.value)}
@@ -191,7 +190,6 @@ export default function Subscriptions_Menu_Page() {
 
                         <div>
                             <Inp_With_Label
-                                valueOrDefaultValue="value"
                                 labelName="عدد الحصص"
                                 inpType="number"
                                 inpValue={getSessionCount == 0 ? "" : getSessionCount}
@@ -213,7 +211,6 @@ export default function Subscriptions_Menu_Page() {
                     <div className="flex justify-center">
                         <div className="w-2/5">
                             <Inp_With_Label
-                                valueOrDefaultValue="value"
                                 labelName="السعر"
                                 inpType="number"
                                 inpValue={getPrice == 0 ? "" : getPrice}

@@ -11,7 +11,7 @@ import { accounte_Type } from "../types";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
 import Permissions from "@/Global-components/Permissions/Permissions";
 import { CREATE_NEW_ACCOUNTS, REMOVE_TRAINERS, RENEWAL_SUBSCRIPTION, trainerPagePath, WITHDRAW_SUBSCRIPTION } from "@/Lib/constants";
-import { checkThePermissionIsHere, normalAlert } from "@/Lib/functions";
+import { checkPermissionesInAccount, normalAlert } from "@/Lib/functions";
 // ========================================================== //
 export default function Accountes_Page() {
     const dispatch = useDispatch();
@@ -31,7 +31,7 @@ export default function Accountes_Page() {
     const [getPassword, setGetPassword] = useState<string | null>(null);
     const [permissionsList, setPermissionsList] = useState([trainerPagePath, REMOVE_TRAINERS, WITHDRAW_SUBSCRIPTION, RENEWAL_SUBSCRIPTION]);
 
-    const checkCreateAccountPermission = checkThePermissionIsHere({
+    const checkCreateAccountPermission = checkPermissionesInAccount({
         accountId: Number(state.logInInfo?.id),
         permissionType: CREATE_NEW_ACCOUNTS
     });

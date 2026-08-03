@@ -147,30 +147,31 @@ export function incrementOrDecrementForTotalSessionsInAccount(
     }
 }
 
-export function checkThePermissionIsHere(
+// This function can check one permission or more in account
+export function checkPermissionesInAccount(
     {
         accountId,
         permissionType,
-        isGetAllPermissions = false
     }: checkThePermissionIsHere_Type
 ) {
     const allAccounts = store.getState().accountes as accounte_Type[];
     const getPermissionsList = allAccounts.find(ele => ele.id == accountId)?.permissions;
 
+
     try {
-        if (isGetAllPermissions) {
-            return getPermissionsList == "fullAccess" ? "fullAccess" : JSON.parse(getPermissionsList as any);
+        if (permissionType && getPermissionsList == "fullAccess") {
+            return true
         }
-
-        if (getPermissionsList == "fullAccess") {
-
+        else if (permissionType) {
+            return getPermissionsList?.includes(permissionType as any) ? true : false;
+        }
+        else if (getPermissionsList == "fullAccess") {
             return true;
         }
         else {
-            return getPermissionsList?.includes(permissionType as any) ? true : false;
+            return JSON.parse(getPermissionsList as any);
         }
-    }
-    catch (err) {
+    } catch (error) {
 
     }
 }

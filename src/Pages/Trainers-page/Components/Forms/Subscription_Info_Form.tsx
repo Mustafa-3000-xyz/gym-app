@@ -8,7 +8,7 @@ import { store_Type } from "@/Rtk/types";
 import { maxSessions, maxSubscriptionPrice, USING_ACTIVE_SOME_SESSIONS } from "@/Lib/constants";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
 import { addSessions, removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
-import { checkThePermissionIsHere, theTodayDate } from "@/Lib/functions";
+import { checkPermissionesInAccount, theTodayDate } from "@/Lib/functions";
 import { differenceInDays } from "date-fns";
 import { regexSubscriptionName } from "@/Lib/REGEX";
 import Max_Min_Length from "@/Global-components/Max-min-length/Max_Min_Length";
@@ -40,7 +40,7 @@ export default function Subscription_Info_Form(
 
     const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
 
-    const checkActiveSomeSessionsPermission = checkThePermissionIsHere({
+    const checkActiveSomeSessionsPermission = checkPermissionesInAccount({
         accountId: Number(state.logInInfo?.id),
         permissionType: USING_ACTIVE_SOME_SESSIONS
     });

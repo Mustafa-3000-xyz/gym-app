@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Trainers_Page from "./Pages/Trainers-page/Trainers_Page";
 import Settings_Page from "./Pages/Settings-page/Settings_Page";
 import SideBar from "./Global-components/Sidebar/SideBar";
@@ -7,8 +7,7 @@ import Profits_And_Expenses_Page from "./Pages/Profits-and-expenses-page/Profits
 import Accountes_Page from "./Pages/Accountes-page/Accountes_Page";
 import Authentication_Page from "./Pages/Authentication-page/Authentication_Page";
 import { useEffect, useState } from "react";
-import { accountesPagePath, attendanceRecordePagePath, expalinAppPagePath, profilePagePath, profitsAndExpensesPagePath, settingsPagePath, statusIsActive, statusIsFinished, statusIsPending, subscriptionsMenuPath, trainerPagePath } from "./Lib/constants";
-import Explain_App_Page from "./Pages/Explain-app-page/Explain_App_Page";
+import { accountesPagePath, attendanceRecordePagePath, profilePagePath, profitsAndExpensesPagePath, settingsPagePath, statusIsActive, statusIsFinished, statusIsPending, subscriptionsMenuPath, trainerPagePath } from "./Lib/constants";
 import Profile_Page from "./Pages/Profile-page/Profile_Page";
 import { logOutFromOldAccount, theTodayDate } from "./Lib/functions";
 import Subscriptions_Menu_Page from "./Pages/Subscriptions-menus-page/Subscriptions_Menus_Page";
@@ -33,7 +32,6 @@ function App() {
     }
   }, shallowEqual);
 
-  const navigate = useNavigate();
   const [todayDate, setTodayDate] = useState<Date>(theTodayDate({ startingIn12Houre: false }));
 
 
@@ -102,7 +100,6 @@ function App() {
 
   useEffect(function () {
     runTables();
-    navigate(expalinAppPagePath);
     dispatch(changeLogInInfo(null));
 
     dispatch(getLogInInfo());
@@ -162,7 +159,6 @@ function App() {
           <Route path={profitsAndExpensesPagePath} element={<Profits_And_Expenses_Page />} />
 
           <Route path={settingsPagePath} element={<Settings_Page />} />
-          <Route path={expalinAppPagePath} element={<Explain_App_Page />} />
         </Routes>
       </div>
     </main>

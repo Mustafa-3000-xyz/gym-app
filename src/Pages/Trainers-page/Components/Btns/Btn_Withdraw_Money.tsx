@@ -1,4 +1,4 @@
-import { alert, checkThePermissionIsHere, normalAlert } from "@/Lib/functions";
+import { alert, checkPermissionesInAccount, normalAlert } from "@/Lib/functions";
 import { addNewTrainer, statusIsFinished, WITHDRAW_SUBSCRIPTION, withDrawSubscription } from "@/Lib/constants";
 import { updatePropertyInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import { removeTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
@@ -24,7 +24,7 @@ export default function Btn_Withdraw_Money(
         }
     }, shallowEqual);
 
-    const checkWithDrawPermission = checkThePermissionIsHere({
+    const checkWithDrawPermission = checkPermissionesInAccount({
         accountId: Number(state.logInInfo?.id),
         permissionType: WITHDRAW_SUBSCRIPTION
     });

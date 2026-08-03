@@ -1,4 +1,4 @@
-import { alert, checkThePermissionIsHere, normalAlert, theTodayDate } from '@/Lib/functions';
+import { alert, checkPermissionesInAccount, normalAlert, theTodayDate } from '@/Lib/functions';
 import { daysProfitsAndExpenses_Type, monthsProfitsAndExpenses_Type, yearsProfitsAndExpenses_Type } from "@/Pages/types";
 import { Btn_Subscription_Renewal_Props } from "@/Pages/typesProps";
 import { updateSomePropertiesInRowInTrainersTable } from '@/Rtk/Slices/Db-slices/trainersSlice';
@@ -28,7 +28,7 @@ export default function Btn_Subscription_Renewal(
         }
     }, shallowEqual);
 
-    const checkRenewalPermission = checkThePermissionIsHere({
+    const checkRenewalPermission = checkPermissionesInAccount({
         accountId: Number(state.logInInfo?.id),
         permissionType: RENEWAL_SUBSCRIPTION
     });

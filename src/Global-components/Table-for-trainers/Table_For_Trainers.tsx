@@ -1,5 +1,5 @@
 import { trainer_Type } from "@/Pages/types";
-import { checkThePermissionIsHere, normalAlert, styleForSubscriptionState } from "@/Lib/functions";
+import { checkPermissionesInAccount, normalAlert, styleForSubscriptionState } from "@/Lib/functions";
 import { styleDate, trainerPagePath } from "@/Lib/constants";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
@@ -35,10 +35,10 @@ export default function Table_For_Trainers(
     const navigation = useNavigate();
     const trainersCountInSlide = 6;
 
-    const checkTrainerPagePermission = checkThePermissionIsHere({
+    const checkTrainerPagePermission = checkPermissionesInAccount({
         accountId: Number(state.logInInfo?.id),
         permissionType: trainerPagePath,
-    })
+    }) as string[] | true;
 
 
 

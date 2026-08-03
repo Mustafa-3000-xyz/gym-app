@@ -1,6 +1,6 @@
 import React, { ChangeEvent, ReactNode } from "react";
 import { TargetAndTransition, Transition } from "framer-motion";
-import { accounte_Type, trainer_Type } from "@/Pages/types";
+import { trainer_Type } from "@/Pages/types";
 // ========================================================== //
 export interface Not_Found_Props {
     srcImg: string,
@@ -12,7 +12,6 @@ export interface Sidebar_Linsk_Props {
     linkName: string,
     path: string,
     icon: ReactNode,
-    isShowTheLink: boolean,
     onClick?: (e: React.MouseEvent) => void,
 }
 
@@ -82,11 +81,11 @@ export interface PasswordInp_Props {
 }
 
 export interface Inp_With_Label_Props {
-    valueOrDefaultValue?: "value" | "default value"
     labelName: string,
     inpType?: "password" | "text" | "number"
     inpValue?: string | number,
     isChangeValue?: boolean,
+    classNameForInput?: string,
     onWriteInInput: (x: ChangeEvent<HTMLInputElement>) => void
 }
 
@@ -102,11 +101,6 @@ export interface Drop_Menu_Props {
     isShowTheMenu?: boolean,
     children?: ReactNode,
     onGetCurrentIsShowMenu?: (x: boolean) => void
-}
-
-export interface Account_Card_Props {
-    account: accounte_Type,
-    isShowAccountCard: boolean
 }
 
 export interface Search_Result_Props {

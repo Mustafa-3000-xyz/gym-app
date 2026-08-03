@@ -1,5 +1,5 @@
 import { REMOVE_TRAINERS } from '@/Lib/constants';
-import { alert, checkThePermissionIsHere, normalAlert } from '@/Lib/functions';
+import { alert, checkPermissionesInAccount, normalAlert } from '@/Lib/functions';
 import { getAllRowsInAttendanceTable } from '@/Rtk/Slices/Db-slices/attendanceSlice';
 import { deleteRowInTrainersTableById } from '@/Rtk/Slices/Db-slices/trainersSlice';
 import { removeAllSessions } from '@/Rtk/Slices/UI-slices/sessionsCountSlice';
@@ -21,7 +21,7 @@ export default function Btn_Delete_Trainer(
         }
     }, shallowEqual);
 
-    const checkDeletePermission = checkThePermissionIsHere({
+    const checkDeletePermission = checkPermissionesInAccount({
         accountId: Number(state.logInInfo?.id),
         permissionType: REMOVE_TRAINERS
     });

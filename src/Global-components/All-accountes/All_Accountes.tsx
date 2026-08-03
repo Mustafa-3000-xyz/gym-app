@@ -15,7 +15,7 @@ export default function All_Accountes() {
     if (state.accountes?.length == 1 && state.logInInfo != null) {
         return <Not_Found
             srcImg="/not_found_for_boxes.svg"
-            title="لايوجد حسابات كباتن"
+            title="لايوجد حسابات اخرى"
         />
     }
 
@@ -23,11 +23,12 @@ export default function All_Accountes() {
     return <div className="flex justify-center items-center gap-3 flex-wrap">
         {
             state.accountes?.map(ele => {
-                return <Account_Card
-                    key={ele.id}
-                    account={ele}
-                    isShowAccountCard={!state.logInInfo || state.logInInfo.id != ele.id}
-                />
+                if (!state.logInInfo || state.logInInfo.id != ele.id) {
+                    return <Account_Card
+                        key={ele.id}
+                        account={ele}
+                    />
+                }
             })
         }
     </div>

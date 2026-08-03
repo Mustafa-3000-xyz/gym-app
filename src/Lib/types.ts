@@ -24,5 +24,4 @@ export interface normalAlert_Type {
 export interface checkThePermissionIsHere_Type {
     accountId: number,
     permissionType?: string,
-    isGetAllPermissions?: boolean
 }

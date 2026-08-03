@@ -2,7 +2,7 @@ import Animation from "@/Global-components/Animation/Animation";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 import { Search_Result_Props } from "@/Global-components/typesProps";
 import { trainerPagePath } from "@/Lib/constants";
-import { checkThePermissionIsHere, normalAlert, styleForSubscriptionState } from "@/Lib/functions";
+import { checkPermissionesInAccount, normalAlert, styleForSubscriptionState } from "@/Lib/functions";
 import { trainer_Type } from "@/Pages/types";
 import { addTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { store_Type } from "@/Rtk/types";
@@ -28,7 +28,7 @@ export default function Search_Result(
     const navigation = useNavigate();
     const searchResultRef = useRef<HTMLDivElement>(null);
 
-    const checkTrainerPagePermission = checkThePermissionIsHere({
+    const checkTrainerPagePermission = checkPermissionesInAccount({
         accountId: Number(state.logInInfo?.id),
         permissionType: trainerPagePath,
     });

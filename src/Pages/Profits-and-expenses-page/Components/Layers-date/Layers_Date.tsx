@@ -462,7 +462,6 @@ export default function Layers_Date(
                     {/* Year number */}
                     <div>
                         <Inp_With_Label
-                            valueOrDefaultValue="value"
                             inpType="number"
                             inpValue={yearNumInp == 0 ? "" : yearNumInp}
                             labelName="اكتب رقم السنه"
@@ -479,7 +478,6 @@ export default function Layers_Date(
                     {/* Target */}
                     <div>
                         <Inp_With_Label
-                            valueOrDefaultValue="value"
                             inpType="number"
                             inpValue={targetForYear == 0 ? "" : targetForYear}
                             labelName="المبلغ الذي يجب تجميعه خلال هذه السنه (Target)"
@@ -541,7 +539,6 @@ export default function Layers_Date(
                     {/* Target */}
                     <div>
                         <Inp_With_Label
-                            valueOrDefaultValue="value"
                             inpType="number"
                             inpValue={targetForMonth == 0 ? "" : targetForMonth}
                             labelName="المبلغ الذي يجب تجميعه خلال هذا الشهر (Target)"
@@ -577,7 +574,6 @@ export default function Layers_Date(
                     {/* Day number */}
                     <div className="flex flex-col justify-center items-center ">
                         <Inp_With_Label
-                            valueOrDefaultValue="value"
                             inpType="number"
                             inpValue={dayNumInp == 0 ? "" : dayNumInp}
                             labelName="اكتب رقم اليوم"
@@ -596,7 +592,6 @@ export default function Layers_Date(
                     {/* Target */}
                     <div>
                         <Inp_With_Label
-                            valueOrDefaultValue="value"
                             inpType="number"
                             inpValue={targetForDay == 0 ? "" : targetForDay}
                             labelName="المبلغ الذي يجب تجميعه خلال هذا اليوم (Target)"

@@ -6,13 +6,12 @@ import { useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { logOutFromOldAccount } from "@/Lib/functions";
-import { Account_Card_Props } from "@/Global-components/typesProps";
 import { store_Type } from "@/Rtk/types";
 import { changeLogInInfo } from "@/Rtk/Slices/UI-slices/logInInfoSlice";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
 // ========================================================== //
 export default function Account_Card(
-    { account, isShowAccountCard }: Account_Card_Props
+    { account }: { account: accounte_Type }
 ) {
     const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
@@ -53,6 +52,7 @@ export default function Account_Card(
 
             setPassword("");
             setErrorMessage("");
+            navigate(profilePagePath.replace(":accountId", account.id as any));
         }
         else {
             setPassword("");
@@ -63,107 +63,98 @@ export default function Account_Card(
     }
 
     function showAccountDetail() {
+        // If the user login and click on another account, so show this account
         if (state.logInInfo) {
-            navigate(profilePagePath.replace(":accountId", `${account.id}`));
+            navigate(profilePagePath.replace(":accountId", account.id as any));
         }
     }
 
 
 
-    return isShowAccountCard ?
-        <div
-            className={`
-                transition-all duration-300
-                rounded-3xl shadow-xl p-8 relative
-                flex flex-col justify-between items-center w-96 gap-10 text-gray-900
-                ${state.logInInfo != null
-                    &&
-                    (
-                        state.logInInfo.type == "manager" && account.type == "captain"
-                        ||
-                        state.logInInfo.type == "captain" && account.type == "captain"
-                    ) ?
-                    "group hover:bg-(--captainColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
-                    :
-                    state.logInInfo?.type == "captain" && account.type == "manager" ?
-                        "group hover:bg-(--managerColor) hover:text-white hover:m-6 hover:scale-110 cursor-pointer"
+
+    return <div
+        className={`
+            transition-all duration-300
+            rounded-3xl shadow-xl p-8 relative
+            flex flex-col justify-between items-center w-96 gap-10 text-gray-900
+            ${state.logInInfo ? "group hover:text-white hover:m-6 hover:scale-110 cursor-pointer" : ""
+            }
+            ${state.logInInfo?.type == "manager" && account.type == "captain" ? "hover:bg-(--captainColor)"
+                :
+                state.logInInfo?.type == "captain" && account.type == "manager" ? "hover:bg-(--managerColor)" : ""
+            }
+        `}
+        onClick={showAccountDetail}
+    >
+        {/* Sessions */}
+        <div className="flex gap-2 absolute bg-neutral-200 text-neutral-500 top-0 left-0 p-3 rounded-br-2xl rounded-tl-3xl">
+            <Shell size={25} />
+
+            <h3>
+                {
+                    Math.trunc(Math.abs(account?.totalActiveSubscriptions)) > 99 ?
+                        `99+`
                         :
-                        ""
+                        Math.trunc(Math.abs(account?.totalActiveSubscriptions))
                 }
-            `}
-            onClick={showAccountDetail}
-        >
-            {/* Sessions */}
-            <div className="flex gap-2 absolute bg-neutral-200 text-neutral-500 top-0 left-0 p-3 rounded-br-2xl rounded-tl-3xl">
-                <Shell size={25} />
+            </h3>
+        </div>
 
-                <h3>
-                    {
-                        Math.trunc(Math.abs(account?.totalActiveSubscriptions)) > 99 ?
-                            `99+`
-                            :
-                            Math.trunc(Math.abs(account?.totalActiveSubscriptions))
-                    }
-                </h3>
-            </div>
-
-            {/* Account image & Name & Tagline */}
-            <div className="flex flex-col items-center gap-3 select-none">
-                <div className=" w-28 h-28">
-                    <img
-                        className={`
+        {/* Account image & Name & Tagline */}
+        <div className="flex flex-col items-center gap-3 select-none">
+            <div className=" w-28 h-28">
+                <img
+                    className={`
                             w-full h-full object-cover rounded-full border-4
                             ${account.type == "manager" ? "border-(--colorManager)" : "border-(--captainColor)"}
                         `}
-                        src={account.profileImg != "" ? account.profileImg : "/account.png"}
-                        alt={account.type}
-                    />
-                </div>
-
-                <div className="text-center">
-                    <h2 className="text-xl font-bold tracking-tight">
-                        {account.name}
-                    </h2>
-                    <p className="text-sm text-gray-400 italic mt-1">
-                        <span>
-                            {account.type == "manager" ? "المدير" : "كابتن في المكان "}
-                        </span>
-                        ({Math.trunc(+account.age)} سنه)
-                    </p>
-                </div>
-            </div>
-
-            {/* Set password */}
-            <div className="flex items-end gap-2">
-                <Inp_With_Label
-                    valueOrDefaultValue="value"
-                    labelName="الرقم السري"
-                    inpType="password"
-                    inpValue={password}
-                    onWriteInInput={(e) => setPassword(e.target.value)}
+                    src={account.profileImg != "" ? account.profileImg : "/account.png"}
+                    alt={account.type}
                 />
-
-                <button
-                    className={`
-                        bg-neutral-500 text-white p-2 pb-3 rounded-lg
-                        transition duration-300 whitespace-nowrap
-                        ${!password ? "opacity-45 cursor-not-allowed" : "opacity-100 cursor-pointer"}
-                    `}
-                    disabled={!password}
-                    onClick={(e) => clickOnLogInBtn(e as any, account as accounte_Type)}
-                >
-                    استخدام
-                </button>
             </div>
 
-
-            {
-                errorMessage &&
-                <p className="text-red-500 select-none">
-                    {errorMessage}
+            <div className="text-center">
+                <h2 className="text-xl font-bold tracking-tight">
+                    {account.name}
+                </h2>
+                <p className="text-sm text-gray-400 italic mt-1">
+                    <span>
+                        {account.type == "manager" ? "المدير" : "كابتن في المكان "}
+                    </span>
+                    ({Math.trunc(+account.age)} سنه)
                 </p>
-            }
+            </div>
         </div>
-        :
-        null
+
+        {/* Set password */}
+        <div className="flex items-end gap-2">
+            <Inp_With_Label
+                labelName="الرقم السري"
+                inpType="password"
+                classNameForInput="group-hover:border-white"
+                inpValue={password}
+                onWriteInInput={(e) => setPassword(e.target.value)}
+            />
+
+            <button
+                className={`
+                    bg-neutral-500 text-white p-2 pb-3 rounded-lg
+                    transition duration-300 whitespace-nowrap
+                    ${!password ? "opacity-45 cursor-not-allowed" : "opacity-100 cursor-pointer"}
+                `}
+                disabled={!password}
+                onClick={(e) => clickOnLogInBtn(e as any, account as accounte_Type)}
+            >
+                استخدام
+            </button>
+        </div>
+
+
+        {
+            errorMessage &&
+            <p className="text-red-500 select-none">
+                {errorMessage}
+            </p>
+        }
+    </div>
 }

@@ -1,7 +1,7 @@
 import Max_Min_Length from "@/Global-components/Max-min-length/Max_Min_Length";
 import Toggle_Btn from "@/Global-components/Toggle-btn/Toggle_Btn";
 import { EDITING_SUBSCRIPTION_MENU, maxSessions, maxSubscriptionPrice } from "@/Lib/constants";
-import { alert, checkThePermissionIsHere } from "@/Lib/functions";
+import { alert, checkPermissionesInAccount } from "@/Lib/functions";
 import { regexSubscriptionName } from "@/Lib/REGEX";
 import { subscriptionsMenus_Type } from "@/Pages/types";
 import { deleteRowInSubscriptionsMenusTableById, updatePropertyInRowInSubscriptionsMenusTable, updateSomePropertiesInRowInSubscriptionsMenusTable } from "@/Rtk/Slices/Db-slices/subscriptionsMenusSlice";
@@ -35,7 +35,7 @@ export default function Subscription_Menu_Card(
     const [sessionsVal, setSessionsVal] = useState(sessionsCount);
     const [priceVal, setPriceVal] = useState(price);
 
-    const checkEditingTheMenuPermission = checkThePermissionIsHere({
+    const checkEditingTheMenuPermission = checkPermissionesInAccount({
         accountId: Number(state.logInInfo?.id),
         permissionType: EDITING_SUBSCRIPTION_MENU
     });

@@ -8,9 +8,7 @@ export default {
     ],
     theme: {
         extend: {
-            colors: {
-                "custom": "#BAA333"
-            }
+            colors: {}
         },
     },
     plugins: [tailwindAnimate],
