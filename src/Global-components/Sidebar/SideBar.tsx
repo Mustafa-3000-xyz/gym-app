@@ -82,7 +82,14 @@ export default function SideBar() {
                     null
             }
 
-            <hr />
+            {
+                    (checkLinksPermissions == true || checkLinksPermissions?.includes(trainerPagePath))
+                    ||
+                    (checkLinksPermissions == true as any || checkLinksPermissions?.includes(attendanceRecordePagePath))
+                    ||
+                    (checkLinksPermissions == true as any || checkLinksPermissions?.includes(subscriptionsMenuPath)) ?
+                    <hr /> : null
+            }
 
             {
                 checkLinksPermissions == true || checkLinksPermissions?.includes(accountesPagePath) ?
@@ -121,7 +128,9 @@ export default function SideBar() {
                     null
             }
 
-            <hr />
+            {
+                checkLinksPermissions == true || checkLinksPermissions?.includes(settingsPagePath) ? <hr /> : null
+            }
 
             {
                 checkLinksPermissions == true || checkLinksPermissions?.includes(settingsPagePath) ?

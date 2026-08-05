@@ -159,14 +159,11 @@ export function checkPermissionesInAccount(
 
 
     try {
-        if (permissionType && getPermissionsList == "fullAccess") {
-            return true
+        if (getPermissionsList == "fullAccess") {
+            return true;
         }
         else if (permissionType) {
-            return getPermissionsList?.includes(permissionType as any) ? true : false;
-        }
-        else if (getPermissionsList == "fullAccess") {
-            return true;
+            return getPermissionsList?.includes(permissionType as any) && true;
         }
         else {
             return JSON.parse(getPermissionsList as any);

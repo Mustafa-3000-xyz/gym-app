@@ -10,7 +10,7 @@ export const maxPriceInOneItem = 9999999;
 export const maxForCreateItems = 25;
 
 // These for profits and expenses page
-export const addNewTrainer = "إضافة متدرب جديد";
+export const addNewTrainer = "إضافة متدرب";
 export const withDrawSubscription = "سحب اشتراك";
 export const renewalSubscription = "تجديد اشتراك";
 

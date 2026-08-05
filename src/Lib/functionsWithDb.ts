@@ -36,7 +36,7 @@ export function arithmeticOperatorsWithProfitsAndExpenses(arithemtic: arithmetic
             store.dispatch(updatePropertyInRowYearsInProfitsAndExpensesTable({
                 id: arithemtic.updateOneColumn?.year.yearId,
                 column: arithemtic.updateOneColumn?.year.column as any,
-                value: Number(arithemtic.updateOneColumn?.year.value)
+                value: Number(arithemtic.updateOneColumn?.year.value) < 0 ? 0 : Number(arithemtic.updateOneColumn?.year.value)
             }) as any);
         }
 
@@ -44,7 +44,7 @@ export function arithmeticOperatorsWithProfitsAndExpenses(arithemtic: arithmetic
             store.dispatch(updatePropertyInRowInMonthsProfitsAndExpensesTable({
                 id: arithemtic.updateOneColumn?.month.monthId,
                 column: arithemtic.updateOneColumn?.month.column as any,
-                value: Number(arithemtic.updateOneColumn?.month.value)
+                value: Number(arithemtic.updateOneColumn?.month.value) < 0 ? 0 : Number(arithemtic.updateOneColumn?.month.value)
             }) as any);
         }
 
@@ -52,7 +52,7 @@ export function arithmeticOperatorsWithProfitsAndExpenses(arithemtic: arithmetic
             store.dispatch(updatePropertyInRowInDaysProfitsAndExpensesTable({
                 id: arithemtic.updateOneColumn?.day.dayId,
                 column: arithemtic.updateOneColumn?.day.column as any,
-                value: Number(arithemtic.updateOneColumn?.day.value)
+                value: Number(arithemtic.updateOneColumn?.day.value) < 0 ? 0 : Number(arithemtic.updateOneColumn?.day.value)
             }) as any);
         }
     }
@@ -62,24 +62,24 @@ export function arithmeticOperatorsWithProfitsAndExpenses(arithemtic: arithmetic
         store.dispatch(updateSomePropertiesInRowInYearsProfitsAndExpensesTable({
             id: Number(arithemtic.updateSomeColumns?.year.yearId),
             values: {
-                profitsTotal: Number(arithemtic.updateSomeColumns?.year.profitsTotal),
-                expensesTotal: Number(arithemtic.updateSomeColumns?.year.expensesTotal)
+                profitsTotal: Number(arithemtic.updateSomeColumns?.year.profitsTotal) < 0 ? 0 : Number(arithemtic.updateSomeColumns?.year.profitsTotal),
+                expensesTotal: Number(arithemtic.updateSomeColumns?.year.expensesTotal) < 0 ? 0 : Number(arithemtic.updateSomeColumns?.year.expensesTotal)
             }
         }) as any);
 
         store.dispatch(updateSomePropertiesInRowInMonthsProfitsAndExpensesTable({
             id: Number(arithemtic.updateSomeColumns?.month.monthId),
             values: {
-                profitsTotal: Number(arithemtic.updateSomeColumns?.month.profitsTotal),
-                expensesTotal: Number(arithemtic.updateSomeColumns?.month.expensesTotal)
+                profitsTotal: Number(arithemtic.updateSomeColumns?.month.profitsTotal) < 0 ? 0 : Number(arithemtic.updateSomeColumns?.month.profitsTotal),
+                expensesTotal: Number(arithemtic.updateSomeColumns?.month.expensesTotal) < 0 ? 0 : Number(arithemtic.updateSomeColumns?.month.expensesTotal)
             }
         }) as any);
 
         store.dispatch(updateSomePropertiesInRowInDaysProfitsAndExpensesTable({
             id: Number(arithemtic.updateSomeColumns?.day.dayId),
             values: {
-                profitsTotal: Number(arithemtic.updateSomeColumns?.day.profitsTotal),
-                expensesTotal: Number(arithemtic.updateSomeColumns?.day.expensesTotal)
+                profitsTotal: Number(arithemtic.updateSomeColumns?.day.profitsTotal) < 0 ? 0 : Number(arithemtic.updateSomeColumns?.day.profitsTotal),
+                expensesTotal: Number(arithemtic.updateSomeColumns?.day.expensesTotal) < 0 ? 0 : Number(arithemtic.updateSomeColumns?.day.expensesTotal)
             }
         }) as any);
     }

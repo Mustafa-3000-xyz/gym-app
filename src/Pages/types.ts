@@ -107,6 +107,7 @@ export interface daysProfitsAndExpenses_Type {
 export interface item_Type {
     id?: number,
     linkWithDay: number,
+    linkedWithTrainer: number | null,
     itemName: string,
     category: "profit" | "expense",
     price: number

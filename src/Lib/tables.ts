@@ -161,6 +161,7 @@ export async function itemsTable() {
             CREATE TABLE IF NOT EXISTS items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 linkWithDay INTEGER,
+                linkedWithTrainer INTEGER,
                 itemName TEXT,
                 category TEXT,
                 price INTEGER

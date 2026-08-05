@@ -111,8 +111,10 @@ export default function Btn_Subscription_Renewal(
                     }
                 }
             });
+
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDay.id),
+                linkedWithTrainer: Number(trainer.id),
                 itemName: renewalSubscription,
                 category: "profit",
                 price: price
@@ -142,8 +144,10 @@ export default function Btn_Subscription_Renewal(
                     }
                 }
             });
+
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
+                linkedWithTrainer: Number(trainer.id),
                 itemName: renewalSubscription,
                 category: "profit",
                 price: price
@@ -178,8 +182,10 @@ export default function Btn_Subscription_Renewal(
                     }
                 }
             });
+
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
+                linkedWithTrainer: Number(trainer.id),
                 itemName: renewalSubscription,
                 category: "profit",
                 price: price
@@ -214,6 +220,7 @@ export default function Btn_Subscription_Renewal(
 
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
+                linkedWithTrainer: Number(trainer.id),
                 itemName: renewalSubscription,
                 category: "profit",
                 price: price

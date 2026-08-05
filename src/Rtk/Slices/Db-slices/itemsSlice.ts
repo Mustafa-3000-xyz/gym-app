@@ -22,12 +22,13 @@ export const addRowInItemsTable = createAsyncThunk(
     async function (data: item_Type) {
         const query = `
             INSERT INTO items (
-                linkWithDay, itemName, category, price
-            ) VALUES (?, ?, ?, ?)
+                linkWithDay, linkedWithTrainer, itemName, category, price
+            ) VALUES (?, ?, ?, ?, ?)
         `;
 
         const values = [
             data.linkWithDay,
+            data.linkedWithTrainer,
             data.itemName,
             data.category,
             data.price,

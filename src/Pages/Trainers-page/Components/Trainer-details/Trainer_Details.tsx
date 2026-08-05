@@ -1,11 +1,10 @@
 import { ArrowLeft, ArrowRight, SquarePen } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { updateSomePropertiesInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import { alert, theTodayDate } from "@/Lib/functions";
-import { addNewTrainer, statusIsActive, statusIsFinished, statusIsPending } from "@/Lib/constants";
+import { statusIsActive, statusIsFinished, statusIsPending } from "@/Lib/constants";
 import Btn_Delete_Trainer from "../Btns/Btn_Delete_Trainer";
 import Btn_Subscription_Renewal from "../Btns/Btn_Subscription_Renewal";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
@@ -112,7 +111,7 @@ export default function Trainer_Details() {
 
         const getItem = await database.select(`
             SELECT * from items WHERE linkWithDay = ${getDay.id} 
-            AND itemName = '${addNewTrainer}' AND price = ${oldPrice}
+            AND linkedWithTrainer = '${state.trainerDetails?.id}'
         `) as item_Type[];
 
         const theItem = getItem[0];
@@ -123,17 +122,17 @@ export default function Trainer_Details() {
                 year: {
                     yearId: Number(getYear.id),
                     column: "profitsTotal",
-                    value: ((getYear.profitsTotal || 0) - oldPrice) + Number(getPrice || 0)
+                    value: getYear.profitsTotal == 0 ? getYear.profitsTotal + Number(getPrice || 0) : ((getYear.profitsTotal) - oldPrice) + Number(getPrice || 0)
                 },
                 month: {
                     monthId: Number(getMonth.id),
                     column: "profitsTotal",
-                    value: ((getMonth.profitsTotal || 0) - oldPrice) + Number(getPrice || 0)
+                    value: getMonth.profitsTotal == 0 ? getMonth.profitsTotal + Number(getPrice || 0) : ((getMonth.profitsTotal) - oldPrice) + Number(getPrice || 0)
                 },
                 day: {
                     dayId: Number(getDay.id),
                     column: "profitsTotal",
-                    value: ((getDay.profitsTotal || 0) - oldPrice) + Number(getPrice || 0)
+                    value: getDay.profitsTotal == 0 ? getDay.profitsTotal + Number(getPrice || 0) : ((getDay.profitsTotal) - oldPrice) + Number(getPrice || 0)
                 }
             }
         });
@@ -141,7 +140,6 @@ export default function Trainer_Details() {
         dispatch(updateSomePropertiesInRowInItemsTable({
             id: Number(theItem.id),
             values: {
-                itemName: addNewTrainer,
                 category: "profit",
                 price: Number(getPrice || 0)
             }

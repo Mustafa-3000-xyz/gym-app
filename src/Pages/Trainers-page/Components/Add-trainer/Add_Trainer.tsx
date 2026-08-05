@@ -115,14 +115,14 @@ export default function Add_Trainer(
 
 
                 onIsShowAddTrainer(false);
-                subscriptionPriceIsProfit();
+                subscriptionPriceIsProfit(getTraineInfos.id);
                 await activeSomeSessions(getTraineInfos.id);
             }
         })
 
     }
 
-    async function subscriptionPriceIsProfit() {
+    async function subscriptionPriceIsProfit(trainerId: number) {
         const database = await Database.load("sqlite:app-gym-db.db");
         const price = Number(getPrice || 0);
 
@@ -164,6 +164,7 @@ export default function Add_Trainer(
 
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDay.id),
+                linkedWithTrainer: trainerId,
                 itemName: addNewTrainer,
                 category: "profit",
                 price: price
@@ -195,6 +196,7 @@ export default function Add_Trainer(
             });
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
+                linkedWithTrainer: trainerId,
                 itemName: addNewTrainer,
                 category: "profit",
                 price: price
@@ -231,6 +233,7 @@ export default function Add_Trainer(
             });
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
+                linkedWithTrainer: trainerId,
                 itemName: addNewTrainer,
                 category: "profit",
                 price: price
@@ -264,6 +267,7 @@ export default function Add_Trainer(
 
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
+                linkedWithTrainer:trainerId,
                 itemName: addNewTrainer,
                 category: "profit",
                 price: price

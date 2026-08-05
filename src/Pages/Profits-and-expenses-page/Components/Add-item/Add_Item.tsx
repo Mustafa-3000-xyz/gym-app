@@ -54,6 +54,7 @@ export default function Add_Item(
             funRunWhenClickOnOk: function () {
                 dispatch(addRowInItemsTable({
                     linkWithDay: Number(dayInfo.id),
+                    linkedWithTrainer: null,
                     itemName: itemNameInp,
                     category: itmeCategory as any,
                     price: Number(itemPrice),

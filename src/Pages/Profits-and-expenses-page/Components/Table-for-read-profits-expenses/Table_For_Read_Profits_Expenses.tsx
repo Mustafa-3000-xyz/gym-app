@@ -2,7 +2,7 @@ import Bottom_Content_For_The_Drop from "@/Global-components/Drop-menu/Bottom-co
 import Drop_Menu from "@/Global-components/Drop-menu/Drop_Menu";
 import Top_Content_For_The_Drop from "@/Global-components/Drop-menu/Top-content-for-the-drop/Top_Content_For_The_Drop";
 import Max_Min_Length from "@/Global-components/Max-min-length/Max_Min_Length";
-import { addNewTrainer, maxForCreateItems, maxPriceInOneItem, renewalSubscription, withDrawSubscription } from "@/Lib/constants";
+import { maxForCreateItems, maxPriceInOneItem } from "@/Lib/constants";
 import { alert } from "@/Lib/functions";
 import { regexItemName } from "@/Lib/REGEX";
 import { item_Type } from "@/Pages/types";
@@ -14,6 +14,7 @@ import { useEffect, useMemo, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import Add_Item from "../Add-item/Add_Item";
 import { arithmeticOperatorsWithProfitsAndExpenses } from "@/Lib/functionsWithDb";
+import { updatePropertyInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 // ========================================================== //
 export default function Table_For_Read_Profits_Expenses(
     {
@@ -128,8 +129,42 @@ export default function Table_For_Read_Profits_Expenses(
             titleBeforeClickOnOk: "هل انت متأكد من تحديث البيانات",
             titleAfterClickOnOk: "تم التحديث بنجاح",
             funRunWhenClickOnOk: function () {
-                // Explain: If item stell profit but his price was changed
-                if (
+                // If item stell profit but his price was changed and this item linked to trainer
+                if ((getMainItemWhenEditing?.category == "profit" && itemCategoryInEditingInp == "profit")
+                    &&
+                    getMainItemWhenEditing?.price != itemPriceInEditingInp
+                    &&
+                    getMainItemWhenEditing.linkedWithTrainer
+                ) {
+                    arithmeticOperatorsWithProfitsAndExpenses({
+                        updateOneColumn: {
+                            year: {
+                                yearId: yearId,
+                                column: "profitsTotal",
+                                value: (getProfitsTotalInYear - getMainItemWhenEditing?.price) + itemPriceInEditingInp
+                            },
+                            month: {
+                                monthId: monthId,
+                                column: "profitsTotal",
+                                value: (getProfitsTotalInMonth - getMainItemWhenEditing?.price) + itemPriceInEditingInp
+                            },
+                            day: {
+                                dayId: Number(dayInfo.id),
+                                column: "profitsTotal",
+                                value: (getProfitsTotalInDay - getMainItemWhenEditing?.price) + itemPriceInEditingInp
+                            }
+                        }
+                    });
+
+                    dispatch(updatePropertyInRowInTrainersTable({
+                        id: Number(getMainItemWhenEditing.linkedWithTrainer),
+                        column: "price",
+                        value: itemPriceInEditingInp
+                    }) as any);
+                }
+
+                // If item stell profit but his price was changed
+                else if (
                     (getMainItemWhenEditing?.category == "profit" && itemCategoryInEditingInp == "profit")
                     &&
                     getMainItemWhenEditing?.price != itemPriceInEditingInp
@@ -155,7 +190,7 @@ export default function Table_For_Read_Profits_Expenses(
                     });
                 }
 
-                // Explain: If item stell expense but his price was changed
+                // If item stell expense but his price was changed
                 else if (
                     (getMainItemWhenEditing?.category == "expense" && itemCategoryInEditingInp == "expense")
                     &&
@@ -182,47 +217,47 @@ export default function Table_For_Read_Profits_Expenses(
                     });
                 }
 
-                // Explain: If item was profit and it is be expense, so update values in year,month and day
+                // If item was profit and it is be expense, so update values in year,month and day
                 else if (getMainItemWhenEditing?.category == "profit" && itemCategoryInEditingInp == "expense") {
                     arithmeticOperatorsWithProfitsAndExpenses({
                         updateSomeColumns: {
                             year: {
                                 yearId: yearId,
-                                profitsTotal: getProfitsTotalInYear - getMainItemWhenEditing.price < 0 ? 0 : getProfitsTotalInYear - getMainItemWhenEditing.price,
+                                profitsTotal: getProfitsTotalInYear - getMainItemWhenEditing.price,
                                 expensesTotal: getExpensesTotalInYear + itemPriceInEditingInp
                             },
                             month: {
                                 monthId: monthId,
-                                profitsTotal: getProfitsTotalInMonth - getMainItemWhenEditing.price < 0 ? 0 : getProfitsTotalInMonth - getMainItemWhenEditing.price,
+                                profitsTotal: getProfitsTotalInMonth - getMainItemWhenEditing.price,
                                 expensesTotal: getExpensesTotalInMonth + itemPriceInEditingInp
                             },
                             day: {
                                 dayId: Number(dayInfo.id),
-                                profitsTotal: getProfitsTotalInDay - getMainItemWhenEditing.price < 0 ? 0 : getProfitsTotalInDay - getMainItemWhenEditing.price,
+                                profitsTotal: getProfitsTotalInDay - getMainItemWhenEditing.price,
                                 expensesTotal: getExpensesTotalInDay + itemPriceInEditingInp
                             }
                         }
                     });
                 }
 
-                // Explain: If item was expense and it is be profit, so update values in year,month and day
+                // If item was expense and it is be profit, so update values in year,month and day
                 else if (getMainItemWhenEditing?.category == "expense" && itemCategoryInEditingInp == "profit") {
                     arithmeticOperatorsWithProfitsAndExpenses({
                         updateSomeColumns: {
                             year: {
                                 yearId: yearId,
                                 profitsTotal: getProfitsTotalInYear + itemPriceInEditingInp,
-                                expensesTotal: getExpensesTotalInYear - getMainItemWhenEditing.price < 0 ? 0 : getExpensesTotalInYear - getMainItemWhenEditing.price
+                                expensesTotal: getExpensesTotalInYear - getMainItemWhenEditing.price
                             },
                             month: {
                                 monthId: monthId,
                                 profitsTotal: getProfitsTotalInMonth + itemPriceInEditingInp,
-                                expensesTotal: getExpensesTotalInMonth - getMainItemWhenEditing.price < 0 ? 0 : getExpensesTotalInMonth - getMainItemWhenEditing.price
+                                expensesTotal: getExpensesTotalInMonth - getMainItemWhenEditing.price
                             },
                             day: {
                                 dayId: Number(dayInfo.id),
                                 profitsTotal: getProfitsTotalInDay + itemPriceInEditingInp,
-                                expensesTotal: getExpensesTotalInDay - getMainItemWhenEditing.price < 0 ? 0 : getExpensesTotalInDay - getMainItemWhenEditing.price
+                                expensesTotal: getExpensesTotalInDay - getMainItemWhenEditing.price
                             }
                         }
                     });
@@ -244,6 +279,7 @@ export default function Table_For_Read_Profits_Expenses(
     }
 
     function clickOnItem(type: "ربح" | "مصروف") {
+        setIsShowMenu(false);
         setItemCategoryInEditingInp(type == "ربح" ? "profit" : "expense");
     }
 
@@ -333,6 +369,7 @@ export default function Table_For_Read_Profits_Expenses(
                     <th className="p-3 rounded-tr-lg">اسم الباند</th>
                     <th>نوع الباند</th>
                     <th>المبلغ</th>
+                    <th>رقم المتدرب</th>
                     <th className="rounded-tl-lg" colSpan={2}>الادوات</th>
                 </tr>
             </thead>
@@ -341,7 +378,7 @@ export default function Table_For_Read_Profits_Expenses(
                 {
                     readItems.length == 0 ?
                         <tr>
-                            <td className="text-white p-2 font-bold" colSpan={4} >
+                            <td className="text-white p-2 font-bold" colSpan={5} >
                                 لا يوجد بيانات
                             </td>
                         </tr>
@@ -369,54 +406,70 @@ export default function Table_For_Read_Profits_Expenses(
                                             </div>
                                         </td>
 
-                                        <td>
-                                            <Drop_Menu
-                                                isShowTheMenu={isShowMenu}
-                                                classNameForMenu="w-full"
-                                                onGetCurrentIsShowMenu={setIsShowMenu}
-                                            >
-                                                <Top_Content_For_The_Drop className="pt-1 pb-2">
-                                                    {itemCategoryInEditingInp == "profit" ? "ربح" : "مصروف"}
-                                                </Top_Content_For_The_Drop>
+                                        <td className={`font-bold`}>
+                                            {!ele.linkedWithTrainer ?
+                                                <Drop_Menu
+                                                    isShowTheMenu={isShowMenu}
+                                                    classNameForMenu="w-full"
+                                                    onGetCurrentIsShowMenu={setIsShowMenu}
+                                                >
+                                                    <Top_Content_For_The_Drop className="pt-1 pb-2">
+                                                        {itemCategoryInEditingInp == "profit" ? "ربح" : "مصروف"}
+                                                    </Top_Content_For_The_Drop>
 
-                                                <Bottom_Content_For_The_Drop>
-                                                    <ul className="ps-3">
-                                                        <li
-                                                            className="duration-200 hover:bg-slate-200 p-2 cursor-pointer"
-                                                            onClick={() => clickOnItem("ربح")}
-                                                        >
-                                                            ربح
-                                                        </li>
+                                                    <Bottom_Content_For_The_Drop>
+                                                        <ul className="ps-3">
+                                                            <li
+                                                                className="duration-200 hover:bg-slate-200 p-2 cursor-pointer text-emerald-500"
+                                                                onClick={() => clickOnItem("ربح")}
+                                                            >
+                                                                ربح
+                                                            </li>
 
-                                                        <li
-                                                            className="duration-200 hover:bg-slate-200 p-2 cursor-pointer"
-                                                            onClick={() => clickOnItem("مصروف")}
-                                                        >
-                                                            مصروف
-                                                        </li>
-                                                    </ul>
-                                                </Bottom_Content_For_The_Drop>
-                                            </Drop_Menu>
+                                                            <li
+                                                                className="duration-200 hover:bg-slate-200 p-2 cursor-pointer text-red-500"
+                                                                onClick={() => clickOnItem("مصروف")}
+                                                            >
+                                                                مصروف
+                                                            </li>
+                                                        </ul>
+                                                    </Bottom_Content_For_The_Drop>
+                                                </Drop_Menu>
+                                                :
+                                                <span className={`${ele.category == "profit" ? "text-emerald-500" : "text-red-500"}`}>
+                                                    {ele.category == "profit" ? "ربح" : "مصروف"}
+                                                </span>
+                                            }
                                         </td>
 
                                         <td>
-                                            <input
-                                                value={itemPriceInEditingInp == 0 ? "" : itemPriceInEditingInp}
-                                                placeholder={`اقصى مبلغ ${maxPriceInOneItem}`}
-                                                className="font-bold border-2 focus:outline-0 rounded-sm text-center w-[170px]"
-                                                onKeyDown={(e) => {
-                                                    if (["e", "E", "+", "-"].includes(e.key)) {
-                                                        e.preventDefault();
-                                                    }
-                                                }}
-                                                onChange={(e) => {
-                                                    if (Number(e.target.value) <= maxPriceInOneItem) {
-                                                        setItemPriceInEditingInp(Number(e.target.value));
-                                                    } else {
-                                                        setItemPriceInEditingInp(maxPriceInOneItem);
-                                                    }
-                                                }}
-                                            />
+                                            {ele.linkedWithTrainer ?
+                                                <span className="font-bold text-white">
+                                                    {ele.price}
+                                                </span>
+                                                :
+                                                <input
+                                                    value={itemPriceInEditingInp == 0 ? "" : itemPriceInEditingInp}
+                                                    placeholder={`اقصى مبلغ ${maxPriceInOneItem}`}
+                                                    className="font-bold border-2 focus:outline-0 rounded-sm text-center w-[170px]"
+                                                    onKeyDown={(e) => {
+                                                        if (["e", "E", "+", "-"].includes(e.key)) {
+                                                            e.preventDefault();
+                                                        }
+                                                    }}
+                                                    onChange={(e) => {
+                                                        if (Number(e.target.value) <= maxPriceInOneItem) {
+                                                            setItemPriceInEditingInp(Number(e.target.value));
+                                                        } else {
+                                                            setItemPriceInEditingInp(maxPriceInOneItem);
+                                                        }
+                                                    }}
+                                                />
+                                            }
+                                        </td>
+
+                                        <td className="text-white font-bold">
+                                            {ele.linkedWithTrainer ? ele.linkedWithTrainer : "لا يوجد"}
                                         </td>
 
                                         <td className="p-3 flex justify-center gap-3">
@@ -449,29 +502,33 @@ export default function Table_For_Read_Profits_Expenses(
 
                                         <td className="text-white font-bold">${ele.price}</td>
 
+                                        <td className="text-white font-bold">
+                                            {ele.linkedWithTrainer ? ele.linkedWithTrainer : "لا يوجد"}
+                                        </td>
+
                                         <td className="p-3 flex justify-center gap-3">
+                                            <Pen
+                                                size={27}
+                                                className="text-gray-100 cursor-pointer hover:scale-110"
+                                                onClick={() => clickOnPenBtn(
+                                                    Number(ele.id),
+                                                    ele.itemName,
+                                                    ele.category,
+                                                    ele.price,
+                                                )
+                                                }
+                                            />
+
                                             {
-                                                !ele.itemName.includes(addNewTrainer) && !ele.itemName.includes(withDrawSubscription) && !ele.itemName.includes(renewalSubscription) ?
-                                                    <Pen
+                                                !ele.linkedWithTrainer ?
+                                                    <Trash
                                                         size={27}
-                                                        className="text-gray-100 cursor-pointer hover:scale-110"
-                                                        onClick={() => clickOnPenBtn(
-                                                            Number(ele.id),
-                                                            ele.itemName,
-                                                            ele.category,
-                                                            ele.price,
-                                                        )
-                                                        }
+                                                        className="text-red-500 cursor-pointer  hover:scale-110"
+                                                        onClick={() => clickOnTrashBtn(Number(ele.id), ele.price, ele.category)}
                                                     />
                                                     :
                                                     null
                                             }
-
-                                            <Trash
-                                                size={27}
-                                                className="text-red-500 cursor-pointer  hover:scale-110"
-                                                onClick={() => clickOnTrashBtn(Number(ele.id), ele.price, ele.category)}
-                                            />
                                         </td>
                                     </>
                             }
