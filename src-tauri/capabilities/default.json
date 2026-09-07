@@ -14,14 +14,6 @@
     "sql:allow-execute",
     "sql:allow-select",
     "opener:default",
-    "core:window:allow-destroy",
-    {
-      "identifier": "http:default",
-      "allow": [
-        {
-          "url": "https://timeapi.io/*"
-        }
-      ]
-    }
+    "core:window:allow-destroy"
   ]
 }

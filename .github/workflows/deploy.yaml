@@ -1,4 +1,4 @@
-name: Build gym app and upload to supabase storage
+name: Build gym app
 
 on:
   push:
@@ -36,19 +36,3 @@ jobs:
           tagName: ${{ github.ref_name }}
           releaseName: 'Gym App ${{ github.ref_name }}'
           releaseBody: 'New release update for Gym App version ${{ github.ref_name }}'
-
-      - name: Upload Build to Supabase Storage
-        shell: bash
-        env:
-          SUPABASE_URL: "https://alqlzackgkgirrtxdzku.supabase.co"
-          SUPABASE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: |
-          FILE_PATH=$(ls src-tauri/target/release/bundle/msi/*.msi | head -n 1)
-          FILE_NAME="gym-app-${{ github.ref_name }}.msi"
-          CONTENT_TYPE="application/octet-stream"
-
-          echo "جاري رفع ملف الأبليكيشن: $FILE_NAME إلى سوبابيز..."
-          curl -X POST "${SUPABASE_URL}/storage/v1/object/apps/${FILE_NAME}" \
-            -H "Authorization: Bearer ${SUPABASE_KEY}" \
-            -H "Content-Type: ${CONTENT_TYPE}" \
-            --data-binary @"$FILE_PATH"

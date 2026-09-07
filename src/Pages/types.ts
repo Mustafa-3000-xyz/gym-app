@@ -114,33 +114,6 @@ export interface item_Type {
     price: number
 }
 
-export interface arithmeticOperatorsIds_Type {
-    yearId: number,
-    monthId: number,
-    dayId: number
-}
-
-export interface arithmeticOperatorsWithOneColumn_Type {
-    year: any,
-    month: any,
-    day: any
-}
-
-export interface arithmeticOperatorsWithSomeColumns_Type {
-    year: {
-        profitsTotal?: any,
-        expensesTotal?: any
-    },
-    month: {
-        profitsTotal?: any,
-        expensesTotal?: any
-    },
-    day: {
-        profitsTotal?: any,
-        expensesTotal?: any
-    }
-}
-
 export interface arithmeticOperatorsWithProfitsAndExpenses_Type {
     updateOneColumn?: {
         year?: {
@@ -177,21 +150,6 @@ export interface arithmeticOperatorsWithProfitsAndExpenses_Type {
             expensesTotal: number
         }
     }
-}
-
-export interface licensingInfo_Type {
-    testInfo: {
-        "isTest": boolean,
-        "endDate": null | string | Date,
-        "activationDate": null | string | Date
-    },
-    "licenseKey": null | string,
-}
-
-export interface licenesKey_Type {
-    id: number,
-    key: string,
-    linkedToPhoneNumber: string
 }
 
 export interface settings_Type {

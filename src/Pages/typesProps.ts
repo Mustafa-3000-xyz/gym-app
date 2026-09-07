@@ -17,12 +17,6 @@ export interface Trainer_Info_Form_Props {
     onGetTrainerType: (x: "man" | "women") => void
 }
 
-export interface Btn_Slide_Props {
-    index: number,
-    currentSlide: number,
-    onGetIndexBtn: (x: number) => void
-}
-
 export interface Btn_Subscription_Renewal_Props {
     trainer: trainer_Type,
     subscriptionStart: string | null,
@@ -113,15 +107,6 @@ export interface Cover_Img_Props {
     accountId: number,
     coverImgSrc: string,
     isChangeCoverImg: boolean
-}
-
-export interface Form_For_Buy_App_Page_Props {
-    onGetUserName: (x: string | null) => void;
-    onGetGymName: (x: string | null) => void;
-    onGetPhoneNumber: (x: number | null) => void;
-    onGetAddress: (x: string | null) => void;
-    onGetPassword: (x: string | null) => void;
-    onIsShowLicenseKey: (x: boolean) => void;
 }
 
 export interface Date_Info_Form_Props {

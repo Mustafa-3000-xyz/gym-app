@@ -23,16 +23,4 @@ tauri-plugin-opener = "2"
 tauri-plugin-sql = { version = "2", features = ["sqlite"] }
 tauri-plugin-process = "2"
 tauri-plugin-updater = "2" # تم إضافته ليعمل الـ plugin الموجود في lib.rs
-
-serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
-aes-gcm = "0.11.0"
-sha2 = "0.11.0"
-base64 = "0.23.1"
-rand = "0.10.2"
-tauri-plugin-http = "2.5.9"
-
-
-[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
-tauri-plugin-updater = "2"
-

@@ -1,8 +1,3 @@
-export interface alertSuccess_Type {
-    mainTitle: string,
-    text?: string,
-}
-
 export interface alert_Type {
     titleBeforeSubmit?: string,
     titleAfterSubmit?: string,
@@ -11,11 +6,6 @@ export interface alert_Type {
     iconStyleBeforeSubmit?: "success" | "error" | "question" | "info" | "warning"
     runFunctionAfterSubmit?: () => void,
     runFunctionAfterCancel?: () => void
-}
-
-export interface allPermissions_Type {
-    title: string,
-    path: string,
 }
 
 export interface normalAlert_Type {

@@ -40,7 +40,7 @@
         "installMode": "basicUi"
       },
       "endpoints": [
-        "https://alqlzackgkgirrtxdzku.supabase.co/storage/v1/object/public/apps/latest.json"
+        "https://github.com/Mustafa-3000-xyz/gym-app/releases/download/updater/latest.json"
       ]
     }
   }

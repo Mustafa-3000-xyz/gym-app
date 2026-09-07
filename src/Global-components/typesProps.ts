@@ -1,4 +1,4 @@
-import React, { ChangeEvent, ReactNode } from "react";
+import React, { ReactNode } from "react";
 import { TargetAndTransition, Transition } from "framer-motion";
 import { trainer_Type } from "@/Pages/types";
 // ========================================================== //
@@ -69,18 +69,6 @@ export interface Account_Form_Props {
     onGetName: (x: string | null) => void;
     onGetAge: (x: number | null) => void;
     onGetPassword: (x: string | null) => void;
-}
-
-export interface InputSearch_Props {
-    placeholder: string,
-    ref?: HTMLInputElement,
-    onGetValue: (x: string) => void
-}
-
-export interface PasswordInp_Props {
-    removeValue?: boolean,
-    password?: string,
-    onWriteInInput?: (e: ChangeEvent<HTMLInputElement>) => void,
 }
 
 export interface Inp_With_Label_Props {
