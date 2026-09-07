@@ -3,7 +3,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Database from "@tauri-apps/plugin-sql";
 import { updatePropertyInAttendance_Type } from "../../types";
 // ======================================= //
-const database = await Database.load("sqlite:app-gym-db.db");
+const database = await Database.load("sqlite:gym-app.db");
 
 
 
@@ -42,7 +42,15 @@ export const deleteRowInAttendanceTableById = createAsyncThunk(
 
         return id;
     }
-)
+);
+
+export const deleteAllRowsInAttendanceTable = createAsyncThunk(
+    "attendanceSlice/deleteAllRowsInAttendanceTable",
+    async function () {
+        await database.execute(`DELETE FROM attendance;`);
+        return [];
+    }
+);
 
 export const updatePropertyInRowInAttendanceTable = createAsyncThunk(
     "attendanceSlice/updatePropertyInRowInAttendanceTable",
@@ -65,8 +73,10 @@ export const updatePropertyInRowInAttendanceTable = createAsyncThunk(
 );
 
 
+
+
 const attendanceSlice = createSlice({
-    name: " attendanceSlice",
+    name: "attendanceSlice",
     initialState: [],
     reducers: {},
 
@@ -82,6 +92,10 @@ const attendanceSlice = createSlice({
 
         builder.addCase(deleteRowInAttendanceTableById.fulfilled, function (state: attendanceDetails_Type[], action) {
             return state.filter(ele => ele.id != action.payload) as any;
+        });
+
+        builder.addCase(deleteAllRowsInAttendanceTable.fulfilled as any, (_, action) => {
+            return action.payload;
         });
 
         builder.addCase(updatePropertyInRowInAttendanceTable.fulfilled, function (state: attendanceDetails_Type[], action) {

@@ -3,7 +3,8 @@ import { subscriptionsMenus_Type } from "@/Pages/types";
 import { updatePropertyInSubscriptionsMenu_Type, updateSomePropertiesInSubscriptionsMenu_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const database = await Database.load("sqlite:app-gym-db.db");
+const database = await Database.load("sqlite:gym-app.db");
+
 
 
 export const getAllRowsInSubscriptionsMenusTable = createAsyncThunk(
@@ -49,6 +50,14 @@ export const deleteRowInSubscriptionsMenusTableById = createAsyncThunk(
         await database.execute(query, [id]);
 
         return id;
+    }
+);
+
+export const deleteAllRowsInSubscriptionsMenusTable = createAsyncThunk(
+    "subscriptionsMenusSlice/deleteAllRowsInSubscriptionsMenusTable",
+    async function () {
+        await database.execute(`DELETE FROM subscriptionsMenus;`);
+        return [];
     }
 );
 
@@ -99,6 +108,7 @@ export const updateSomePropertiesInRowInSubscriptionsMenusTable = createAsyncThu
 );
 
 
+
 const subscriptionsMenusSlice = createSlice({
     name: "subscriptionsMenuSlice",
     initialState: [] as subscriptionsMenus_Type[],
@@ -115,6 +125,10 @@ const subscriptionsMenusSlice = createSlice({
 
         builder.addCase(deleteRowInSubscriptionsMenusTableById.fulfilled as any, (state: subscriptionsMenus_Type[], action): any => {
             return state.filter((ele) => ele.id != action.payload);
+        });
+
+        builder.addCase(deleteAllRowsInSubscriptionsMenusTable.fulfilled as any, (_, action): any => {
+            return action.payload;
         });
 
         builder.addCase(updatePropertyInRowInSubscriptionsMenusTable.fulfilled as any, (state: subscriptionsMenus_Type[], action): any => {

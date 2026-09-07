@@ -5,8 +5,7 @@ import Animation from "../Animation/Animation";
 // ========================================================== //
 export default function Popup_Form(
     {
-        titel,
-        discription,
+        popupFormInfo,
         children,
         isSave = false,
         isShowBtn = true,
@@ -32,14 +31,22 @@ export default function Popup_Form(
                 scale: 1,
             }}
         >
-            {/* Title & x */}
+            {/* Title & discription & icon & x */}
             <div className="p-5 flex justify-between items-center bg-black/5 border-b border-b-slate-300">
-                <div>
-                    <h3 className=" font-bold text-lg">
-                        {titel}
-                    </h3>
-                    <Discription discription={discription} />
+                <div className="flex items-center gap-3">
+                    {
+                        popupFormInfo?.icon
+                    }
+
+                    <div>
+                        <h3 className=" font-bold text-lg">
+                            {popupFormInfo?.title}
+                        </h3>
+                        <Discription discription={popupFormInfo?.discription ?? ""} />
+                    </div>
                 </div>
+
+
 
                 <X size={23} onClick={clickOnCancel} className="cursor-pointer text-red-500" />
             </div>

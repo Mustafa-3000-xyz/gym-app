@@ -1,19 +1,12 @@
-import { attendanceDetails_Type, boxInfoInTrainersPage_Type, filter_Type, trainer_Type } from "./types"
-
+import { attendanceDetails_Type, boxInfoInTrainersPage_Type, item_Type, trainer_Type } from "./types"
+// ========================================================== //
 export interface Subscription_Info_Form_Props {
+    subscriptionStart: string | null,
+    subscriptionEnd: string | null,
     onGetSubscriptionName: (x: string | null) => void,
     onGetPrice: (x: number | null) => void,
+    onGetSessions: (x: number | null) => void,
     onGetActiveSomeSessions?: (x: number) => void
-}
-
-export interface Date_Info_Props {
-    onGetSubscriptionStart: (x: Date) => void,
-    onGetSubscriptionEnd: (x: Date) => void,
-}
-
-export interface End_Date_Picker_Props {
-    dateStart: Date,
-    getDate: (x: Date | null) => void
 }
 
 export interface Trainer_Info_Form_Props {
@@ -21,6 +14,7 @@ export interface Trainer_Info_Form_Props {
     onGetLastName: (x: string | null) => void,
     onGetPhone: (x: number | null) => void,
     onGetAddress: (x: string | null) => void,
+    onGetTrainerType: (x: "man" | "women") => void
 }
 
 export interface Btn_Slide_Props {
@@ -29,39 +23,10 @@ export interface Btn_Slide_Props {
     onGetIndexBtn: (x: number) => void
 }
 
-export interface Btn_Filter_Props {
-    trainersList: trainer_Type[],
-    onGetFilter: (x: filter_Type) => void,
-    onGetTrainerListAfterFilter: (x: trainer_Type[]) => void,
-}
-
-export interface Menu_Props {
-    btnFilterEle: HTMLButtonElement | null,
-    filterObj: filter_Type,
-    onIsShowMenu: (x: boolean) => void
-    onGetFilterResult: (x: filter_Type) => void
-}
-
-export interface Btn_Save_Change_Props {
-    id: string | number,
-    trainerState: any,
-    isChangeInfo: boolean,
-    closeWindow: () => void
-}
-
 export interface Btn_Subscription_Renewal_Props {
     trainer: trainer_Type,
+    subscriptionStart: string | null,
     isInfoComplete: boolean,
-}
-
-export interface Btn_Finished_Subscription_Props {
-    id: string | number,
-    onGetSubscriptionState: (x: string) => void,
-}
-
-export interface Data_Inputs_Props {
-    onIsShowEndMessage: (x: boolean) => void,
-    onGetManagerInfo: (x: any) => void,
 }
 
 export interface Permissions_Props {
@@ -94,12 +59,16 @@ export interface Info_Box_For_Profits_Expenses_Props {
     profitsTotal: number,
     expensesTotal: number,
     target: number,
-    targetType: "السنوي" | "الشهري" | "اليومي",
+    targetType: "year" | "month" | "day",
     isHiddenTheWord?: boolean,
     className?: string,
     styleBoxWhenSelect?: string | null,
     monthNumber?: number,
-    onGetBoxInfo: (x: { id: number, title: number | string, monthNumber?: number }) => void
+    onGetBoxInfo: (x: {
+        id: number,
+        title: number | string,
+        monthNumber?: number
+    }) => void
 }
 
 export interface Layers_Date_Props {
@@ -111,6 +80,7 @@ export interface Layers_Date_Props {
 export interface Table_For_Read_Profits_Expenses_Props {
     yearId: number,
     monthId: number,
+    countRowsInSlide: number,
     dayInfo: {
         id: null | number,
         title: null | number
@@ -135,6 +105,7 @@ export interface Add_Item_Props {
 
 export interface Subscriptions_Menu_Props {
     onGetSubscriptionName: (x: string) => void,
+    onGetSesions: (x: number) => void,
     onGetPrice: (x: number) => void
 }
 
@@ -142,4 +113,45 @@ export interface Cover_Img_Props {
     accountId: number,
     coverImgSrc: string,
     isChangeCoverImg: boolean
+}
+
+export interface Form_For_Buy_App_Page_Props {
+    onGetUserName: (x: string | null) => void;
+    onGetGymName: (x: string | null) => void;
+    onGetPhoneNumber: (x: number | null) => void;
+    onGetAddress: (x: string | null) => void;
+    onGetPassword: (x: string | null) => void;
+    onIsShowLicenseKey: (x: boolean) => void;
+}
+
+export interface Date_Info_Form_Props {
+    sessions: number | null,
+    onGetSubscriptionStart: (x: string | null) => void,
+    onGetSubscriptionEnd: (x: string | null) => void
+}
+
+export interface The_Setting_Props {
+    title: string,
+    discription?: string,
+    typeSetting: {
+        question?: {
+            value: undefined | boolean,
+            onGetValue: (x: boolean) => void
+        },
+        element?: any,
+    }
+}
+
+export interface Item_Details_Props {
+    yearId: number,
+    monthId: number,
+    dayId: number,
+    profitsTotalInYear: number,
+    profitsTotalInMonth: number,
+    profitsTotalInDay: number,
+    expensesTotalInYear: number,
+    expensesTotalInMonth: number,
+    expensesTotalInDay: number,
+    mainItem: item_Type,
+    onIsShowItemDetails: (x: boolean) => void
 }

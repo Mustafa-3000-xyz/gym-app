@@ -1,80 +1,139 @@
 import { BicepsFlexed, ShieldCheck, ShieldOff, ShieldQuestionMark, Users } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { attendanceDetails_Type, boxInfoInTrainersPage_Type, trainer_Type } from "@/Pages/types";
 import Add_Trainer from "./Components/Add-trainer/Add_Trainer";
-import { shallowEqual, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import Box from "@/Global-components/Box/Box";
-import { allSubscriptions, statusIsActive, statusIsFinished, statusIsPending } from "@/Lib/constants";
+import { allSubscriptions } from "@/Lib/constants";
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import Table_For_Trainers from "@/Global-components/Table-for-trainers/Table_For_Trainers";
 import Search_Box_For_Trainers from "@/Global-components/Search-box-for-trainers/Search_Box_For_Trainers";
-import { theTodayDate } from "@/Lib/functions";
+import { normalAlert, theTodayDate } from "@/Lib/functions";
 import Filter from "./Components/Filter/Filter";
 import Trainer_Details from "./Components/Trainer-details/Trainer_Details";
 import { getAllAttendanceInSpecificDate } from "@/Lib/functionsWithDb";
+import { getAllRowsInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
+import Database from "@tauri-apps/plugin-sql";
+import { removeTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
 // ========================================================== //
 export default function Trainers_Page() {
+    const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
             attendance: state.attendance,
             trainers: state.trainers,
-            trainerDetails: state.trainerDetails
+            trainerDetails: state.trainerDetails,
+            settings: state.settings
         }
     }, shallowEqual);
 
     const [getTrainersAfterFilter, setGetTrainersAfterFilter] = useState<trainer_Type[]>([]);
     const [getBoxInfo, setGetBoxInfo] = useState<boxInfoInTrainersPage_Type | null>(null);
-    const filterInLocalStorage = JSON.parse(localStorage.getItem("filter") || "{}" as any);
 
     const [isShowAddTrainer, setIsShowAddTrainer] = useState<boolean>(false);
     const [attendanceTodayTotal, setAttendanceTodayTotal] = useState(0);
+    const [todayDate, setTodayDate] = useState(new Date());
 
 
 
-
-    function clickOnAddTrainerBtn() {
+    const handelAddTrainer = useCallback(function () {
         setIsShowAddTrainer(true);
-    }
+    }, []);
 
 
 
     // I want when open trainers page, get attendance total
-    useEffect(function () {
-        async function x() {
-            const dayDetails = await getAllAttendanceInSpecificDate(theTodayDate({ startingIn12Houre: true })) as attendanceDetails_Type[];
-            let total = 0;
+    async function attendanceTotal() {
+        // Dont't change the startingInHalfNight value 
+        const todayDate = theTodayDate({ startingInHalfNight: true });
+        const dayDetails = await getAllAttendanceInSpecificDate(todayDate) as attendanceDetails_Type[];
 
-            if (!dayDetails) return 0;
-
-            dayDetails.forEach(function (row) {
-                const convertToArray = JSON.parse(row.trainers as any) as number[];
-                total += convertToArray.length;
-            });
-
-            setAttendanceTodayTotal(total);
+        if (!dayDetails) {
+            setAttendanceTodayTotal(0);
+            return;
         }
-        x();
+
+        let total = 0;
+
+        dayDetails.forEach(function (row) {
+            const convertToArray = JSON.parse(row.trainers as any ?? "[]") as number[];
+            total += convertToArray.length;
+        });
+
+        setAttendanceTodayTotal(total);
+    }
+
+    async function checkTheSubscriptionStatusInTrainer() {
+        const db = await Database.load("sqlite:gym-app.db");
+
+
+
+        try {
+            const resultActuive = await db.execute(`
+                UPDATE trainers
+                SET subscriptionStatus = 'active'
+                WHERE subscriptionStatus = 'pending'
+                    AND DATE(subscriptionStart, 'localtime') <= DATE('now', 'localtime')
+                    AND DATE(subscriptionEnd, 'localtime') > DATE('now', 'localtime');
+            `);
+
+            const resultFinished = await db.execute(`
+                UPDATE trainers
+                SET subscriptionStatus = 'finished'
+                WHERE subscriptionStatus != 'finished'
+                    AND DATE(subscriptionEnd, 'localtime') <= DATE('now', 'localtime');
+            `);
+
+
+            if (resultActuive.rowsAffected > 0 || resultFinished.rowsAffected > 0) {
+
+                if (state.trainerDetails) {
+                    dispatch(removeTrainerDetails());
+                }
+
+                dispatch(getAllRowsInTrainersTable() as any);
+            }
+
+        } catch (error) {
+            normalAlert({
+                title: "حدث خطا",
+                text: "لا نستطيع التحقق من حالة الاشتراكات الخاصه بالمتدربين",
+                icon: "error"
+            })
+            console.error(error);
+        }
+    }
+
+
+
+    useEffect(function () {
+        checkTheSubscriptionStatusInTrainer();
+
+        const tomorrow = new Date();
+        tomorrow.setDate(todayDate.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+
+        const timer = setTimeout(function () {
+            checkTheSubscriptionStatusInTrainer();
+            setTodayDate(tomorrow);
+        }, tomorrow.getTime() - todayDate.getTime());
+
+
+        return () => clearTimeout(timer);
+    }, [todayDate]);
+
+    useEffect(function () {
+        attendanceTotal();
     }, [state.attendance]);
 
-
-    const [
-        allActiveSubscriptions,
-        allPendingSubscriptions,
-        allFinishedSubscriptions
-    ] = useMemo(function () {
+    useEffect(function () {
         if (state.trainers?.length == 0) {
-            return [0, 0, 0]
+            dispatch(getAllRowsInTrainersTable() as any);
         }
-        else {
-            const allActiveSubscriptions = state.trainers?.filter(ele => ele.subscriptionStatus == statusIsActive).length;
-            const allPendingSubscriptions = state.trainers?.filter(ele => ele.subscriptionStatus == statusIsPending).length;
-            const allFinishedSubscriptions = state.trainers?.filter(ele => ele.subscriptionStatus == statusIsFinished).length;
+    }, [state.trainers?.length]);
 
 
-            return [allActiveSubscriptions, allPendingSubscriptions, allFinishedSubscriptions];
-        }
-    }, [state.trainers]);
 
 
 
@@ -97,14 +156,15 @@ export default function Trainers_Page() {
             />
 
             {
-                filterInLocalStorage.subscriptionType == allSubscriptions ?
+                getBoxInfo?.type == allSubscriptions ?
                     <div className="flex justify-center items-center gap-5 bg-slate-100 rounded-lg h-40 select-none">
                         <div className="flex flex-col items-center">
                             <ShieldCheck
                                 size={60}
                                 className="bg-emerald-100 text-emerald-500 p-3 rounded-lg"
                             />
-                            <p>{allActiveSubscriptions}</p>
+
+                            <p>{Array.isArray(getBoxInfo.total) && getBoxInfo.total[0]}</p>
                         </div>
 
                         <div className="bg-black h-5 w-0.5"></div>
@@ -114,7 +174,8 @@ export default function Trainers_Page() {
                                 size={60}
                                 className="bg-amber-100 text-amber-500 p-3 rounded-lg"
                             />
-                            <p>{allPendingSubscriptions}</p>
+
+                            <p>{Array.isArray(getBoxInfo.total) && getBoxInfo.total[1]}</p>
                         </div>
 
                         <div className="bg-black h-5 w-0.5"></div>
@@ -124,15 +185,21 @@ export default function Trainers_Page() {
                                 size={60}
                                 className="bg-red-100 text-red-500 p-3 rounded-lg"
                             />
-                            <p>{allFinishedSubscriptions}</p>
+
+                            <p>{Array.isArray(getBoxInfo.total) && getBoxInfo.total[2]}</p>
                         </div>
                     </div>
                     :
                     <Box
                         icon={getBoxInfo?.icon}
                         styleIcon={getBoxInfo?.styleBgForIcon as any}
-                        title={getBoxInfo?.name as any}
-                        total={getBoxInfo?.total as any}
+                        total={typeof getBoxInfo?.total == "number" ? getBoxInfo.total : 0}
+                        title={
+                            getBoxInfo?.type == "activeSubscriptions" ?
+                                "كل الاشتراكات المفعله"
+                                :
+                                getBoxInfo?.type == "pendingSubscriptions" ? "كل الاشتراكات المعلقه" : "كل الاشتراكات المنتهيه"
+                        }
                     />
             }
         </div>
@@ -152,14 +219,17 @@ export default function Trainers_Page() {
                 />
 
                 <Add_Btn
-                className="cursor-pointer py-2"
+                    className="cursor-pointer py-2"
                     title="إضافة متدرب جديد"
-                    onClick={clickOnAddTrainerBtn}
+                    onClick={handelAddTrainer}
                 />
             </div>
         </div>
 
-        <Table_For_Trainers trainersList={getTrainersAfterFilter} />
+        <Table_For_Trainers
+            trainersList={getTrainersAfterFilter}
+            countRowsInSlide={Number(state.settings.rowsInTrainerTable)}
+        />
 
         {
             isShowAddTrainer ?

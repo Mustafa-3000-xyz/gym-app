@@ -3,7 +3,7 @@ import { updateSomePropertiesInRowInItemsTable_Type } from "@/Rtk/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const database = await Database.load("sqlite:app-gym-db.db");
+const database = await Database.load("sqlite:gym-app.db");
 
 
 
@@ -22,13 +22,12 @@ export const addRowInItemsTable = createAsyncThunk(
     async function (data: item_Type) {
         const query = `
             INSERT INTO items (
-                linkWithDay, linkedWithTrainer, itemName, category, price
-            ) VALUES (?, ?, ?, ?, ?)
+                linkWithDay, itemName, category, price
+            ) VALUES (?, ?, ?, ?)
         `;
 
         const values = [
             data.linkWithDay,
-            data.linkedWithTrainer,
             data.itemName,
             data.category,
             data.price,

@@ -3,11 +3,10 @@ import { Subscription_Info_Form_Props } from "@/Pages/typesProps";
 import { useEffect, useMemo, useState } from "react";
 import { Shell } from "lucide-react";
 import Discription from "@/Global-components/Description/Discription";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import { maxSessions, maxSubscriptionPrice, USING_ACTIVE_SOME_SESSIONS } from "@/Lib/constants";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
-import { addSessions, removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import { checkPermissionesInAccount, theTodayDate } from "@/Lib/functions";
 import { differenceInDays } from "date-fns";
 import { regexSubscriptionName } from "@/Lib/REGEX";
@@ -15,30 +14,32 @@ import Max_Min_Length from "@/Global-components/Max-min-length/Max_Min_Length";
 // ========================================================== //
 export default function Subscription_Info_Form(
     {
+        subscriptionStart,
+        subscriptionEnd,
         onGetSubscriptionName,
         onGetPrice,
+        onGetSessions,
         onGetActiveSomeSessions
     }: Subscription_Info_Form_Props
 ) {
-    const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
             logInInfo: state.logInInfo,
-            sessionsCount: state.sessionsCount,
             trainerDetails: state.trainerDetails,
-            subscriptionEnd: state.subscriptionEnd,
-            subscriptionStart: state.subscriptionStart,
         }
     }, shallowEqual);
 
 
     const [alertForActiveSomeSubscription, setAlertForActiveSomeSubscription] = useState<string | null>("");
     const [maxForActiveSomeSessions, setMaxForActiveSomeSessions] = useState(0);
+    const [activeSomeSessionsInp, setActiveSomeSessionsInp] = useState(0);
 
     const [subscriptionName, setSubscriptionName] = useState<string>("");
+    const [sessions, setSessions] = useState<number>(0);
     const [price, setPrice] = useState<number>(0);
 
-    const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
+    // Dont't change the startingInHalfNight value 
+    const todayDate = useMemo(() => theTodayDate({ startingInHalfNight: true }), []);
 
     const checkActiveSomeSessionsPermission = checkPermissionesInAccount({
         accountId: Number(state.logInInfo?.id),
@@ -49,47 +50,23 @@ export default function Subscription_Info_Form(
 
 
     function makeAlertForActiveSomeSubscription() {
-        if (!state.sessionsCount) {
+        if (!sessions) {
             setAlertForActiveSomeSubscription("قم بكتابة عدد الحصص");
         }
-        else if (!state.subscriptionStart) {
+        else if (!subscriptionStart) {
             setAlertForActiveSomeSubscription("اختر تاريخ بداية الاشتراك");
         }
-        else if (new Date(state.subscriptionStart).getTime() >= todayDate.getTime()) {
+        else if (new Date(subscriptionStart).getTime() >= todayDate.getTime()) {
             setAlertForActiveSomeSubscription("تاريخ بداية الاشتراك غير مناسب لاستخدام ميزة تفعيل بعض الحصص");
         }
-        else if (!state.subscriptionEnd && new Date(state.subscriptionStart).getTime() < todayDate.getTime()) {
+        else if (!subscriptionEnd && new Date(subscriptionStart).getTime() < todayDate.getTime()) {
             setAlertForActiveSomeSubscription("قم بختيار تاريخ نهاية الاشتراك");
         }
-        else if (new Date(state.subscriptionEnd as any).getTime() < todayDate.getTime()) {
+        else if (new Date(subscriptionEnd as any).getTime() < todayDate.getTime() || new Date(subscriptionEnd as any).getTime() == todayDate.getTime()) {
             setAlertForActiveSomeSubscription("تاريخ نهاية الاشتراك غير مناسب لاستخدام ميزة تفعيل بعض الحصص");
         }
         else {
             setAlertForActiveSomeSubscription(null);
-        }
-    }
-
-    function writeInSessionsInp(e: any) {
-        const value = Number(e.target.value);
-
-
-        if (value < maxSessions) {
-            dispatch(addSessions(value));
-        }
-        else if (value >= maxSessions) {
-            dispatch(addSessions(maxSessions));
-        }
-    }
-
-    function writeInPriceInp(e: any) {
-        const value = Number(e.target.value);
-
-
-        if (value < maxSubscriptionPrice) {
-            setPrice(value);
-        }
-        else if (value >= maxSubscriptionPrice) {
-            setPrice(maxSubscriptionPrice);
         }
     }
 
@@ -99,15 +76,23 @@ export default function Subscription_Info_Form(
     // When open state.trainerDetails details, i want show his values
     useEffect(() => {
         if (state.trainerDetails) {
-            setSubscriptionName(state.trainerDetails.subscriptionName ?? "");
-            dispatch(addSessions(state.trainerDetails.sessionsCount ?? 0));
+            setSubscriptionName(state.trainerDetails.subscriptionName);
+            setSessions(state.trainerDetails.sessionsCount);
             setPrice(state.trainerDetails.price ?? 0);
         } else {
             setSubscriptionName("");
-            dispatch(removeAllSessions());
+            setSessions(0);
             setPrice(0);
         }
     }, [state.trainerDetails]);
+
+    useEffect(function () {
+        if (activeSomeSessionsInp == 0) {
+            onGetActiveSomeSessions?.(0);
+        } else {
+            onGetActiveSomeSessions?.(activeSomeSessionsInp);
+        }
+    }, [activeSomeSessionsInp]);
 
     useEffect(function () {
         if (subscriptionName?.match(regexSubscriptionName)) {
@@ -116,36 +101,41 @@ export default function Subscription_Info_Form(
             onGetSubscriptionName(null);
         }
 
+        if (sessions > 0) {
+            onGetSessions(sessions);
+        } else {
+            onGetSessions(null);
+        }
+
         if (price > 0) {
             onGetPrice(price);
         } else {
             onGetPrice(null);
         }
-    }, [subscriptionName, price]);
+    }, [subscriptionName, sessions, price]);
 
     // This for active some sessions
     useEffect(() => {
-        const subscriptionStart = new Date(state.subscriptionStart as any);
-        const subscriptionEnd = new Date(state.subscriptionEnd as any);
+        const subscriptionStartDate = new Date(subscriptionStart as any);
+        const subscriptionEndDate = new Date(subscriptionEnd as any);
 
         if (
-            state.sessionsCount &&
-            state.subscriptionStart &&
-            state.subscriptionEnd &&
-            subscriptionStart.getTime() < todayDate.getTime() &&
-            subscriptionEnd.getTime() >= todayDate.getTime()
+            sessions && subscriptionStart && subscriptionEnd &&
+            subscriptionStartDate.getTime() < todayDate.getTime() &&
+            subscriptionEndDate.getTime() > todayDate.getTime()
         ) {
-            const diff = Math.abs(differenceInDays(todayDate, subscriptionStart)) + 1;
-            const result = diff >= Number(state.sessionsCount) ? Number(state.sessionsCount) - 1 : diff
+            const diff = Math.abs(differenceInDays(todayDate, subscriptionStart));
+            const result = diff >= sessions ? sessions - 1 : diff
 
             setMaxForActiveSomeSessions(result);
         } else {
             setMaxForActiveSomeSessions(0);
-            onGetActiveSomeSessions?.(0);
         }
 
+        setActiveSomeSessionsInp(0);
+        onGetActiveSomeSessions?.(0);
         makeAlertForActiveSomeSubscription();
-    }, [state.subscriptionStart, state.subscriptionEnd, state.sessionsCount, todayDate]);
+    }, [subscriptionStart, subscriptionEnd, sessions, todayDate]);
 
 
 
@@ -162,6 +152,7 @@ export default function Subscription_Info_Form(
         >
             <Subscriptions_Menu
                 onGetSubscriptionName={setSubscriptionName}
+                onGetSesions={setSessions}
                 onGetPrice={setPrice}
             />
 
@@ -173,7 +164,7 @@ export default function Subscription_Info_Form(
                         labelName="اسم الاشتراك"
                         inpType="text"
                         inpValue={subscriptionName}
-                        onWriteInInput={(e) => setSubscriptionName(e.target.value)}
+                        onWriteInInput={setSubscriptionName}
                     />
 
                     <Max_Min_Length
@@ -188,8 +179,15 @@ export default function Subscription_Info_Form(
                     <Inp_With_Label
                         labelName="عدد الحصص"
                         inpType="number"
-                        inpValue={state.sessionsCount == 0 ? "" : state.sessionsCount}
-                        onWriteInInput={(e) => writeInSessionsInp(e)}
+                        inpValue={sessions == 0 ? "" : sessions}
+                        onWriteInInput={(value) => {
+                            if (Number(value) < maxSessions) {
+                                setSessions(Number(value));
+                            }
+                            else if (Number(value) >= maxSessions) {
+                                setSessions(Number(maxSessions));
+                            }
+                        }}
                     />
 
                     <p className="font-bold">
@@ -203,7 +201,14 @@ export default function Subscription_Info_Form(
                         labelName="السعر"
                         inpType="number"
                         inpValue={price == 0 ? "" : price}
-                        onWriteInInput={(e) => writeInPriceInp(e)} />
+                        onWriteInInput={(value) => {
+                            if (Number(value) < maxSubscriptionPrice) {
+                                setPrice(Number(value));
+                            }
+                            else if (Number(value) >= maxSubscriptionPrice) {
+                                setPrice(maxSubscriptionPrice);
+                            }
+                        }} />
 
                     <p className="font-bold">
                         الحد الاقصى : {maxSubscriptionPrice}
@@ -234,35 +239,20 @@ export default function Subscription_Info_Form(
                     <div>
                         {
                             alertForActiveSomeSubscription == null ?
-                                <>
-                                    <input
-                                        type="number"
-                                        onChange={(e) => {
-                                            if (Number(e.target.value) > Number(maxForActiveSomeSessions)) {
-                                                e.target.value = Number(maxForActiveSomeSessions) as any;
-                                                onGetActiveSomeSessions?.(maxForActiveSomeSessions);
-                                            }
-                                            else {
-                                                onGetActiveSomeSessions?.(Number(e.target.value));
-                                            }
-                                        }}
-                                        className={`
-                                            bg-slate-100 border border-slate-300 p-2 rounded-lg focus:outline-0
-                                            appearance-none w-full text-center
-                                            [&::-webkit-inner-spin-button]:appearance-none
-                                            [&::-webkit-outer-spin-button]:appearance-none
-                                        `}
-                                    />
-
-                                    {
-                                        maxForActiveSomeSessions ?
-                                            <p className="font-bold mt-3">
-                                                الحد الاقصى للتفعيل : {maxForActiveSomeSessions}
-                                            </p>
-                                            :
-                                            null
-                                    }
-                                </>
+                                <Inp_With_Label
+                                    inpType="number"
+                                    inpValue={activeSomeSessionsInp == 0 ? "" : activeSomeSessionsInp}
+                                    labelName={`الحد الاقصى للتفعيل : ${maxForActiveSomeSessions}`}
+                                    className=""
+                                    onWriteInInput={(value) => {
+                                        if (Number(value) > Number(maxForActiveSomeSessions)) {
+                                            setActiveSomeSessionsInp(maxForActiveSomeSessions);
+                                        }
+                                        else {
+                                            setActiveSomeSessionsInp(Number(value));
+                                        }
+                                    }}
+                                />
                                 :
                                 <p className="bg-red-500 font-bold border border-slate-300 p-2 rounded-lg focus:outline-0 w-full cursor-not-allowed text-center">
                                     {alertForActiveSomeSubscription}

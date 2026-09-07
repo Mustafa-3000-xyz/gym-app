@@ -3,7 +3,7 @@ import { updatePropertyInRowInDaysProfetsAndExpensesTable_Type, updateSomeProper
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const database = await Database.load("sqlite:app-gym-db.db");
+const database = await Database.load("sqlite:gym-app.db");
 
 
 

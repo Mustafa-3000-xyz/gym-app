@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import Welcome_Message from "./Components/Welcome-message/Welcome_Message";
-import End_Message from "./Components/End-message/End_Message";
+import Welcome_Message from "../Welcome-message/Welcome_Message";
+import End_Message from "../End-message/End_Message";
 import { accounte_Type } from "@/Pages/types";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
 import Animation from "@/Global-components/Animation/Animation";

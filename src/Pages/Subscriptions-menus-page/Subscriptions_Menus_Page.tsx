@@ -1,6 +1,6 @@
 import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import Box from "@/Global-components/Box/Box";
-import { Captions, Users } from "lucide-react";
+import { Captions, ShieldCheck } from "lucide-react";
 import Subscription_Menu_Card from "./Components/Subscription_Menu_Card";
 import { useEffect, useMemo, useState } from "react";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
@@ -84,6 +84,7 @@ export default function Subscriptions_Menu_Page() {
 
 
 
+
     useEffect(function () {
         if (!isShowAddNewSubscriptionType) {
             setGetSubscriptionName("");
@@ -125,7 +126,7 @@ export default function Subscriptions_Menu_Page() {
             />
 
             <Box
-                icon={<Users size={30} />}
+                icon={<ShieldCheck size={30} />}
                 title="مجموع الاشتراكات المفعله"
                 total={totalActivesMenu as any}
                 styleIcon="bg-neutral-200 text-neutral-500"
@@ -166,8 +167,10 @@ export default function Subscriptions_Menu_Page() {
         {
             isShowAddNewSubscriptionType ?
                 <Popup_Form
-                    titel="إضافة قائمة اشتراك جديد"
-                    discription="الان, يمكنك إضافة قائمة اشتراك جديد"
+                    popupFormInfo={{
+                        title: "إضافة قائمة اشتراك جديد",
+                        discription: "الان, يمكنك إضافة قائمة اشتراك جديد",
+                    }}
                     classNameForContainer="h-fit"
                     isSave={isSaveData}
                     clickOnSaveBtn={saveData}
@@ -178,7 +181,7 @@ export default function Subscriptions_Menu_Page() {
                             <Inp_With_Label
                                 labelName="اسم الاشتراك"
                                 inpValue={getSubscriptionName}
-                                onWriteInInput={(e) => setGetSubscriptionName(e.target.value)}
+                                onWriteInInput={setGetSubscriptionName}
                             />
 
                             <Max_Min_Length
@@ -193,11 +196,11 @@ export default function Subscriptions_Menu_Page() {
                                 labelName="عدد الحصص"
                                 inpType="number"
                                 inpValue={getSessionCount == 0 ? "" : getSessionCount}
-                                onWriteInInput={(e) => {
-                                    if (+e.target.value >= maxSessions) {
+                                onWriteInInput={(value) => {
+                                    if (Number(value) >= maxSessions) {
                                         setGetSessionCount(maxSessions);
                                     } else {
-                                        setGetSessionCount(+e.target.value);
+                                        setGetSessionCount(Number(value));
                                     }
                                 }}
                             />
@@ -214,11 +217,11 @@ export default function Subscriptions_Menu_Page() {
                                 labelName="السعر"
                                 inpType="number"
                                 inpValue={getPrice == 0 ? "" : getPrice}
-                                onWriteInInput={(e) => {
-                                    if (+e.target.value >= maxSubscriptionPrice) {
+                                onWriteInInput={(value) => {
+                                    if (Number(value) >= maxSubscriptionPrice) {
                                         setGetPrice(maxSubscriptionPrice);
                                     } else {
-                                        setGetPrice(+e.target.value)
+                                        setGetPrice(Number(value))
                                     }
                                 }}
                             />

@@ -3,19 +3,18 @@ import Drop_Menu from "@/Global-components/Drop-menu/Drop_Menu";
 import Top_Content_For_The_Drop from "@/Global-components/Drop-menu/Top-content-for-the-drop/Top_Content_For_The_Drop";
 import { subscriptionsMenus_Type } from "@/Pages/types";
 import { Subscriptions_Menu_Props } from "@/Pages/typesProps";
-import { addSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import { store_Type } from "@/Rtk/types";
 import { Menu } from "lucide-react";
 import { useEffect, useState } from "react";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 // ========================================================== //
 export default function Subscriptions_Menu(
     {
         onGetSubscriptionName,
+        onGetSesions,
         onGetPrice
     }: Subscriptions_Menu_Props
 ) {
-    const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
             trainerDetails: state.trainerDetails,
@@ -30,18 +29,18 @@ export default function Subscriptions_Menu(
 
     function clickOnSubscriptionMenu(subscriptionInfo: subscriptionsMenus_Type) {
         onGetSubscriptionName(subscriptionInfo.subscriptionName);
+        onGetSesions(subscriptionInfo.sessionsCount);
         onGetPrice(subscriptionInfo.price);
 
-        dispatch(addSessions(subscriptionInfo.sessionsCount));
         setIsShowMenu(false);
     }
+
 
 
 
     useEffect(function () {
         if (state.subscriptionsMenus?.length == 0) return;
         const arr: subscriptionsMenus_Type[] = [];
-
 
         state.subscriptionsMenus?.forEach(ele => ele.isActive == "true" && arr.push(ele));
         setMenusList(arr.length == 0 ? null : arr);
@@ -55,7 +54,7 @@ export default function Subscriptions_Menu(
         isShowTheMenu={isShowMenu}
         onGetCurrentIsShowMenu={setIsShowMenu}
     >
-        <Top_Content_For_The_Drop className="flex gap-3 items-center p-2"> 
+        <Top_Content_For_The_Drop className="flex gap-3 items-center p-2">
             <Menu size={23} />
             <h4 className="text-lg font-bold">قوائم الاشتراكات</h4>
         </Top_Content_For_The_Drop>

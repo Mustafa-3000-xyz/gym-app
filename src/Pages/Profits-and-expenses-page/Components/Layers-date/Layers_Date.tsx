@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import Info_Box_For_Profits_Expenses from "../Info-box-for-profits-expenses/Info-box-for-profits-expenses/Info_Box_For_Profits_Expenses";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
-import { regexYear } from "@/Lib/REGEX";
 import { addRowInYearsProfitsAndExpensesTable } from "@/Rtk/Slices/Db-slices/yearsProfitsAndExpensesSlice";
 import { alert, normalAlert } from "@/Lib/functions";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
@@ -36,6 +35,8 @@ export default function Layers_Date(
         }
     }, shallowEqual);
 
+
+
     const readYears = useMemo(function () {
         return [...state.yearsProfitsAndExpenses].sort((a, b) => Number(b.yearNumber) - Number(a.yearNumber));
     }, [state.yearsProfitsAndExpenses]);
@@ -47,8 +48,6 @@ export default function Layers_Date(
     const readDays = useMemo(function () {
         return [...state.daysProfitsAndExpenses].sort((a, b) => Number(b.dayNumber) - Number(a.dayNumber));
     }, [state.daysProfitsAndExpenses]);
-
-
 
 
 
@@ -90,12 +89,12 @@ export default function Layers_Date(
 
 
     function createNewYear() {
-        if (!`${yearNumInp}`.match(regexYear) && targetForYear == 0) return;
+        if (`${yearNumInp}`.length != 4 && targetForYear == 0) return;
 
         alert({
-            titleBeforeClickOnOk: "هل انت متأكد بإنشاء تلك السنه",
-            titleAfterClickOnOk: "تم إنشاء السنه بنجاح",
-            funRunWhenClickOnOk: function () {
+            textBeforeSubmit: "هل انت متأكد بإنشاء تلك السنه",
+            textAfterSubmit: "تم إنشاء السنه بنجاح",
+            runFunctionAfterSubmit: function () {
                 dispatch(addRowInYearsProfitsAndExpensesTable({
                     yearNumber: yearNumInp,
                     target: targetForYear,
@@ -112,9 +111,9 @@ export default function Layers_Date(
         if (monthInp == "" && targetForMonth == 0 && yearInfo.id == null) return;
 
         alert({
-            titleBeforeClickOnOk: `هل انت متأكد ربط شهر ${monthInp} بسنة ${yearInfo.title}`,
-            titleAfterClickOnOk: "تم إنشاء السنه بنجاح",
-            funRunWhenClickOnOk: function () {
+            textBeforeSubmit: `هل انت متأكد ربط شهر ${monthInp} بسنة ${yearInfo.title}`,
+            textAfterSubmit: "تم إنشاء السنه بنجاح",
+            runFunctionAfterSubmit: function () {
                 dispatch(addRowInMonthsProfitsAndExpensesTable({
                     linkWithYear: Number(yearInfo.id),
                     monthName: monthInp,
@@ -142,9 +141,9 @@ export default function Layers_Date(
         }
 
         alert({
-            titleBeforeClickOnOk: `هل انت متأكد ربط يوم ${dayNumInp} بشهر ${monthInfo.title}`,
-            titleAfterClickOnOk: "تم إنشاء اليوم بنجاح",
-            funRunWhenClickOnOk: function () {
+            textBeforeSubmit: `هل انت متأكد ربط يوم ${dayNumInp} بشهر ${monthInfo.title}`,
+            textAfterSubmit: "تم إنشاء اليوم بنجاح",
+            runFunctionAfterSubmit: function () {
                 dispatch(addRowInDaysProfitsAndExpensesTable({
                     linkWithMonth: Number(monthInfo.id),
                     dayNumber: Number(dayNumInp),
@@ -260,7 +259,7 @@ export default function Layers_Date(
         }
 
 
-        if (`${yearNumInp}`.match(regexYear) && targetForYear != 0) {
+        if (`${yearNumInp}`.length == 4 && targetForYear != 0) {
             setIsSave(true);
         } else {
             setIsSave(false);
@@ -303,11 +302,11 @@ export default function Layers_Date(
 
 
 
-    return <div className="grid grid-cols-3 gap-3 mt-7">
+    return <div className="grid grid-cols-3 gap-3">
         {/* Years */}
         <div>
             {/* Title & icon */}
-            <div className="flex itmes-center gap-2 font-bold mb-5">
+            <div className="flex itmes-center gap-2 font-bold mb-2">
                 <PackageOpen size={33} />
 
                 <h3 className="text-2xl">
@@ -317,12 +316,12 @@ export default function Layers_Date(
 
             <Add_Btn
                 title="إنشاء سنه جديد"
-                className="cursor-pointer mb-5 py-5"
+                className="cursor-pointer mb-5"
                 onClick={() => setIsShowCreateNewYear(true)}
             />
 
             {/* All Boxes for years */}
-            <div className="flex flex-col items-center gap-3 h-[70vh] overflow-y-auto p-5">
+            <div className="flex flex-col items-center gap-3 p-5 max-h-[70vh] overflow-y-auto">
                 {
                     readYears.length > 0 ?
                         readYears.map(ele => <Info_Box_For_Profits_Expenses
@@ -333,7 +332,7 @@ export default function Layers_Date(
                             profitsTotal={ele.profitsTotal}
                             expensesTotal={ele.expensesTotal}
                             target={ele.target}
-                            targetType="السنوي"
+                            targetType="year"
                             isHiddenTheWord={new Date().getFullYear() == Number(ele.yearNumber) ? false : true}
                             className={`${yearInfo.id != ele.id ? "cursor-pointer" : ""}`}
                             styleBoxWhenSelect={yearInfo.id == ele.id ? "black" : null}
@@ -351,7 +350,7 @@ export default function Layers_Date(
         {/* Monthes */}
         <div>
             {/* Title & icon */}
-            <div className="flex itmes-center gap-2 font-bold mb-5">
+            <div className="flex itmes-center gap-2 font-bold mb-2">
                 <Package size={33} />
 
                 <h3 className="text-2xl">
@@ -361,12 +360,12 @@ export default function Layers_Date(
 
             <Add_Btn
                 title="إنشاء شهر جديد"
-                className="cursor-pointer mb-5 py-5"
+                className="cursor-pointer mb-5"
                 onClick={clickOnAddNewMonthBtn}
             />
 
             {/* All Boxes for monthes */}
-            <div className="flex flex-col items-center gap-3 h-[70vh] overflow-y-auto p-5">
+            <div className="flex flex-col items-center gap-3 p-5 max-h-[70vh] overflow-y-auto">
                 {
                     yearInfo.id != null && state.monthsProfitsAndExpenses.length > 0 ?
                         readMonths.map(ele => <Info_Box_For_Profits_Expenses
@@ -377,7 +376,7 @@ export default function Layers_Date(
                             profitsTotal={ele.profitsTotal}
                             expensesTotal={ele.expensesTotal}
                             target={ele.target}
-                            targetType="الشهري"
+                            targetType="month"
                             monthNumber={ele.monthNumber}
                             className={`${monthInfo.id != ele.id ? "cursor-pointer" : ""}`}
                             styleBoxWhenSelect={monthInfo.id == ele.id ? "black" : null}
@@ -401,7 +400,7 @@ export default function Layers_Date(
         {/* Days */}
         <div>
             {/* Title & icon */}
-            <div className="flex itmes-center gap-2 font-bold mb-5 text-black">
+            <div className="flex itmes-center gap-2 font-bold mb-2">
                 <Cuboid size={33} />
 
                 <h3 className="text-2xl">
@@ -411,12 +410,12 @@ export default function Layers_Date(
 
             <Add_Btn
                 title="إنشاء يوم جديد"
-                className="cursor-pointer mb-5 py-5"
+                className="cursor-pointer mb-5"
                 onClick={clickOnAddNewDayBtn}
             />
 
             {/* All Boxes for days */}
-            <div className="flex flex-col items-center gap-3 h-[70vh] overflow-y-auto p-5">
+            <div className="flex flex-col items-center gap-3 p-5 max-h-[70vh] overflow-y-auto">
                 {
                     monthInfo.id != null && state.daysProfitsAndExpenses.length > 0 ?
                         readDays.map(ele => <Info_Box_For_Profits_Expenses
@@ -427,7 +426,7 @@ export default function Layers_Date(
                             profitsTotal={ele.profitsTotal}
                             expensesTotal={ele.expensesTotal}
                             target={ele.target}
-                            targetType="اليومي"
+                            targetType="day"
                             className={`${dayInfo.id != ele.id ? "cursor-pointer" : ""}`}
                             styleBoxWhenSelect={dayInfo.id == ele.id ? "black" : null}
                             onGetBoxInfo={dayInfo.id != ele.id ? setDayInfo as any : () => null}
@@ -451,9 +450,11 @@ export default function Layers_Date(
         {
             isShowCreateNewYear ?
                 <Popup_Form
+                    popupFormInfo={{
+                        title: "إنشاء سنه جديده",
+                        discription: "يمكنك الان إنشاء سنه جديده لكي يتم ربطها بشهر معين",
+                    }}
                     isSave={isSave}
-                    titel="إنشاء سنه جديده"
-                    discription="يمكنك الان إنشاء سنه جديده لكي يتم ربطها بشهر معين"
                     classNameForParent="h-fit"
                     classNameForContainer="grid grid-cols-2 gap-3"
                     clickOnSaveBtn={createNewYear}
@@ -465,11 +466,11 @@ export default function Layers_Date(
                             inpType="number"
                             inpValue={yearNumInp == 0 ? "" : yearNumInp}
                             labelName="اكتب رقم السنه"
-                            onWriteInInput={(e) => setYearNumInp(Number(e.target.value))}
+                            onWriteInInput={(value) => setYearNumInp(Number(value))}
                         />
 
                         <Max_Min_Length
-                            isGreenFlag={`${yearNumInp}`.match(regexYear) ? true : false}
+                            isGreenFlag={`${yearNumInp}`.length == 4 ? true : false}
                             maxLength={4}
                             minLength={`${yearNumInp == 0 ? "" : yearNumInp}`.length}
                         />
@@ -481,12 +482,12 @@ export default function Layers_Date(
                             inpType="number"
                             inpValue={targetForYear == 0 ? "" : targetForYear}
                             labelName="المبلغ الذي يجب تجميعه خلال هذه السنه (Target)"
-                            onWriteInInput={(e) => {
-                                if (Number(e.target.value) > maxTargetInYear) {
+                            onWriteInInput={(value) => {
+                                if (Number(value) > maxTargetInYear) {
                                     setTargetForYear(maxTargetInYear);
                                 }
                                 else {
-                                    setTargetForYear(Number(e.target.value));
+                                    setTargetForYear(Number(value));
                                 }
                             }}
                         />
@@ -503,9 +504,11 @@ export default function Layers_Date(
         {
             isShowCreateNewMonth ?
                 <Popup_Form
+                    popupFormInfo={{
+                        title: "إنشاء شهر جديد",
+                        discription: `يمكنك الان إنشاء شهر جديد داخل سنة (${yearInfo.title})`,
+                    }}
                     isSave={isSave}
-                    titel="إنشاء شهر جديد"
-                    discription={`يمكنك الان إنشاء شهر جديد داخل سنة (${yearInfo.title})`}
                     classNameForParent={`${isDropMenuOpen ? "h-[500px]!" : "h-fit"}`}
                     classNameForContainer="grid grid-cols-2 gap-3"
                     clickOnSaveBtn={createNewMonth}
@@ -542,12 +545,12 @@ export default function Layers_Date(
                             inpType="number"
                             inpValue={targetForMonth == 0 ? "" : targetForMonth}
                             labelName="المبلغ الذي يجب تجميعه خلال هذا الشهر (Target)"
-                            onWriteInInput={(e) => {
-                                if (Number(e.target.value) > maxTargetInMonth) {
+                            onWriteInInput={(value) => {
+                                if (Number(value) > maxTargetInMonth) {
                                     setTargetForMonth(maxTargetInMonth);
                                 }
                                 else {
-                                    setTargetForMonth(Number(e.target.value));
+                                    setTargetForMonth(Number(value));
                                 }
                             }}
                         />
@@ -564,9 +567,11 @@ export default function Layers_Date(
         {
             isShowCreateNewDay ?
                 <Popup_Form
+                    popupFormInfo={{
+                        title: "إنشاء يوم جديد",
+                        discription: `يمكنك الان إنشاء يوم جديد داخل شهر (${monthInfo.title}) في سنة (${yearInfo.title})`,
+                    }}
                     isSave={isSave}
-                    titel="إنشاء يوم جديد"
-                    discription={`يمكنك الان إنشاء يوم جديد داخل شهر (${monthInfo.title}) في سنة (${yearInfo.title})`}
                     classNameForContainer="grid grid-cols-2 gap-3"
                     clickOnSaveBtn={createNewDay}
                     clickOnCancel={resetValues}
@@ -577,7 +582,7 @@ export default function Layers_Date(
                             inpType="number"
                             inpValue={dayNumInp == 0 ? "" : dayNumInp}
                             labelName="اكتب رقم اليوم"
-                            onWriteInInput={(e) => setDayNumInp(Number(e.target.value))}
+                            onWriteInInput={(value) => setDayNumInp(Number(value))}
                         />
 
                         <div className="flex flex-wrap gap-1 font-bold w-full">
@@ -595,12 +600,12 @@ export default function Layers_Date(
                             inpType="number"
                             inpValue={targetForDay == 0 ? "" : targetForDay}
                             labelName="المبلغ الذي يجب تجميعه خلال هذا اليوم (Target)"
-                            onWriteInInput={(e) => {
-                                if (Number(e.target.value) > maxTargetInDay) {
+                            onWriteInInput={(value) => {
+                                if (Number(value) > maxTargetInDay) {
                                     setTargetForDay(maxTargetInDay);
                                 }
                                 else {
-                                    setTargetForDay(Number(e.target.value));
+                                    setTargetForDay(Number(value));
                                 }
                             }}
                         />

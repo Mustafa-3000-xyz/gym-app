@@ -1,16 +1,19 @@
 import { Trainer_Info_Form_Props } from "@/Pages/typesProps";
-import { regexAddress, regexFindSpacesInTranierName, regexFirstName, regexLastName, regexPhone } from "@/Lib/REGEX";
+import { regexAddress, regexFirstName, regexLastName, regexPhone } from "@/Lib/REGEX";
 import { useEffect, useState } from "react";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
 import { shallowEqual, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
+import Max_Min_Length from "@/Global-components/Max-min-length/Max_Min_Length";
+import { Checkbox } from "primereact/checkbox";
 // ========================================================== //
 export default function Trainer_Info_Form(
     {
         onGetFirstName,
         onGetLastName,
         onGetPhone,
-        onGetAddress
+        onGetAddress,
+        onGetTrainerType
     }: Trainer_Info_Form_Props
 ) {
     const state = useSelector(function (state: store_Type) {
@@ -25,24 +28,23 @@ export default function Trainer_Info_Form(
     const [phone, setPhone] = useState<number>(0);
     const [address, setAddress] = useState<string>("");
 
+    const [isMan, setIsMan] = useState(true);
+    const [isGirl, setIsGirl] = useState(false);
 
 
-    function checkFirstName(value: string) {
-        if (value.match(regexFindSpacesInTranierName)) {
-            value = value.replace(/\s/g, "");
+    function clickOnManBox() {
+        if (!isMan && isGirl) {
+            setIsMan(true);
+            setIsGirl(false);
         }
-
-        setFirstName(value);
     }
 
-    function checkLastName(value: string) {
-        if (value.match(regexFindSpacesInTranierName)) {
-            value = value.replace(/\s/g, "");
+    function clickOnGirlBox() {
+        if (isMan && !isGirl) {
+            setIsMan(false);
+            setIsGirl(true);
         }
-
-        setLastName(value);
     }
-
 
 
     // When open trainerDetails details, i want show his values
@@ -52,14 +54,25 @@ export default function Trainer_Info_Form(
             setLastName(state.trainerDetails?.lastName as any);
             setPhone(state.trainerDetails?.phone as any);
             setAddress(state.trainerDetails?.address as any);
+
+            if (state.trainerDetails?.trainerType == "man") {
+                setIsMan(true);
+                setIsGirl(false);
+            } else {
+                setIsMan(false);
+                setIsGirl(true);
+            }
         } else {
             setFirstName("");
             setLastName("");
             setPhone(0);
             setAddress("");
+            setIsMan(true);
+            setIsGirl(false);
         }
     }, [state.trainerDetails]);
 
+    // Send values
     useEffect(function () {
         if (firstName?.match(regexFirstName)) {
             onGetFirstName(firstName);
@@ -84,89 +97,119 @@ export default function Trainer_Info_Form(
         } else {
             onGetAddress(null);
         }
-    }, [firstName, lastName, phone, address]);
+
+
+        if (isMan) {
+            onGetTrainerType("man");
+        } else {
+            onGetTrainerType("women");
+        }
+    }, [firstName, lastName, phone, address, isMan, isGirl]);
 
 
 
 
-    return <div>
-        {/* First name & Last name */}
-        <div className="flex justify-center gap-3">
-            <div className="w-4/12">
+
+
+    return <div className="grid grid-cols-2 gap-5 mb-4 p-1">
+        {/* First name & last name & phone & address */}
+        <div className="rounded-lg border border-slate-300 grid grid-cols-2 p-3 gap-3">
+            <div>
                 <Inp_With_Label
                     labelName="الاسم الاول"
                     inpType="text"
                     inpValue={firstName}
-                    onWriteInInput={(e) => checkFirstName(e.target.value)}
+                    isRemoveSpaces
+                    onWriteInInput={setFirstName}
                 />
 
-                <p className={`
-                        text-end m-1
-                        ${firstName?.length < 3
-                        ||
-                        firstName?.length > 13 ? "text-red-500" : "text-emerald-500"}
-                    `}
-                >
-                    13/{firstName.length}
-                </p>
+                <Max_Min_Length
+                    maxLength={13}
+                    minLength={firstName.length}
+                    isGreenFlag={firstName?.length > 3 && firstName?.length <= 13}
+                />
             </div>
 
-            <div className="w-4/12">
+            <div>
                 <Inp_With_Label
                     labelName="الاسم الثاني"
                     inpType="text"
                     inpValue={lastName}
-                    onWriteInInput={(e) => checkLastName(e.target.value)}
+                    isRemoveSpaces
+                    onWriteInInput={setLastName}
                 />
 
-                <p className={`
-                        text-end m-1
-                        ${lastName.length < 3
-                        ||
-                        lastName?.length > 13 ? "text-red-500" : "text-emerald-500"}
-                    `}
-                >
-                    13/{lastName?.length || 0}
-                </p>
+                <Max_Min_Length
+                    maxLength={13}
+                    minLength={lastName.length}
+                    isGreenFlag={lastName?.length > 3 && lastName?.length <= 13}
+                />
             </div>
-        </div>
 
-        {/* Phone number & Adrees */}
-        <div className="flex justify-center gap-3">
-            <div className="flex flex-col w-4/12">
+            <div>
                 <Inp_With_Label
                     labelName="رقم الموبايل (اختياري)"
                     inpType="number"
                     inpValue={phone == 0 ? "" : phone}
-                    onWriteInInput={(e) => setPhone(Number(e.target.value))}
+                    onWriteInInput={(value) => setPhone(Number(value))}
                 />
 
-                <p className={`
-                        text-end m-1
-                        ${phone.toString().length > 10
-                        ||
-                        (phone.toString().length < 10 && phone != 0) ? "text-red-500" : "text-emerald-500"}
-                    `}
-                >
-                    10/{phone == 0 ? 0 : phone?.toString().length}
-                </p>
+                <Max_Min_Length
+                    maxLength={10}
+                    minLength={phone == 0 ? 0 : phone?.toString().length}
+                    isGreenFlag={phone.toString().match(regexPhone) || phone == 0 ? true : false}
+                />
             </div>
 
-            <div className="w-4/12">
+            <div>
                 <Inp_With_Label
                     labelName="العنوان (اختياري)"
                     inpType="text"
                     inpValue={address}
-                    onWriteInInput={(e) => setAddress(e.target.value)}
+                    onWriteInInput={(value) => setAddress(value)}
                 />
 
-                <p className={`
-                        text-end m-1
-                        ${address?.length > 50 ? "text-red-500" : "text-emerald-500"}
-                    `}
+                <Max_Min_Length
+                    maxLength={30}
+                    minLength={address.length}
+                    isGreenFlag={address?.length <= 30}
+                />
+            </div>
+        </div>
+
+        {/* Trainer type */}
+        <div className="flex flex-col gap-5 justify-center items-center border rounded-lg border-slate-300">
+            <h3 className="text-5xl font-bold">
+                نوع المتدرب
+            </h3>
+
+            {/* Trainer type => man or girl*/}
+            <div
+                className="flex items-center gap-3 cursor-pointer"
+                onClick={clickOnManBox}
+            >
+                {/* Man */}
+                <div className="flex gap-2 items-center">
+                    <p className="text-2xl font-bold">
+                        ذكر
+                    </p>
+
+                    <Checkbox checked={isMan} />
+                </div>
+
+                <div className="bg-black h-5 w-0.5"></div>
+
+                {/* Girl */}
+                <div
+                    className="flex gap-2 items-center cursor-pointer"
+                    onClick={clickOnGirlBox}
                 >
-                    50/{address.length}
-                </p>
+                    <p className="text-2xl font-bold">
+                        انثى
+                    </p>
+
+                    <Checkbox checked={isGirl} />
+                </div>
             </div>
         </div>
     </div>

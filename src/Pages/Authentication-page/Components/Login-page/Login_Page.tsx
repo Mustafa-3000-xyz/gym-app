@@ -1,4 +1,4 @@
-import All_Accountes from "@/Global-components/All-accountes/All_Accountes";
+import All_Accounts from "@/Global-components/All-accountes/All_Accounts"
 // ========================================================== //
 export default function Login_Page() {
     return <section>
@@ -7,7 +7,7 @@ export default function Login_Page() {
         </h1>
 
         <div className="flex justify-center items-center flex-wrap gap-3">
-            <All_Accountes />
+            <All_Accounts />
         </div>
     </section>
 }

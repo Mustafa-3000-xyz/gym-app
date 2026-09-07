@@ -25,6 +25,8 @@ export default function Info_Box_For_Profits_Expenses(
     }: Info_Box_For_Profits_Expenses_Props
 ) {
     const dispatch = useDispatch();
+
+
     const [isEditingBox, setIsEditingBox] = useState(false);
     const [targetInfoForEditing, setTargetInfoForEditing] = useState(0);
     const [targetInp, setTargetInp] = useState(0);
@@ -59,7 +61,7 @@ export default function Info_Box_For_Profits_Expenses(
         if (targetInp == 0) return;
 
 
-        if (targetType == "السنوي") {
+        if (targetType == "year") {
             dispatch(updatePropertyInRowYearsInProfitsAndExpensesTable({
                 id: Number(id),
                 column: "target",
@@ -68,7 +70,7 @@ export default function Info_Box_For_Profits_Expenses(
 
             cancelChanges(e);
         }
-        else if (targetType == "الشهري") {
+        else if (targetType == "month") {
             dispatch(updatePropertyInRowInMonthsProfitsAndExpensesTable({
                 id: Number(id),
                 column: "target",
@@ -100,8 +102,8 @@ export default function Info_Box_For_Profits_Expenses(
 
     useEffect(function () {
         if (isEditingBox) {
-            const result = targetType == "السنوي" ? maxTargetInYear
-                : targetType == "الشهري" ? maxTargetInMonth
+            const result = targetType == "year" ? maxTargetInYear
+                : targetType == "month" ? maxTargetInMonth
                     : maxTargetInDay;
 
             setTargetInfoForEditing(result);
@@ -172,7 +174,13 @@ export default function Info_Box_For_Profits_Expenses(
                             />
                             :
                             <>
-                                {targetType} : {target}$
+                                {
+                                    targetType == "year" ?
+                                        "السنوي"
+                                        :
+                                        targetType == "month" ? "الشهري" : "اليومي"
+                                } :
+                                {target}$
                             </>
                     }
                 </li>

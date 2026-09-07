@@ -17,10 +17,11 @@ export default function End_Message(
     ];
 
 
+
     useEffect(() => {
         let count = 0;
 
-        const interval = setInterval(() => {
+        const interval = setInterval(async () => {
             if (count == texts.length - 1) {
                 clearInterval(interval);
                 dispatch(addRowInAccountsTable({
@@ -28,11 +29,11 @@ export default function End_Message(
                     profileImg: "",
                     coverImg: "",
                     type: "manager",
-                    loginDate: "",
-                    workingHours: 0,
+                    color: "#000000",
+                    trainersTotal: 0,
                     totalActiveSubscriptions: 0,
                     permissions: "fullAccess"
-                }) as any)
+                }) as any);
             } 
             else {
                 count += 1;

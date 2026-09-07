@@ -1,13 +1,13 @@
 import Account_Img from "@/Pages/Profile-page/Components/Account-img/Account_Img";
 import Box from "@/Global-components/Box/Box";
-import { accountesPagePath, allPermissions } from "@/Lib/constants";
+import { accountesPagePath, allPermissions, CHANGE_ACCOUNT_COLOR } from "@/Lib/constants";
 import { deleteRowInAccountsTableById, updatePropertyInRowInAccountsTable, updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
-import { BriefcaseBusiness, KeyRound, LogOut, Shell, Trash } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { KeyRound, LogOut, Shell, Trash, UsersRound } from "lucide-react";
+import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { accounte_Type } from "../types";
 import Permissions from "../../Global-components/Permissions/Permissions";
-import { alert, logOutFromOldAccount } from "@/Lib/functions";
+import { alert, checkPermissionesInAccount } from "@/Lib/functions";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
 import { useNavigate, useParams } from "react-router-dom";
 import { store_Type } from "@/Rtk/types";
@@ -19,11 +19,15 @@ export default function Profile_Page() {
     const state = useSelector(function (state: store_Type) {
         return {
             trainerDetails: state.trainerDetails,
-            accountes: state.accountes,
+            accounts: state.accounts,
             logInInfo: state.logInInfo,
         }
     }, shallowEqual);
 
+    const checkTheChangeColor = checkPermissionesInAccount({
+        accountId: Number(state.logInInfo?.id),
+        permissionType: CHANGE_ACCOUNT_COLOR
+    });
 
     const [theAccount, setTheAccount] = useState<accounte_Type | null>(null);
     const [permissionsList, setPermissionsList] = useState<string | string[]>("fullAccess");
@@ -32,6 +36,7 @@ export default function Profile_Page() {
     const [isSaveChange, setIsSaveChange] = useState(false);
     const [getName, setGetName] = useState<string | null>(null);
     const [getAge, setGetAge] = useState<number | null>(null);
+    const [getColor, setGetColor] = useState<string | null>(null);
     const [getPassword, setGetPassword] = useState<string | null>(null);
 
     const navigate = useNavigate();
@@ -39,21 +44,21 @@ export default function Profile_Page() {
 
 
 
+
     function clickOnLogOutBtn() {
         alert({
-            titleBeforeClickOnOk: "هل تريد بالفعل تسجيل الخروج ؟؟",
-            funRunWhenClickOnOk: function () {
+            textBeforeSubmit: "هل تريد بالفعل تسجيل الخروج ؟؟",
+            runFunctionAfterSubmit: function () {
                 dispatch(changeLogInInfo(null))
-                logOutFromOldAccount(Number(state.logInInfo?.id));
             }
         })
     }
 
     function clickOnRemoveAccountBtn() {
         alert({
-            titleBeforeClickOnOk: "هل تريد بالفعل حذف ذلك الحساب ؟؟",
-            titleAfterClickOnOk: "تم حذف الحساب بنجاح",
-            funRunWhenClickOnOk: function () {
+            textBeforeSubmit: "هل تريد بالفعل حذف ذلك الحساب ؟؟",
+            textAfterSubmit: "تم حذف الحساب بنجاح",
+            runFunctionAfterSubmit: function () {
                 dispatch(deleteRowInAccountsTableById(accountId as any) as any);
                 navigate(accountesPagePath);
             }
@@ -72,20 +77,25 @@ export default function Profile_Page() {
     function clickOnSaveChangesBtn() {
         if (!isSaveChange) return;
 
-
         dispatch(updateSomePropertiesInRowInAccountsTable({
             id: theAccount?.id as any,
             values: {
                 name: getName as any,
                 age: getAge as any,
+                color: getColor as any,
                 password: getPassword as any
             }
         }) as any)
 
-        setIsShowEditingAccount(false);
-        setIsSaveChange(false)
-    }
+        dispatch(changeLogInInfo({
+            id: theAccount?.id as any,
+            type: theAccount?.type as any,
+            color: getColor
+        }));
 
+        setIsShowEditingAccount(false);
+        setIsSaveChange(false);
+    }
 
 
 
@@ -118,10 +128,11 @@ export default function Profile_Page() {
 
     // Get account
     useEffect(function () {
-        const getAccount = state.accountes?.find(ele => ele.id == (Number(accountId)));
+        const getAccount = state.accounts?.find(ele => ele.id == (Number(accountId)));
 
         setTheAccount(getAccount as accounte_Type);
-    }, [accountId, state.accountes]);
+        setGetColor(getAccount?.color as any);
+    }, [accountId, state.accounts]);
 
     // Check values is changes or no
     useEffect(function () {
@@ -132,31 +143,19 @@ export default function Profile_Page() {
 
 
         if (
-            (getName != theAccount?.name)
+            getName != theAccount?.name
             ||
-            (getAge != theAccount?.age)
+            getAge != theAccount?.age
             ||
-            (getPassword != theAccount?.password)
+            getColor != theAccount.color
+            ||
+            getPassword != theAccount?.password
         ) {
             setIsSaveChange(true);
         } else {
             setIsSaveChange(false);
         }
-    }, [getName, getAge, getPassword]);
-
-
-    const houresTotal = useMemo(function () {
-        if (theAccount?.loginDate) {
-            const startDate = new Date(theAccount?.loginDate as any).getTime();
-            const dateNow = new Date().getTime();
-            const totalForHours = (startDate - dateNow) / (1000 * 60 * 60);
-
-            return Math.trunc(Math.abs(totalForHours));
-        }
-        else {
-            return Math.trunc(Math.abs(theAccount?.workingHours as any));
-        }
-    }, [theAccount]);
+    }, [getName, getAge, getPassword, getColor]);
 
 
 
@@ -181,7 +180,7 @@ export default function Profile_Page() {
                 <Account_Img
                     accountId={theAccount?.id as number}
                     img={theAccount?.profileImg as string}
-                    accountType={theAccount?.type as any}
+                    color={theAccount?.color as any}
                     isChangeTheImg={state.logInInfo?.id == accountId}
                 />
             </div>
@@ -219,10 +218,10 @@ export default function Profile_Page() {
             />
 
             <Box
-                icon={<BriefcaseBusiness />}
+                icon={<UsersRound />}
                 styleIcon="bg-neutral-200 text-neutral-500"
-                title="مجموع ساعات العمل"
-                total={houresTotal as any}
+                title="مجموع المتدربين"
+                total={Number(theAccount.trainersTotal)}
             />
 
             <Box
@@ -303,7 +302,8 @@ export default function Profile_Page() {
 
         {
             isShowEditingAccount ?
-                <div className="select-none">
+                <>
+                    {/* Account form */}
                     <Account_Form
                         name={theAccount.name}
                         age={theAccount.age}
@@ -314,8 +314,51 @@ export default function Profile_Page() {
                         onGetPassword={setGetPassword}
                     />
 
+                    {
+                        checkTheChangeColor ?
+                            <div className="flex gap-3 justify-center mt-10">
+                                {
+                                    state.logInInfo?.type == "manager" ?
+                                        <div
+                                            className={`
+                                                bg-black w-10 h-10 rounded-lg
+                                                ${getColor == "#000000" ? "border-5 border-amber-500" : "cursor-pointer"}
+                                            `}
+                                            onClick={() => setGetColor("#000000")}
+                                        ></div>
+                                        :
+                                        null
+                                }
 
-                    <div className="flex justify-center my-10">
+                                <div
+                                    className={`
+                                        bg-purple-500 w-10 h-10 rounded-lg
+                                        ${getColor == "#ad46ff" ? "border-5 border-amber-500" : "cursor-pointer"}
+                                    `}
+                                    onClick={() => setGetColor("#ad46ff")}
+                                ></div>
+
+                                <div
+                                    className={`
+                                        bg-[#3b82f6] w-10 h-10 rounded-lg
+                                        ${getColor == "#3b82f6" ? "border-5 border-amber-500" : "cursor-pointer"}
+                                    `}
+                                    onClick={() => setGetColor("#3b82f6")}
+                                ></div>
+
+                                <div
+                                    className={`
+                                        bg-lime-700 w-10 h-10 rounded-lg 
+                                        ${getColor == "#497d00" ? "border-5 border-amber-500" : "cursor-pointer"}
+                                    `}
+                                    onClick={() => setGetColor("#497d00")}
+                                ></div>
+                            </div>
+                            :
+                            null
+                    }
+
+                    <div className="flex justify-center my-5">
                         <button
                             className={`
                                 w-2/3 duration-300
@@ -328,9 +371,9 @@ export default function Profile_Page() {
                             حفظ التغيرات
                         </button>
                     </div>
-                </div>
+                </>
                 :
                 null
         }
-    </section>
+    </section >
 }

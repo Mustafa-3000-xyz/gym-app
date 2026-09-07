@@ -20,22 +20,15 @@ export default function Sidebar_Links(
 
 
 
-    return <li className={`
-                transition-all duration-300 p-2 rounded-sm text-black
-                ${
-                    pathname == path && state.logInInfo?.type == "manager" ? 
-                    "bg-(--managerColor) text-white"
-                    :
-                    state.logInInfo?.type == "manager" &&
-                        "hover:bg-(--managerColor)/70 hover:text-white"
-                }
-                ${
-                    pathname == path && state.logInInfo?.type == "captain" ?
-                    "bg-(--captainColor) text-white"
-                    :
-                    state.logInInfo?.type == "captain" &&
-                        "hover:bg-(--captainColor)/70 hover:text-white"
-                }
+    return <li
+        style={{
+            backgroundColor: pathname == path ? state.logInInfo?.color : "",
+            '--account-color': state.logInInfo?.color,
+        } as React.CSSProperties}
+
+        className={`
+            duration-300 p-2 rounded-sm hover:bg-(--account-color)/70 hover:text-white
+            ${pathname == path ? "!text-white" : ""}
         `}
     >
         <Link to={path} className="flex items-center gap-2">
@@ -44,9 +37,9 @@ export default function Sidebar_Links(
             </div>
 
             <span className={`
-                text-lg
-                hidden group-hover:block whitespace-nowrap
-            `}
+                    text-lg hidden group-hover:block whitespace-nowrap text-(--thirdColor) font-bold
+                    ${pathname == path ? "!text-white" : ""}
+                `}
             >
                 {linkName}
             </span>

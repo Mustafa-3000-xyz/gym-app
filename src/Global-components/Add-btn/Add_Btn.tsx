@@ -1,7 +1,8 @@
 import { Plus } from "lucide-react";
 import { Add_Btn_Props } from "../typesProps";
+import React from "react";
 // ========================================================== //
-export default function Add_Btn(
+function Add_Btn(
     {
         title,
         className,
@@ -27,3 +28,5 @@ export default function Add_Btn(
         </button>
     </div>
 }
+
+export default React.memo(Add_Btn);

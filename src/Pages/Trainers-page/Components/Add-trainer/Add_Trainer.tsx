@@ -1,26 +1,25 @@
-import { Presentation, UserRound } from "lucide-react";
+import { CircleUserRound, Presentation, UserRound } from "lucide-react";
 import { useMemo, useState } from "react";
 import { addRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import Trainer_Info_Form from "../Forms/Trainer_Info_Form";
 import Subscription_Info_Form from "../Forms/Subscription_Info_Form";
-import { alert, incrementOrDecrementForTotalSessionsInAccount, theTodayDate } from "@/Lib/functions";
+import { alert, arithmeticOperatorsWithProfitsAndExpenses, incrementOrDecrementForTotalSessionsInAccount } from "@/Lib/functions";
 import { addNewTrainer, maxTargetInDay, maxTargetInMonth, maxTargetInYear, monthsWithHisDays, statusIsActive, statusIsFinished, statusIsPending } from "@/Lib/constants";
 import Date_Info_Form from "../Forms/Date_Info_Form";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { daysProfitsAndExpenses_Type, monthsProfitsAndExpenses_Type, trainer_Type, yearsProfitsAndExpenses_Type } from "@/Pages/types";
+import { attendanceDetails_Type, daysProfitsAndExpenses_Type, monthsProfitsAndExpenses_Type, trainer_Type, yearsProfitsAndExpenses_Type } from "@/Pages/types";
 import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
 import { store_Type } from "@/Rtk/types";
-import { removeSubscriptionStart } from "@/Rtk/Slices/UI-slices/subscriptionStartSlice";
-import { removeSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSlice";
-import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import { addDays } from "date-fns";
 import Database from "@tauri-apps/plugin-sql";
-import { addRowInAttendanceTable } from "@/Rtk/Slices/Db-slices/attendanceSlice";
+import { addRowInAttendanceTable, updatePropertyInRowInAttendanceTable } from "@/Rtk/Slices/Db-slices/attendanceSlice";
 import { addRowInItemsTable } from "@/Rtk/Slices/Db-slices/itemsSlice";
-import { arithmeticOperatorsWithProfitsAndExpenses } from "@/Lib/functionsWithDb";
+import { getAllAttendanceInSpecificDate } from "@/Lib/functionsWithDb";
 import { addRowInDaysProfitsAndExpensesTable } from "@/Rtk/Slices/Db-slices/daysProfitsAndExpensesSlice";
 import { addRowInMonthsProfitsAndExpensesTable } from "@/Rtk/Slices/Db-slices/monthsProfitsAndExpensesSlice";
 import { addRowInYearsProfitsAndExpensesTable } from "@/Rtk/Slices/Db-slices/yearsProfitsAndExpensesSlice";
+import { addRowInActiveSessionsTableAndLinkedTheTrainer } from "@/Rtk/Slices/Db-slices/activeSessionsSlice";
+import { updatePropertyInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 // ========================================================== //
 export default function Add_Trainer(
     { onIsShowAddTrainer }: { onIsShowAddTrainer: (x: boolean) => void }
@@ -28,10 +27,8 @@ export default function Add_Trainer(
     const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
-            subscriptionStart: state.subscriptionStart,
-            subscriptionEnd: state.subscriptionEnd,
             logInInfo: state.logInInfo,
-            sessionsCount: state.sessionsCount
+            accounts: state.accounts
         }
     }, shallowEqual);
 
@@ -41,13 +38,58 @@ export default function Add_Trainer(
     const [getLastName, setGetLastName] = useState<string | null>(null);
     const [getPhone, setGetPhone] = useState<number | null>(0);
     const [getAddress, setGetAddress] = useState<string | null>(null);
+    const [getTrainerType, setGetTrainerType] = useState<"man" | "women">("man");
 
     // Get subscription info
     const [getSubscriptionName, setGetSubscriptionName] = useState<string | null>(null);
     const [getPrice, setGetPrice] = useState<number | null>(null);
+    const [getSessions, setGetSessions] = useState<number | null>(null);
     const [getActiveSomeSessions, setGetActiveSomeSessions] = useState<number>(0);
 
-    const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
+
+    const [getSubscriptionStart, setGetSubscriptionStart] = useState<string | null>(null);
+    const [getSubscriptionEnd, setGetSubscriptionEnd] = useState<string | null>(null);
+
+
+
+    const todayDate = useMemo(() => new Date(), []);
+
+    const statusTheSubscription = useMemo(() => {
+        if (
+            todayDate.getTime() >= new Date(getSubscriptionStart as any).getTime()
+            &&
+            todayDate.getTime() < new Date(getSubscriptionEnd as any).getTime()
+        ) {
+            return statusIsActive;
+        }
+        else if (todayDate.getTime() < new Date(getSubscriptionStart as any).getTime()) {
+            return statusIsPending;
+        }
+        else {
+            return statusIsFinished;
+        }
+    }, [getSubscriptionStart, getSubscriptionEnd, todayDate]);
+
+    // This check the trainer info is compolete or no
+    const isAllInfoComplete = useMemo(function () {
+        if (
+            getFirstName != null &&
+            getLastName != null &&
+            getPhone != null &&
+            getAddress != null &&
+            getSubscriptionName != null &&
+            getSessions != null &&
+            getPrice != null &&
+            getSubscriptionStart != null &&
+            getSubscriptionEnd != null
+        ) {
+            return true
+        } else {
+            return false;
+        }
+    }, [getFirstName, getLastName, getPhone, getAddress, getSubscriptionName, getSessions,
+        getPrice, getSubscriptionStart, getSubscriptionEnd
+    ]);
 
 
 
@@ -55,31 +97,53 @@ export default function Add_Trainer(
     async function activeSomeSessions(trainerId: number) {
         if (!getActiveSomeSessions || !trainerId) return;
 
-        const database = await Database.load("sqlite:app-gym-db.db");
-        let dateNow: any = new Date(state.subscriptionStart as string).toISOString();
+        let dateNow: any = new Date(getSubscriptionStart as any).toISOString();
 
 
         for (let i = 0; i < getActiveSomeSessions; i++) {
-            const query = `
-                INSERT INTO activeSessions(
-                    linkWithTrainer, accountId, sessionNumber, activationDate
-                ) VALUES (?, ?, ?, ?)
-            `;
+            const getAllAttendanceDetails = await getAllAttendanceInSpecificDate(dateNow) as attendanceDetails_Type[];
+            const findTrainer = getAllAttendanceDetails.find(ele => ele.trainers.includes(trainerId as any));
+            const findAccount = getAllAttendanceDetails.find(ele => ele.accountId == state.logInInfo?.id);
 
-            const values = [
-                trainerId,
-                state.logInInfo?.id,
-                i,
-                dateNow
-            ];
+            /*
+                If the account not exsist in today date and the trainer not exsist in today date,
+                create new row
+            */
+            if (!findAccount && !findTrainer) {
+                const getAccountId = await dispatch(addRowInAttendanceTable({
+                    date: dateNow,
+                    accountId: Number(state.logInInfo?.id),
+                    trainers: [Number(trainerId)]
+                }) as any).unwrap() as attendanceDetails_Type;
 
-            dispatch(addRowInAttendanceTable({
-                date: dateNow,
-                accountId: Number(state.logInInfo?.id),
-                trainers: [trainerId]
-            }) as any);
+                dispatch(addRowInActiveSessionsTableAndLinkedTheTrainer({
+                    linkWithTrainer: trainerId,
+                    accountId: Number(getAccountId.accountId),
+                    sessionNumber: i,
+                    activationDate: dateNow
+                }) as any);
+            }
 
-            await database.execute(query, values);
+            /*
+                If the account is exsist in today date and the trainer not exsist in today date,
+                add this trainer in trainers array
+            */
+            else if (findAccount && !findTrainer) {
+                dispatch(updatePropertyInRowInAttendanceTable({
+                    id: Number(findAccount.id),
+                    column: "trainers",
+                    value: [...JSON.parse(findAccount.trainers as any), Number(trainerId)]
+                }) as any);
+
+                dispatch(addRowInActiveSessionsTableAndLinkedTheTrainer({
+                    linkWithTrainer: trainerId,
+                    accountId: Number(findAccount.accountId),
+                    sessionNumber: i,
+                    activationDate: dateNow
+                }) as any);
+            }
+
+
             dateNow = new Date(addDays(dateNow, 1)).toISOString();
         }
 
@@ -89,13 +153,18 @@ export default function Add_Trainer(
 
     async function saveTrainerInfo() {
         if (!isAllInfoComplete) return;
+
+
+
         alert({
-            titleBeforeClickOnOk: "هل تريد بالفعل إضافة ذلك المتدرب ؟",
-            titleAfterClickOnOk: "تمت إضافة المتدرب بنجاح",
-            funRunWhenClickOnOk: async function () {
-                dispatch(removeSubscriptionStart());
-                dispatch(removeSubscriptionEnd());
-                dispatch(removeAllSessions());
+            textBeforeSubmit: "هل تريد بالفعل إضافة ذلك المتدرب ؟",
+            textAfterSubmit: "تمت إضافة المتدرب بنجاح",
+            runFunctionAfterSubmit: async function () {
+                dispatch(updatePropertyInRowInAccountsTable({
+                    id: Number(state.logInInfo?.id),
+                    column: "trainersTotal",
+                    value: Number(state.accounts?.find(ele => ele.id == state.logInInfo?.id)?.trainersTotal) + 1
+                }) as any);
 
                 const getTraineInfos = await dispatch(
                     addRowInTrainersTable({
@@ -103,11 +172,12 @@ export default function Add_Trainer(
                         lastName: getLastName,
                         phone: String(getPhone),
                         address: getAddress,
+                        trainerType: getTrainerType,
                         subscriptionName: getSubscriptionName,
-                        sessionsCount: Number(state.sessionsCount),
+                        sessionsCount: getSessions,
                         price: Number(getPrice),
-                        subscriptionStart: state.subscriptionStart,
-                        subscriptionEnd: state.subscriptionEnd,
+                        subscriptionStart: getSubscriptionStart,
+                        subscriptionEnd: getSubscriptionEnd,
                         subscriptionStatus: statusTheSubscription,
                         lastRenewalSubscription: new Date().toISOString()
                     } as trainer_Type) as any
@@ -115,15 +185,15 @@ export default function Add_Trainer(
 
 
                 onIsShowAddTrainer(false);
-                subscriptionPriceIsProfit(getTraineInfos.id);
+                subscriptionPriceIsProfit();
                 await activeSomeSessions(getTraineInfos.id);
             }
         })
 
     }
 
-    async function subscriptionPriceIsProfit(trainerId: number) {
-        const database = await Database.load("sqlite:app-gym-db.db");
+    async function subscriptionPriceIsProfit() {
+        const database = await Database.load("sqlite:gym-app.db");
         const price = Number(getPrice || 0);
 
         const [getYear] = await database.select(`
@@ -164,7 +234,6 @@ export default function Add_Trainer(
 
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDay.id),
-                linkedWithTrainer: trainerId,
                 itemName: addNewTrainer,
                 category: "profit",
                 price: price
@@ -196,7 +265,6 @@ export default function Add_Trainer(
             });
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
-                linkedWithTrainer: trainerId,
                 itemName: addNewTrainer,
                 category: "profit",
                 price: price
@@ -233,7 +301,6 @@ export default function Add_Trainer(
             });
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
-                linkedWithTrainer: trainerId,
                 itemName: addNewTrainer,
                 category: "profit",
                 price: price
@@ -267,7 +334,6 @@ export default function Add_Trainer(
 
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
-                linkedWithTrainer:trainerId,
                 itemName: addNewTrainer,
                 category: "profit",
                 price: price
@@ -275,65 +341,32 @@ export default function Add_Trainer(
         }
     }
 
-    function clickOnCancel() {
-        onIsShowAddTrainer(false);
-        dispatch(removeSubscriptionStart());
-        dispatch(removeSubscriptionEnd());
-        dispatch(removeAllSessions());
-    }
-
-
-
-
-
-    // This check the trainer_Type info is compolete or no
-    const isAllInfoComplete = useMemo(function () {
-        if (
-            getFirstName != null &&
-            getLastName != null &&
-            getPhone != null &&
-            getAddress != null &&
-            getSubscriptionName != null &&
-            state.sessionsCount != null &&
-            getPrice != null &&
-            state.subscriptionStart != null &&
-            state.subscriptionEnd != null
-        ) {
-            return true
-        } else {
-            return false;
-        }
-    }, [getFirstName, getLastName, getPhone, getAddress, getSubscriptionName, state.sessionsCount,
-        getPrice, state.subscriptionStart, state.subscriptionEnd
-    ]);
-
-    const statusTheSubscription = useMemo(() => {
-        if (
-            todayDate.getTime() >= new Date(state.subscriptionStart as any).getTime()
-            &&
-            todayDate.getTime() <= new Date(state.subscriptionEnd as any).getTime()
-        ) {
-            return statusIsActive;
-        }
-        else if (
-            todayDate.getTime() < new Date(state.subscriptionStart as any).getTime()
-        ) {
-            return statusIsPending;
-        }
-        else {
-            return statusIsFinished;
-        }
-    }, [state.subscriptionStart, state.subscriptionEnd, todayDate]);
-
 
 
 
     return <Popup_Form
-        titel="إضافة متدرب"
-        discription="الان, يمكنك إضافة متدرب جديد"
-        classNameForParent="h-[84vh] flex flex-col justify-between"
+        popupFormInfo={{
+            title: "إضافة متدرب",
+            discription: "الان, يمكنك إضافة متدرب جديد",
+            icon: <CircleUserRound
+                size={43}
+                strokeWidth={1.7}
+                className={`
+                    ${
+                        !getSubscriptionStart || !getSubscriptionEnd ? "!text-black" : ""
+                    }
+                    
+                    ${statusTheSubscription == statusIsActive ?
+                        "text-emerald-500"
+                        :
+                        statusTheSubscription == statusIsPending ? "text-amber-500" : "text-red-500"
+                    }
+                `}
+            />
+        }}
+        classNameForParent="h-[92vh] w-[93vw] flex flex-col justify-between"
         isSave={isAllInfoComplete}
-        clickOnCancel={clickOnCancel}
+        clickOnCancel={() => onIsShowAddTrainer(false)}
         clickOnSaveBtn={saveTrainerInfo}
     >
         {/* Trainer info */}
@@ -348,6 +381,7 @@ export default function Add_Trainer(
                 onGetLastName={setGetLastName}
                 onGetPhone={setGetPhone}
                 onGetAddress={setGetAddress}
+                onGetTrainerType={setGetTrainerType}
             />
         </div>
 
@@ -359,12 +393,19 @@ export default function Add_Trainer(
             </div>
 
             <Subscription_Info_Form
+                subscriptionStart={getSubscriptionStart}
+                subscriptionEnd={getSubscriptionEnd}
                 onGetSubscriptionName={setGetSubscriptionName}
                 onGetPrice={setGetPrice}
+                onGetSessions={setGetSessions}
                 onGetActiveSomeSessions={setGetActiveSomeSessions}
             />
         </div>
 
-        <Date_Info_Form />
+        <Date_Info_Form
+            sessions={getSessions}
+            onGetSubscriptionStart={setGetSubscriptionStart}
+            onGetSubscriptionEnd={setGetSubscriptionEnd}
+        />
     </Popup_Form >
 }

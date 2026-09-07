@@ -3,7 +3,8 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { updatePropertyInTrainer_Type, updateSomePropertiesInTrainer_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const database = await Database.load("sqlite:app-gym-db.db");
+const database = await Database.load("sqlite:gym-app.db");
+
 
 
 export const getAllRowsInTrainersTable = createAsyncThunk(
@@ -18,10 +19,10 @@ export const addRowInTrainersTable = createAsyncThunk(
     async function (data: trainer_Type) {
         const query = `
             INSERT INTO trainers (
-                firstName, lastName, phone, address, 
+                firstName, lastName, phone, address, trainerType,
                 subscriptionName, sessionsCount, price, 
                 subscriptionStart, subscriptionEnd, subscriptionStatus, lastRenewalSubscription
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const values = [
@@ -29,6 +30,7 @@ export const addRowInTrainersTable = createAsyncThunk(
             data.lastName,
             data.phone,
             data.address,
+            data.trainerType,
             data.subscriptionName,
             data.sessionsCount,
             data.price,
@@ -54,6 +56,14 @@ export const deleteRowInTrainersTableById = createAsyncThunk(
 
         await database.execute(query, [id]);
         return id;
+    }
+);
+
+export const deleteAllRowsInTrainersTable = createAsyncThunk(
+    "trainersSlice/deleteAllRowsInTrainersTable",
+    async function () {
+        await database.execute(`DELETE FROM trainers;`);
+        return [];
     }
 );
 
@@ -119,6 +129,10 @@ const trainersSlice = createSlice({
 
         builde.addCase(deleteRowInTrainersTableById.fulfilled as any, (state: trainer_Type[], action): any => {
             return state.filter(ele => ele.id != action.payload);
+        });
+
+        builde.addCase(deleteAllRowsInTrainersTable.fulfilled as any, (_, action) => {
+            return action.payload;
         });
 
         builde.addCase(updatePropertyInRowInTrainersTable.fulfilled as any, (state: trainer_Type[], action): any => {

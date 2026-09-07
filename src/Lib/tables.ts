@@ -1,6 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
 // ========================================================== //
-const db = await Database.load("sqlite:app-gym-db.db");
+const db = await Database.load("sqlite:gym-app.db");
 
 
 
@@ -13,6 +13,7 @@ export async function trainerTable() {
                 lastName TEXT,
                 phone INTEGER,
                 address TEXT,
+                trainerType TEXT,
                 subscriptionName TEXT,
                 sessionsCount INTEGER,
                 price INTEGER,
@@ -54,10 +55,10 @@ export async function accountsTable() {
                 age INTEGER,
                 password TEXT,
                 type TEXT,
+                color TEXT,
                 profileImg TEXT,
                 coverImg TEXT,
-                loginDate TEXT,
-                workingHours INTEGER,
+                trainersTotal INTEGER,
                 totalActiveSubscriptions INTEGER,
                 permissions TEXT
             )
@@ -161,12 +162,33 @@ export async function itemsTable() {
             CREATE TABLE IF NOT EXISTS items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 linkWithDay INTEGER,
-                linkedWithTrainer INTEGER,
                 itemName TEXT,
                 category TEXT,
                 price INTEGER
             )
         `)
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export async function settingsTable() {
+    try {
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS settings (
+                key TEXT UNIQUE NOT NULL,
+                value TEXT NOT NULL
+            );
+        `);
+
+
+        await db.execute(`
+            INSERT OR IGNORE INTO settings (key, value) VALUES 
+            ('rowsInTrainerTable', '6'),
+            ('rowsInAttendanceTable', '6'),
+            ('rowsInItemsTable', '6');
+        `);
 
     } catch (error) {
         console.log(error);

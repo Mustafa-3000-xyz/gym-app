@@ -33,8 +33,11 @@ export interface Box_Props {
 }
 
 export interface Popup_Form_Props {
-    titel: string,
-    discription: string,
+    popupFormInfo?:{
+        title: string,
+        discription: string,
+        icon?: any
+    }
     children: ReactNode,
     isSave?: boolean,
     isShowBtn?: boolean,
@@ -49,7 +52,7 @@ export interface Account_Img_Props {
     accountId: number,
     img: string,
     isChangeTheImg: boolean,
-    accountType: "manager" | "captain",
+    color: string,
 }
 
 export interface Add_Btn_Props {
@@ -81,12 +84,14 @@ export interface PasswordInp_Props {
 }
 
 export interface Inp_With_Label_Props {
-    labelName: string,
+    labelName?: string,
+    placeholder?: string,
     inpType?: "password" | "text" | "number"
-    inpValue?: string | number,
+    inpValue?: any,
     isChangeValue?: boolean,
-    classNameForInput?: string,
-    onWriteInInput: (x: ChangeEvent<HTMLInputElement>) => void
+    className?: string,
+    isRemoveSpaces?:boolean
+    onWriteInInput?: (x: any) => void
 }
 
 export interface Toggle_Btn_Props {
@@ -134,4 +139,9 @@ export interface Progress_Props {
     classNameForParent?: string,
     widthChild?: number,
     percentage?: number | null
+}
+
+export interface Table_For_Trainers_Props{
+    trainersList: trainer_Type[],
+    countRowsInSlide: number,
 }

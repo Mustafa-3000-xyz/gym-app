@@ -10,10 +10,6 @@ const trainerDetailsSlice = createSlice({
             return action.payload as trainer_Type;
         },
 
-        getTrainerDetails: function (state) {
-            return state;
-        },
-
         removeTrainerDetails: function () {
             return null;
         }
@@ -21,4 +17,4 @@ const trainerDetailsSlice = createSlice({
 });
 
 export default trainerDetailsSlice.reducer;
-export const { addTrainerDetails, getTrainerDetails, removeTrainerDetails } = trainerDetailsSlice.actions;
+export const { addTrainerDetails, removeTrainerDetails } = trainerDetailsSlice.actions;

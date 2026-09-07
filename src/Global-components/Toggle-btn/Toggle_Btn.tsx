@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Toggle_Btn_Props } from "../typesProps";
 // ========================================================== //
 export default function Toggle_Btn(
@@ -8,11 +8,13 @@ export default function Toggle_Btn(
         onGetValue 
     }: Toggle_Btn_Props
 ) {
-    const [isActive, setIsActive] = useState(value);
+    const [isActive, setIsActive] = useState(false);
 
 
 
     function clickOnButton() {
+        if (disabled) return;
+
         if (isActive) {
             setIsActive(false);
             onGetValue(false)
@@ -22,6 +24,12 @@ export default function Toggle_Btn(
             onGetValue(true);
         }
     }
+
+
+
+    useEffect(function(){
+        setIsActive(value);
+    }, [value]);
 
 
 

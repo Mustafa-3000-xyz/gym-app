@@ -1,9 +1,6 @@
 @import "tailwindcss";
-
 /* ====== */
 :root {
-    --managerColor: #0B0F19;
-    --captainColor: #3b82f6;
     --thirdColor: #4f607e;
 }
 
@@ -34,15 +31,6 @@ body {
 
 
 /* These codes for calendar */
-.p-datepicker-buttonbar {
-    display: flex;
-    justify-content: end;
-}
-
-.clear-btn-in-calendar {
-    display: none;
-}
-
 .today-btn-in-calendar {
     color: black;
     content: "";
@@ -58,6 +46,16 @@ body {
     border: none !important;
     box-shadow: none !important;
 }
+
+.p-datepicker-buttonbar {
+    display: flex;
+    justify-content: end;
+}
+
+.clear-btn-in-calendar {
+    display: none;
+}
+
 
 .p-disabled {
     cursor: not-allowed !important;

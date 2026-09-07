@@ -1,27 +1,28 @@
 import { Download, RefreshCcw } from "lucide-react";
 import { useEffect, useState } from "react";
-import { check, Update } from '@tauri-apps/plugin-updater';
+import { check } from '@tauri-apps/plugin-updater';
 import { alert, normalAlert } from "@/Lib/functions";
 import { relaunch } from '@tauri-apps/plugin-process';
-import { useDispatch } from "react-redux";
-import { hiddenOrShowSideBar } from "@/Rtk/Slices/UI-slices/sideBarSlice";
 import Popup_Download_Version from "../Popup-download-version/Popup_Download_Version";
 // ========================================================== //
 export default function Update_App() {
-    const dispatch = useDispatch();
-
-    const [versionAppValue, setVersionAppValue] = useState<"stable" | "error" | "updating">("stable");
+    const [versionStatus, setVersionStatus] = useState<"stable" | "error" | "updating" | "search">("stable");
     const [startRotateAnimation, setStartRotateAnimation] = useState(false);
 
-    const [theVersionSize, setTheVersionSize] = useState(0);
-    const [theDownloaded, setTheDownloaded] = useState(0);
+    const [versionSize, setVersionSize] = useState(0);
+    const [downloaded, setDownloaded] = useState(0);
 
-    const versionAppNow = "1.2.0";
+    const versionAppNow = "1.0.0";
 
 
 
     async function clickOnSearchUpdateBtn() {
+        if (versionStatus == "search") return;
+
+
         setStartRotateAnimation(true);
+        setVersionStatus("search");
+
 
         try {
             const update = await check({
@@ -33,11 +34,48 @@ export default function Update_App() {
             });
 
             if (update) {
+                alert({
+                    titleBeforeSubmit: "تحديث جديد",
+                    textBeforeSubmit: `هل تريد تحديث البرنامج لاصدار : ${update.version}`,
+                    runFunctionAfterSubmit: async function () {
+                        setVersionStatus("updating");
+
+                        try {
+                            await update.downloadAndInstall(function (event) {
+                                switch (event.event) {
+                                    case 'Started':
+                                        setVersionSize(Number(event.data.contentLength));
+                                        break;
+                                    case 'Progress':
+                                        setDownloaded((x) => x += event.data.chunkLength)
+                                        break;
+                                }
+                            });
+
+                            await relaunch();
+                        }
+                        catch (err) {
+                            normalAlert({
+                                title: "خطا اثناء تحميل وثبيت التحديث",
+                                text: String(err),
+                                icon: "error"
+                            });
+
+                            setVersionStatus("error");
+                        }
+                    },
+
+                    runFunctionAfterCancel: function () {
+                        setVersionStatus("stable");
+                        setStartRotateAnimation(false);
+                    }
+                });
+
                 setStartRotateAnimation(false);
-                downloadAndInstallVersion(update);
-            } else {
+            }
+            else {
                 setStartRotateAnimation(false);
-                setVersionAppValue("stable");
+                setVersionStatus("stable");
 
                 normalAlert({
                     title: "تهانينا",
@@ -52,66 +90,31 @@ export default function Update_App() {
                 text: String(err),
                 icon: "error"
             });
+
             setStartRotateAnimation(false);
-            setVersionAppValue("error");
+            setVersionStatus("error");
         }
     }
 
-    function downloadAndInstallVersion(update: Update) {
-        alert({
-            titleBeforeClickOnOk: `هل تريد تحديث البرنامج لاصدار : ${update.version}`,
-            titleAfterClickOnOk: "يتم التحديث الان",
-            funRunWhenClickOnOk: async function () {
-                dispatch(hiddenOrShowSideBar("hidden"));
-                setVersionAppValue("updating");
-
-                try {
-                    await update.downloadAndInstall(function (event) {
-                        switch (event.event) {
-                            case 'Started':
-                                setTheVersionSize(Number(event.data.contentLength));
-                                break;
-                            case 'Progress':
-                                setTheDownloaded((x) => x += event.data.chunkLength)
-                                break;
-                        }
-                    });
-
-                    await relaunch();
-                }
-                catch (err) {
-                    normalAlert({
-                        title: "خطا اثناء تحميل وثبيت التحديث",
-                        text: String(err),
-                        icon: "error"
-                    });
-
-                    dispatch(hiddenOrShowSideBar("show"));
-                    setVersionAppValue("error");
-                }
-            }
-        })
-    }
 
 
-
-    useEffect(function(){
-        if (versionAppValue == "error") {
-            setTheVersionSize(0);
-            setTheDownloaded(0);
+    useEffect(function () {
+        if (versionStatus != "updating") {
+            setVersionSize(0);
+            setDownloaded(0);
         }
-    }, [versionAppValue]);
+    }, [versionStatus]);
 
 
 
 
     return <div className="m-5 flex flex-col gap-3 items-center">
         {
-            versionAppValue == "updating" ?
+            versionStatus == "updating" ?
                 <div className="bg-emerald-500 text-white px-6 py-2 pb-3 rounded-full text-lg font-bold flex items-center gap-3">
                     <Download size={23} />
 
-                    <h3 className="">
+                    <h3>
                         جاري التحديث
                     </h3>
                 </div>
@@ -139,7 +142,7 @@ export default function Update_App() {
 
         <div className="text-center">
             <h3 className="font-bold text-lg">
-                اصدار البرنامج
+                اصدار البرنامج (BETA)
             </h3>
 
             <h3 className="font-bold underline">
@@ -148,10 +151,10 @@ export default function Update_App() {
         </div>
 
         {
-            versionAppValue == "updating" ?
+            versionStatus == "updating" ?
                 <Popup_Download_Version
-                    versionSize={theVersionSize}
-                    downloaded={theDownloaded}
+                    versionSize={versionSize}
+                    downloaded={downloaded}
                 />
                 :
                 null

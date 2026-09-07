@@ -5,10 +5,12 @@ import { Eye, EyeClosed } from "lucide-react";
 export default function Inp_With_Label(
     {
         labelName,
+        placeholder,
         inpType = "text",
         inpValue = "",
-        classNameForInput = "",
+        className = "",
         isChangeValue = true,
+        isRemoveSpaces = false,
         onWriteInInput
     }: Inp_With_Label_Props
 ) {
@@ -29,7 +31,15 @@ export default function Inp_With_Label(
 
     function writeInInp(e: ChangeEvent<HTMLInputElement>) {
         if (!isChangeValue) return;
-        onWriteInInput(e);
+
+        if (isRemoveSpaces) {
+            const removeSpaces = e.target.value.replace(/\s+/g, "");
+
+            onWriteInInput?.(removeSpaces);
+        }
+        else {
+            onWriteInInput?.(e.target.value);
+        }
     }
 
 
@@ -41,13 +51,14 @@ export default function Inp_With_Label(
             inpType == "password" ?
                 <div className="relative">
                     <input
-                        className={`
-                            w-full border border-black/20 p-2 pr-10 rounded-lg focus:outline-0
-                            ${classNameForInput}
-                        `}
+                        placeholder={placeholder}
                         type={isShowPassword ? "text" : "password"}
                         dir={"ltr"}
                         value={inpValue ?? ""}
+                        className={`
+                            w-full border border-black/20 p-2 pr-10 rounded-lg focus:outline-0
+                            ${className}
+                        `}
                         onChange={writeInInp}
                         onClick={(e) => e.stopPropagation()}
                     />
@@ -67,12 +78,13 @@ export default function Inp_With_Label(
                 :
                 <input
                     type={inpType}
+                    placeholder={placeholder}
                     value={inpValue ?? ""}
                     disabled={!isChangeValue}
                     className={`
                         rounded-lg border border-black/20 p-2 px-3 focus:outline-none w-full text-center
                         ${!isChangeValue ? "cursor-not-allowed opacity-45" : ""}
-                        ${classNameForInput}
+                        ${className}
                     `}
                     onKeyDown={(e) => {
                         if (inpType == "number" && ["e", "E", "+", "-"].includes(e.key)) {

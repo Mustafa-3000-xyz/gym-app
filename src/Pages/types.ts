@@ -1,16 +1,17 @@
 export interface trainer_Type {
-    id?: number;
-    firstName: string;
-    lastName: string;
-    phone: string;
-    address: string;
-    subscriptionName: string;
-    sessionsCount: number;
-    price: number;
-    subscriptionStart: string;
-    subscriptionEnd: string;
-    subscriptionStatus: string;
-    lastRenewalSubscription: string;
+    id?: number,
+    firstName: string,
+    lastName: string,
+    phone: string,
+    address: string,
+    trainerType: "man" | "women",
+    subscriptionName: string,
+    sessionsCount: number,
+    price: number,
+    subscriptionStart: string,
+    subscriptionEnd: string,
+    subscriptionStatus: string,
+    lastRenewalSubscription: string
 }
 
 export interface activeSession_Type {
@@ -18,7 +19,7 @@ export interface activeSession_Type {
     linkWithTrainer: number,
     accountId: number,
     sessionNumber: number,
-    activationDate: Date | string,
+    activationDate: Date | string
 }
 
 export interface accounte_Type {
@@ -27,10 +28,10 @@ export interface accounte_Type {
     age: number,
     password: string,
     type: "manager" | "captain",
+    color: string,
     profileImg: string,
     coverImg: string,
-    loginDate: Date | string,
-    workingHours: number,
+    trainersTotal: number,
     totalActiveSubscriptions: number,
     permissions?: string[] | "fullAccess",
 }
@@ -52,6 +53,7 @@ export interface attendanceDetails_Type {
 
 export interface filter_Type {
     arrange: string,
+    trainers: string,
     subscriptionType: string,
 }
 
@@ -63,10 +65,10 @@ export interface sessionListForRead_Type {
 }
 
 export interface boxInfoInTrainersPage_Type {
-    name: string,
-    styleBgForIcon: string,
-    icon: any,
-    total: number,
+    type: "allSubscriptions" | "activeSubscriptions" | "pendingSubscriptions" | "finishedSubscriptions",
+    total: number | number[],
+    styleBgForIcon?: string,
+    icon?: any,
 }
 
 export interface readSessions_Type {
@@ -107,7 +109,6 @@ export interface daysProfitsAndExpenses_Type {
 export interface item_Type {
     id?: number,
     linkWithDay: number,
-    linkedWithTrainer: number | null,
     itemName: string,
     category: "profit" | "expense",
     price: number
@@ -176,4 +177,25 @@ export interface arithmeticOperatorsWithProfitsAndExpenses_Type {
             expensesTotal: number
         }
     }
+}
+
+export interface licensingInfo_Type {
+    testInfo: {
+        "isTest": boolean,
+        "endDate": null | string | Date,
+        "activationDate": null | string | Date
+    },
+    "licenseKey": null | string,
+}
+
+export interface licenesKey_Type {
+    id: number,
+    key: string,
+    linkedToPhoneNumber: string
+}
+
+export interface settings_Type {
+    rowsInTrainerTable: number,
+    rowsInAttendanceTable: number,
+    rowsInItemsTable: number,
 }

@@ -4,9 +4,13 @@ export interface alertSuccess_Type {
 }
 
 export interface alert_Type {
-    titleBeforeClickOnOk: string,
-    titleAfterClickOnOk?: string,
-    funRunWhenClickOnOk: Function,
+    titleBeforeSubmit?: string,
+    titleAfterSubmit?: string,
+    textBeforeSubmit: string,
+    textAfterSubmit?: string,
+    iconStyleBeforeSubmit?: "success" | "error" | "question" | "info" | "warning"
+    runFunctionAfterSubmit?: () => void,
+    runFunctionAfterCancel?: () => void
 }
 
 export interface allPermissions_Type {
@@ -17,8 +21,8 @@ export interface allPermissions_Type {
 export interface normalAlert_Type {
     title: string,
     text?: string,
-    toast?: boolean,
     icon: "success" | "error" | "question" | "info",
+    runFunctionAfterSubmit?: () => void
 }
 
 export interface checkThePermissionIsHere_Type {

@@ -194,7 +194,7 @@ export default function Date_Box(
                             `}
                             onClick={() => clickOnDateBtn(i)}
                         >
-                            {format(ele, styleDate)}
+                            {format(new Date(ele), styleDate)}
                         </button>)
                     }
                 </Bottom_Content_For_The_Drop>

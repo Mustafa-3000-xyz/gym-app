@@ -1,9 +1,9 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Search_Result from "./Search-result/Search_Result";
 import { Search } from "lucide-react";
 import { trainer_Type } from "@/Pages/types";
 // ========================================================== //
-export default function Search_Box_For_Trainers(
+function Search_Box_For_Trainers(
     { arrayForSearch }: { arrayForSearch: trainer_Type[] }
 ) {
     const searchInpRef = useRef<HTMLInputElement | null>(null);
@@ -70,3 +70,5 @@ export default function Search_Box_For_Trainers(
         }
     </div>
 }
+
+export default React.memo(Search_Box_For_Trainers);

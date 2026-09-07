@@ -1,30 +1,31 @@
-import { alert, checkPermissionesInAccount, normalAlert, theTodayDate } from '@/Lib/functions';
+import { alert, arithmeticOperatorsWithProfitsAndExpenses, checkPermissionesInAccount, normalAlert, theTodayDate } from '@/Lib/functions';
 import { daysProfitsAndExpenses_Type, monthsProfitsAndExpenses_Type, yearsProfitsAndExpenses_Type } from "@/Pages/types";
 import { Btn_Subscription_Renewal_Props } from "@/Pages/typesProps";
 import { updateSomePropertiesInRowInTrainersTable } from '@/Rtk/Slices/Db-slices/trainersSlice';
 import { removeTrainerDetails } from '@/Rtk/Slices/UI-slices/trainerDetailsSlice';
 import { RefreshCcw } from 'lucide-react'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { maxTargetInDay, maxTargetInMonth, maxTargetInYear, monthsWithHisDays, RENEWAL_SUBSCRIPTION, renewalSubscription, statusIsActive } from '@/Lib/constants';
-import { removeSubscriptionStart } from '@/Rtk/Slices/UI-slices/subscriptionStartSlice';
-import { removeSubscriptionEnd } from '@/Rtk/Slices/UI-slices/subscriptionEndSlice';
-import { removeAllSessions } from '@/Rtk/Slices/UI-slices/sessionsCountSlice';
+import { maxTargetInDay, maxTargetInMonth, maxTargetInYear, monthsWithHisDays, RENEWAL_SUBSCRIPTION, renewalSubscription } from '@/Lib/constants';
 import { store_Type } from '@/Rtk/types';
 import Database from '@tauri-apps/plugin-sql';
 import { useMemo } from 'react';
-import { arithmeticOperatorsWithProfitsAndExpenses } from '@/Lib/functionsWithDb';
 import { addRowInItemsTable } from '@/Rtk/Slices/Db-slices/itemsSlice';
 import { addRowInDaysProfitsAndExpensesTable } from '@/Rtk/Slices/Db-slices/daysProfitsAndExpensesSlice';
 import { addRowInMonthsProfitsAndExpensesTable } from '@/Rtk/Slices/Db-slices/monthsProfitsAndExpensesSlice';
 import { addRowInYearsProfitsAndExpensesTable } from '@/Rtk/Slices/Db-slices/yearsProfitsAndExpensesSlice';
 // ========================================================== //
 export default function Btn_Subscription_Renewal(
-    { trainer, isInfoComplete }: Btn_Subscription_Renewal_Props
+    {
+        trainer,
+        subscriptionStart,
+        isInfoComplete,
+    }: Btn_Subscription_Renewal_Props
 ) {
     const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
-            logInInfo: state.logInInfo
+            logInInfo: state.logInInfo,
+            trainerDetails: state.trainerDetails,
         }
     }, shallowEqual);
 
@@ -33,7 +34,7 @@ export default function Btn_Subscription_Renewal(
         permissionType: RENEWAL_SUBSCRIPTION
     });
 
-    const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
+    const todayDate = useMemo(() => theTodayDate({startingInHalfNight: true}), []);
 
 
 
@@ -41,28 +42,39 @@ export default function Btn_Subscription_Renewal(
     function subscriptionRenewal() {
         if (!isInfoComplete) return;
 
+
+        if (
+            subscriptionStart
+            &&
+            todayDate.getTime() > new Date(subscriptionStart as any).getTime()
+        ) {
+            normalAlert({
+                title: "تنويه",
+                text: "في حالة تجديد الاشتراك , يجب ان تاريخ بداية الاشتراك يسبق تاريخ اليوم او يساويه",
+                icon: "info"
+            });
+            return;
+        }
+
+
         if (checkRenewalPermission) {
             alert({
-                titleBeforeClickOnOk: "هل تريد تجديد الاشتراك ؟؟",
-                titleAfterClickOnOk: `تم تجديد الاشتراك للمتدرب رقم : ${trainer?.id}`,
-                funRunWhenClickOnOk: function () {
+                textBeforeSubmit: "هل تريد تجديد الاشتراك ؟؟",
+                textAfterSubmit: `تم تجديد الاشتراك للمتدرب رقم : ${trainer?.id}`,
+                runFunctionAfterSubmit: function () {
                     dispatch(updateSomePropertiesInRowInTrainersTable({
                         id: trainer?.id as any,
                         values: {
-                            ...trainer,
-                            subscriptionStatus: statusIsActive,
+                            ...trainer as any,
                             lastRenewalSubscription: todayDate.toISOString()
                         }
                     }) as any);
-
-                    dispatch(removeSubscriptionStart());
-                    dispatch(removeSubscriptionEnd());
-                    dispatch(removeAllSessions());
 
                     subscriptionPriceIsProfit();
                 }
             });
         }
+
         else {
             normalAlert({
                 title: "المعذره",
@@ -73,7 +85,7 @@ export default function Btn_Subscription_Renewal(
     }
 
     async function subscriptionPriceIsProfit() {
-        const database = await Database.load("sqlite:app-gym-db.db");
+        const database = await Database.load("sqlite:gym-app.db");
         const price = Number(trainer.price || 0);
 
         const [getYear] = await database.select(`
@@ -114,7 +126,6 @@ export default function Btn_Subscription_Renewal(
 
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDay.id),
-                linkedWithTrainer: Number(trainer.id),
                 itemName: renewalSubscription,
                 category: "profit",
                 price: price
@@ -147,7 +158,6 @@ export default function Btn_Subscription_Renewal(
 
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
-                linkedWithTrainer: Number(trainer.id),
                 itemName: renewalSubscription,
                 category: "profit",
                 price: price
@@ -185,7 +195,6 @@ export default function Btn_Subscription_Renewal(
 
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
-                linkedWithTrainer: Number(trainer.id),
                 itemName: renewalSubscription,
                 category: "profit",
                 price: price
@@ -220,7 +229,6 @@ export default function Btn_Subscription_Renewal(
 
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
-                linkedWithTrainer: Number(trainer.id),
                 itemName: renewalSubscription,
                 category: "profit",
                 price: price

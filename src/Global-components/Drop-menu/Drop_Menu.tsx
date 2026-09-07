@@ -13,59 +13,41 @@ export default function Drop_Menu(
         onGetCurrentIsShowMenu
     }: Drop_Menu_Props
 ) {
-    const [topContent, setTopContent] = useState<ReactElement | any>(null);
-    const [bottomContent, setBottomContent] = useState<ReactElement | any>(null);
-
     const [isShowMenu, setIsShowMenu] = useState(false);
     const topContentRef = useRef<HTMLDivElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
 
+    let topContent: any | null = null;
+    let bottomContent: any | null = null;
+
+
+
+    Children.forEach(children, (child) => {
+        if (!isValidElement(child)) return;
+        const element = child as ReactElement | any;
+
+        if (element.type?.displayName === "Top_Content_For_The_Drop") {
+            topContent = child;
+        } else if (element.type?.displayName === "Bottom_Content_For_The_Drop") {
+            bottomContent = child;
+        }
+    });
 
 
 
     function clickOnTopContnet() {
-        if (!isShowMenu) {
-            setIsShowMenu(true);
-        }
-        else {
-            setIsShowMenu(false);
-        }
+        setIsShowMenu((prev) => !prev);
     }
 
 
 
 
-    useEffect(function () {
-        onGetCurrentIsShowMenu?.(isShowMenu);
-    }, [isShowMenu]);
-
-    useEffect(function () {
-        Children.forEach(children, (child) => {
-            if (!isValidElement(child)) return;
-            const element = child as ReactElement | any;
-
-            if (element.type?.displayName == "Top_Content_For_The_Drop") {
-                setTopContent(child);
-            } else if (element.type?.displayName == "Bottom_Content_For_The_Drop") {
-                setBottomContent(child);
-            }
-        });
-    }, [children]);
-
-    useEffect(function () {
-        if (isShowTheMenu == false) {
-            setIsShowMenu(isShowTheMenu);
-        }
-    }, [isShowTheMenu]);
-
     useEffect(() => {
         function handleCloseMenu(e: MouseEvent) {
             if (
-                !menuRef.current?.contains(e.target as any)
-                &&
-                topContentRef.current != e.target
-                &&
-                !topContentRef.current?.contains(e.target as any)
+                !menuRef.current?.contains(e.target as Node) &&
+                topContentRef.current &&
+                !topContentRef.current.contains(e.target as Node)
             ) {
                 setIsShowMenu(false);
             }
@@ -73,7 +55,17 @@ export default function Drop_Menu(
 
         document.addEventListener("mousedown", handleCloseMenu);
         return () => document.removeEventListener("mousedown", handleCloseMenu);
-    }, [topContentRef, menuRef]);
+    }, []);
+
+    useEffect(() => {
+        if (isShowTheMenu === false) {
+            setIsShowMenu(false);
+        }
+    }, [isShowTheMenu]);
+
+    useEffect(() => {
+        onGetCurrentIsShowMenu?.(isShowMenu);
+    }, [isShowMenu, onGetCurrentIsShowMenu]);
 
 
 

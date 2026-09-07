@@ -1,3 +1,5 @@
+import { createClient } from '@supabase/supabase-js'
+// ========================================================== //
 export const styleDate = "yyyy/MM/dd";
 
 // Maxes
@@ -7,7 +9,7 @@ export const maxTargetInYear = 2700000;
 export const maxTargetInMonth = maxTargetInYear / 12;
 export const maxTargetInDay = maxTargetInMonth / 30;
 export const maxPriceInOneItem = 9999999;
-export const maxForCreateItems = 25;
+export const maxForCreateItems = 24;
 
 // These for profits and expenses page
 export const addNewTrainer = "إضافة متدرب";
@@ -22,6 +24,9 @@ export const statusIsFinished = "finished";
 // These for filter
 export const fromOldToNew = "fromOldToNew";
 export const fromNewToOld = "fromNewToOld";
+export const allTrainers = "allTrainers";
+export const allMens = "allMens";
+export const allWomens = "allWomens";
 export const allSubscriptions = "allSubscriptions";
 export const activeSubscriptions = "activeSubscriptions";
 export const pendingSubscriptions = "pendingSubscriptions";
@@ -32,20 +37,27 @@ export const finishedSubscriptions = "finishedSubscriptions";
 export const trainerPagePath = "/trainers-page";
 export const attendanceRecordePagePath = "/attendance-recorde-page";
 export const subscriptionsMenuPath = "/subscriptions-menu";
-export const accountesPagePath = "/accountes-page";
+export const accountesPagePath = "/accounts-page";
 export const profilePagePath = "/profile-page/:accountId";
 export const profitsAndExpensesPagePath = "/profits-and-expenses-page";
 export const settingsPagePath = "/settings-page";
-
+export const authenticationPagePath = "/authentication-page";
+export const errorInAppPagePath = "/error-in-app-page";
+export const tryOrBuyAppPagePath = "/try-or-buy-app-page";
+export const stepsForBuyAppPage = "steps-for-buy-app-page";
 
 // Permissions
 export const USING_ACTIVE_SOME_SESSIONS = "USING_ACTIVE_SOME_SESSIONS";
 export const REMOVE_TRAINERS = "REMOVE_TRAINERS";
 export const WITHDRAW_SUBSCRIPTION = "WITHDRAW_SUBSCRIPTION";
+export const CANCEL_SUBSCRIPTION = "CANCEL_SUBSCRIPTION";
 export const RENEWAL_SUBSCRIPTION = "RENEWAL_SUBSCRIPTION";
 export const ADD_NEW_SUBSCRIPTION_MENU = "ADD_NEW_SUBSCRIPTION_MENU";
 export const EDITING_SUBSCRIPTION_MENU = "EDITING_SUBSCRIPTION_MENU";
 export const CREATE_NEW_ACCOUNTS = "CREATE_NEW_ACCOUNTS";
+export const CHANGE_ACCOUNT_COLOR = "CHANGE_ACCOUNT_COLOR";
+
+export const supabase = createClient('https://alqlzackgkgirrtxdzku.supabase.co', "sb_publishable_4bG9Qerp318eML_BRvNtsQ_u7BB0l7D")
 
 
 // All permissions
@@ -87,6 +99,10 @@ export const allPermissions = [
         key: WITHDRAW_SUBSCRIPTION
     },
     {
+        title: "الغاء اشتراكات المتدربين",
+        key: CANCEL_SUBSCRIPTION
+    },
+    {
         title: "تجديد اشتراك المتدربين",
         key: RENEWAL_SUBSCRIPTION
     },
@@ -101,6 +117,10 @@ export const allPermissions = [
     {
         title: "إنشاء حسابات جديده",
         key: CREATE_NEW_ACCOUNTS
+    },
+    {
+        title: "تغير لون الحساب",
+        key: CHANGE_ACCOUNT_COLOR
     }
 ];
 

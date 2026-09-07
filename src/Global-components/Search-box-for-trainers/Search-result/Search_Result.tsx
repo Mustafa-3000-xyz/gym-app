@@ -1,11 +1,12 @@
 import Animation from "@/Global-components/Animation/Animation";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 import { Search_Result_Props } from "@/Global-components/typesProps";
-import { trainerPagePath } from "@/Lib/constants";
-import { checkPermissionesInAccount, normalAlert, styleForSubscriptionState } from "@/Lib/functions";
+import { styleDate, trainerPagePath } from "@/Lib/constants";
+import { checkPermissionesInAccount, normalAlert } from "@/Lib/functions";
 import { trainer_Type } from "@/Pages/types";
 import { addTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { store_Type } from "@/Rtk/types";
+import { format } from "date-fns";
 import { useEffect, useRef } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -32,6 +33,7 @@ export default function Search_Result(
         accountId: Number(state.logInInfo?.id),
         permissionType: trainerPagePath,
     });
+
 
 
     function showTrainer(trainer_Type: trainer_Type) {
@@ -77,9 +79,9 @@ export default function Search_Result(
     return <Animation
         ref={searchResultRef}
         className={`
-            h-52 w-full
-            translate-y-10  shadow-2xl
-            transform overflow-auto  z-10 flex flex-col justify-center items-center gap-3
+            h-60 w-full
+            translate-y-10 shadow-2xl
+            transform overflow-auto z-10 flex flex-col  items-center gap-3
             absolute border border-black/15 bg-slate-100 p-3
         `}
 
@@ -106,25 +108,23 @@ export default function Search_Result(
                         className="flex justify-between items-center w-full bg-slate-200 p-3 rounded-md cursor-pointer"
                     >
                         {/* First name & last name & id */}
-                        <div className='flex flex-col items-start'>
+                        <div className='flex gap-1 items-start'>
                             <h3 className=' font-bold mb-1'>
                                 {ele.firstName} {ele.lastName}
                             </h3>
-                            <p className='underline'>
-                                {ele.id}
+                            <p className=''>
+                                ({ele.id})
                             </p>
                         </div>
 
-                        {/* Subscription state */}
-                        <div>
-                            <p className={`
-                                        px-3 py-1 rounded-full font-bold
-                                        ${styleForSubscriptionState(ele).style}
-                                    `}
-                            >
-                                {
-                                    styleForSubscriptionState(ele).title
-                                }
+                        {/* Dates */}
+                        <div className="flex flex-col gap-1">
+                            <p className="font-bold underline">
+                                {format(new Date(ele.subscriptionStart), styleDate)}
+                            </p>
+
+                            <p className="font-bold underline">
+                                {format(new Date(ele.subscriptionEnd), styleDate)}
                             </p>
                         </div>
                     </button>

@@ -46,9 +46,9 @@ export default function Subscription_Menu_Card(
         if (!checkEditingTheMenuPermission) return;
 
         alert({
-            titleBeforeClickOnOk: `${subscriptionName} <= هل انت متأكد من انك تريد حذف تلك القائمة`,
-            titleAfterClickOnOk: "تم حذف القائمه بنجاح",
-            funRunWhenClickOnOk: function () {
+            textBeforeSubmit: `${subscriptionName} <= هل انت متأكد من انك تريد حذف تلك القائمة`,
+            textAfterSubmit: "تم حذف القائمه بنجاح",
+            runFunctionAfterSubmit: function () {
                 dispatch(deleteRowInSubscriptionsMenusTableById(id as any) as any);
             }
         })
@@ -64,9 +64,9 @@ export default function Subscription_Menu_Card(
         if (!isSaveChanges) return;
 
         alert({
-            titleBeforeClickOnOk: "هل انت متأكد من حفظ البيانات الجديده ؟",
-            titleAfterClickOnOk: "تم التحديث بنجاح",
-            funRunWhenClickOnOk: function () {
+            textBeforeSubmit: "هل انت متأكد من حفظ البيانات الجديده ؟",
+            textAfterSubmit: "تم التحديث بنجاح",
+            runFunctionAfterSubmit: function () {
                 dispatch(updateSomePropertiesInRowInSubscriptionsMenusTable({
                     id: id as any,
                     values: {

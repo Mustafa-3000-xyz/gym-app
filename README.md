@@ -74,3 +74,84 @@ src-tauri/
 			gym-app <= This app
 ```
 ملحوظه : التطبيق الخارج من عملية Build سوف يشتغل على نظام التشيغل الذي تم فيه عملية Build, على سبيل المثال, إذا كنت تستخدم نظام لنكس وقمت بعملية Build, التطبيق سوف يعمل فقط في نظام لنكس.
+
+
+
+
+
+
+
+
+
+fn get_motherboard_id() -> Result<String, String> {
+    if cfg!(target_os = "windows") {
+        let output = Command::new("wmic")
+            .args(["baseboard", "get", "serialnumber"])
+            .output()
+            .or_else(|_| {
+                Command::new("powershell")
+                    .args(["-Command", "Get-CimInstance Win32_BaseBoard | Select-Object -ExpandProperty SerialNumber"])
+                    .output()
+            })
+            .map_err(|e| e.to_string())?;
+
+        let serial = String::from_utf8_lossy(&output.stdout);
+        let clean_serial = serial.lines().skip(1).collect::<Vec<&str>>().join("").trim().to_string();
+
+        if clean_serial.is_empty() {
+            Err("NO_BOARD_SERIAL".into())
+        } else {
+            Ok(clean_serial)
+        }
+    } else if cfg!(target_os = "linux") {
+        let output = Command::new("cat")
+            .arg("/sys/class/dmi/id/board_serial")
+            .output()
+            .map_err(|e| e.to_string())?;
+
+        let serial = String::from_utf8_lossy(&output.stdout).trim().to_string();
+
+        if serial.is_empty() || serial.contains("Permission denied") {
+            Err("NO_BOARD_SERIAL".into())
+        } else {
+            Ok(serial)
+        }
+    } else {
+        Err("UNSUPPORTED_OS".into())
+    }
+}
+
+fn get_machine_id() -> String {
+    if cfg!(target_os = "windows") {
+        let output = Command::new("cmd")
+            .args(["/C", "reg query HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Crypto /v MachineGuid"])
+            .output();
+
+        if let Ok(out) = output {
+            let str_out = String::from_utf8_lossy(&out.stdout);
+            if let Some(guid) = str_out.split_whitespace().last() {
+                return guid.to_string();
+            }
+        }
+    } else if cfg!(target_os = "linux") {
+        if let Ok(id) = std::fs::read_to_string("/etc/machine-id") {
+            return id.trim().to_string();
+        }
+    }
+    "UNKNOWN_MACHINE_ID".to_string()
+}
+
+#[tauri::command]
+fn generate_hwid() -> String {
+    let board_id = get_motherboard_id().unwrap_or_else(|_| "NO_BOARD_ID".to_string());
+    let machine_id = get_machine_id();
+    let os_name = std::env::consts::OS;
+
+    let raw_hwid = format!("{}:{}:{}", board_id, machine_id, os_name);
+
+    let mut hasher = Sha256::new();
+    hasher.update(raw_hwid.as_bytes());
+
+    let hash_result = hasher.finalize();
+    hash_result.iter().map(|b| format!("{:02x}", b)).collect()
+}

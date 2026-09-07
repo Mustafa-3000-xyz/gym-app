@@ -19,7 +19,7 @@ export default function (
     const state = useSelector(function (state: store_Type) {
         return {
             trainers: state.trainers,
-            accountes: state.accountes,
+            accounts: state.accounts,
         }
     }, shallowEqual);
 
@@ -87,7 +87,7 @@ export default function (
                 <Bottom_Content_For_The_Drop className={`${trainersIds.length >= 4 ? "h-[209px] overflow-auto p-3" : ""}`}>
                     {
                         dayDetails.map(ele => {
-                            const getAccount = state.accountes?.find(acc => acc.id == ele.accountId);
+                            const getAccount = state.accounts?.find(acc => acc.id == ele.accountId);
 
                             return <button
                                 key={ele.id}

@@ -66,7 +66,7 @@ export default function Account_Form(
                 <Inp_With_Label
                     labelName="الاسم"
                     inpValue={theName}
-                    onWriteInInput={(e) => setTheName(e.target.value)}
+                    onWriteInInput={setTheName}
                 />
 
                 <Max_Min_Length
@@ -81,7 +81,7 @@ export default function Account_Form(
                     labelName="العمر"
                     inpType="number"
                     inpValue={theAge == 0 ? "" : theAge}
-                    onWriteInInput={(e) => writeInAccountAgeInp(+e.target.value)}
+                    onWriteInInput={writeInAccountAgeInp}
                 />
             </div>
         </div>
@@ -94,7 +94,8 @@ export default function Account_Form(
                     labelName="كلمة السر"
                     inpType="password"
                     inpValue={thePassword}
-                    onWriteInInput={(e) => setThePassword(e.target.value)}
+                    isRemoveSpaces
+                    onWriteInInput={setThePassword}
                 />
 
                 <Max_Min_Length
@@ -110,7 +111,6 @@ export default function Account_Form(
                     labelName="نوع الحساب"
                     inpValue={accountType == "manager" ? "المدير" : "الكابتن"}
                     isChangeValue={false}
-                    onWriteInInput={(e) => setThePassword(e.target.value)}
                 />
             </div>
         </div>

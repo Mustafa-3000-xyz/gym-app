@@ -3,8 +3,18 @@ import Layers_Date from "./Components/Layers-date/Layers_Date";
 import { useState } from "react";
 import Table_For_Read_Profits_Expenses from "./Components/Table-for-read-profits-expenses/Table_For_Read_Profits_Expenses";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
+import { shallowEqual, useSelector } from "react-redux";
+import { store_Type } from "@/Rtk/types";
 // ========================================================== //
 export default function Profits_And_Expenses_Page() {
+    const state = useSelector(function (state: store_Type) {
+        return {
+            settings: state.settings
+        }
+    }, shallowEqual);
+
+
+
     const [getYearInfo, setGetYearInfo] = useState({
         id: null,
         title: null
@@ -24,7 +34,7 @@ export default function Profits_And_Expenses_Page() {
 
 
 
-    return <section className="relative">
+    return <section>
         <Layers_Date
             onGetYearInfo={setGetYearInfo as any}
             onGetMonthInfo={setGetMonthInfo as any}
@@ -58,6 +68,7 @@ export default function Profits_And_Expenses_Page() {
                     yearId={getYearInfo.id}
                     monthId={getMontInfo.id}
                     dayInfo={getDayInfo}
+                    countRowsInSlide={Number(state.settings.rowsInItemsTable)}
                 />
                 :
                 <Not_Found

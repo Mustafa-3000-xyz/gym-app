@@ -5,7 +5,6 @@ import { profilePagePath } from "@/Lib/constants";
 import { useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
-import { logOutFromOldAccount } from "@/Lib/functions";
 import { store_Type } from "@/Rtk/types";
 import { changeLogInInfo } from "@/Rtk/Slices/UI-slices/logInInfoSlice";
 import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
@@ -32,15 +31,11 @@ export default function Account_Card(
         account: accounte_Type
     ) {
         if (account.password == password) {
-            // when switch another account, this action is log out from old account
-            if (state.logInInfo) {
-                logOutFromOldAccount(state.logInInfo.id);
-            }
-
             // Set the new account id
             dispatch(changeLogInInfo({
                 id: account.id as any,
-                type: account.type as any
+                type: account.type as any,
+                color: account.color
             }));
 
             // Start count the work houres for the new account
@@ -73,16 +68,12 @@ export default function Account_Card(
 
 
     return <div
+        style={{ '--account-color': account.color } as React.CSSProperties}
         className={`
             transition-all duration-300
             rounded-3xl shadow-xl p-8 relative
             flex flex-col justify-between items-center w-96 gap-10 text-gray-900
-            ${state.logInInfo ? "group hover:text-white hover:m-6 hover:scale-110 cursor-pointer" : ""
-            }
-            ${state.logInInfo?.type == "manager" && account.type == "captain" ? "hover:bg-(--captainColor)"
-                :
-                state.logInInfo?.type == "captain" && account.type == "manager" ? "hover:bg-(--managerColor)" : ""
-            }
+            ${state.logInInfo ? "group hover:text-white hover:m-6 hover:scale-110 hover:bg-(--account-color) cursor-pointer" : ""}
         `}
         onClick={showAccountDetail}
     >
@@ -104,10 +95,8 @@ export default function Account_Card(
         <div className="flex flex-col items-center gap-3 select-none">
             <div className=" w-28 h-28">
                 <img
-                    className={`
-                            w-full h-full object-cover rounded-full border-4
-                            ${account.type == "manager" ? "border-(--colorManager)" : "border-(--captainColor)"}
-                        `}
+                    style={{ borderColor: account.color }}
+                    className="w-full h-full object-cover rounded-full border-4"
                     src={account.profileImg != "" ? account.profileImg : "/account.png"}
                     alt={account.type}
                 />
@@ -131,9 +120,10 @@ export default function Account_Card(
             <Inp_With_Label
                 labelName="الرقم السري"
                 inpType="password"
-                classNameForInput="group-hover:border-white"
+                className="group-hover:border-white"
                 inpValue={password}
-                onWriteInInput={(e) => setPassword(e.target.value)}
+                isRemoveSpaces
+                onWriteInInput={setPassword as any}
             />
 
             <button

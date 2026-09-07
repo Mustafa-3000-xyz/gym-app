@@ -18,6 +18,7 @@ export default function Permissions(
     }, shallowEqual);
 
 
+
     function clickOnPermission(key: string) {
         if (state.logInInfo?.type == "captain") {
             normalAlert({
@@ -28,8 +29,7 @@ export default function Permissions(
 
             return;
         }
-
-        if (permissionsList == "fullAccess") {
+        else if (permissionsList == "fullAccess") {
             normalAlert({
                 title: "!! مهلا يا مدير",
                 text: "لا يمكنك تعديل الصلاحيات الخاصه بك",

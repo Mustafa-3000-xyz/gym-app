@@ -1,23 +1,21 @@
-import { accounte_Type, attendanceDetails_Type, daysProfitsAndExpenses_Type, item_Type, monthsProfitsAndExpenses_Type, subscriptionsMenus_Type, trainer_Type, yearsProfitsAndExpenses_Type } from "@/Pages/types";
+import { accounte_Type, activeSession_Type, attendanceDetails_Type, daysProfitsAndExpenses_Type, item_Type, monthsProfitsAndExpenses_Type, settings_Type, subscriptionsMenus_Type, trainer_Type, yearsProfitsAndExpenses_Type } from "@/Pages/types";
 // ========================================================== //
 export interface store_Type {
     // Db
     trainers?: trainer_Type[],
-    accountes?: accounte_Type[],
+    activeSessions?: activeSession_Type[],
+    accounts?: accounte_Type[],
     subscriptionsMenus?: subscriptionsMenus_Type[],
     attendance: attendanceDetails_Type[],
     yearsProfitsAndExpenses: yearsProfitsAndExpenses_Type[],
     monthsProfitsAndExpenses: monthsProfitsAndExpenses_Type[],
     daysProfitsAndExpenses: daysProfitsAndExpenses_Type[],
     items: item_Type[],
+    settings: settings_Type
 
     // Ui
     trainerDetails?: trainer_Type | null,
     logInInfo?: logInInfoSlice_Type | null,
-    sessionsCount?: number,
-    subscriptionStart?: string | null,
-    subscriptionEnd?: string | null,
-    sideBar?: boolean
 }
 
 // ============================ //
@@ -30,11 +28,12 @@ export interface updateSomePropertiesInTrainer_Type {
         lastName?: string,
         phone?: string,
         address?: string,
+        trainerType?: "man" | "woman",
         subscriptionName?: string,
         sessionsCount?: number,
         price?: number,
-        subscriptionStart?: string,
-        subscriptionEnd?: string,
+        subscriptionStart?: any,
+        subscriptionEnd?: any,
         subscriptionStatus?: string,
         lastRenewalSubscription?: Date | string
     }
@@ -47,6 +46,7 @@ export interface updateSomePropertiesInAccount_Type {
         age?: string | number,
         password?: string,
         type?: "manager" | "captain",
+        color?: string,
         profileImg?: string,
         coverImg?: string,
         permissions?: string[] | "fullAccess",
@@ -104,15 +104,15 @@ export interface updateSomePropertiesInRowInDaysProfitsAndExpensesTable_Type {
 // ============================ //
 export interface updatePropertyInTrainer_Type {
     id: string | number,
-    column: "firstName" | "lastName" | "phone" | "address" | "subscriptionName" |
-    "sessionsCount" | "price" | "subscriptionStart" | "subscriptionEnd" | "subscriptionStatus" |"lastRenewalSubscription",
+    column: "firstName" | "lastName" | "phone" | "address" | "trainerType" | "subscriptionName" |
+    "sessionsCount" | "price" | "subscriptionStart" | "subscriptionEnd" | "subscriptionStatus" | "lastRenewalSubscription",
     value: any
 }
 
 export interface updatePropertyInAccount_Type {
     id: string | number,
-    column: | "name" | "age" | "password" | "type" | "permissions" | "profileImg" | "coverImg" |
-    "totalActiveSubscriptions" | "workingHours" | "loginDate",
+    column: | "name" | "age" | "password" | "type" | "color" | "permissions" | "profileImg" | "coverImg" |
+    "totalActiveSubscriptions" | "trainersTotal",
     value: any
 }
 
@@ -152,4 +152,5 @@ export interface updatePropertyInRowInDaysProfetsAndExpensesTable_Type {
 export interface logInInfoSlice_Type {
     id: number,
     type: "manager" | "captain",
+    color: string,
 }

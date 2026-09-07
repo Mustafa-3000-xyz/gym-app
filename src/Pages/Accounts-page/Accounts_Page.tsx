@@ -1,4 +1,3 @@
-import All_Accountes from "@/Global-components/All-accountes/All_Accountes";
 import { IdCardLanyard, Shell } from "lucide-react";
 import { useEffect, useState } from "react";
 import Box from "@/Global-components/Box/Box";
@@ -10,15 +9,16 @@ import { addRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { accounte_Type } from "../types";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
 import Permissions from "@/Global-components/Permissions/Permissions";
-import { CREATE_NEW_ACCOUNTS, REMOVE_TRAINERS, RENEWAL_SUBSCRIPTION, trainerPagePath, WITHDRAW_SUBSCRIPTION } from "@/Lib/constants";
+import { CANCEL_SUBSCRIPTION, CREATE_NEW_ACCOUNTS, REMOVE_TRAINERS, RENEWAL_SUBSCRIPTION, trainerPagePath } from "@/Lib/constants";
 import { checkPermissionesInAccount, normalAlert } from "@/Lib/functions";
+import All_Accounts from "@/Global-components/All-accountes/All_Accounts";
 // ========================================================== //
-export default function Accountes_Page() {
+export default function Accounts_Page() {
     const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
             logInInfo: state.logInInfo,
-            accountes: state.accountes,
+            accounts: state.accounts,
         }
     }, shallowEqual);
 
@@ -29,7 +29,7 @@ export default function Accountes_Page() {
     const [getName, setGetName] = useState<string | null>(null);
     const [getAge, setGetAge] = useState<number | null>(null);
     const [getPassword, setGetPassword] = useState<string | null>(null);
-    const [permissionsList, setPermissionsList] = useState([trainerPagePath, REMOVE_TRAINERS, WITHDRAW_SUBSCRIPTION, RENEWAL_SUBSCRIPTION]);
+    const [permissionsList, setPermissionsList] = useState([trainerPagePath, REMOVE_TRAINERS, CANCEL_SUBSCRIPTION, RENEWAL_SUBSCRIPTION]);
 
     const checkCreateAccountPermission = checkPermissionesInAccount({
         accountId: Number(state.logInInfo?.id),
@@ -39,10 +39,10 @@ export default function Accountes_Page() {
 
 
     function clickOnCreateAccount() {
-        if (checkCreateAccountPermission && state.accountes?.length as any < 4) {
+        if (checkCreateAccountPermission && state.accounts?.length as any < 4) {
             setIsCreateNewAccount(true);
         }
-        else if (checkCreateAccountPermission && state.accountes?.length as any >= 4) {
+        else if (checkCreateAccountPermission && state.accounts?.length as any >= 4) {
             normalAlert({
                 title: "المعذره",
                 text: "لقد وصلت للحد الاقصى",
@@ -68,10 +68,10 @@ export default function Accountes_Page() {
             age: getAge,
             password: getPassword,
             type: "captain",
+            color: "#3b82f6",
             profileImg: "",
             coverImg: "",
-            loginDate: "",
-            workingHours: 0,
+            trainersTotal: 0,
             totalActiveSubscriptions: 0,
             permissions: JSON.stringify(permissionsList),
         } as accounte_Type;
@@ -108,7 +108,7 @@ export default function Accountes_Page() {
                 title="مجموع الحسابات"
                 styleIcon="bg-(--thirdColor)/10 text-(--thirdColor)"
                 total={`
-                    ${state.accountes?.length} من اصل 4
+                    ${state.accounts?.length} من اصل 4
                 `}
             />
 
@@ -116,7 +116,7 @@ export default function Accountes_Page() {
                 icon={<Shell size={25} />}
                 title="مجموع الحصص المفعله"
                 styleIcon="bg-neutral-200 text-neutral-500"
-                total={Math.trunc(state.accountes?.reduce((sum, ele) => sum + Number(ele.totalActiveSubscriptions), 0) || 0)}
+                total={Math.trunc(state.accounts?.reduce((sum, ele) => sum + Number(ele.totalActiveSubscriptions), 0) || 0)}
             />
         </div>
 
@@ -127,17 +127,19 @@ export default function Accountes_Page() {
             onClick={clickOnCreateAccount}
         />
 
-        {/* All accountes */}
+        {/* All accounts */}
         <div className="mt-20">
-            <All_Accountes />
+            <All_Accounts />
         </div>
 
 
         {
             isCreateNewAccount ?
                 <Popup_Form
-                    titel={"إنشاء حساب"}
-                    discription="يمكنك الان إنشاء حساب جديد"
+                    popupFormInfo={{
+                        title: "إنشاء حساب",
+                        discription: "يمكنك الان إنشاء حساب جديد",
+                    }}
                     classNameForParent="h-[70vh]"
                     isSave={isAllDataComplete}
                     clickOnCancel={() => setIsCreateNewAccount(false)}

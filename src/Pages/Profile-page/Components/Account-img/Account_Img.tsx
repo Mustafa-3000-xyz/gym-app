@@ -9,7 +9,7 @@ export default function Account_Img(
         accountId,
         img,
         isChangeTheImg,
-        accountType,
+        color,
     }: Account_Img_Props
 ) {
     const dispatch = useDispatch();
@@ -54,12 +54,14 @@ export default function Account_Img(
 
 
 
-    return <div className={`
+
+    return <div
+        style={{ borderColor: color }}
+        className={`
             w-28 h-28 relative
             border-4 rounded-full
             flex items-center justify-center text-white group 
             ${isChangeTheImg ? "cursor-default" : "cursor-not-allowed"}
-            ${accountType == "manager" ? "border-(--managerColor)" : "border-(--captainColor)"}
         `}
     >
         <img
@@ -89,7 +91,7 @@ export default function Account_Img(
 
 
         {
-            isChangeTheImg && img != ""?
+            isChangeTheImg && img != "" ?
                 <button
                     className={`
                         duration-500

@@ -3,7 +3,8 @@ import { accounte_Type } from "@/Pages/types";
 import { updatePropertyInAccount_Type, updateSomePropertiesInAccount_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const database = await Database.load("sqlite:app-gym-db.db");
+const database = await Database.load("sqlite:gym-app.db");
+
 
 
 export const getAllRowsInAccountsTable = createAsyncThunk(
@@ -18,8 +19,8 @@ export const addRowInAccountsTable = createAsyncThunk(
     async function (data: accounte_Type) {
         const query = `
             INSERT INTO accounts (
-                name, age, password, type, profileImg, coverImg, 
-                loginDate, workingHours, totalActiveSubscriptions, permissions
+                name, age, password, type, color, profileImg, coverImg, 
+                trainersTotal, totalActiveSubscriptions, permissions
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
@@ -28,10 +29,10 @@ export const addRowInAccountsTable = createAsyncThunk(
             data.age,
             data.password,
             data.type,
+            data.color,
             data.profileImg,
             data.coverImg,
-            data.loginDate,
-            data.workingHours,
+            data.trainersTotal,
             data.totalActiveSubscriptions,
             data.permissions
         ];
@@ -56,6 +57,13 @@ export const deleteRowInAccountsTableById = createAsyncThunk(
         );
 
         return id;
+    }
+);
+
+export const deleteAllRowsInAccountsTable = createAsyncThunk(
+    "accountsSlice/deleteAllRowsInAccountsTable",
+    async function () {
+        await database.execute(`DELETE FROM accounts WHERE type != 'manager';`);
     }
 );
 
@@ -108,6 +116,7 @@ export const updateSomePropertiesInRowInAccountsTable = createAsyncThunk(
 );
 
 
+
 const accountsSlice = createSlice({
     name: "accountsSlice",
     initialState: [],
@@ -124,6 +133,10 @@ const accountsSlice = createSlice({
 
         builde.addCase(deleteRowInAccountsTableById.fulfilled as any, (state: accounte_Type[], action): any => {
             return state.filter(ele => ele.id != action.payload);
+        });
+
+        builde.addCase(deleteAllRowsInAccountsTable.fulfilled as any, (state: accounte_Type[]): any => {
+            return state.filter(account => account.type == "manager");
         });
 
         builde.addCase(updatePropertyInRowInAccountsTable.fulfilled as any, (state: accounte_Type[], action): any => {

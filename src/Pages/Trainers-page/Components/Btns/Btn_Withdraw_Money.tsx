@@ -1,14 +1,10 @@
-import { alert, checkPermissionesInAccount, normalAlert, theTodayDate } from "@/Lib/functions";
+import { alert, arithmeticOperatorsWithProfitsAndExpenses, checkPermissionesInAccount, normalAlert } from "@/Lib/functions";
 import { maxTargetInDay, maxTargetInMonth, maxTargetInYear, monthsWithHisDays, statusIsFinished, WITHDRAW_SUBSCRIPTION, withDrawSubscription } from "@/Lib/constants";
 import { updatePropertyInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import { removeTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
-import { BanknoteX } from "lucide-react";
+import { BanknoteArrowDown } from "lucide-react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { removeSubscriptionStart } from "@/Rtk/Slices/UI-slices/subscriptionStartSlice";
-import { removeSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSlice";
-import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
 import { store_Type } from "@/Rtk/types";
-import { arithmeticOperatorsWithProfitsAndExpenses, deleteRowsInActiveSessionsLinkedToTrainer } from "@/Lib/functionsWithDb";
 import Database from "@tauri-apps/plugin-sql";
 import { daysProfitsAndExpenses_Type, monthsProfitsAndExpenses_Type, yearsProfitsAndExpenses_Type } from "@/Pages/types";
 import { addRowInItemsTable } from "@/Rtk/Slices/Db-slices/itemsSlice";
@@ -16,6 +12,7 @@ import { useMemo } from "react";
 import { addRowInDaysProfitsAndExpensesTable } from "@/Rtk/Slices/Db-slices/daysProfitsAndExpensesSlice";
 import { addRowInMonthsProfitsAndExpensesTable } from "@/Rtk/Slices/Db-slices/monthsProfitsAndExpensesSlice";
 import { addRowInYearsProfitsAndExpensesTable } from "@/Rtk/Slices/Db-slices/yearsProfitsAndExpensesSlice";
+import { deleteAllRowsInActiveSessionsTableToLinkedTheTrainer } from "@/Rtk/Slices/Db-slices/activeSessionsSlice";
 // ========================================================== //
 export default function Btn_Withdraw_Money(
     { trainerId }: { trainerId: number }
@@ -34,7 +31,7 @@ export default function Btn_Withdraw_Money(
     });
 
 
-    const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
+    const todayDate = useMemo(() => new Date(), []);
 
 
 
@@ -42,9 +39,9 @@ export default function Btn_Withdraw_Money(
     function finishedSubscriptionUsingBtn() {
         if (checkWithDrawPermission) {
             alert({
-                titleBeforeClickOnOk: "هل تريد بالفعل سحب اشتراك ذلك المتدرب ؟؟",
-                titleAfterClickOnOk: `تم سحب الاشتراك للمتدرب رقم : ${trainerId}`,
-                funRunWhenClickOnOk: async function () {
+                textBeforeSubmit: "هل تريد بالفعل سحب اشتراك ذلك المتدرب ؟؟",
+                textAfterSubmit: `تم سحب الاشتراك للمتدرب رقم : ${trainerId}`,
+                runFunctionAfterSubmit: async function () {
                     subscriptionPriceIsExpense();
 
                     dispatch(updatePropertyInRowInTrainersTable({
@@ -53,11 +50,8 @@ export default function Btn_Withdraw_Money(
                         value: statusIsFinished
                     }) as any);
 
-                    dispatch(removeSubscriptionStart());
-                    dispatch(removeSubscriptionEnd());
-                    dispatch(removeAllSessions());
 
-                    await deleteRowsInActiveSessionsLinkedToTrainer(trainerId);
+                    dispatch(deleteAllRowsInActiveSessionsTableToLinkedTheTrainer(trainerId) as any);
                 }
             });
         }
@@ -71,7 +65,7 @@ export default function Btn_Withdraw_Money(
     }
 
     async function subscriptionPriceIsExpense() {
-        const database = await Database.load("sqlite:app-gym-db.db");
+        const database = await Database.load("sqlite:gym-app.db");
         const price = Number(state.trainerDetails?.price || 0);
 
         const [getYear] = await database.select(`
@@ -95,25 +89,24 @@ export default function Btn_Withdraw_Money(
                 updateOneColumn: {
                     year: {
                         yearId: Number(getYear.id),
-                        column: "profitsTotal",
-                        value: (getYear.profitsTotal || 0) - price
+                        column: 'expensesTotal',
+                        value: (getYear.expensesTotal || 0) + price
                     },
                     month: {
                         monthId: Number(getMonth.id),
-                        column: "profitsTotal",
-                        value: (getMonth.profitsTotal || 0) - price
+                        column: "expensesTotal",
+                        value: (getMonth.expensesTotal || 0) + price
                     },
                     day: {
                         dayId: Number(getDay.id),
-                        column: "profitsTotal",
-                        value: (getDay.profitsTotal || 0) - price
+                        column: "expensesTotal",
+                        value: (getDay.expensesTotal || 0) + price
                     }
                 }
             });
 
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDay.id),
-                linkedWithTrainer: Number(state.trainerDetails?.id),
                 itemName: withDrawSubscription,
                 price: price,
                 category: "expense"
@@ -147,7 +140,6 @@ export default function Btn_Withdraw_Money(
 
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
-                linkedWithTrainer: Number(trainerId),
                 itemName: withDrawSubscription,
                 category: "expense",
                 price: price
@@ -186,7 +178,6 @@ export default function Btn_Withdraw_Money(
 
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
-                linkedWithTrainer: Number(trainerId),
                 itemName: withDrawSubscription,
                 category: "expense",
                 price: price
@@ -224,7 +215,6 @@ export default function Btn_Withdraw_Money(
 
             dispatch(addRowInItemsTable({
                 linkWithDay: Number(getDayId.id),
-                linkedWithTrainer: Number(trainerId),
                 itemName: withDrawSubscription,
                 category: "expense",
                 price: price
@@ -238,14 +228,19 @@ export default function Btn_Withdraw_Money(
 
     return <button
         type='button'
-        className="flex items-center gap-2 font-bold px-6 py-3 cursor-pointer rounded-lg bg-amber-300/40 text-amber-700"
+        className={`
+            overflow-hidden
+            duration-300 w-[70px] hover:w-[180px] hover:gap-3
+            flex items-center gap-7 font-bold px-6 py-3 cursor-pointer rounded-lg bg-amber-300/40 text-amber-700
+        `}
         onClick={finishedSubscriptionUsingBtn}
     >
-        <span>
-            <BanknoteX size={23} />
-        </span>
+        <BanknoteArrowDown
+            size={23}
+            className="shrink-0"
+        />
 
-        <span>
+        <span className="shrink-0 mb-1.5">
             سحب الاشتراك
         </span>
     </button>

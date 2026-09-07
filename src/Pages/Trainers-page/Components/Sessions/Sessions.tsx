@@ -1,28 +1,28 @@
 import { statusIsActive, statusIsFinished, statusIsPending, styleDate } from "@/Lib/constants";
 import { alert, incrementOrDecrementForTotalSessionsInAccount, theTodayDate } from "@/Lib/functions";
-import { deleteRowsInActiveSessionsLinkedToTrainer, getAllAttendanceInSpecificDate } from "@/Lib/functionsWithDb";
-import { activeSession_Type, attendanceDetails_Type, readSessions_Type } from "@/Pages/types";
+import { getAllAttendanceInSpecificDate } from "@/Lib/functionsWithDb";
+import { attendanceDetails_Type, readSessions_Type } from "@/Pages/types";
+import { addRowInActiveSessionsTableAndLinkedTheTrainer, deleteAllRowsInActiveSessionsTableToLinkedTheTrainer, deleteRowInActiveSessionsTableToLinkedTheTrainerById, getAllRowsInActiveSessionsTableToLinkedTheTrainer } from "@/Rtk/Slices/Db-slices/activeSessionsSlice";
 import { addRowInAttendanceTable, deleteRowInAttendanceTableById, updatePropertyInRowInAttendanceTable } from "@/Rtk/Slices/Db-slices/attendanceSlice";
 import { updatePropertyInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
-import { removeAllSessions } from "@/Rtk/Slices/UI-slices/sessionsCountSlice";
-import { removeSubscriptionEnd } from "@/Rtk/Slices/UI-slices/subscriptionEndSlice";
-import { removeSubscriptionStart } from "@/Rtk/Slices/UI-slices/subscriptionStartSlice";
 import { removeTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
 import { store_Type } from "@/Rtk/types";
-import Database from "@tauri-apps/plugin-sql";
 import { format } from "date-fns";
 import { Presentation } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 // ========================================================== //
-export default function Sessions() {
+function Sessions() {
     const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
+            activeSessions: state.activeSessions,
             logInInfo: state.logInInfo,
             attendance: state.attendance,
-            trainerDetails: state.trainerDetails,
-            accountes: state.accountes,
+            trainerId: state.trainerDetails?.id,
+            subscriptionStatus: state.trainerDetails?.subscriptionStatus,
+            sessionsCount: state.trainerDetails?.sessionsCount,
+            accounts: state.accounts,
         }
     }, shallowEqual);
 
@@ -37,63 +37,20 @@ export default function Sessions() {
         date: "",
     });
 
-    const todayDate = useMemo(() => theTodayDate({ startingIn12Houre: true }), []);
+    // Dont't change the startingInHalfNight value 
+    const todayDate = useMemo(() => theTodayDate({ startingInHalfNight: true }), []);
 
 
 
 
 
-    async function getActiveSessionsForTrainer(trainerId: number) {
-        const database = await Database.load("sqlite:app-gym-db.db");
-        const query = "SELECT * FROM activeSessions WHERE linkWithTrainer = ?";
-        const value = [trainerId];
 
-        return await database.select(query, value);
-    }
-
-    async function handleSessionsForRead() {
-        const activeSessions = await getActiveSessionsForTrainer(Number(state.trainerDetails?.id)) as activeSession_Type[];
-        let isSessionUsed = false;
-        const arr = [];
-
-
-        // Handle active sessions
-        for (let i = 0; i < activeSessions.length; i++) {
-            const sessionObj = {
-                id: activeSessions[i].id,
-                sessionNumber: i,
-                account: state.accountes?.find(ele => ele.id == activeSessions[i].accountId) ?? "removed",
-                activationDate: activeSessions[i].activationDate,
-                usingThisSession: todayDate.getTime() == new Date(activeSessions[i].activationDate).getTime()
-            }
-
-            isSessionUsed = todayDate.getTime() == new Date(activeSessions[i].activationDate).getTime();
-            arr.push(sessionObj);
-        }
-
-        // Handle for not active sessions
-        for (let i = activeSessions.length; i < Number(state.trainerDetails?.sessionsCount); i++) {
-            const sessionObj = {
-                id: null,
-                sessionNumber: i,
-                account: null,
-                activationDate: null,
-                usingThisSession: isSessionUsed ? false : true
-            }
-
-            isSessionUsed = true;
-            arr.push(sessionObj);
-        }
-
-        setActiveSessionsCount(activeSessions.length);
-        setReadSessions(arr as readSessions_Type[]);
-    }
 
     async function clickOnSession(sessionNum: number) {
         if (
-            state.trainerDetails?.subscriptionStatus == statusIsPending
+            state.subscriptionStatus == statusIsPending
             ||
-            state.trainerDetails?.subscriptionStatus == statusIsFinished
+            state.subscriptionStatus == statusIsFinished
         ) return;
 
 
@@ -102,29 +59,20 @@ export default function Sessions() {
             return;
         }
 
-
-        const database = await Database.load("sqlite:app-gym-db.db");
         const getSession = readSessions.find(ele => ele.sessionNumber == sessionNum);
 
 
         // Add session if the session is not active
         if (getSession?.account == null) {
-            const query = `
-                INSERT INTO activeSessions (
-                    linkWithTrainer, accountId, sessionNumber, activationDate
-                ) VALUES(?, ?, ?, ?)
-            `;
+            dispatch(addRowInActiveSessionsTableAndLinkedTheTrainer({
+                linkWithTrainer: Number(state.trainerId),
+                accountId: Number(state.logInInfo?.id),
+                sessionNumber: Number(sessionNum),
+                activationDate: todayDate.toISOString()
+            }) as any);
 
-            const values = [
-                state.trainerDetails?.id,
-                state.logInInfo?.id,
-                sessionNum,
-                todayDate.toISOString()
-            ]
 
-            await database.execute(query, values);
             attendance(true);
-            handleSessionsForRead();
             incrementOrDecrementForTotalSessionsInAccount(
                 Number(state.logInInfo?.id),
                 1,
@@ -138,12 +86,9 @@ export default function Sessions() {
             ||
             (getSession?.account == "removed" && state.logInInfo?.type == "manager")
         ) {
-            const query = "DELETE FROM activeSessions WHERE id = ?";
-            const value = [getSession.id];
+            dispatch(deleteRowInActiveSessionsTableToLinkedTheTrainerById(Number(getSession.id)) as any);
 
-            await database.execute(query, value);
             attendance(false);
-            handleSessionsForRead();
             incrementOrDecrementForTotalSessionsInAccount(
                 Number(state.logInInfo?.id),
                 1,
@@ -153,11 +98,12 @@ export default function Sessions() {
     }
 
     async function attendance(isAttend: boolean) {
-        const trainerId = state.trainerDetails?.id;
+        const trainerId = state.trainerId;
 
         const getAllAttendanceDetails = await getAllAttendanceInSpecificDate(todayDate) as attendanceDetails_Type[];
         const findTrainer = getAllAttendanceDetails.find(ele => ele.trainers.includes(trainerId as any));
         const findAccount = getAllAttendanceDetails.find(ele => ele.accountId == state.logInInfo?.id);
+
 
 
         // Remove trainer from trainers array
@@ -208,9 +154,16 @@ export default function Sessions() {
 
     function finishedSubscriptionUsingLastSession() {
         alert({
-            titleBeforeClickOnOk: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
-            titleAfterClickOnOk: `تم إنهاء الاشتراك للمتدرب رقم : ${state.trainerDetails?.id}`,
-            funRunWhenClickOnOk: async function () {
+            textBeforeSubmit: "هل تريد بالفعل إنهاء اشتراك ذلك المتدرب ؟؟",
+            textAfterSubmit: `تم إنهاء الاشتراك للمتدرب رقم : ${state.trainerId}`,
+            runFunctionAfterSubmit: async function () {
+                dispatch(updatePropertyInRowInTrainersTable({
+                    id: Number(state.trainerId),
+                    column: "subscriptionStatus",
+                    value: statusIsFinished
+                }) as any);
+
+
                 attendance(true);
                 incrementOrDecrementForTotalSessionsInAccount(
                     Number(state.logInInfo?.id),
@@ -218,17 +171,7 @@ export default function Sessions() {
                     "increment"
                 );
 
-                dispatch(updatePropertyInRowInTrainersTable({
-                    id: Number(state.trainerDetails?.id),
-                    column: "subscriptionStatus",
-                    value: statusIsFinished
-                }) as any);
-
-
-                deleteRowsInActiveSessionsLinkedToTrainer(Number(state.trainerDetails?.id));
-                dispatch(removeSubscriptionStart());
-                dispatch(removeSubscriptionEnd());
-                dispatch(removeAllSessions());
+                dispatch(deleteAllRowsInActiveSessionsTableToLinkedTheTrainer(Number(state.trainerId)) as any);
                 dispatch(removeTrainerDetails());
             }
         });
@@ -262,8 +205,49 @@ export default function Sessions() {
 
 
     useEffect(function () {
-        handleSessionsForRead();
-    }, [state.trainerDetails]);
+        if (state.trainerId) {
+            dispatch(getAllRowsInActiveSessionsTableToLinkedTheTrainer(Number(state.trainerId)) as any);
+        }
+    }, [state.trainerId]);
+
+    useEffect(function () {
+        let isSessionUsed = false;
+        const arr = [];
+
+
+        // get active sessions
+        const sessionActiveList = state.activeSessions?.map(function (sessionEle, i) {
+            const sessionObj = {
+                id: sessionEle.id,
+                sessionNumber: i,
+                account: state.accounts?.find(ele => ele.id == sessionEle.accountId) ?? "removed",
+                activationDate: sessionEle.activationDate,
+                usingThisSession: todayDate.getTime() == new Date(sessionEle.activationDate).getTime()
+            }
+
+            isSessionUsed = todayDate.getTime() == new Date(sessionEle.activationDate).getTime();
+            arr.push(sessionObj);
+        });
+
+        // Handle for not active sessions
+        for (let i = sessionActiveList?.length; i! < Number(state.sessionsCount); i!++) {
+            const sessionObj = {
+                id: null,
+                sessionNumber: i,
+                account: null,
+                activationDate: null,
+                usingThisSession: isSessionUsed ? false : true
+            }
+
+            isSessionUsed = true;
+            arr.push(sessionObj);
+        }
+
+
+        setActiveSessionsCount(Number(sessionActiveList?.length));
+        setReadSessions(arr as readSessions_Type[]);
+    }, [state.activeSessions]);
+
 
 
 
@@ -279,7 +263,7 @@ export default function Sessions() {
 
         <div className="opacity-60 mb-7">
             {
-                state.trainerDetails?.subscriptionStatus == statusIsActive ?
+                state.subscriptionStatus == statusIsActive ?
                     <p>
                         <span> تم إكمال </span>
                         <span className="font-bold me-1">
@@ -287,11 +271,11 @@ export default function Sessions() {
                         </span>
                         <span>  من اصل </span>
                         <span className="font-bold">
-                            {state.trainerDetails?.sessionsCount}
+                            {state.sessionsCount}
                         </span>
                     </p>
                     :
-                    state.trainerDetails?.subscriptionStatus == statusIsPending ?
+                    state.subscriptionStatus == statusIsPending ?
                         <p>
                             الاشتراك معلق
                         </p>
@@ -304,19 +288,17 @@ export default function Sessions() {
 
         {/* Session info */}
         {
-            state.trainerDetails?.subscriptionStatus == statusIsActive ?
+            state.subscriptionStatus == statusIsActive ?
                 <div
-                    className={`
-                        opacity-0 -z-50
-                        absolute p-3 rounded-2xl rounded-bl-none text-center
-                        ${showPopover ? "opacity-100 z-50" : "opacity-0 -z-50"}
-                        ${popoverInfo.accountType == "manager" ? "bg-(--managerColor) text-white font-bold" : ""}
-                        ${popoverInfo.accountType == "captain" || popoverInfo.accountType == "removed" ? "bg-(--captainColor) text-white" : ""}
-                    `}
                     style={{
                         top: `${popoverCoords.top}px`,
-                        left: `${popoverCoords.left}px`
+                        left: `${popoverCoords.left}px`,
                     }}
+                    className={`
+                        absolute p-3 rounded-2xl rounded-bl-none text-center
+                        bg-emerald-500 text-white font-bold
+                        ${showPopover ? "opacity-100 z-50" : "opacity-0 -z-50"}
+                    `}
                 >
                     <p className="whitespace-nowrap">
                         {popoverInfo.name}
@@ -340,24 +322,26 @@ export default function Sessions() {
         <div className="flex gap-3 flex-wrap overflow-auto h-20">
             {
                 readSessions.map(function (ele, i) {
+
+                    
                     return <div
                         key={i}
                         className={`
                             duration-300
                             flex justify-center items-center border border-neutral-300 w-12 h-12 rounded-full
                             ${!ele.usingThisSession ? "opacity-40" : ""}
-                            ${(ele.account == null && ele.usingThisSession)
+                            ${
+                                (ele.account == null && ele.usingThisSession)
                                 ||
                                 (ele.account != "removed" && ele.account?.id == state.logInInfo?.id && ele.usingThisSession)
                                 ||
                                 (ele?.account == "removed" && state.logInInfo?.type == "manager" && ele.usingThisSession)
                                 ? "cursor-pointer" : "cursor-not-allowed"
                             }
-                            ${ele.account != "removed" && ele.account?.type == "manager" ? "bg-(--managerColor) text-white border-0! font-bold" : ""}
-                            ${(ele.account != "removed" && ele.account?.type == "captain") || ele.account == "removed" ? "bg-(--captainColor) text-white border-0! font-bold" : ""}
+                            ${ele.account ? "bg-emerald-500 text-white font-bold" : ""}
 
-                            ${state.trainerDetails?.subscriptionStatus == statusIsFinished ? "bg-red-500! text-white! cursor-not-allowed! opacity-100!" : ""}
-                            ${state.trainerDetails?.subscriptionStatus == statusIsPending ? "bg-amber-500! text-white! cursor-not-allowed! opacity-100!" : ""}
+                            ${state.subscriptionStatus == statusIsFinished ? "bg-red-500! text-white! cursor-not-allowed! opacity-100!" : ""}
+                            ${state.subscriptionStatus == statusIsPending ? "bg-amber-500! text-white! cursor-not-allowed! opacity-100!" : ""}
                         `}
 
                         onClick={() => {
@@ -376,3 +360,6 @@ export default function Sessions() {
         </div>
     </div>
 }
+
+
+export default React.memo(Sessions);

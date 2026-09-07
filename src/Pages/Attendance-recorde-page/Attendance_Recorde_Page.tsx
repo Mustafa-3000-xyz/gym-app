@@ -2,18 +2,38 @@ import Box from "@/Global-components/Box/Box";
 import { BookUser, CalendarDays } from "lucide-react";
 import Date_Box from "./Components/Date-box/Date_Box";
 import Table_For_Trainers from "@/Global-components/Table-for-trainers/Table_For_Trainers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { attendanceDetails_Type, trainer_Type } from "../types";
 import Fitler from "./Components/Filter/Fitler";
 import Search_Box_For_Trainers from "@/Global-components/Search-box-for-trainers/Search_Box_For_Trainers";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { store_Type } from "@/Rtk/types";
+import { getAllRowsInAttendanceTable } from "@/Rtk/Slices/Db-slices/attendanceSlice";
 // ========================================================== //
 export default function Attendance_Recorde_Page() {
+    const dispatch = useDispatch();
+    const state = useSelector(function (state: store_Type) {
+        return {
+            attendance: state.attendance,
+            trainers: state.trainers,
+            settings: state.settings
+        }
+    }, shallowEqual);
+
+
     const [datesTotal, setDatesTotal] = useState(0);
+    const [getTrainers, setGetTrainers] = useState<trainer_Type[]>([]);
+
     const [getAllAttendanceInSpecificDate, setGetAllAttendanceInSpecificDate] = useState<attendanceDetails_Type[]>([])
     const [filterType, setFilterType] = useState<number | "allTrainers">("allTrainers");
 
-    const [getTrainers, setGetTrainers] = useState<trainer_Type[]>([]);
 
+
+    useEffect(function () {
+        if (state.attendance?.length == 0) {
+            dispatch(getAllRowsInAttendanceTable() as any);
+        }
+    }, [state.attendance?.length]);
 
 
 
@@ -66,7 +86,9 @@ export default function Attendance_Recorde_Page() {
             </div>
         </div>
 
-        {/* Table */}
-        <Table_For_Trainers trainersList={getTrainers} />
+        <Table_For_Trainers
+            trainersList={getTrainers}
+            countRowsInSlide={Number(state.settings.rowsInAttendanceTable)}
+        />
     </div>
 }

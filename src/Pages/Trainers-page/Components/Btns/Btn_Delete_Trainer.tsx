@@ -1,10 +1,8 @@
 import { REMOVE_TRAINERS } from '@/Lib/constants';
 import { alert, checkPermissionesInAccount, normalAlert } from '@/Lib/functions';
+import { deleteAllRowsInActiveSessionsTableToLinkedTheTrainer } from '@/Rtk/Slices/Db-slices/activeSessionsSlice';
 import { getAllRowsInAttendanceTable } from '@/Rtk/Slices/Db-slices/attendanceSlice';
 import { deleteRowInTrainersTableById } from '@/Rtk/Slices/Db-slices/trainersSlice';
-import { removeAllSessions } from '@/Rtk/Slices/UI-slices/sessionsCountSlice';
-import { removeSubscriptionEnd } from '@/Rtk/Slices/UI-slices/subscriptionEndSlice';
-import { removeSubscriptionStart } from '@/Rtk/Slices/UI-slices/subscriptionStartSlice';
 import { removeTrainerDetails } from '@/Rtk/Slices/UI-slices/trainerDetailsSlice';
 import { store_Type } from '@/Rtk/types';
 import Database from '@tauri-apps/plugin-sql';
@@ -31,20 +29,18 @@ export default function Btn_Delete_Trainer(
     function deleteTrainer() {
         if (checkDeletePermission) {
             alert({
-                titleBeforeClickOnOk: "هل تريد حقا حذف ذلك المتدرب ؟",
-                titleAfterClickOnOk: "ذلك المتدرب لم يعد موجود في الجدول",
-                funRunWhenClickOnOk: function () {
+                textBeforeSubmit: "هل تريد حقا حذف ذلك المتدرب ؟",
+                textAfterSubmit: "ذلك المتدرب لم يعد موجود في الجدول",
+                runFunctionAfterSubmit: function () {
                     dispatch(deleteRowInTrainersTableById(id as any) as any);
                     dispatch(removeTrainerDetails() as any);
-                    dispatch(removeSubscriptionStart());
-                    dispatch(removeSubscriptionEnd());
-                    dispatch(removeAllSessions());
 
+                    dispatch(deleteAllRowsInActiveSessionsTableToLinkedTheTrainer(id) as any);
                     removeTrainerInAttendanceRecord(id);
                 }
             });
         }
-        else{
+        else {
             normalAlert({
                 title: "المعذره",
                 text: "ليس لديك الصلاحية لحذف المتدربين",
@@ -53,35 +49,27 @@ export default function Btn_Delete_Trainer(
         }
     }
 
-    async function removeTrainerInAttendanceRecord(id: number) {
-        const database = await Database.load("sqlite:app-gym-db.db");
-
-        await database.execute("BEGIN TRANSACTION;");
+    async function removeTrainerInAttendanceRecord(trainerId: number) {
+        const database = await Database.load("sqlite:gym-app.db");
 
         try {
             await database.execute(`
-                UPDATE attendance 
-                SET trainers = (
-                    SELECT json_group_array(value) 
+                UPDATE attendance SET trainers = (
+                SELECT json_group_array(value) 
                     FROM json_each(attendance.trainers) 
-                    WHERE value != ?
+                    WHERE value != ? AND value != ?
                 )
-                WHERE attendance.id IN (
-                    SELECT attendance.id 
-                    FROM attendance, json_each(attendance.trainers) 
-                    WHERE json_each.value = ?
-                )
-            `, [id, id]);
+                WHERE attendance.trainers LIKE ?;
+            `, [trainerId, trainerId.toString(), `%${trainerId}%`]);
 
             await database.execute(`
                 DELETE FROM attendance 
-                WHERE trainers = '[]' OR json_array_length(trainers) = 0;
+                WHERE trainers IS NULL 
+                OR trainers = '[]' 
+                OR json_array_length(trainers) = 0;
             `);
-
-            await database.execute("COMMIT;");
             dispatch(getAllRowsInAttendanceTable() as any);
         } catch (error) {
-            await database.execute("ROLLBACK;");
             console.error(error);
         }
     }

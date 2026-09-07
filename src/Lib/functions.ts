@@ -1,114 +1,77 @@
-import { accounte_Type, trainer_Type } from "@/Pages/types";
+import { accounte_Type } from "@/Pages/types";
 import Swal from "sweetalert2";
 import { alert_Type, checkThePermissionIsHere_Type, normalAlert_Type } from "./types";
-import { statusIsActive, statusIsPending } from "./constants";
+import { updatePropertyInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import store from "@/Rtk/store";
-import { updatePropertyInRowInAccountsTable, updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
+import { updatePropertyInRowYearsInProfitsAndExpensesTable, updateSomePropertiesInRowInYearsProfitsAndExpensesTable } from "@/Rtk/Slices/Db-slices/yearsProfitsAndExpensesSlice";
+import { updatePropertyInRowInMonthsProfitsAndExpensesTable, updateSomePropertiesInRowInMonthsProfitsAndExpensesTable } from "@/Rtk/Slices/Db-slices/monthsProfitsAndExpensesSlice";
+import { updatePropertyInRowInDaysProfitsAndExpensesTable, updateSomePropertiesInRowInDaysProfitsAndExpensesTable } from "@/Rtk/Slices/Db-slices/daysProfitsAndExpensesSlice";
+import { arithmeticOperatorsWithProfitsAndExpenses_Type } from "@/Pages/types";
 // ========================================================== //
-export function styleForSubscriptionState(trainer: trainer_Type) {
-    /*
-        This function his jop is take trainer and return style subscription state,
-        please look in [Search_Result] file or [All_Trainers] file
-    */
-
-    const styleObj = {
-        style: "",
-        title: ""
-    }
-
-
-    if (trainer.subscriptionStatus == statusIsActive) {
-        styleObj.style = "bg-emerald-100 text-emerald-500";
-        styleObj.title = "مفعل";
-    }
-    else if (trainer.subscriptionStatus == statusIsPending) {
-        styleObj.style = "bg-amber-100 text-amber-500";
-        styleObj.title = "معلق";
-    }
-    else {
-        styleObj.style = "bg-red-100 text-red-500";
-        styleObj.title = "منتهي";
-    }
-
-
-    return styleObj;
-}
-
 export function normalAlert(
     {
         title,
         text = "",
-        toast = false,
         icon,
+        runFunctionAfterSubmit
     }: normalAlert_Type
 ) {
     Swal.fire({
         title: title,
         text: text,
         icon: icon,
-        toast: toast,
         confirmButtonText: "تمام"
-    } as any);
+    }).then((result) => {
+        if (result.isConfirmed || result.dismiss == "backdrop" || result.dismiss == "close" || result.dismiss == "timer" || result.dismiss == "esc") {
+            runFunctionAfterSubmit?.();
+        }
+    });
 }
 
 export function alert({
-    titleBeforeClickOnOk,
-    titleAfterClickOnOk,
-    funRunWhenClickOnOk,
-}: alert_Type): void {
+    titleBeforeSubmit = "تحذير",
+    titleAfterSubmit = "تمت العمليه",
+    textBeforeSubmit,
+    textAfterSubmit,
+    iconStyleBeforeSubmit = "warning",
+    runFunctionAfterSubmit,
+    runFunctionAfterCancel
+}: alert_Type) {
     Swal.fire({
-        title: "!! تحذير",
-        text: titleBeforeClickOnOk,
-        icon: "warning",
+        title: titleBeforeSubmit,
+        text: textBeforeSubmit,
+        icon: iconStyleBeforeSubmit,
         showCancelButton: true,
         confirmButtonColor: "#d33",
         cancelButtonColor: "#3085d6",
         confirmButtonText: "نعم , انا متأكد",
         cancelButtonText: "إلغاء",
     }).then((result) => {
-        if (result.isConfirmed) {
-            if (titleAfterClickOnOk) {
-                normalAlert({
-                    title: "تمت العمليه",
-                    text: titleAfterClickOnOk as string,
-                    icon: "success"
-                });
-            }
+        if (result.isDismissed) {
+            runFunctionAfterCancel?.();
+        }
 
-            funRunWhenClickOnOk();
+        if (result.isConfirmed && textAfterSubmit) {
+            normalAlert({
+                title: titleAfterSubmit,
+                text: textAfterSubmit as string,
+                icon: "success"
+            });
+
+            runFunctionAfterSubmit?.();
+        }
+        else if (result.isConfirmed) {
+            runFunctionAfterSubmit?.();
         }
     });
 }
 
-export function logOutFromOldAccount(oldAccountId: number) {
-    const state = store.getState().accountes as accounte_Type[];
-    const theAccount = state.find(ele => ele.id == oldAccountId);
-
-
-    if (!theAccount) return;
-
-    const loginTime = new Date(theAccount?.loginDate as any).getTime();
-    const logOutTime = new Date().getTime();
-
-    const convertToHours = (logOutTime - loginTime) / (1000 * 60 * 60);
-    const totalForHours = (theAccount?.workingHours || 0) + convertToHours;
-
-
-    store.dispatch(updateSomePropertiesInRowInAccountsTable({
-        id: oldAccountId,
-        values: {
-            loginDate: "",
-            workingHours: Math.trunc(totalForHours)
-        }
-    }) as any);
-}
-
 export function theTodayDate(
-    { startingIn12Houre }: { startingIn12Houre?: boolean }
+    { startingInHalfNight }: { startingInHalfNight?: boolean }
 ) {
     const todayDate = new Date();
 
-    if (startingIn12Houre) {
+    if (startingInHalfNight) {
         todayDate.setHours(0, 0, 0, 0);
     }
 
@@ -120,8 +83,8 @@ export function incrementOrDecrementForTotalSessionsInAccount(
     sessionsCount: number,
     type: "increment" | "decrement",
 ) {
-    const accountes = store.getState().accountes as accounte_Type[];
-    const getAccount = accountes.find(ele => ele.id == accountId);
+    const accounts = store.getState().accounts as accounte_Type[];
+    const getAccount = accounts.find(ele => ele.id == accountId);
 
 
     switch (type) {
@@ -154,7 +117,7 @@ export function checkPermissionesInAccount(
         permissionType,
     }: checkThePermissionIsHere_Type
 ) {
-    const allAccounts = store.getState().accountes as accounte_Type[];
+    const allAccounts = store.getState().accounts as accounte_Type[];
     const getPermissionsList = allAccounts.find(ele => ele.id == accountId)?.permissions;
 
 
@@ -170,5 +133,63 @@ export function checkPermissionesInAccount(
         }
     } catch (error) {
 
+    }
+}
+
+export function arithmeticOperatorsWithProfitsAndExpenses(arithemtic: arithmeticOperatorsWithProfitsAndExpenses_Type) {
+    if (arithemtic.updateOneColumn?.year?.yearId) {
+        store.dispatch(updatePropertyInRowYearsInProfitsAndExpensesTable({
+            id: arithemtic.updateOneColumn?.year.yearId,
+            column: arithemtic.updateOneColumn?.year.column as any,
+            value: Number(arithemtic.updateOneColumn?.year.value) < 0 ? 0 : Number(arithemtic.updateOneColumn?.year.value)
+        }) as any);
+    }
+
+    if (arithemtic.updateOneColumn?.month?.monthId) {
+        store.dispatch(updatePropertyInRowInMonthsProfitsAndExpensesTable({
+            id: arithemtic.updateOneColumn?.month.monthId,
+            column: arithemtic.updateOneColumn?.month.column as any,
+            value: Number(arithemtic.updateOneColumn?.month.value) < 0 ? 0 : Number(arithemtic.updateOneColumn?.month.value)
+        }) as any);
+    }
+
+    if (arithemtic.updateOneColumn?.day?.dayId) {
+        store.dispatch(updatePropertyInRowInDaysProfitsAndExpensesTable({
+            id: arithemtic.updateOneColumn?.day.dayId,
+            column: arithemtic.updateOneColumn?.day.column as any,
+            value: Number(arithemtic.updateOneColumn?.day.value) < 0 ? 0 : Number(arithemtic.updateOneColumn?.day.value)
+        }) as any);
+    }
+
+    // ================== //
+
+    if (arithemtic.updateSomeColumns?.year.yearId) {
+        store.dispatch(updateSomePropertiesInRowInYearsProfitsAndExpensesTable({
+            id: Number(arithemtic.updateSomeColumns?.year.yearId),
+            values: {
+                profitsTotal: Number(arithemtic.updateSomeColumns?.year.profitsTotal) < 0 ? 0 : Number(arithemtic.updateSomeColumns?.year.profitsTotal),
+                expensesTotal: Number(arithemtic.updateSomeColumns?.year.expensesTotal) < 0 ? 0 : Number(arithemtic.updateSomeColumns?.year.expensesTotal)
+            }
+        }) as any);
+    }
+
+    if (arithemtic.updateSomeColumns?.month.monthId) {
+        store.dispatch(updateSomePropertiesInRowInMonthsProfitsAndExpensesTable({
+            id: Number(arithemtic.updateSomeColumns?.month.monthId),
+            values: {
+                profitsTotal: Number(arithemtic.updateSomeColumns?.month.profitsTotal) < 0 ? 0 : Number(arithemtic.updateSomeColumns?.month.profitsTotal),
+                expensesTotal: Number(arithemtic.updateSomeColumns?.month.expensesTotal) < 0 ? 0 : Number(arithemtic.updateSomeColumns?.month.expensesTotal)
+            }
+        }) as any);
+    }
+
+    if (arithemtic.updateSomeColumns?.day.dayId) {
+        store.dispatch(updateSomePropertiesInRowInDaysProfitsAndExpensesTable({
+            id: Number(arithemtic.updateSomeColumns?.day.dayId),
+            values: {
+                profitsTotal: Number(arithemtic.updateSomeColumns?.day.profitsTotal) < 0 ? 0 : Number(arithemtic.updateSomeColumns?.day.profitsTotal),
+                expensesTotal: Number(arithemtic.updateSomeColumns?.day.expensesTotal) < 0 ? 0 : Number(arithemtic.updateSomeColumns?.day.expensesTotal)
+            }
+        }) as any);
     }
 }
