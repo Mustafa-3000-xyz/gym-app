@@ -1,55 +1,30 @@
-import Animation from "@/Global-components/Animation/Animation";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
 import { Search_Result_Props } from "@/Global-components/typesProps";
-import { styleDate, trainerPagePath } from "@/Lib/constants";
-import { checkPermissionesInAccount, normalAlert } from "@/Lib/functions";
-import { trainer_Type } from "@/Pages/types";
-import { addTrainerDetails } from "@/Rtk/Slices/UI-slices/trainerDetailsSlice";
-import { store_Type } from "@/Rtk/types";
+import { styleDate, trainerDetailsPagePath } from "@/Lib/constants";
 import { format } from "date-fns";
 import { useEffect, useRef } from "react";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useDispatch } from "react-redux";
+import { changeStatusTheShowForSideBar } from "@/Rtk/Slices/UI-slices/sideBarSlice";
 // ========================================================== //
 export default function Search_Result(
     {
-        searchInpRef,
         arrayContainsTrainers,
         onIsShowSearchResult,
     }: Search_Result_Props
 ) {
     const dispatch = useDispatch();
-    const state = useSelector(function (state: store_Type) {
-        return {
-            logInInfo: state.logInInfo,
-        }
-    }, shallowEqual);
-
-
-    const navigation = useNavigate();
+    const navigate = useNavigate();
     const searchResultRef = useRef<HTMLDivElement>(null);
 
-    const checkTrainerPagePermission = checkPermissionesInAccount({
-        accountId: Number(state.logInInfo?.id),
-        permissionType: trainerPagePath,
-    });
 
 
-
-    function showTrainer(trainer_Type: trainer_Type) {
+    function showTrainer(trainerId: number) {
         onIsShowSearchResult(false);
-        dispatch(addTrainerDetails(trainer_Type));
+        navigate(trainerDetailsPagePath.replace(":trainerId", trainerId as any));
 
-        if (checkTrainerPagePermission) {
-            navigation(trainerPagePath);
-        }
-        else {
-            normalAlert({
-                title: "المعذره",
-                text: "ليس لديك الصلاحيه للوصول الى صفحة المتدربين  لمعرفة تفاصيل المتدرب",
-                icon: "error"
-            });
-        }
+        dispatch(changeStatusTheShowForSideBar("hidden"));
     }
 
 
@@ -57,13 +32,9 @@ export default function Search_Result(
     useEffect(() => {
         function handleClickOutside(e: MouseEvent) {
             if (
-                !searchInpRef?.contains(e.target as any)
+                searchResultRef.current != e.target
                 &&
-                (
-                    searchResultRef.current != e.target
-                    &&
-                    !searchResultRef.current?.contains(e.target as any)
-                )
+                !searchResultRef.current?.contains(e.target as any)
             ) {
                 onIsShowSearchResult(false);
             }
@@ -71,20 +42,19 @@ export default function Search_Result(
 
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [searchInpRef, searchResultRef]);
+    }, [searchResultRef]);
 
 
 
 
-    return <Animation
+    return <motion.div
         ref={searchResultRef}
         className={`
             h-60 w-full
-            translate-y-10 shadow-2xl
+            translate-y-2 shadow-2xl
             transform overflow-auto z-10 flex flex-col  items-center gap-3
-            absolute border border-black/15 bg-slate-100 p-3
+            absolute border-4 border-(--thirdColor)/50 bg-slate-100 p-3 rounded-lg
         `}
-
         initial={{
             y: -30
         }}
@@ -95,16 +65,18 @@ export default function Search_Result(
     >
         {
             arrayContainsTrainers.length == 0 ?
-                <Not_Found
-                    srcImg='/not_found_in_drop_menu.svg'
-                    title=' لا يوجد نتائج'
-                    className='w-28'
-                />
+                <div className="w-full h-full flex justify-center items-center">
+                    <Not_Found
+                        srcImg='/not_found_in_drop_menu.svg'
+                        title=' لا يوجد نتائج'
+                        className='w-28'
+                    />
+                </div>
                 :
                 arrayContainsTrainers.map(ele => (
-                    <button
+                    <div
                         key={ele.id}
-                        onClick={() => showTrainer(ele)}
+                        onClick={() => showTrainer(Number(ele.id))}
                         className="flex justify-between items-center w-full bg-slate-200 p-3 rounded-md cursor-pointer"
                     >
                         {/* First name & last name & id */}
@@ -112,7 +84,7 @@ export default function Search_Result(
                             <h3 className=' font-bold mb-1'>
                                 {ele.firstName} {ele.lastName}
                             </h3>
-                            <p className=''>
+                            <p>
                                 ({ele.id})
                             </p>
                         </div>
@@ -127,8 +99,8 @@ export default function Search_Result(
                                 {format(new Date(ele.subscriptionEnd), styleDate)}
                             </p>
                         </div>
-                    </button>
+                    </div>
                 ))
         }
-    </Animation>
+    </motion.div>
 }

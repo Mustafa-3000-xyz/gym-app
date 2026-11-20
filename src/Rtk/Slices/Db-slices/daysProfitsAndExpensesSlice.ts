@@ -1,16 +1,16 @@
 import { daysProfitsAndExpenses_Type } from "@/Pages/types";
-import { updatePropertyInRowInDaysProfetsAndExpensesTable_Type, updateSomePropertiesInRowInDaysProfitsAndExpensesTable_Type } from "@/Rtk/types";
+import { updateAnyPropertyInRowInDaysProfitsAndExpensesTable_Type } from "@/Rtk/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const database = await Database.load("sqlite:gym-app.db");
+const db = await Database.load("sqlite:gym-app.db");
 
 
 
 export const getAllRowsInDaysProfitsAndExpensesLinkedToMonthTable = createAsyncThunk(
     "daysProfitsAndExpensesSlice/getAllRowsInDaysProfitsAndExpensesLinkedToMonthTable",
     async function (monthId: number) {
-        return await database.select(
+        return await db.select(
             "SELECT * FROM daysProfitsAndExpenses WHERE linkWithMonth = ?",
             [monthId]
         );
@@ -31,10 +31,10 @@ export const addRowInDaysProfitsAndExpensesTable = createAsyncThunk(
             data.dayNumber,
             data.profitsTotal,
             data.expensesTotal,
-            data.target
+            data.target,
         ];
 
-        const createRow = await database.execute(query, values);
+        const createRow = await db.execute(query, values);
 
         return {
             id: createRow.lastInsertId,
@@ -43,30 +43,9 @@ export const addRowInDaysProfitsAndExpensesTable = createAsyncThunk(
     }
 );
 
-export const updatePropertyInRowInDaysProfitsAndExpensesTable = createAsyncThunk(
-    "daysProfitsAndExpensesSlice/updatePropertyInRowInDaysProfitsAndExpensesTable",
-    async function ({
-        id,
-        column,
-        value
-    }: updatePropertyInRowInDaysProfetsAndExpensesTable_Type) {
-        const query = `UPDATE daysProfitsAndExpenses SET ${column} = ? WHERE id = ?`;
-
-        await database.execute(query, [value, id]);
-
-        const getDayAfterUpdate = await database.select(
-            `SELECT * FROM daysProfitsAndExpenses WHERE id = ?`,
-            [id]
-        );
-
-
-        return (getDayAfterUpdate as daysProfitsAndExpenses_Type[])[0];
-    }
-);
-
-export const updateSomePropertiesInRowInDaysProfitsAndExpensesTable = createAsyncThunk(
-    "daysProfitsAndExpensesSlice/updateSomePropertiesInRowInDaysProfitsAndExpensesTable",
-    async function ({ id, values }: updateSomePropertiesInRowInDaysProfitsAndExpensesTable_Type) {
+export const updateAnyPropertyInRowInDaysProfitsAndExpensesTable = createAsyncThunk(
+    "daysProfitsAndExpensesSlice/updateAnyPropertyInRowInDaysProfitsAndExpensesTable",
+    async function ({ id, values }: updateAnyPropertyInRowInDaysProfitsAndExpensesTable_Type) {
         const keys = Object.keys(values);
 
         if (keys.length === 0) return;
@@ -74,12 +53,12 @@ export const updateSomePropertiesInRowInDaysProfitsAndExpensesTable = createAsyn
         const setClause = keys.map(key => `${key} = ?`).join(", ");
         const result = keys.map(key => (values as any)[key]);
 
-        await database.execute(
+        await db.execute(
             `UPDATE daysProfitsAndExpenses SET ${setClause} WHERE id = ?`,
             [...result, id]
         );
 
-        const getDayAfterUpdate = await database.select(
+        const getDayAfterUpdate = await db.select(
             `SELECT * FROM daysProfitsAndExpenses WHERE id = ?`,
             [id]
         );
@@ -104,12 +83,7 @@ const daysProfitsAndExpensesSlice = createSlice({
             return [...state, action.payload];
         });
 
-        builde.addCase(updatePropertyInRowInDaysProfitsAndExpensesTable.fulfilled as any, (state: daysProfitsAndExpenses_Type[], action): any => {
-            const result = state.filter(ele => ele.id != action.payload.id);
-            return [...result, action.payload];
-        });
-
-        builde.addCase(updateSomePropertiesInRowInDaysProfitsAndExpensesTable.fulfilled as any, (state: daysProfitsAndExpenses_Type[], action): any => {
+        builde.addCase(updateAnyPropertyInRowInDaysProfitsAndExpensesTable.fulfilled as any, (state: daysProfitsAndExpenses_Type[], action): any => {
             const result = state.filter(ele => ele.id != action.payload.id);
             return [...result, action.payload];
         });

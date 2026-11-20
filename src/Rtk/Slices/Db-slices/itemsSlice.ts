@@ -1,16 +1,16 @@
 import { item_Type } from "@/Pages/types";
-import { updateSomePropertiesInRowInItemsTable_Type } from "@/Rtk/types";
+import { updateAnyPropertyInRowInItemsTable_Type } from "@/Rtk/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const database = await Database.load("sqlite:gym-app.db");
+const db = await Database.load("sqlite:gym-app.db");
 
 
 
 export const getAllRowsInItemsTableLinkedToDay = createAsyncThunk(
     "itemsSlice/getAllRowsInItemsTableLinkedToDay",
     async function (dayId: number) {
-        return await database.select(
+        return await db.select(
             "SELECT * FROM items WHERE linkWithDay = ?",
             [dayId]
         );
@@ -22,18 +22,19 @@ export const addRowInItemsTable = createAsyncThunk(
     async function (data: item_Type) {
         const query = `
             INSERT INTO items (
-                linkWithDay, itemName, category, price
-            ) VALUES (?, ?, ?, ?)
+                linkWithDay, additionTime, category, itemName, price
+            ) VALUES (?, ?, ?, ?, ?)
         `;
 
         const values = [
             data.linkWithDay,
-            data.itemName,
+            data.additionTime,
             data.category,
+            data.itemName,
             data.price,
         ];
 
-        const createRow = await database.execute(query, values);
+        const createRow = await db.execute(query, values);
 
         return {
             id: createRow.lastInsertId,
@@ -42,19 +43,9 @@ export const addRowInItemsTable = createAsyncThunk(
     }
 );
 
-export const deleteRowInItemsTableById = createAsyncThunk(
-    "itemsSlice/deleteRowInItemsTableById",
-    async function (itemId: number) {
-        const query = "DELETE FROM items WHERE id = ?";
-
-        await database.execute(query, [itemId]);
-        return itemId;
-    }
-);
-
-export const updateSomePropertiesInRowInItemsTable = createAsyncThunk(
-    "itemsSlice/updateSomePropertiesInRowInItemsTable",
-    async function ({ id, values }: updateSomePropertiesInRowInItemsTable_Type) {
+export const updateAnyPropertyInRowInItemsTable = createAsyncThunk(
+    "itemsSlice/updateAnyPropertyInRowInItemsTable",
+    async function ({ id, values }: updateAnyPropertyInRowInItemsTable_Type) {
         const keys = Object.keys(values);
 
         if (keys.length === 0) return;
@@ -62,17 +53,27 @@ export const updateSomePropertiesInRowInItemsTable = createAsyncThunk(
         const setClause = keys.map(key => `${key} = ?`).join(", ");
         const result = keys.map(key => (values as any)[key]);
 
-        await database.execute(
+        await db.execute(
             `UPDATE items SET ${setClause} WHERE id = ?`,
             [...result, id]
         );
 
-        const getItmeAfterUpdate = await database.select(
+        const getRowAfterUpdate = await db.select(
             `SELECT * FROM items WHERE id = ?`,
             [id]
         );
 
-        return (getItmeAfterUpdate as item_Type[])[0];
+        return (getRowAfterUpdate as item_Type[])[0];
+    }
+);
+
+export const deleteRowInItemsTableById = createAsyncThunk(
+    "itemsSlice/deleteRowInItemsTableById",
+    async function (id: number) {
+        const query = "DELETE FROM items WHERE id = ?";
+
+        await db.execute(query, [id]);
+        return id;
     }
 );
 
@@ -92,13 +93,13 @@ const itemsSlice = createSlice({
             return [...state, action.payload];
         });
 
-        builde.addCase(deleteRowInItemsTableById.fulfilled as any, (state: item_Type[], action): any => {
-            return state.filter(ele => ele.id != action.payload);
-        });
-
-        builde.addCase(updateSomePropertiesInRowInItemsTable.fulfilled as any, (state: item_Type[], action): any => {
+        builde.addCase(updateAnyPropertyInRowInItemsTable.fulfilled as any, (state: item_Type[], action): any => {
             const result = state.filter(ele => ele.id != action.payload.id);
             return [...result, action.payload];
+        });
+
+        builde.addCase(deleteRowInItemsTableById.fulfilled as any, (state: item_Type[], action): any => {
+            return state.filter(ele => ele.id != action.payload);
         });
     }
 });

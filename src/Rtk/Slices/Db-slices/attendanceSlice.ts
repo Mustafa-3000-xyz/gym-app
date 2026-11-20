@@ -3,14 +3,14 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Database from "@tauri-apps/plugin-sql";
 import { updatePropertyInAttendance_Type } from "../../types";
 // ======================================= //
-const database = await Database.load("sqlite:gym-app.db");
+const db = await Database.load("sqlite:gym-app.db");
 
 
 
 export const getAllRowsInAttendanceTable = createAsyncThunk(
     "attendanceSlice/getAllRowsInAttendanceTable",
     async function () {
-        return await database.select("SELECT * FROM attendance");
+        return await db.select("SELECT * FROM attendance");
     }
 );
 
@@ -23,7 +23,7 @@ export const addRowInAttendanceTable = createAsyncThunk(
             data.accountId,
             JSON.stringify(data.trainers)
         ];
-        const createRow = await database.execute(query, values);
+        const createRow = await db.execute(query, values);
 
         return {
             id: createRow.lastInsertId,
@@ -38,7 +38,7 @@ export const deleteRowInAttendanceTableById = createAsyncThunk(
         const query = "DELETE FROM attendance WHERE id = ?";
         const value = [id];
 
-        await database.execute(query, value);
+        await db.execute(query, value);
 
         return id;
     }
@@ -47,7 +47,7 @@ export const deleteRowInAttendanceTableById = createAsyncThunk(
 export const deleteAllRowsInAttendanceTable = createAsyncThunk(
     "attendanceSlice/deleteAllRowsInAttendanceTable",
     async function () {
-        await database.execute(`DELETE FROM attendance;`);
+        await db.execute(`DELETE FROM attendance;`);
         return [];
     }
 );
@@ -61,14 +61,12 @@ export const updatePropertyInRowInAttendanceTable = createAsyncThunk(
             value
         }: updatePropertyInAttendance_Type
     ) {
-        const query = `UPDATE attendance SET ${column} = ? WHERE id = ?`;
-        const theValue = column == "trainers" ? JSON.stringify(value) : value;
 
-        await database.execute(query, [theValue, id]);
+        await db.execute(`UPDATE attendance SET ${column} = ? WHERE id = ?`, [JSON.stringify(value), id]);
 
-        const getDayAfterUpdate = await database.select("SELECT * FROM attendance WHERE id = ?", [id]);
+        const getRowAfterUpdate = await db.select("SELECT * FROM attendance WHERE id = ?", [id]);
 
-        return (getDayAfterUpdate as any)[0];
+        return (getRowAfterUpdate as any)[0];
     }
 );
 

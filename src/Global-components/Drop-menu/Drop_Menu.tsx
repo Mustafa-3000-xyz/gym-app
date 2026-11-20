@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useRef, useState } from "react";
 import { Drop_Menu_Props } from "../typesProps";
-import Animation from "../Animation/Animation";
+import { motion } from "framer-motion";
 import Not_Found from "../Not-found/Not_Found";
 import { Children, isValidElement } from "react";
 // ========================================================== //
@@ -83,10 +83,10 @@ export default function Drop_Menu(
 
         {
             isShowMenu ?
-                <Animation
+                <motion.div
                     ref={menuRef}
                     className={`
-                        absolute top-full mt-2 z-50
+                        absolute top-full mt-2 z-50 w-full border-4 border-(--thirdColor)/50
                         shadow-2xl p-4 rounded-md select-none bg-slate-100 cursor-default!
                         ${classNameForMenu}
                     `}
@@ -110,7 +110,7 @@ export default function Drop_Menu(
                             :
                             bottomContent
                     }
-                </Animation>
+                </motion.div>
                 :
                 null
         }

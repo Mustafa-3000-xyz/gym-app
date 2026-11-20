@@ -1,18 +1,20 @@
 export interface alert_Type {
     titleBeforeSubmit?: string,
     titleAfterSubmit?: string,
-    textBeforeSubmit: string,
-    textAfterSubmit?: string,
+    textBeforeSubmitAction: string,
+    textAfterSubmitAction?: string | undefined,
+    isShowNoBtn?: boolean,
     iconStyleBeforeSubmit?: "success" | "error" | "question" | "info" | "warning"
-    runFunctionAfterSubmit?: () => void,
-    runFunctionAfterCancel?: () => void
+    runFunctionAfterConfirm?: () => void,
+    runFunctionAfterDenied?: () => void,
+    runFunctionAfterClickOnCancel?: () => void,
 }
 
 export interface normalAlert_Type {
     title: string,
     text?: string,
     icon: "success" | "error" | "question" | "info",
-    runFunctionAfterSubmit?: () => void
+    runFunctionAfterConfirm?: () => void
 }
 
 export interface checkThePermissionIsHere_Type {

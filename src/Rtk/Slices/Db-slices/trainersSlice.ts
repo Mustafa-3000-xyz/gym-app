@@ -1,16 +1,16 @@
 import { trainer_Type } from "@/Pages/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { updatePropertyInTrainer_Type, updateSomePropertiesInTrainer_Type } from "../../types";
+import { updateAnyPropertyInRowInTrainersTable_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const database = await Database.load("sqlite:gym-app.db");
+const db = await Database.load("sqlite:gym-app.db");
 
 
 
 export const getAllRowsInTrainersTable = createAsyncThunk(
     "trainersSlice/getAllRowsInTrainersTable",
     async function () {
-        return await database.select("SELECT * FROM trainers");
+        return await db.select("SELECT * FROM trainers");
     }
 );
 
@@ -19,28 +19,29 @@ export const addRowInTrainersTable = createAsyncThunk(
     async function (data: trainer_Type) {
         const query = `
             INSERT INTO trainers (
-                firstName, lastName, phone, address, trainerType,
+                trainerType, firstName, lastName, phone, address, notes,
                 subscriptionName, sessionsCount, price, 
-                subscriptionStart, subscriptionEnd, subscriptionStatus, lastRenewalSubscription
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                subscriptionStart, subscriptionEnd, subscriptionStatus, debt
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const values = [
+            data.trainerType,
             data.firstName,
             data.lastName,
             data.phone,
             data.address,
-            data.trainerType,
+            data.notes,
             data.subscriptionName,
             data.sessionsCount,
             data.price,
             data.subscriptionStart,
             data.subscriptionEnd,
             data.subscriptionStatus,
-            data.lastRenewalSubscription
+            data.debt
         ];
 
-        const createRow = await database.execute(query, values);
+        const createRow = await db.execute(query, values);
 
         return {
             id: createRow.lastInsertId,
@@ -49,48 +50,9 @@ export const addRowInTrainersTable = createAsyncThunk(
     }
 );
 
-export const deleteRowInTrainersTableById = createAsyncThunk(
-    "trainersSlice/deleteRowInTrainersTableById",
-    async function (id: number | string) {
-        const query = "DELETE FROM trainers WHERE id = ?";
-
-        await database.execute(query, [id]);
-        return id;
-    }
-);
-
-export const deleteAllRowsInTrainersTable = createAsyncThunk(
-    "trainersSlice/deleteAllRowsInTrainersTable",
-    async function () {
-        await database.execute(`DELETE FROM trainers;`);
-        return [];
-    }
-);
-
-export const updatePropertyInRowInTrainersTable = createAsyncThunk(
-    "trainersSlice/updatePropertyInRowInTrainersTable",
-    async function ({
-        id,
-        column,
-        value
-    }: updatePropertyInTrainer_Type) {
-        const query = `UPDATE trainers SET ${column} = ? WHERE id = ?`;
-
-        await database.execute(query, [value, id]);
-
-        const getTrainerAfterUpdate = await database.select(
-            `SELECT * FROM trainers WHERE id = ?`,
-            [id]
-        );
-
-
-        return (getTrainerAfterUpdate as trainer_Type[])[0];
-    }
-);
-
-export const updateSomePropertiesInRowInTrainersTable = createAsyncThunk(
-    "trainersSlice/updateSomePropertiesInRowInTrainersTable",
-    async function ({ id, values }: updateSomePropertiesInTrainer_Type) {
+export const updateAnyPropertyInRowInTrainersTable = createAsyncThunk(
+    "trainersSlice/updateAnyPropertyInRowInTrainersTable",
+    async function ({ id, values }: updateAnyPropertyInRowInTrainersTable_Type) {
         const keys = Object.keys(values);
 
         if (keys.length === 0) return;
@@ -98,12 +60,12 @@ export const updateSomePropertiesInRowInTrainersTable = createAsyncThunk(
         const setClause = keys.map(key => `${key} = ?`).join(", ");
         const result = keys.map(key => (values as any)[key]);
 
-        await database.execute(
+        await db.execute(
             `UPDATE trainers SET ${setClause} WHERE id = ?`,
             [...result, id]
         );
 
-        const getTrainerAfterUpdate = await database.select(
+        const getTrainerAfterUpdate = await db.select(
             `SELECT * FROM trainers WHERE id = ?`,
             [id]
         );
@@ -111,6 +73,26 @@ export const updateSomePropertiesInRowInTrainersTable = createAsyncThunk(
         return (getTrainerAfterUpdate as trainer_Type[])[0];
     }
 );
+
+export const deleteRowInTrainersTableById = createAsyncThunk(
+    "trainersSlice/deleteRowInTrainersTableById",
+    async function (id: number) {
+        const query = "DELETE FROM trainers WHERE id = ?";
+
+        await db.execute(query, [id]);
+        return id;
+    }
+);
+
+export const deleteAllRowsInTrainersTable = createAsyncThunk(
+    "trainersSlice/deleteAllRowsInTrainersTable",
+    async function () {
+        await db.execute(`DELETE FROM trainers;`);
+        return [];
+    }
+);
+
+
 
 
 const trainersSlice = createSlice({
@@ -135,12 +117,7 @@ const trainersSlice = createSlice({
             return action.payload;
         });
 
-        builde.addCase(updatePropertyInRowInTrainersTable.fulfilled as any, (state: trainer_Type[], action): any => {
-            const result = state.filter(ele => ele.id != action.payload.id);
-            return [...result, action.payload];
-        });
-
-        builde.addCase(updateSomePropertiesInRowInTrainersTable.fulfilled as any, (state: trainer_Type[], action): any => {
+        builde.addCase(updateAnyPropertyInRowInTrainersTable.fulfilled as any, (state: trainer_Type[], action): any => {
             const result = state.filter(ele => ele.id != action.payload.id);
             return [...result, action.payload];
         });

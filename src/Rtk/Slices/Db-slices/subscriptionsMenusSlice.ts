@@ -1,16 +1,16 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { subscriptionsMenus_Type } from "@/Pages/types";
-import { updatePropertyInSubscriptionsMenu_Type, updateSomePropertiesInSubscriptionsMenu_Type } from "../../types";
+import { updateAnyPropertyInRowInSubscriptionsMenusTable_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const database = await Database.load("sqlite:gym-app.db");
+const db = await Database.load("sqlite:gym-app.db");
 
 
 
 export const getAllRowsInSubscriptionsMenusTable = createAsyncThunk(
     "subscriptionsMenusSlice/getAllRowsInSubscriptionsMenusTable",
     async function () {
-        return await database.select("SELECT * FROM subscriptionsMenus");
+        return await db.select("SELECT * FROM subscriptionsMenus");
     }
 );
 
@@ -32,7 +32,7 @@ export const addRowInSubscriptionsMenusTable = createAsyncThunk(
             data.isActive
         ];
 
-        const createRow = await database.execute(query, values);
+        const createRow = await db.execute(query, values);
 
 
         return {
@@ -42,12 +42,36 @@ export const addRowInSubscriptionsMenusTable = createAsyncThunk(
     }
 );
 
+export const updateAnyPropertyInRowInSubscriptionsMenusTable = createAsyncThunk(
+    "subscriptionsMenusSlice/updateAnyPropertyInRowInSubscriptionsMenusTable",
+    async function ({ id, values }: updateAnyPropertyInRowInSubscriptionsMenusTable_Type) {
+        const keys = Object.keys(values);
+
+        if (keys.length === 0) return;
+
+        const setClause = keys.map((key) => `${key} = ?`).join(", ");
+        const result = keys.map((key) => (values as any)[key]);
+
+        await db.execute(
+            `UPDATE subscriptionsMenus SET ${setClause} WHERE id = ?`,
+            [...result, id]
+        );
+
+        const getMenuAfterUpdate = await db.select(
+            `SELECT * FROM subscriptionsMenus WHERE id = ?`,
+            [id]
+        );
+
+        return (getMenuAfterUpdate as subscriptionsMenus_Type[])[0];
+    }
+);
+
 export const deleteRowInSubscriptionsMenusTableById = createAsyncThunk(
     "subscriptionsMenusSlice/deleteRowInSubscriptionsMenusTableById",
     async function (id: number | string) {
         const query = "DELETE FROM subscriptionsMenus WHERE id = ?";
 
-        await database.execute(query, [id]);
+        await db.execute(query, [id]);
 
         return id;
     }
@@ -56,56 +80,11 @@ export const deleteRowInSubscriptionsMenusTableById = createAsyncThunk(
 export const deleteAllRowsInSubscriptionsMenusTable = createAsyncThunk(
     "subscriptionsMenusSlice/deleteAllRowsInSubscriptionsMenusTable",
     async function () {
-        await database.execute(`DELETE FROM subscriptionsMenus;`);
+        await db.execute(`DELETE FROM subscriptionsMenus;`);
         return [];
     }
 );
 
-export const updatePropertyInRowInSubscriptionsMenusTable = createAsyncThunk(
-    "subscriptionsMenusSlice/updatePropertyInRowInSubscriptionsMenusTable",
-    async function (
-        {
-            id,
-            column,
-            value
-        }: updatePropertyInSubscriptionsMenu_Type
-    ) {
-        const query = `UPDATE subscriptionsMenus SET ${column} = ? WHERE id = ?`;
-
-        await database.execute(query, [value, id]);
-
-        const getMenuAfterUpdate = await database.select(
-            `SELECT * FROM subscriptionsMenus WHERE id = ?`,
-            [id]
-        );
-
-        return (getMenuAfterUpdate as subscriptionsMenus_Type[])[0];
-    }
-);
-
-export const updateSomePropertiesInRowInSubscriptionsMenusTable = createAsyncThunk(
-    "subscriptionsMenusSlice/updateSomePropertiesInRowInSubscriptionsMenusTable",
-    async function ({ id, values }: updateSomePropertiesInSubscriptionsMenu_Type) {
-        const keys = Object.keys(values);
-
-        if (keys.length === 0) return;
-
-        const setClause = keys.map((key) => `${key} = ?`).join(", ");
-        const result = keys.map((key) => (values as any)[key]);
-
-        await database.execute(
-            `UPDATE subscriptionsMenus SET ${setClause} WHERE id = ?`,
-            [...result, id]
-        );
-
-        const getMenuAfterUpdate = await database.select(
-            `SELECT * FROM subscriptionsMenus WHERE id = ?`,
-            [id]
-        );
-
-        return (getMenuAfterUpdate as subscriptionsMenus_Type[])[0];
-    }
-);
 
 
 
@@ -131,12 +110,7 @@ const subscriptionsMenusSlice = createSlice({
             return action.payload;
         });
 
-        builder.addCase(updatePropertyInRowInSubscriptionsMenusTable.fulfilled as any, (state: subscriptionsMenus_Type[], action): any => {
-            const filter = state.filter((ele) => ele.id != action.payload.id);
-            return [...filter, action.payload].sort((a, b) => Number(a.id) - Number(b.id));
-        });
-
-        builder.addCase(updateSomePropertiesInRowInSubscriptionsMenusTable.fulfilled as any, (state: subscriptionsMenus_Type[], action): any => {
+        builder.addCase(updateAnyPropertyInRowInSubscriptionsMenusTable.fulfilled as any, (state: subscriptionsMenus_Type[], action): any => {
             const filter = state.filter((ele) => ele.id != action.payload.id);
             return [...filter, action.payload].sort((a, b) => Number(a.id) - Number(b.id));
         });

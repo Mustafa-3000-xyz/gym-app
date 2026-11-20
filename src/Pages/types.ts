@@ -1,17 +1,18 @@
 export interface trainer_Type {
     id?: number,
+    trainerType: "man" | "woman",
     firstName: string,
     lastName: string,
-    phone: string,
+    phone: number,
     address: string,
-    trainerType: "man" | "women",
+    notes: string
     subscriptionName: string,
     sessionsCount: number,
     price: number,
     subscriptionStart: string,
     subscriptionEnd: string,
     subscriptionStatus: string,
-    lastRenewalSubscription: string
+    debt: number,
 }
 
 export interface activeSession_Type {
@@ -32,8 +33,9 @@ export interface accounte_Type {
     profileImg: string,
     coverImg: string,
     trainersTotal: number,
-    totalActiveSubscriptions: number,
-    permissions?: string[] | "fullAccess",
+    numberOfActiveSessions: number,
+    permissions: string[] | "fullAccess",
+    numberOfDeletedTrainers: number,
 }
 
 export interface subscriptionsMenus_Type {
@@ -46,7 +48,7 @@ export interface subscriptionsMenus_Type {
 
 export interface attendanceDetails_Type {
     id?: number,
-    date: Date | string,
+    date: string, // yyyy/mm/dd
     accountId: number,
     trainers: number[],
 }
@@ -57,15 +59,32 @@ export interface filter_Type {
     subscriptionType: string,
 }
 
-export interface sessionListForRead_Type {
-    account: accounte_Type | "removed",
-    session: number,
-    date?: null | any,
-    isActive: boolean
+export interface sessionInActiveSeeionsTable {
+    id?: number,
+    linkWithTrainer: number,
+    accountId: number,
+    sessionNumber: number,
+    activationDate: string
 }
 
-export interface boxInfoInTrainersPage_Type {
+export interface sessionListForRead_Type {
+    id?: number,
+    accountId?: number,
+    sessionNum: number,
+    accountName: null | string | "removed",
+    date: null | string,
+    isUsingThisSession?: boolean
+}
+
+export interface subscriptionStatusBox_Type {
     type: "allSubscriptions" | "activeSubscriptions" | "pendingSubscriptions" | "finishedSubscriptions",
+    total: number | number[],
+    styleBgForIcon?: string,
+    icon?: any,
+}
+
+export interface trainersTypeBox_Type {
+    type: "allTrainers" | "men" | "women",
     total: number | number[],
     styleBgForIcon?: string,
     icon?: any,
@@ -94,7 +113,7 @@ export interface monthsProfitsAndExpenses_Type {
     monthNumber: number,
     profitsTotal: number,
     expensesTotal: number,
-    target: number
+    target: number,
 }
 
 export interface daysProfitsAndExpenses_Type {
@@ -103,57 +122,78 @@ export interface daysProfitsAndExpenses_Type {
     dayNumber: number,
     profitsTotal: number,
     expensesTotal: number,
-    target: number
+    target: number,
 }
 
 export interface item_Type {
     id?: number,
     linkWithDay: number,
-    itemName: string,
+    additionTime: string,
     category: "profit" | "expense",
-    price: number
+    itemName: string,
+    price: number,
 }
 
-export interface arithmeticOperatorsWithProfitsAndExpenses_Type {
-    updateOneColumn?: {
-        year?: {
-            yearId: number,
-            column: "profitsTotal" | "expensesTotal",
-            value: number,
-        },
-        month?: {
-            monthId: number,
-            column: "profitsTotal" | "expensesTotal",
-            value: number,
-        },
-        day?: {
-            dayId: number
-            column: "profitsTotal" | "expensesTotal",
-            value: number,
-        },
-    }
-
-    updateSomeColumns?: {
-        year: {
-            yearId: number,
-            profitsTotal: number,
-            expensesTotal: number
-        },
-        month: {
-            monthId: number,
-            profitsTotal: number,
-            expensesTotal: number
-        },
-        day: {
-            dayId: number
-            profitsTotal: number,
-            expensesTotal: number
-        }
-    }
+export interface reports_Type {
+    id?: number,
+    linkWithPerson: "bemo" | number,
+    additionTime: string,
+    title: string,
+    description: string,
+    reportedBy: string,
 }
 
 export interface settings_Type {
     rowsInTrainerTable: number,
     rowsInAttendanceTable: number,
     rowsInItemsTable: number,
+    isDeleteSomeTrainersWhoNotRenwal: boolean,
+    isActiveMoreSessionInDay: boolean
+}
+// ==================================================================== //
+export interface addYearsMonthesDaysAndItems_Type {
+    year?: {
+        profites?: number,
+        expensess?: number,
+    },
+    month?: {
+        profites?: number,
+        expensess?: number,
+    },
+    day?: {
+        profites?: number,
+        expensess?: number,
+    },
+    item?: {
+        id?: number,
+        additionTime?: string,
+        category?: "profit" | "expense",
+        title?: string,
+        price?: number,
+    }
+}
+
+export interface editingProfitsOrExpensessInYearsMontesDaysAndItems_Type {
+    year?: {
+        id: number,
+        profites?: number,
+        expensess?: number,
+    },
+    month?: {
+        id: number,
+        profites?: number,
+        expensess?: number,
+    },
+    day?: {
+        id: number,
+        profites?: number,
+        expensess?: number,
+    },
+    item?: {
+        id: number,
+        additionTime?: string,
+        category?: "profit" | "expense",
+        title?: string,
+        price?: number,
+    }
 }

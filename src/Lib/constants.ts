@@ -3,16 +3,7 @@ export const styleDate = "yyyy/MM/dd";
 // Maxes
 export const maxSessions = 60;
 export const maxSubscriptionPrice = 999999;
-export const maxTargetInYear = 2700000;
-export const maxTargetInMonth = maxTargetInYear / 12;
-export const maxTargetInDay = maxTargetInMonth / 30;
-export const maxPriceInOneItem = 9999999;
 export const maxForCreateItems = 24;
-
-// These for profits and expenses page
-export const addNewTrainer = "إضافة متدرب";
-export const withDrawSubscription = "سحب اشتراك";
-export const renewalSubscription = "تجديد اشتراك";
 
 // These for subscription status
 export const statusIsActive = "active";
@@ -23,8 +14,8 @@ export const statusIsFinished = "finished";
 export const fromOldToNew = "fromOldToNew";
 export const fromNewToOld = "fromNewToOld";
 export const allTrainers = "allTrainers";
-export const allMens = "allMens";
-export const allWomens = "allWomens";
+export const women = "women";
+export const men = "men";
 export const allSubscriptions = "allSubscriptions";
 export const activeSubscriptions = "activeSubscriptions";
 export const pendingSubscriptions = "pendingSubscriptions";
@@ -38,36 +29,26 @@ export const accountesPagePath = "/accounts-page";
 export const profilePagePath = "/profile-page/:accountId";
 export const profitsAndExpensesPagePath = "/profits-and-expenses-page";
 export const settingsPagePath = "/settings-page";
-export const authenticationPagePath = "/authentication-page";
+export const logInPagePath = "/log-in-page";
+export const addTrainerPagePath = "/add-trainer";
+export const trainerDetailsPagePath = "/trainer-details-page/:trainerId";
+export const preferencesPagePath = "/preferences-page";
+export const anotherSettingsPagePath = "/another-settings-page";
+export const reportsPagePath = "/reports-page";
+
 
 // Permissions
-export const USING_ACTIVE_SOME_SESSIONS = "USING_ACTIVE_SOME_SESSIONS";
 export const REMOVE_TRAINERS = "REMOVE_TRAINERS";
-export const WITHDRAW_SUBSCRIPTION = "WITHDRAW_SUBSCRIPTION";
 export const CANCEL_SUBSCRIPTION = "CANCEL_SUBSCRIPTION";
 export const RENEWAL_SUBSCRIPTION = "RENEWAL_SUBSCRIPTION";
-export const ADD_NEW_SUBSCRIPTION_MENU = "ADD_NEW_SUBSCRIPTION_MENU";
-export const EDITING_SUBSCRIPTION_MENU = "EDITING_SUBSCRIPTION_MENU";
 export const CREATE_NEW_ACCOUNTS = "CREATE_NEW_ACCOUNTS";
-export const CHANGE_ACCOUNT_COLOR = "CHANGE_ACCOUNT_COLOR";
+
 
 // All permissions
 export const allPermissions = [
     {
-        title: "صفحة المتدربين",
-        key: trainerPagePath
-    },
-    {
-        title: "صفحة سجل الحضور",
-        key: attendanceRecordePagePath
-    },
-    {
-        title: "صفحة قائمة الاشتراكات",
+        title: "صفحة قوائم الإشتراكات",
         key: subscriptionsMenuPath
-    },
-    {
-        title: "صفحة الحسابات",
-        key: accountesPagePath
     },
     {
         title: "صفحة الارباح والمصروفات",
@@ -78,44 +59,24 @@ export const allPermissions = [
         key: settingsPagePath
     },
     {
-        title: "استخدام ميزة تفعيل بعض الحصص",
-        key: USING_ACTIVE_SOME_SESSIONS
-    },
-    {
         title: "حذف المتدربين",
         key: REMOVE_TRAINERS
     },
     {
-        title: "سحب اشتراكات المتدربين",
-        key: WITHDRAW_SUBSCRIPTION
-    },
-    {
-        title: "الغاء اشتراكات المتدربين",
+        title: "الغاء الإشتراكات",
         key: CANCEL_SUBSCRIPTION
     },
     {
-        title: "تجديد اشتراك المتدربين",
+        title: "تجديد الإشتراكات",
         key: RENEWAL_SUBSCRIPTION
-    },
-    {
-        title: "إضافة قوائم اشتراكات جديده",
-        key: ADD_NEW_SUBSCRIPTION_MENU
-    },
-    {
-        title: "تعديل على قوائم الاشتراكات",
-        key: EDITING_SUBSCRIPTION_MENU
     },
     {
         title: "إنشاء حسابات جديده",
         key: CREATE_NEW_ACCOUNTS
-    },
-    {
-        title: "تغير لون الحساب",
-        key: CHANGE_ACCOUNT_COLOR
     }
 ];
 
-export const monthsWithHisDays = [
+export const listOfMonthes = [
     {
         monthNumber: 1,
         month: "يناير",

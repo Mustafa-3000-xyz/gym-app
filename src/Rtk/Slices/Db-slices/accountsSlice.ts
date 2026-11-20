@@ -1,16 +1,16 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { accounte_Type } from "@/Pages/types";
-import { updatePropertyInAccount_Type, updateSomePropertiesInAccount_Type } from "../../types";
+import { updateAnyPropertyInAccount_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const database = await Database.load("sqlite:gym-app.db");
+const db = await Database.load("sqlite:gym-app.db");
 
 
 
 export const getAllRowsInAccountsTable = createAsyncThunk(
     "accountsSlice/getAllRowsInAccountsTable",
     async function () {
-        return await database.select("SELECT * FROM accounts");
+        return await db.select("SELECT * FROM accounts");
     }
 );
 
@@ -20,8 +20,8 @@ export const addRowInAccountsTable = createAsyncThunk(
         const query = `
             INSERT INTO accounts (
                 name, age, password, type, color, profileImg, coverImg, 
-                trainersTotal, totalActiveSubscriptions, permissions
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                trainersTotal, numberOfActiveSessions, permissions, numberOfDeletedTrainers
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const values = [
@@ -33,11 +33,12 @@ export const addRowInAccountsTable = createAsyncThunk(
             data.profileImg,
             data.coverImg,
             data.trainersTotal,
-            data.totalActiveSubscriptions,
-            data.permissions
+            data.numberOfActiveSessions,
+            data.permissions,
+            data.numberOfDeletedTrainers
         ];
 
-        const getId = (await database.execute(query, values)).lastInsertId;
+        const getId = (await db.execute(query, values)).lastInsertId;
 
 
         return {
@@ -49,9 +50,9 @@ export const addRowInAccountsTable = createAsyncThunk(
 
 export const deleteRowInAccountsTableById = createAsyncThunk(
     "accountsSlice/deleteRowInAccountsTableById",
-    async function (id: number | string) {
+    async function (id: number) {
 
-        await database.execute(
+        await db.execute(
             "DELETE FROM accounts WHERE id = ?",
             [id]
         );
@@ -63,35 +64,14 @@ export const deleteRowInAccountsTableById = createAsyncThunk(
 export const deleteAllRowsInAccountsTable = createAsyncThunk(
     "accountsSlice/deleteAllRowsInAccountsTable",
     async function () {
-        await database.execute(`DELETE FROM accounts WHERE type != 'manager';`);
+        await db.execute(`DELETE FROM accounts WHERE type != 'manager';`);
     }
 );
 
-export const updatePropertyInRowInAccountsTable = createAsyncThunk(
-    "accountsSlice/updatePropertyInRowInAccountsTable",
-    async function ({
-        id,
-        column,
-        value
-    }: updatePropertyInAccount_Type) {
-        const query = `UPDATE accounts SET ${column} = ? WHERE id = ?`;
-
-        await database.execute(query, [value, id]);
-
-        const getAccountAfterUpdate = await database.select(
-            `SELECT * FROM accounts WHERE id = ?`,
-            [id]
-        );
-
-
-        return (getAccountAfterUpdate as accounte_Type[])[0];
-    }
-);
-
-export const updateSomePropertiesInRowInAccountsTable = createAsyncThunk(
-    "accountsSlice/updateSomePropertiesInRowInAccountsTable",
+export const updateAnyPropertyInRowInAccountsTable = createAsyncThunk(
+    "accountsSlice/updateAnyPropertyInRowInAccountsTable",
     async function (
-        { id, values }: updateSomePropertiesInAccount_Type
+        { id, values }: updateAnyPropertyInAccount_Type
     ) {
         const keys = Object.keys(values);
 
@@ -101,17 +81,17 @@ export const updateSomePropertiesInRowInAccountsTable = createAsyncThunk(
         const setClause = keys.map(key => `${key} = ?`).join(", ");
         const result = keys.map(key => (values as any)[key]);
 
-        await database.execute(
+        await db.execute(
             `UPDATE accounts SET ${setClause} WHERE id = ?`,
             [...result, id]
         );
 
-        const getAccountAfterUpdate = await database.select(
+        const getRowAfterUpdate = await db.select(
             `SELECT * FROM accounts WHERE id = ?`,
             [id]
         );
 
-        return (getAccountAfterUpdate as accounte_Type[])[0];
+        return (getRowAfterUpdate as accounte_Type[])[0];
     }
 );
 
@@ -122,31 +102,29 @@ const accountsSlice = createSlice({
     initialState: [],
     reducers: {},
 
-    extraReducers: function (builde) {
-        builde.addCase(getAllRowsInAccountsTable.fulfilled as any, (_, action) => {
+    extraReducers: function (builder) {
+        builder.addCase(getAllRowsInAccountsTable.fulfilled as any, (_, action) => {
             return action.payload;
         });
 
-        builde.addCase(addRowInAccountsTable.fulfilled as any, (state, action): any => {
+        builder.addCase(addRowInAccountsTable.fulfilled as any, (state, action): any => {
             return [...state, action.payload];
         });
 
-        builde.addCase(deleteRowInAccountsTableById.fulfilled as any, (state: accounte_Type[], action): any => {
-            return state.filter(ele => ele.id != action.payload);
+        builder.addCase(deleteRowInAccountsTableById.fulfilled as any, (state: accounte_Type[], action): any => {
+            return state.filter(ele => ele.id != action.payload)
         });
 
-        builde.addCase(deleteAllRowsInAccountsTable.fulfilled as any, (state: accounte_Type[]): any => {
+        builder.addCase(deleteAllRowsInAccountsTable.fulfilled as any, (state: accounte_Type[]): any => {
             return state.filter(account => account.type == "manager");
         });
 
-        builde.addCase(updatePropertyInRowInAccountsTable.fulfilled as any, (state: accounte_Type[], action): any => {
-            const filter = state.filter(ele => ele.id != action.payload.id);
-            return [...filter, action.payload].sort((a, b) => a.id - b.id);
-        });
+        builder.addCase(updateAnyPropertyInRowInAccountsTable.fulfilled as any, (state: accounte_Type[], action): any => {
+            const index = state.findIndex(ele => ele.id == action.payload.id);
 
-        builde.addCase(updateSomePropertiesInRowInAccountsTable.fulfilled as any, (state: accounte_Type[], action): any => {
-            const filter = state.filter(ele => ele.id != action.payload.id);
-            return [...filter, action.payload].sort((a, b) => a.id - b.id);;
+            if (index != -1) {
+                state[index] = action.payload;
+            }
         });
     }
 });

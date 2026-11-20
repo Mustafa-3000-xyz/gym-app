@@ -1,14 +1,13 @@
 import Max_Min_Length from "@/Global-components/Max-min-length/Max_Min_Length";
 import Toggle_Btn from "@/Global-components/Toggle-btn/Toggle_Btn";
-import { EDITING_SUBSCRIPTION_MENU, maxSessions, maxSubscriptionPrice } from "@/Lib/constants";
-import { alert, checkPermissionesInAccount } from "@/Lib/functions";
+import {  maxSessions, maxSubscriptionPrice } from "@/Lib/constants";
+import { customAlert } from "@/Lib/functions";
 import { regexSubscriptionName } from "@/Lib/REGEX";
 import { subscriptionsMenus_Type } from "@/Pages/types";
-import { deleteRowInSubscriptionsMenusTableById, updatePropertyInRowInSubscriptionsMenusTable, updateSomePropertiesInRowInSubscriptionsMenusTable } from "@/Rtk/Slices/Db-slices/subscriptionsMenusSlice";
-import { store_Type } from "@/Rtk/types";
+import { deleteRowInSubscriptionsMenusTableById, updateAnyPropertyInRowInSubscriptionsMenusTable } from "@/Rtk/Slices/Db-slices/subscriptionsMenusSlice";
 import { Pen, Save, Trash, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import {useDispatch } from "react-redux";
 // ========================================================== //
 export default function Subscription_Menu_Card(
     {
@@ -20,11 +19,7 @@ export default function Subscription_Menu_Card(
     }: subscriptionsMenus_Type
 ) {
     const dispatch = useDispatch();
-    const state = useSelector(function (state: store_Type) {
-        return {
-            logInInfo: state.logInInfo,
-        }
-    }, shallowEqual);
+
 
 
     const [isEditing, setIsEditing] = useState(false);
@@ -35,39 +30,30 @@ export default function Subscription_Menu_Card(
     const [sessionsVal, setSessionsVal] = useState(sessionsCount);
     const [priceVal, setPriceVal] = useState(price);
 
-    const checkEditingTheMenuPermission = checkPermissionesInAccount({
-        accountId: Number(state.logInInfo?.id),
-        permissionType: EDITING_SUBSCRIPTION_MENU
-    });
-
 
 
     function clickOnTrash() {
-        if (!checkEditingTheMenuPermission) return;
-
-        alert({
-            textBeforeSubmit: `${subscriptionName} <= هل انت متأكد من انك تريد حذف تلك القائمة`,
-            textAfterSubmit: "تم حذف القائمه بنجاح",
-            runFunctionAfterSubmit: function () {
+        customAlert({
+            textBeforeSubmitAction: `${subscriptionName} <= هل انت متأكد من انك تريد حذف تلك القائمة`,
+            textAfterSubmitAction: "تم حذف القائمه بنجاح",
+            runFunctionAfterConfirm: function () {
                 dispatch(deleteRowInSubscriptionsMenusTableById(id as any) as any);
             }
         })
     }
 
     function clickOnPen() {
-        if (!checkEditingTheMenuPermission) return;
-
         setIsEditing(true);
     }
 
     function clickOnSaveBtn() {
         if (!isSaveChanges) return;
 
-        alert({
-            textBeforeSubmit: "هل انت متأكد من حفظ البيانات الجديده ؟",
-            textAfterSubmit: "تم التحديث بنجاح",
-            runFunctionAfterSubmit: function () {
-                dispatch(updateSomePropertiesInRowInSubscriptionsMenusTable({
+        customAlert({
+            textBeforeSubmitAction: "هل انت متأكد من حفظ البيانات الجديده ؟",
+            textAfterSubmitAction: "تم التحديث بنجاح",
+            runFunctionAfterConfirm: function () {
+                dispatch(updateAnyPropertyInRowInSubscriptionsMenusTable({
                     id: id as any,
                     values: {
                         subscriptionName: nameVal,
@@ -95,10 +81,11 @@ export default function Subscription_Menu_Card(
 
 
     useEffect(function () {
-        dispatch(updatePropertyInRowInSubscriptionsMenusTable({
+        dispatch(updateAnyPropertyInRowInSubscriptionsMenusTable({
             id: id as any,
-            value: isCardActive,
-            column: "isActive"
+            values:{
+                isActive: isCardActive
+            }
         }) as any);
     }, [isCardActive]);
 
@@ -199,7 +186,7 @@ export default function Subscription_Menu_Card(
         <div className="flex justify-between items-center">
             <Toggle_Btn
                 value={isCardActive as any}
-                disabled={!checkEditingTheMenuPermission}
+                disabled={false}
                 onGetValue={setIsCardActive as any}
             />
 
@@ -226,7 +213,7 @@ export default function Subscription_Menu_Card(
                             size={25}
                             className={`
                                 duration-300 
-                                ${checkEditingTheMenuPermission ? "hover:text-emerald-300 hover:scale-125 cursor-pointer text-emerald-500" : "opacity-50 cursor-not-allowed"}
+                                hover:text-emerald-300 hover:scale-125 cursor-pointer text-emerald-500
                             `}
                             onClick={clickOnPen}
                         />
@@ -235,7 +222,7 @@ export default function Subscription_Menu_Card(
                             size={25}
                             className={`
                                 duration-300
-                                ${checkEditingTheMenuPermission ? " hover:text-red-600 hover:scale-125 cursor-pointer text-red-500" : "opacity-50 cursor-not-allowed"}
+                                hover:text-red-600 hover:scale-125 cursor-pointer text-red-500
                             `}
                             onClick={clickOnTrash}
                         />

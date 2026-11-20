@@ -4,7 +4,7 @@ import { trainer_Type } from "@/Pages/types";
 // ========================================================== //
 export interface Not_Found_Props {
     srcImg: string,
-    title: string,
+    title?: string,
     className?: string,
 }
 
@@ -33,14 +33,8 @@ export interface Box_Props {
 }
 
 export interface Popup_Form_Props {
-    popupFormInfo?:{
-        title: string,
-        discription: string,
-        icon?: any
-    }
+    title: string,
     children: ReactNode,
-    isSave?: boolean,
-    isShowBtn?: boolean,
     classNameForParent?: string,
     classNameForContainer?: string,
     typeBtn?: "save data" | "save change",
@@ -52,7 +46,6 @@ export interface Account_Img_Props {
     accountId: number,
     img: string,
     isChangeTheImg: boolean,
-    color: string,
 }
 
 export interface Add_Btn_Props {
@@ -66,9 +59,18 @@ export interface Account_Form_Props {
     age: number,
     password: string,
     accountType: "manager" | "captain"
-    onGetName: (x: string | null) => void;
-    onGetAge: (x: number | null) => void;
-    onGetPassword: (x: string | null) => void;
+    onGetName: (x: {
+        value: string,
+        isTrue: boolean
+    }) => void;
+    onGetAge: (x: {
+        value: number,
+        isTrue: boolean
+    }) => void;
+    onGetPassword: (x: {
+        value: string,
+        isTrue: boolean
+    }) => void;
 }
 
 export interface Inp_With_Label_Props {
@@ -78,7 +80,7 @@ export interface Inp_With_Label_Props {
     inpValue?: any,
     isChangeValue?: boolean,
     className?: string,
-    isRemoveSpaces?:boolean
+    isRemoveSpaces?: boolean
     onWriteInInput?: (x: any) => void
 }
 
@@ -97,7 +99,6 @@ export interface Drop_Menu_Props {
 }
 
 export interface Search_Result_Props {
-    searchInpRef: HTMLInputElement,
     arrayContainsTrainers: trainer_Type[],
     onIsShowSearchResult: (x: boolean) => void,
 }
@@ -129,7 +130,26 @@ export interface Progress_Props {
     percentage?: number | null
 }
 
-export interface Table_For_Trainers_Props{
+export interface Table_For_Trainers_Props {
     trainersList: trainer_Type[],
     countRowsInSlide: number,
+}
+
+export interface Password_Inp_Props {
+    account: {
+        id: number,
+        type: "manager" | "captain",
+        color: string,
+        password: string,
+    }
+    value: any,
+    onWrite: (x: string) => void,
+    onIsErrorPassword: (x: string) => void
+}
+
+
+export interface Custom_Btn_Props {
+    className?: string,
+    children: React.ReactNode,
+    onClick?: (x: Function) => void,
 }

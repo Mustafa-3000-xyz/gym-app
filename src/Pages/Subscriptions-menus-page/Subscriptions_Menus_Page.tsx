@@ -1,49 +1,42 @@
-import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
 import Box from "@/Global-components/Box/Box";
-import { Captions, ShieldCheck } from "lucide-react";
+import { Captions, Plus, ShieldCheck } from "lucide-react";
 import Subscription_Menu_Card from "./Components/Subscription_Menu_Card";
 import { useEffect, useMemo, useState } from "react";
-import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
+import Popup_Component from "@/Global-components/Popup-component/Popup_Component";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import { addRowInSubscriptionsMenusTable } from "@/Rtk/Slices/Db-slices/subscriptionsMenusSlice";
 import Not_Found from "@/Global-components/Not-found/Not_Found";
-import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
-import { checkPermissionesInAccount, normalAlert } from "@/Lib/functions";
+import { customAlert, normalAlert } from "@/Lib/functions";
 import { regexSubscriptionName } from "@/Lib/REGEX";
 import Max_Min_Length from "@/Global-components/Max-min-length/Max_Min_Length";
-import { ADD_NEW_SUBSCRIPTION_MENU, maxSessions, maxSubscriptionPrice } from "@/Lib/constants";
+import { maxSessions, maxSubscriptionPrice } from "@/Lib/constants";
+import Custom_Btn from "@/Global-components/Custom-btn/Custom_Btn";
+import { InputText } from "primereact/inputtext";
 // ========================================================== //
 export default function Subscriptions_Menu_Page() {
     const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
             logInInfo: state.logInInfo,
-            trainerDetails: state.trainerDetails,
             subscriptionsMenus: state.subscriptionsMenus,
         }
     }, shallowEqual);
 
-    const [isSaveData, setIsSaveData] = useState(false);
     const [isShowAddNewSubscriptionType, setIsShowAddNewSubscriptionType] = useState(false);
-
 
     const [getSubscriptionName, setGetSubscriptionName] = useState<string>("");
     const [getSessionCount, setGetSessionCount] = useState<number>(0);
     const [getPrice, setGetPrice] = useState<number>(0);
 
-    const checkAddMenuPermission = checkPermissionesInAccount({
-        accountId: Number(state.logInInfo?.id),
-        permissionType: ADD_NEW_SUBSCRIPTION_MENU
-    });
 
 
 
     function addNewSubscriptionMenu() {
-        if (checkAddMenuPermission && Number(state.subscriptionsMenus?.length) < 6) {
+        if (Number(state.subscriptionsMenus?.length) < 6) {
             setIsShowAddNewSubscriptionType(true);
         }
-        else if (checkAddMenuPermission && Number(state.subscriptionsMenus?.length) >= 6) {
+        else if (Number(state.subscriptionsMenus?.length) >= 6) {
             normalAlert({
                 title: "المعذره",
                 text: "لقد وصلت للحد الاقصى",
@@ -64,22 +57,56 @@ export default function Subscriptions_Menu_Page() {
     }
 
     function saveData() {
-        if (!isSaveData) return;
+        const errorsMessagesList = [];
 
-        dispatch(addRowInSubscriptionsMenusTable({
-            subscriptionName: getSubscriptionName!,
-            sessionsCount: getSessionCount!,
-            price: getPrice!,
-            isActive: "true"
-        }) as any);
+        if (!getSubscriptionName.match(regexSubscriptionName)) {
+            errorsMessagesList.push("يجب اسم القائمه لا تقل عن ثلاثة احرف ولا تزيد عن احدى عشر حرف");
+        }
 
-        normalAlert({
-            title: "تمت العمليه بنجاح",
-            text: "لقد تم إضافة قائمة جديده",
-            icon: "success"
-        })
+        if (!getSessionCount) {
+            errorsMessagesList.push("يجب كتابة عدد الحصص");
+        }
 
-        setIsShowAddNewSubscriptionType(false);
+        if (!getPrice) {
+            errorsMessagesList.push("يجب كتابة سعر القائمه")
+        }
+
+
+        if (errorsMessagesList.length > 0) {
+            normalAlert({
+                title: "يوجد بيانات خاطئه",
+                text: errorsMessagesList.join(" / "),
+                icon: "error"
+            });
+        }
+        else {
+            dispatch(addRowInSubscriptionsMenusTable({
+                subscriptionName: getSubscriptionName,
+                sessionsCount: getSessionCount,
+                price: getPrice,
+                isActive: "true"
+            }) as any);
+
+            normalAlert({
+                title: "تمت العمليه بنجاح",
+                text: "لقد تم إضافة قائمة جديده",
+                icon: "success"
+            })
+
+            setIsShowAddNewSubscriptionType(false);
+        }
+    }
+
+    function cancel() {
+        if (getSubscriptionName || getSessionCount || getPrice) {
+            customAlert({
+                textBeforeSubmitAction: "هل تريد بالفعل عدم استكمال كتابة البيانات ؟",
+                runFunctionAfterConfirm: () => setIsShowAddNewSubscriptionType(false)
+            })
+        }
+        else {
+            setIsShowAddNewSubscriptionType(false)
+        }
     }
 
 
@@ -93,19 +120,6 @@ export default function Subscriptions_Menu_Page() {
         }
     }, [isShowAddNewSubscriptionType]);
 
-    useEffect(function () {
-        if (
-            !getSubscriptionName?.match(regexSubscriptionName) ||
-            getSessionCount == 0 ||
-            getPrice == 0
-        ) {
-            setIsSaveData(false);
-        }
-        else {
-            setIsSaveData(true);
-        }
-    }, [getSubscriptionName, getSessionCount, getPrice]);
-
 
     const totalActivesMenu = useMemo(function () {
         return state.subscriptionsMenus?.filter(ele => ele.isActive == "true" && ele).length || 0;
@@ -115,7 +129,7 @@ export default function Subscriptions_Menu_Page() {
 
 
 
-    return <section>
+    return <section className="mt-10">
         {/* Box */}
         <div className="grid grid-cols-2 gap-3 mb-5">
             <Box
@@ -135,11 +149,18 @@ export default function Subscriptions_Menu_Page() {
 
         {/* Add new subscription menu */}
         <div className="mb-20">
-            <Add_Btn
-                title="إضافة قائمة اشتراك"
-                className="cursor-pointer"
+            <Custom_Btn
+                className="flex cursor-pointer w-full py-7 !bg-emerald-500 !border-emerald-600"
                 onClick={addNewSubscriptionMenu}
-            />
+            >
+                <div className="flex items-center justify-center w-full gap-2">
+                    <Plus size={20} strokeWidth={3} />
+
+                    <h3 className="text-lg font-bold mb-1">
+                        إضافة قائمه جديده
+                    </h3>
+                </div>
+            </Custom_Btn>
         </div>
 
         {/* All subscriptions menu */}
@@ -166,72 +187,100 @@ export default function Subscriptions_Menu_Page() {
         {/* Add new subscription menu */}
         {
             isShowAddNewSubscriptionType ?
-                <Popup_Form
-                    popupFormInfo={{
-                        title: "إضافة قائمة اشتراك جديد",
-                        discription: "الان, يمكنك إضافة قائمة اشتراك جديد",
-                    }}
+                <Popup_Component
+                    title="إضافة قائمه جديده"
                     classNameForContainer="h-fit"
-                    isSave={isSaveData}
                     clickOnSaveBtn={saveData}
-                    clickOnCancel={() => setIsShowAddNewSubscriptionType(false)}
+                    clickOnCancel={cancel}
                 >
+                    {/* Top */}
                     <div className="grid grid-cols-2 gap-3 mb-5 px-10">
-                        <div>
-                            <Inp_With_Label
-                                labelName="اسم الاشتراك"
-                                inpValue={getSubscriptionName}
-                                onWriteInInput={setGetSubscriptionName}
+                        {/* Subscription name */}
+                        <div className="flex flex-col">
+                            <label className="mb-1 font-bold">
+                                اسم القائمه
+                            </label>
+
+                            <InputText
+                                className="h-10 text-center!"
+                                value={getSubscriptionName}
+                                onChange={(e) => setGetSubscriptionName(e.target.value)}
                             />
 
-                            <Max_Min_Length
-                                isGreenFlag={getSubscriptionName.match(regexSubscriptionName) ? true : false}
-                                maxLength={11}
-                                minLength={getSubscriptionName?.length}
-                            />
+                            <small
+                                id="username-help"
+                                className="text-[15px] font-bold"
+                            >
+                                <Max_Min_Length
+                                    isGreenFlag={getSubscriptionName.match(regexSubscriptionName) ? true : false}
+                                    maxLength={11}
+                                    minLength={getSubscriptionName?.length}
+                                />
+                            </small>
                         </div>
 
-                        <div>
-                            <Inp_With_Label
-                                labelName="عدد الحصص"
-                                inpType="number"
-                                inpValue={getSessionCount == 0 ? "" : getSessionCount}
-                                onWriteInInput={(value) => {
-                                    if (Number(value) >= maxSessions) {
+                        {/* Session count */}
+                        <div className="flex flex-col">
+                            <label className="mb-1 font-bold">
+                                عدد الحصص
+                            </label>
+
+                            <InputText
+                                type="number"
+                                className="h-10 text-center!"
+                                value={getSessionCount == 0 ? "" : getSessionCount as any}
+                                onChange={(e) => {
+                                    if (Number(e.target.value) >= maxSessions) {
                                         setGetSessionCount(maxSessions);
                                     } else {
-                                        setGetSessionCount(Number(value));
+                                        setGetSessionCount(Number(e.target.value));
                                     }
                                 }}
                             />
 
-                            <p className="font-bold">
-                                الحد الاقصى : {maxSessions}
-                            </p>
+                            <small
+                                id="username-help"
+                                className="text-[15px] font-bold"
+                            >
+                                <p className="font-bold">
+                                    الحد الاقصى : {maxSessions}
+                                </p>
+                            </small>
                         </div>
                     </div>
 
+
+                    {/* Price */}
                     <div className="flex justify-center">
-                        <div className="w-2/5">
-                            <Inp_With_Label
-                                labelName="السعر"
-                                inpType="number"
-                                inpValue={getPrice == 0 ? "" : getPrice}
-                                onWriteInInput={(value) => {
-                                    if (Number(value) >= maxSubscriptionPrice) {
+                        <div className="flex flex-col w-1/2">
+                            <label className="mb-1 font-bold">
+                                السعر
+                            </label>
+
+                            <InputText
+                                type="number"
+                                className="h-10 text-center!"
+                                value={getPrice == 0 ? "" : getPrice as any}
+                                onChange={(e) => {
+                                    if (Number(e.target.value) >= maxSubscriptionPrice) {
                                         setGetPrice(maxSubscriptionPrice);
                                     } else {
-                                        setGetPrice(Number(value))
+                                        setGetPrice(Number(e.target.value))
                                     }
                                 }}
                             />
 
-                            <p className="font-bold">
-                                الحد الاقصى : {maxSubscriptionPrice}
-                            </p>
+                            <small
+                                id="username-help"
+                                className="text-[15px] font-bold"
+                            >
+                                <p className="font-bold">
+                                    الحد الاقصى : {maxSubscriptionPrice}
+                                </p>
+                            </small>
                         </div>
                     </div>
-                </Popup_Form>
+                </Popup_Component>
                 :
                 null
         }

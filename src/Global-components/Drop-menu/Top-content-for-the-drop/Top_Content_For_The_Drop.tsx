@@ -6,7 +6,6 @@ function Top_Content_For_The_Drop(
     return <div className={`
         ${className}
         flex items-center justify-center gap-2 w-full h-full select-none cursor-pointer
-        duration-300 hover:scale-110
     `}
     >
         {children}

@@ -2,17 +2,14 @@ import { accounte_Type } from "@/Pages/types";
 import { Shell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { profilePagePath } from "@/Lib/constants";
-import { useState } from "react";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
+import { useEffect, useState } from "react";
+import { shallowEqual, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
-import { changeLogInInfo } from "@/Rtk/Slices/UI-slices/logInInfoSlice";
-import Inp_With_Label from "@/Global-components/Inp-with-label/Inp_With_Label";
+import Password_Inp from "../Password-inp/Password_Inp";
 // ========================================================== //
 export default function Account_Card(
     { account }: { account: accounte_Type }
 ) {
-    const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
             logInInfo: state.logInInfo,
@@ -20,42 +17,12 @@ export default function Account_Card(
     }, shallowEqual);
 
 
-    const navigate = useNavigate();
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
 
+    const navigate = useNavigate();
 
 
-    function clickOnLogInBtn(
-        e: React.MouseEvent<HTMLButtonElement>,
-        account: accounte_Type
-    ) {
-        if (account.password == password) {
-            // Set the new account id
-            dispatch(changeLogInInfo({
-                id: account.id as any,
-                type: account.type as any,
-                color: account.color
-            }));
-
-            // Start count the work houres for the new account
-            dispatch(updateSomePropertiesInRowInAccountsTable({
-                id: account.id as any,
-                values: { loginDate: new Date().toISOString() }
-            }) as any);
-
-
-            setPassword("");
-            setErrorMessage("");
-            navigate(profilePagePath.replace(":accountId", account.id as any));
-        }
-        else {
-            setPassword("");
-            setErrorMessage("كلمة المرور غير صحيحه");
-        }
-
-        e.stopPropagation();
-    }
 
     function showAccountDetail() {
         // If the user login and click on another account, so show this account
@@ -67,26 +34,37 @@ export default function Account_Card(
 
 
 
+    useEffect(function () {
+        if (errorMessage == "") return;
+
+        setTimeout(function () {
+            setErrorMessage("");
+        }, 3000);
+    }, [errorMessage]);
+
+
+
+
     return <div
-        style={{ '--account-color': account.color } as React.CSSProperties}
+        style={{ backgroundColor: account?.color }}
         className={`
-            transition-all duration-300
-            rounded-3xl shadow-xl p-8 relative
-            flex flex-col justify-between items-center w-96 gap-10 text-gray-900
-            ${state.logInInfo ? "group hover:text-white hover:m-6 hover:scale-110 hover:bg-(--account-color) cursor-pointer" : ""}
+            rounded-3xl p-8 relative
+            duration-300 text-white border-r-8
+            flex flex-col justify-between items-center w-96 gap-10 shadow-2xl
+            ${state.logInInfo ? "hover:m-6 hover:scale-110 cursor-pointer  hover:border-amber-500" : ""}
         `}
         onClick={showAccountDetail}
     >
         {/* Sessions */}
-        <div className="flex gap-2 absolute bg-neutral-200 text-neutral-500 top-0 left-0 p-3 rounded-br-2xl rounded-tl-3xl">
+        <div className="flex gap-2 absolute bg-neutral-200 text-neutral-500 top-0 left-0 p-3 rounded-br-2xl rounded-tl-2xl">
             <Shell size={25} />
 
             <h3>
                 {
-                    Math.trunc(Math.abs(account?.totalActiveSubscriptions)) > 99 ?
+                    Math.trunc(Math.abs(account?.numberOfActiveSessions)) > 99 ?
                         `99+`
                         :
-                        Math.trunc(Math.abs(account?.totalActiveSubscriptions))
+                        Math.trunc(Math.abs(account?.numberOfActiveSessions))
                 }
             </h3>
         </div>
@@ -95,8 +73,7 @@ export default function Account_Card(
         <div className="flex flex-col items-center gap-3 select-none">
             <div className=" w-28 h-28">
                 <img
-                    style={{ borderColor: account.color }}
-                    className="w-full h-full object-cover rounded-full border-4"
+                    className="w-full h-full object-cover rounded-full"
                     src={account.profileImg != "" ? account.profileImg : "/account.png"}
                     alt={account.type}
                 />
@@ -106,9 +83,9 @@ export default function Account_Card(
                 <h2 className="text-xl font-bold tracking-tight">
                     {account.name}
                 </h2>
-                <p className="text-sm text-gray-400 italic mt-1">
+                <p className="text-sm text-gray-200 italic mt-1 underline">
                     <span>
-                        {account.type == "manager" ? "المدير" : "كابتن في المكان "}
+                        {account.type == "manager" ? "المدير " : "الكابتن  "}
                     </span>
                     ({Math.trunc(+account.age)} سنه)
                 </p>
@@ -116,35 +93,26 @@ export default function Account_Card(
         </div>
 
         {/* Set password */}
-        <div className="flex items-end gap-2">
-            <Inp_With_Label
-                labelName="الرقم السري"
-                inpType="password"
-                className="group-hover:border-white"
-                inpValue={password}
-                isRemoveSpaces
-                onWriteInInput={setPassword as any}
-            />
-
-            <button
-                className={`
-                    bg-neutral-500 text-white p-2 pb-3 rounded-lg
-                    transition duration-300 whitespace-nowrap
-                    ${!password ? "opacity-45 cursor-not-allowed" : "opacity-100 cursor-pointer"}
-                `}
-                disabled={!password}
-                onClick={(e) => clickOnLogInBtn(e as any, account as accounte_Type)}
-            >
-                استخدام
-            </button>
-        </div>
+        <Password_Inp
+            account={{
+                id: Number(account.id),
+                type: account.type,
+                color: account.color,
+                password: account.password
+            }}
+            value={password}
+            onWrite={setPassword}
+            onIsErrorPassword={setErrorMessage}
+        />
 
 
         {
-            errorMessage &&
-            <p className="text-red-500 select-none">
-                {errorMessage}
-            </p>
+            errorMessage ?
+                <p className="text-red-500 select-none">
+                    {errorMessage}
+                </p>
+                :
+                null
         }
     </div>
 }

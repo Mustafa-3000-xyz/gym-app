@@ -1,16 +1,16 @@
 import { monthsProfitsAndExpenses_Type } from "@/Pages/types";
-import { updatePropertyInRowInMonthsProfetsAndExpensesTable_Type, updateSomePropertiesInRowInMonthsProfitsAndExpensesTable_Type } from "@/Rtk/types";
+import { updateAnyPropertyInRowInMonthsProfitsAndExpensesTable_Type } from "@/Rtk/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const database = await Database.load("sqlite:gym-app.db");
+const db = await Database.load("sqlite:gym-app.db");
 
 
 
 export const getAllRowsInMonthsProfitsAndExpensesLinkedToYearTable = createAsyncThunk(
     "monthsProfitsAndExpensesSlice/getAllRowsInMonthsProfitsAndExpensesLinkedToYearTable",
     async function (yearId: number) {
-        return await database.select(
+        return await db.select(
             "SELECT * FROM monthsProfitsAndExpenses WHERE linkWithYear = ?",
             [yearId]
         );
@@ -32,10 +32,10 @@ export const addRowInMonthsProfitsAndExpensesTable = createAsyncThunk(
             data.monthNumber,
             data.profitsTotal,
             data.expensesTotal,
-            data.target
+            data.target,
         ];
 
-        const createRow = await database.execute(query, values);
+        const createRow = await db.execute(query, values);
 
         return {
             id: createRow.lastInsertId,
@@ -44,30 +44,9 @@ export const addRowInMonthsProfitsAndExpensesTable = createAsyncThunk(
     }
 );
 
-export const updatePropertyInRowInMonthsProfitsAndExpensesTable = createAsyncThunk(
-    "monthsProfitsAndExpensesSlice/updatePropertyInRowInMonthsProfitsAndExpensesTable",
-    async function ({
-        id,
-        column,
-        value
-    }: updatePropertyInRowInMonthsProfetsAndExpensesTable_Type) {
-        const query = `UPDATE monthsProfitsAndExpenses SET ${column} = ? WHERE id = ?`;
-
-        await database.execute(query, [value, id]);
-
-        const getMonthAfterUpdate = await database.select(
-            `SELECT * FROM monthsProfitsAndExpenses WHERE id = ?`,
-            [id]
-        );
-
-
-        return (getMonthAfterUpdate as monthsProfitsAndExpenses_Type[])[0];
-    }
-);
-
-export const updateSomePropertiesInRowInMonthsProfitsAndExpensesTable = createAsyncThunk(
-    "monthsProfitsAndExpensesSlice/updateSomePropertiesInRowInMonthsProfitsAndExpensesTable",
-    async function ({ id, values }: updateSomePropertiesInRowInMonthsProfitsAndExpensesTable_Type) {
+export const updateAnyPropertyInRowInMonthsProfitsAndExpensesTable = createAsyncThunk(
+    "monthsProfitsAndExpensesSlice/updateAnyPropertyInRowInMonthsProfitsAndExpensesTable",
+    async function ({ id, values }: updateAnyPropertyInRowInMonthsProfitsAndExpensesTable_Type) {
         const keys = Object.keys(values);
 
         if (keys.length === 0) return;
@@ -75,12 +54,12 @@ export const updateSomePropertiesInRowInMonthsProfitsAndExpensesTable = createAs
         const setClause = keys.map(key => `${key} = ?`).join(", ");
         const result = keys.map(key => (values as any)[key]);
 
-        await database.execute(
+        await db.execute(
             `UPDATE monthsProfitsAndExpenses SET ${setClause} WHERE id = ?`,
             [...result, id]
         );
 
-        const getMonthAfterUpdate = await database.select(
+        const getMonthAfterUpdate = await db.select(
             `SELECT * FROM monthsProfitsAndExpenses WHERE id = ?`,
             [id]
         );
@@ -105,12 +84,7 @@ const monthsProfitsAndExpensesSlice = createSlice({
             return [...state, action.payload];
         });
 
-        builde.addCase(updatePropertyInRowInMonthsProfitsAndExpensesTable.fulfilled as any, (state: monthsProfitsAndExpenses_Type[], action): any => {
-            const result = state.filter(ele => ele.id != action.payload.id);
-            return [...result, action.payload];
-        });
-
-        builde.addCase(updateSomePropertiesInRowInMonthsProfitsAndExpensesTable.fulfilled as any, (state: monthsProfitsAndExpenses_Type[], action): any => {
+        builde.addCase(updateAnyPropertyInRowInMonthsProfitsAndExpensesTable.fulfilled as any, (state: monthsProfitsAndExpenses_Type[], action): any => {
             const result = state.filter(ele => ele.id != action.payload.id);
             return [...result, action.payload];
         });

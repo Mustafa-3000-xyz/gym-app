@@ -34,7 +34,7 @@ export default function Progress(
                     ${colorProgress}
                 `}
                 style={{
-                    width: `${Math.abs(Number(widthChild)) > 100 ? 100 : Math.abs(Number(widthChild))}%`
+                    width: `${Math.abs(Number(widthChild)) > 100 ? 100 : Number(widthChild)}%`
                 }}
             ></div>
         </div>

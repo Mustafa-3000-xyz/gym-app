@@ -1,21 +1,25 @@
 import { allPermissions } from "@/Lib/constants";
 import { normalAlert } from "@/Lib/functions";
 import { Permissions_Props } from "@/Pages/typesProps";
+import { updateAnyPropertyInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { store_Type } from "@/Rtk/types";
 import { KeyRound } from "lucide-react";
-import { shallowEqual, useSelector } from "react-redux";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 // ========================================================== //
 export default function Permissions(
     {
+        accountId,
         permissionsList,
         onGetPermissionsList
     }: Permissions_Props
 ) {
+    const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
             logInInfo: state.logInInfo,
         }
     }, shallowEqual);
+
 
 
 
@@ -39,6 +43,7 @@ export default function Permissions(
             return;
         }
 
+
         let arr = [...permissionsList as string[]];
 
         // Add or remove the pathname
@@ -51,19 +56,29 @@ export default function Permissions(
         }
 
 
-        onGetPermissionsList(arr);
+        // Update permissions automatically
+        if (accountId) {
+            dispatch(updateAnyPropertyInRowInAccountsTable({
+                id: accountId,
+                values: {
+                    permissions: arr
+                }
+            }) as any);
+        }
+        else {
+            onGetPermissionsList?.(arr);
+        }
     }
+
+
 
 
     return <div className="flex flex-col gap-2">
         <div className="flex gap-1 mb-2 text-[#717c8e] ">
-            <KeyRound
-                strokeWidth={2.5}
-                className=""
-            />
+            <KeyRound strokeWidth={2.5} />
 
-            <h3 className="font-bold ">
-                الصلاحيات :
+            <h3 className="font-bold">
+                الصلاحيات ({allPermissions.length}) :
             </h3>
         </div>
 
@@ -74,9 +89,10 @@ export default function Permissions(
 
                     return <button
                         key={i}
-                        type="button"
                         className={`
                             border py-2 pb-3 px-5 rounded-full flex gap-2 items-center cursor-pointer
+                            ${state.logInInfo?.type == "captain" ? "cursor-not-allowed!" : ""}
+                            ${state.logInInfo?.type == "manager" && permissionsList == "fullAccess" ? "cursor-not-allowed!" : ""}
                             ${isInclude || permissionsList == "fullAccess" ? "bg-(--thirdColor) text-white" : "border-slate-300"}
                         `}
                         onClick={() => clickOnPermission(ele.key as any)}

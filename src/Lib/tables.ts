@@ -19,10 +19,28 @@ export async function trainerTable() {
                 price INTEGER,
                 subscriptionStart TEXT,
                 subscriptionEnd TEXT,
-                subscriptionStatus TEXT,
-                lastRenewalSubscription TEXT
+                subscriptionStatus TEXT
             )
         `);
+
+        try {
+            await db.execute(`ALTER TABLE trainers ADD COLUMN notes TEXT;`);
+        } catch (e) {
+
+        }
+
+        try {
+            await db.execute(`ALTER TABLE trainers ADD COLUMN debt INTEGER;`);
+        } catch (e) {
+
+        }
+
+        try {
+            await db.execute(`ALTER TABLE trainers DROP COLUMN lastRenewalSubscription;`);
+        } catch (e) {
+
+        }
+
     } catch (err) {
         console.error("DB Error:", err);
         throw err;
@@ -59,13 +77,26 @@ export async function accountsTable() {
                 profileImg TEXT,
                 coverImg TEXT,
                 trainersTotal INTEGER,
-                totalActiveSubscriptions INTEGER,
+                numberOfActiveSessions INTEGER,
                 permissions TEXT
             )
         `);
     } catch (err) {
         console.error("DB Error:", err);
         throw err;
+    }
+
+
+    try {
+        await db.execute(`ALTER TABLE accounts RENAME COLUMN numberOfActiveSessions TO numberOfActiveSessions;`);
+    } catch (e) {
+
+    }
+
+    try {
+        await db.execute(`ALTER TABLE accounts ADD COLUMN numberOfDeletedTrainers INTEGER;`);
+    } catch (e) {
+
     }
 }
 
@@ -168,8 +199,32 @@ export async function itemsTable() {
             )
         `)
 
+        try {
+            await db.execute(`ALTER TABLE items ADD COLUMN additionTime TEXT;`);
+        } catch (e) {
+
+        }
+
     } catch (error) {
         console.log(error);
+    }
+}
+
+export async function reportsTable() {
+    try {
+        await db.execute(`
+            CREATE TABLE IF NOT EXISTS reports (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                linkWithPerson INTEGER,
+                additionTime TEXT,
+                title TEXT,
+                description TEXT,
+                reportedBy TEXT
+            )
+        `);
+    } catch (error) {
+        console.error("Error creating reports table:", error);
+        throw error;
     }
 }
 
@@ -187,7 +242,9 @@ export async function settingsTable() {
             INSERT OR IGNORE INTO settings (key, value) VALUES 
             ('rowsInTrainerTable', '6'),
             ('rowsInAttendanceTable', '6'),
-            ('rowsInItemsTable', '6');
+            ('rowsInItemsTable', '6'),
+            ('isDeleteSomeTrainersWhoNotRenwal', 'true'),
+            ('isActiveMoreSessionInDay', 'false')
         `);
 
     } catch (error) {

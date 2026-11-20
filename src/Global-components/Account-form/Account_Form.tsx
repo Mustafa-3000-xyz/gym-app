@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Account_Form_Props } from "../typesProps";
 import { regexAccountName, regexAccountPassword } from "@/Lib/REGEX";
-import Inp_With_Label from "../Inp-with-label/Inp_With_Label";
 import Max_Min_Length from "../Max-min-length/Max_Min_Length";
+import { InputText } from "primereact/inputtext";
+import { Eye, EyeClosed } from "lucide-react";
 // ========================================================== //
 export default function Account_Form(
     {
@@ -15,102 +16,162 @@ export default function Account_Form(
         onGetPassword
     }: Account_Form_Props
 ) {
-    const [theName, setTheName] = useState(name);
-    const [theAge, setTheAge] = useState(age);
-    const [thePassword, setThePassword] = useState(password);
+    const [isShowPassword, setIsShowPassword] = useState(false);
 
 
 
 
-    function writeInAccountAgeInp(value: number) {
-        if (value >= 100) {
-            setTheAge(100);
-        }
-        else {
-            setTheAge(value);
-        }
+
+    function clickOnEye(e: any) {
+        e.stopPropagation();
+        setIsShowPassword(vlaue => !vlaue);
     }
-
-
-
-
-    useEffect(function () {
-        if (theName.match(regexAccountName)) {
-            onGetName(theName);
-        } else {
-            onGetName(null);
-        }
-
-        if (theAge > 0) {
-            onGetAge(theAge);
-        }
-        else {
-            onGetAge(null);
-        }
-
-        if (thePassword.match(regexAccountPassword)) {
-            onGetPassword(thePassword);
-        }
-        else {
-            onGetPassword(null);
-        }
-    }, [theName, theAge, thePassword])
 
 
 
 
     return <div className="mb-5">
         {/* Name & age */}
-        <div className="flex gap-2 justify-center mb-5">
-            <div className="w-1/3">
-                <Inp_With_Label
-                    labelName="الاسم"
-                    inpValue={theName}
-                    onWriteInInput={setTheName}
+        <div className="grid grid-cols-2 gap-2 mb-1">
+            {/* Name */}
+            <div className="flex flex-col">
+                <label className="mb-1 font-bold">
+                    اسم الحساب
+                </label>
+
+                <InputText
+                    className="h-10 text-center!"
+                    value={name}
+                    onChange={(e) => {
+                        if (e.target.value.match(regexAccountName)) {
+                            onGetName({
+                                value: e.target.value,
+                                isTrue: true
+                            });
+                        } else {
+                            onGetName({
+                                value: e.target.value,
+                                isTrue: false
+                            });
+                        }
+                    }}
                 />
 
-                <Max_Min_Length
-                    isGreenFlag={theName.match(regexAccountName) ? true : false}
-                    maxLength={15}
-                    minLength={theName.length}
-                />
+                <small
+                    id="username-help"
+                    className="text-[15px] font-bold"
+                >
+                    <Max_Min_Length
+                        isGreenFlag={name.match(regexAccountName) ? true : false}
+                        maxLength={15}
+                        minLength={name.length}
+                    />
+                </small>
             </div>
 
-            <div className="w-1/3">
-                <Inp_With_Label
-                    labelName="العمر"
-                    inpType="number"
-                    inpValue={theAge == 0 ? "" : theAge}
-                    onWriteInInput={writeInAccountAgeInp}
+            {/* Age */}
+            <div className="flex flex-col">
+                <label className="mb-1 font-bold">
+                    العمر
+                </label>
+
+                <InputText
+                    type="number"
+                    className="h-10 text-center!"
+                    value={age == 0 ? "" : age as any}
+                    onChange={(e) => {
+                        const value = Number(e.target.value) > 100 ? 100 : Number(e.target.value)
+                        if (value != 0) {
+                            onGetAge({
+                                value: value,
+                                isTrue: true
+                            });
+                        }
+                        else {
+                            onGetAge({
+                                value: value,
+                                isTrue: false
+                            });
+                        }
+                    }}
                 />
             </div>
         </div>
 
-        {/* Password & type */}
-        <div className="flex gap-2 justify-center">
-            {/* Password */}
-            <div className="w-1/4">
-                <Inp_With_Label
-                    labelName="كلمة السر"
-                    inpType="password"
-                    inpValue={thePassword}
-                    isRemoveSpaces
-                    onWriteInInput={setThePassword}
-                />
 
-                <Max_Min_Length
-                    isGreenFlag={thePassword.match(regexAccountPassword) ? true : false}
-                    maxLength={25}
-                    minLength={thePassword.length}
-                />
+        {/* Password & type */}
+        <div className="grid grid-cols-2 gap-2 px-60">
+            {/* Password */}
+            <div className="flex flex-col ">
+                <label className="mb-1 font-bold">
+                    الرقم السري
+                </label>
+
+
+                <div className="relative w-full">
+                    <InputText
+                        dir="ltr"
+                        placeholder="***"
+                        type={isShowPassword ? "text" : "password"}
+                        className="h-12 w-full"
+                        value={password}
+                        onChange={(e) => {
+                            if (e.target.value.match(regexAccountPassword)) {
+                                onGetPassword({
+                                    value: e.target.value,
+                                    isTrue: true
+                                });
+                            }
+                            else {
+                                onGetPassword({
+                                    value: e.target.value,
+                                    isTrue: false
+                                });
+                            }
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === ' ' || e.code === 'Space') {
+                                e.preventDefault();
+                            }
+                        }}
+                    />
+
+                    {
+                        isShowPassword ?
+                            <Eye
+                                className="absolute top-3 right-2.5 cursor-pointer text-black"
+                                onClick={clickOnEye}
+                            />
+                            :
+                            <EyeClosed
+                                className="absolute top-3 right-2.5 cursor-pointer text-black"
+                                onClick={clickOnEye}
+                            />
+                    }
+                </div>
+
+                <small
+                    id="username-help"
+                    className="text-[15px] font-bold"
+                >
+                    <Max_Min_Length
+                        isGreenFlag={password.match(regexAccountPassword) ? true : false}
+                        maxLength={25}
+                        minLength={password.length}
+                    />
+                </small>
             </div>
 
             {/* Type */}
-            <div className="w-1/4">
-                <Inp_With_Label
-                    labelName="نوع الحساب"
-                    inpValue={accountType == "manager" ? "المدير" : "الكابتن"}
-                    isChangeValue={false}
+            <div className="flex flex-col">
+                <label className="mb-1 font-bold">
+                    نوع الحساب
+                </label>
+
+                <InputText
+                    disabled
+                    className="text-center"
+                    placeholder={accountType == "captain" ? "كابتن" : "مدير"}
                 />
             </div>
         </div>

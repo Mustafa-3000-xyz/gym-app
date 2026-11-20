@@ -1,15 +1,16 @@
 import { settings_Type } from "@/Pages/types";
+import { updateAnyPropertyInRowInSettingsTable_Type } from "@/Rtk/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const database = await Database.load("sqlite:gym-app.db");
+const db = await Database.load("sqlite:gym-app.db");
 
 
 
 export const getAllRowsInSettingsTable = createAsyncThunk(
     "settingsSlice/getAllRowsInSettingsTable",
     async function () {
-        const getData = await database.select(
+        const getData = await db.select(
             "SELECT * FROM settings",
         ) as any;
 
@@ -23,9 +24,9 @@ export const getAllRowsInSettingsTable = createAsyncThunk(
     }
 );
 
-export const updateSomePropertiesInRowInSettingsTable = createAsyncThunk(
-    "settingsSlice/updateSomePropertiesInRowInSettingsTable",
-    async function (settings: settings_Type) {
+export const updateAnyPropertyInRowInSettingsTable = createAsyncThunk(
+    "settingsSlice/updateAnyPropertyInRowInSettingsTable",
+    async function (settings: updateAnyPropertyInRowInSettingsTable_Type) {
         const keys = Object.keys(settings) as (keyof settings_Type)[];
 
         if (keys.length === 0) return {};
@@ -37,7 +38,7 @@ export const updateSomePropertiesInRowInSettingsTable = createAsyncThunk(
                 const stringValue = String(value);
 
                 const query = `UPDATE settings SET value = ? WHERE key = ?`;
-                await database.execute(query, [stringValue, key]);
+                await db.execute(query, [stringValue, key]);
             }
 
         }
@@ -58,8 +59,11 @@ const settingsSlice = createSlice({
             return action.payload;
         });
 
-        builde.addCase(updateSomePropertiesInRowInSettingsTable.fulfilled as any, (_, action): any => {
-            return action.payload;
+        builde.addCase(updateAnyPropertyInRowInSettingsTable.fulfilled as any, (state, action): any => {
+            return {
+                ...state,
+                ... action.payload
+            };
         });
     }
 });

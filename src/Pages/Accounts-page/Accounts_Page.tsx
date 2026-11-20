@@ -1,17 +1,17 @@
-import { IdCardLanyard, Shell } from "lucide-react";
-import { useEffect, useState } from "react";
+import { IdCardLanyard, Plus, Shell } from "lucide-react";
+import { useState } from "react";
 import Box from "@/Global-components/Box/Box";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
-import Add_Btn from "@/Global-components/Add-btn/Add_Btn";
-import Popup_Form from "@/Global-components/Popup-form/Popup_Form";
+import Popup_Component from "@/Global-components/Popup-component/Popup_Component";
 import { addRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { accounte_Type } from "../types";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
 import Permissions from "@/Global-components/Permissions/Permissions";
-import { CANCEL_SUBSCRIPTION, CREATE_NEW_ACCOUNTS, REMOVE_TRAINERS, RENEWAL_SUBSCRIPTION, trainerPagePath } from "@/Lib/constants";
-import { checkPermissionesInAccount, normalAlert } from "@/Lib/functions";
+import { CANCEL_SUBSCRIPTION, CREATE_NEW_ACCOUNTS, REMOVE_TRAINERS, RENEWAL_SUBSCRIPTION } from "@/Lib/constants";
+import { checkPermissionesInAccount, customAlert, normalAlert } from "@/Lib/functions";
 import All_Accounts from "@/Global-components/All-accountes/All_Accounts";
+import Custom_Btn from "@/Global-components/Custom-btn/Custom_Btn";
 // ========================================================== //
 export default function Accounts_Page() {
     const dispatch = useDispatch();
@@ -23,13 +23,23 @@ export default function Accounts_Page() {
     }, shallowEqual);
 
 
-    const [isAllDataComplete, setIsAllDataComplete] = useState(false);
     const [isCreateNewAccount, setIsCreateNewAccount] = useState(false);
+    const [permissionsList, setPermissionsList] = useState([REMOVE_TRAINERS, CANCEL_SUBSCRIPTION, RENEWAL_SUBSCRIPTION]);
 
-    const [getName, setGetName] = useState<string | null>(null);
-    const [getAge, setGetAge] = useState<number | null>(null);
-    const [getPassword, setGetPassword] = useState<string | null>(null);
-    const [permissionsList, setPermissionsList] = useState([trainerPagePath, REMOVE_TRAINERS, CANCEL_SUBSCRIPTION, RENEWAL_SUBSCRIPTION]);
+
+    const [getName, setGetName] = useState({
+        value: "",
+        isTrue: false
+    });
+    const [getAge, setGetAge] = useState({
+        value: 0,
+        isTrue: false
+    });
+    const [getPassword, setGetPassword] = useState({
+        value: "",
+        isTrue: false
+    });
+
 
     const checkCreateAccountPermission = checkPermissionesInAccount({
         accountId: Number(state.logInInfo?.id),
@@ -38,11 +48,21 @@ export default function Accounts_Page() {
 
 
 
-    function clickOnCreateAccount() {
-        if (checkCreateAccountPermission && state.accounts?.length as any < 4) {
+    function clickOnCreateAccountBtn() {
+        if (!checkCreateAccountPermission) {
+            normalAlert({
+                title: "المعذره",
+                text: "ليس لديك الصلاحيه لإنشاء حساب جديد",
+                icon: "error"
+            });
+
+            return;
+        }
+
+        if (Number(state.accounts?.length) < 4) {
             setIsCreateNewAccount(true);
         }
-        else if (checkCreateAccountPermission && state.accounts?.length as any >= 4) {
+        else {
             normalAlert({
                 title: "المعذره",
                 text: "لقد وصلت للحد الاقصى",
@@ -51,81 +71,100 @@ export default function Accounts_Page() {
 
             setIsCreateNewAccount(false);
         }
-        else {
-            normalAlert({
-                title: "المعذره",
-                text: "ليس لديك الصلاحيه لإنشاء حساب جديد",
-                icon: "error"
-            });
+    }
 
+    function saveData() {
+        const errorsMessagesList = [];
+
+        if (!getName.isTrue) {
+            errorsMessagesList.push("يجب اسم الحساب لا يقل عن ثلاثة احرف ولا يزيد عن ثلاثة عشر حرف");
+        }
+
+        if (!getAge.isTrue) {
+            errorsMessagesList.push("يجب ادخال العمر");
+        }
+
+        if (!getPassword.isTrue) {
+            errorsMessagesList.push("يجب الرقم السري لا يقل عن ثلاثة حروف ولا يزيد عن عشرون حرف");
+        }
+
+
+        if (errorsMessagesList.length > 0) {
+            normalAlert({
+                title: "يوجد بيانات خاطئه",
+                text: errorsMessagesList.join(" / "),
+                icon: "error"
+            })
+        }
+        else {
+            customAlert({
+                textBeforeSubmitAction: "هل تريد بالفعل إنشاء حساب جديد ؟",
+                textAfterSubmitAction: "تمت إضافة حساب جديد بنجاح",
+                runFunctionAfterConfirm: function () {
+                    const data = {
+                        name: getName.value,
+                        age: getAge.value,
+                        password: getPassword.value,
+                        type: "captain",
+                        color: "#3b82f6",
+                        profileImg: "",
+                        coverImg: "",
+                        trainersTotal: 0,
+                        numberOfActiveSessions: 0,
+                        permissions: JSON.stringify(permissionsList),
+                    } as accounte_Type;
+
+                    dispatch(addRowInAccountsTable(data) as any);
+                    setIsCreateNewAccount(false);
+                }
+            });
+        }
+    }
+
+    function cancel() {
+        if (getName.value || getAge.value || getPassword.value) {
+            customAlert({
+                textBeforeSubmitAction: "هل تريد بالفعل عدم استكمال كتابة البيانات ؟",
+                runFunctionAfterConfirm: () => setIsCreateNewAccount(false)
+            })
+        }
+        else {
             setIsCreateNewAccount(false);
         }
     }
 
-    function saveData() {
-        const data = {
-            name: getName,
-            age: getAge,
-            password: getPassword,
-            type: "captain",
-            color: "#3b82f6",
-            profileImg: "",
-            coverImg: "",
-            trainersTotal: 0,
-            totalActiveSubscriptions: 0,
-            permissions: JSON.stringify(permissionsList),
-        } as accounte_Type;
-
-
-        normalAlert({
-            title: "تهانينا",
-            text: "تم إنشاء حساب جديد",
-            icon: "success"
-        });
-        setIsCreateNewAccount(false);
-        dispatch(addRowInAccountsTable(data as accounte_Type) as any);
-    }
 
 
 
-    useEffect(function () {
-        if (!getName || !getAge || !getPassword) {
-            setIsAllDataComplete(false);
-            return;
-        }
-
-        setIsAllDataComplete(true);
-    }, [getName, getAge, getPassword]);
-
-
-
-
-    return <section className="mb-5">
+    return <section className="mt-10">
         {/* Boxes */}
         <div className="grid grid-cols-2 gap-3 mb-5">
             <Box
                 icon={<IdCardLanyard size={25} />}
                 title="مجموع الحسابات"
                 styleIcon="bg-(--thirdColor)/10 text-(--thirdColor)"
-                total={`
-                    ${state.accounts?.length} من اصل 4
-                `}
+                total={` ${state.accounts?.length} من اصل 4 `}
             />
 
             <Box
                 icon={<Shell size={25} />}
                 title="مجموع الحصص المفعله"
                 styleIcon="bg-neutral-200 text-neutral-500"
-                total={Math.trunc(state.accounts?.reduce((sum, ele) => sum + Number(ele.totalActiveSubscriptions), 0) || 0)}
+                total={Math.trunc(state.accounts?.reduce((sum, ele) => sum + Number(ele.numberOfActiveSessions), 0) || 0)}
             />
         </div>
 
         {/* Create new account */}
-        <Add_Btn
-            title="إنشاء حساب جديد"
-            className="bg-emerald-500 border-emerald-600"
-            onClick={clickOnCreateAccount}
-        />
+        <Custom_Btn
+            className="bg-emerald-500! border-emerald-600! flex gap-3 items-center justify-center py-7 w-full"
+            onClick={clickOnCreateAccountBtn}
+        >
+            <Plus size={20} strokeWidth={3} />
+
+            <p className="font-bold mb-1">
+                إنشاء حساب جديد
+            </p>
+        </Custom_Btn>
 
         {/* All accounts */}
         <div className="mt-20">
@@ -135,20 +174,16 @@ export default function Accounts_Page() {
 
         {
             isCreateNewAccount ?
-                <Popup_Form
-                    popupFormInfo={{
-                        title: "إنشاء حساب",
-                        discription: "يمكنك الان إنشاء حساب جديد",
-                    }}
-                    classNameForParent="h-[70vh]"
-                    isSave={isAllDataComplete}
-                    clickOnCancel={() => setIsCreateNewAccount(false)}
+                <Popup_Component
+                    title="إنشاء حساب جديد"
+                    classNameForParent="h-fit"
                     clickOnSaveBtn={saveData}
+                    clickOnCancel={cancel}
                 >
                     <Account_Form
-                        name={""}
-                        age={0}
-                        password={""}
+                        name={getName.value}
+                        age={getAge.value}
+                        password={getPassword.value}
                         accountType={"captain"}
                         onGetName={setGetName}
                         onGetAge={setGetAge as any}
@@ -164,13 +199,13 @@ export default function Accounts_Page() {
                         {
                             state.logInInfo?.type == "captain" ?
                                 <p className="mt-5 text-red-500 font-bold">
-                                    حساب المدير هو القادر على تغير الصلاحيات
+                                    حساب المدير هو القادر على إضافة الصلاحيات
                                 </p>
                                 :
                                 null
                         }
                     </div>
-                </Popup_Form>
+                </Popup_Component>
                 :
                 null
         }

@@ -1,210 +1,334 @@
-import Account_Img from "@/Pages/Profile-page/Components/Account-img/Account_Img";
+import Account_Img from "@/Pages/Profile-page/Components/Account_Img";
 import Box from "@/Global-components/Box/Box";
-import { accountesPagePath, allPermissions, CHANGE_ACCOUNT_COLOR } from "@/Lib/constants";
-import { deleteRowInAccountsTableById, updatePropertyInRowInAccountsTable, updateSomePropertiesInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
-import { KeyRound, LogOut, Shell, Trash, UsersRound } from "lucide-react";
+import { accountesPagePath, logInPagePath, profilePagePath } from "@/Lib/constants";
+import { deleteRowInAccountsTableById, updateAnyPropertyInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
+import { LogOut, Shell, Trash, UsersRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { accounte_Type } from "../types";
 import Permissions from "../../Global-components/Permissions/Permissions";
-import { alert, checkPermissionesInAccount } from "@/Lib/functions";
+import { customAlert, normalAlert } from "@/Lib/functions";
 import Account_Form from "@/Global-components/Account-form/Account_Form";
 import { useNavigate, useParams } from "react-router-dom";
 import { store_Type } from "@/Rtk/types";
-import Cover_Img from "./Components/Cover-img/Cover_Img";
+import Cover_Img from "./Components/Cover_Img";
 import { changeLogInInfo } from "@/Rtk/Slices/UI-slices/logInInfoSlice";
+import Custom_Line from "@/Global-components/Custom-line/Custom_Line";
+import Custom_Btn from "@/Global-components/Custom-btn/Custom_Btn";
+import Password_Inp from "@/Global-components/All-accountes/Password-inp/Password_Inp";
+import Swal from "sweetalert2";
 // ========================================================== //
 export default function Profile_Page() {
     const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
-            trainerDetails: state.trainerDetails,
             accounts: state.accounts,
             logInInfo: state.logInInfo,
         }
     }, shallowEqual);
 
-    const checkTheChangeColor = checkPermissionesInAccount({
-        accountId: Number(state.logInInfo?.id),
-        permissionType: CHANGE_ACCOUNT_COLOR
+
+
+    const [passwordInp, setPasswordInp] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
+
+
+    const [permissionsList, setPermissionsList] = useState<string | string[]>("fullAccess");
+    const [getColor, setGetColor] = useState<string | null>(null);
+    const [getName, setGetName] = useState({
+        value: "",
+        isTrue: false
+    });
+    const [getAge, setGetAge] = useState({
+        value: 0,
+        isTrue: false
+    });
+    const [getPassword, setGetPassword] = useState({
+        value: "",
+        isTrue: false
     });
 
-    const [theAccount, setTheAccount] = useState<accounte_Type | null>(null);
-    const [permissionsList, setPermissionsList] = useState<string | string[]>("fullAccess");
-    const [isShowEditingAccount, setIsShowEditingAccount] = useState(false);
 
-    const [isSaveChange, setIsSaveChange] = useState(false);
-    const [getName, setGetName] = useState<string | null>(null);
-    const [getAge, setGetAge] = useState<number | null>(null);
-    const [getColor, setGetColor] = useState<string | null>(null);
-    const [getPassword, setGetPassword] = useState<string | null>(null);
+    const [accountDetails, setAccountDetails] = useState<accounte_Type | null>(null);
+
 
     const navigate = useNavigate();
     const { accountId } = useParams();
 
 
 
+    async function clickOnLogInBtn() {
+        const { value: userInput } = await Swal.fire({
+            title: "أكتب رقم السر الخاص بحساب المدير",
+            input: "password",
+            inputPlaceholder: "***",
+            showCancelButton: true,
+            confirmButtonText: "موافق",
+            cancelButtonText: "إلغاء",
+
+            inputValidator: (value) => {
+                if (!value) {
+                    return "من فضلك, اكتب كلمة السر";
+                }
+            }
+        });
+
+
+
+        if (userInput && userInput != getPassword.value) {
+            normalAlert({
+                title: "المعذره",
+                text: "كلمة السر خاطئه",
+                icon: "error"
+            });
+        }
+        else if (userInput == getPassword.value) {
+            normalAlert({
+                title: "تهانينا",
+                text: "تم تسجيل الدخول للحساب بنجاح",
+                icon: "success",
+            });
+
+
+            dispatch(changeLogInInfo({
+                id: accountId as any,
+                type: accountDetails?.type as any,
+                color: getColor
+            }));
+
+            navigate(profilePagePath.replace(":accountId", accountId as any));
+        }
+    }
+
+    async function clickOnRemoveAccountBtn() {
+        const { value: userInput } = await Swal.fire({
+            title: "أكتب رقم السر الخاص بحساب المدير",
+            input: "password",
+            inputPlaceholder: "***",
+            showCancelButton: true,
+            confirmButtonText: "موافق",
+            cancelButtonText: "إلغاء",
+
+            inputValidator: (value) => {
+                if (!value) {
+                    return "من فضلك, اكتب كلمة السر";
+                }
+            }
+        });
+
+        if (userInput && userInput != getPassword?.value) {
+            normalAlert({
+                title: "المعذره",
+                text: "كلمة السر خاطئه",
+                icon: "error"
+            });
+        }
+        else if (userInput == getPassword?.value) {
+            normalAlert({
+                title: "تهانينا",
+                text: "تم  حذف الحساب بنجاح",
+                icon: "success",
+            });
+
+            dispatch(deleteRowInAccountsTableById(Number(accountDetails?.id)) as any);
+            navigate(accountesPagePath);
+        }
+    }
 
     function clickOnLogOutBtn() {
-        alert({
-            textBeforeSubmit: "هل تريد بالفعل تسجيل الخروج ؟؟",
-            runFunctionAfterSubmit: function () {
-                dispatch(changeLogInInfo(null))
+        customAlert({
+            textBeforeSubmitAction: "هل تريد بالفعل تسجيل الخروج ؟؟",
+            runFunctionAfterConfirm: function () {
+                dispatch(changeLogInInfo(null));
+                navigate(logInPagePath);
             }
         })
     }
 
-    function clickOnRemoveAccountBtn() {
-        alert({
-            textBeforeSubmit: "هل تريد بالفعل حذف ذلك الحساب ؟؟",
-            textAfterSubmit: "تم حذف الحساب بنجاح",
-            runFunctionAfterSubmit: function () {
-                dispatch(deleteRowInAccountsTableById(accountId as any) as any);
-                navigate(accountesPagePath);
-            }
-        })
-    }
+    function saveDate() {
+        const errorsMessagesList = [];
 
-    function clickOnEditingAccountBtn() {
-        if (isShowEditingAccount) {
-            setIsShowEditingAccount(false);
+        if (!getName.isTrue) {
+            errorsMessagesList.push("يجب اسم الحساب لا يقل عن ثلاثة حروف ولا يزيد عن خمسة عشر حرف")
         }
-        else {
-            setIsShowEditingAccount(true);
+
+        if (!getAge.isTrue) {
+            errorsMessagesList.push("يجب كتابة العمر")
         }
-    }
 
-    function clickOnSaveChangesBtn() {
-        if (!isSaveChange) return;
-
-        dispatch(updateSomePropertiesInRowInAccountsTable({
-            id: theAccount?.id as any,
-            values: {
-                name: getName as any,
-                age: getAge as any,
-                color: getColor as any,
-                password: getPassword as any
-            }
-        }) as any)
-
-        dispatch(changeLogInInfo({
-            id: theAccount?.id as any,
-            type: theAccount?.type as any,
-            color: getColor
-        }));
-
-        setIsShowEditingAccount(false);
-        setIsSaveChange(false);
-    }
-
-
-
-    // Update permissions
-    useEffect(function () {
-        if (
-            permissionsList == "fullAccess"
-            ||
-            theAccount?.permissions == permissionsList
-        ) return
-
-        dispatch(updatePropertyInRowInAccountsTable({
-            id: theAccount?.id as any,
-            column: "permissions",
-            value: permissionsList
-        }) as any);
-    }, [permissionsList]);
-
-    // Check permissions value
-    useEffect(function () {
-        if (!theAccount?.permissions) return;
-
-        if (theAccount.permissions == "fullAccess") {
-            setPermissionsList("fullAccess")
+        if (!getPassword.isTrue) {
+            errorsMessagesList.push("يجب الرقم السري لا يقل عن ثلاثة احرف ولا يزيد عن اثنين وخمسون حرف")
         }
-        else {
-            setPermissionsList(JSON.parse(theAccount.permissions as any))
-        }
-    }, [theAccount?.permissions]);
 
-    // Get account
-    useEffect(function () {
-        const getAccount = state.accounts?.find(ele => ele.id == (Number(accountId)));
+        if (errorsMessagesList.length > 0) {
+            normalAlert({
+                title: "يوجد بيانات غير صالحه",
+                text: errorsMessagesList.join(" / "),
+                icon: "error"
+            });
 
-        setTheAccount(getAccount as accounte_Type);
-        setGetColor(getAccount?.color as any);
-    }, [accountId, state.accounts]);
-
-    // Check values is changes or no
-    useEffect(function () {
-        if (!getName || !getAge || !getPassword) {
-            setIsSaveChange(false);
             return;
         }
 
 
         if (
-            getName != theAccount?.name
-            ||
-            getAge != theAccount?.age
-            ||
-            getColor != theAccount.color
-            ||
-            getPassword != theAccount?.password
+            getName.value == accountDetails?.name
+            &&
+            getAge.value == accountDetails.age
+            &&
+            getPassword.value == accountDetails.password
+            &&
+            getColor == accountDetails.color
         ) {
-            setIsSaveChange(true);
-        } else {
-            setIsSaveChange(false);
+            normalAlert({
+                title: "هممم",
+                text: "لا يوجد اي بيانات تم تعديلها",
+                icon: "info"
+            })
         }
-    }, [getName, getAge, getPassword, getColor]);
+        else {
+            customAlert({
+                textBeforeSubmitAction: "هل تريد حفظ البيانات الجديده ؟",
+                textAfterSubmitAction: "تم الحفظ بنجاح",
+                runFunctionAfterConfirm() {
+                    dispatch(updateAnyPropertyInRowInAccountsTable({
+                        id: Number(accountDetails?.id),
+                        values: {
+                            name: getName.value,
+                            age: getAge.value,
+                            password: getPassword.value,
+                            color: getColor as any,
+                        }
+                    }) as any);
+
+                    dispatch(changeLogInInfo({
+                        id: Number(accountDetails?.id),
+                        type: accountDetails?.type,
+                        color: getColor
+                    }));
+                }
+            })
+        }
+    }
+
+    function cancel() {
+        if (
+            getName.value != accountDetails?.name
+            ||
+            getAge.value != accountDetails.age
+            ||
+            getPassword.value != accountDetails.password
+            ||
+            getColor != accountDetails.color
+        ) {
+            customAlert({
+                textBeforeSubmitAction: "هل تريد بالفعل الرجوع للبيانات القديمه ؟",
+                runFunctionAfterConfirm: function () {
+                    setGetName({
+                        value: accountDetails?.name as any,
+                        isTrue: true
+                    });
+                    setGetAge({
+                        value: accountDetails?.age as any,
+                        isTrue: true
+                    });
+                    setGetPassword({
+                        value: accountDetails?.password as any,
+                        isTrue: true
+                    });
+
+                    setGetColor(accountDetails?.color as any);
+                    setPermissionsList(accountDetails?.permissions as any);
+                }
+            })
+        }
+        else {
+            normalAlert({
+                title: "هممم",
+                text: "لا يوجد اي بيانات تم تعديلها",
+                icon: "info"
+            })
+        }
+    }
+
+
+
+    // Get account
+    useEffect(function () {
+        if (state.accounts?.length == 0 || !accountId) return;
+
+
+        const getAccount = state.accounts?.find(ele => ele.id == (Number(accountId)));
+
+        setAccountDetails(getAccount as any);
+
+        setGetName({
+            value: getAccount?.name as any,
+            isTrue: true
+        });
+        setGetAge({
+            value: getAccount?.age as any,
+            isTrue: true
+        });
+        setGetPassword({
+            value: getAccount?.password as any,
+            isTrue: true
+        });
+
+        setPermissionsList(getAccount?.permissions as any);
+        setGetColor(getAccount?.color as any);
+    }, [accountId, state.accounts]);
 
 
 
 
 
+    if (!accountDetails) return null
 
-    if (!theAccount) return null
 
-
-    return <section>
+    return <section className="mt-10">
         {/* Cover & img */}
         <div className="relative">
             {/* Cover */}
             <Cover_Img
-                accountId={Number(accountId)}
-                coverImgSrc={theAccount.coverImg}
-                isChangeCoverImg={state.logInInfo?.id == accountId}
+                accountId={Number(accountDetails.id)}
+                coverImgSrc={accountDetails?.coverImg as any}
+                isChangeCoverImg={state.logInInfo?.id == accountDetails.id}
             />
 
             {/* Profile img */}
             <div className="absolute -bottom-6 left-1/2 -translate-x-1/2">
                 <Account_Img
-                    accountId={theAccount?.id as number}
-                    img={theAccount?.profileImg as string}
-                    color={theAccount?.color as any}
-                    isChangeTheImg={state.logInInfo?.id == accountId}
+                    accountId={accountDetails?.id as number}
+                    img={accountDetails?.profileImg as string}
+                    isChangeTheImg={state.logInInfo?.id == accountDetails.id}
                 />
             </div>
         </div>
 
-        {/* Name & age & age */}
+        {/* Name & age & id*/}
         <div className="my-10 text-center">
             <h3 className="font-bold text-2xl">
-                {theAccount?.name}
+                {accountDetails?.name}
             </h3>
 
             <p className={`
-                ${theAccount?.type == "manager" ? "font-bold" : ""}
+                ${accountDetails?.type == "manager" ? "font-bold" : ""}
             `}
             >
                 <span>
-                    العمر ({Math.trunc(theAccount?.age as any)})
+                    العمر ({Math.trunc(accountDetails?.age)})
                 </span>
 
                 <span> | </span>
 
                 <span>
-                    {theAccount?.type == "manager" ? "المدير" : "كابتن في الجيم"}
+                    {accountDetails?.type == "manager" ? "المدير" : "كابتن في الجيم"}
                 </span>
+            </p>
+
+            <p className="font-bold underline">
+                رقم الحساب : {accountDetails.id}
             </p>
         </div>
 
@@ -214,166 +338,171 @@ export default function Profile_Page() {
                 icon={<Shell />}
                 styleIcon="bg-(--thirdColor)/10 text-(--thirdColor)"
                 title="عدد الحصص المفعله"
-                total={Math.trunc(Math.abs(theAccount?.totalActiveSubscriptions) as any) as any}
+                total={Math.trunc(Math.abs(accountDetails?.numberOfActiveSessions))}
             />
 
             <Box
                 icon={<UsersRound />}
                 styleIcon="bg-neutral-200 text-neutral-500"
                 title="مجموع المتدربين"
-                total={Number(theAccount.trainersTotal)}
+                total={Number(accountDetails?.trainersTotal)}
             />
 
             <Box
-                icon={<KeyRound />}
-                styleIcon="bg-(--thirdColor)/10 text-(--thirdColor)"
-                title="عدد الصلاحيات للحساب"
-                total={`
-                    ${theAccount?.type == "manager" ? allPermissions.length : permissionsList?.length}
-                    من اصل
-                    ${allPermissions.length}
-                `}
+                icon={<Trash />}
+                styleIcon="bg-red-100 text-red-500"
+                title="عدد المتدربين المحذوفين"
+                total={
+                    accountDetails?.numberOfDeletedTrainers ? accountDetails.numberOfDeletedTrainers : 0
+                }
             />
         </div>
 
         {/* Permissions */}
         <div className="mt-6 flex gap-3">
             <Permissions
-                permissionsList={permissionsList as any}
-                onGetPermissionsList={setPermissionsList as any}
+                accountId={accountDetails.id}
+                permissionsList={
+                    permissionsList === "fullAccess"
+                        ? "fullAccess"
+                        : typeof permissionsList == "string"
+                            ? JSON.parse(permissionsList)
+                            : permissionsList
+                }
             />
         </div>
 
-        {/* Delete account btn & logout btn */}
-        <div className="flex gapp-2 justify-end mt-6">
+        <Custom_Line />
+
+        {/* Account info */}
+        <div className="relative p-5 mb-10">
             {
-                state.logInInfo?.id == accountId ?
-                    <button
-                        className={`
-                            transition duration-300
-                            bg-red-500 text-white px-3 py-2 rounded-lg cursor-pointer
-                            hover:bg-red-600
-                        `}
-                        onClick={clickOnLogOutBtn}
-                    >
-                        <LogOut />
-                    </button>
-                    :
-                    null
-            }
-
-
-            {
-                state.logInInfo?.type == "manager" && theAccount?.type == "captain" ?
-                    <button
-                        className={`
-                        transition duration-300
-                        bg-red-500 text-white px-3 py-2 rounded-lg cursor-pointer
-                        hover:bg-red-600
-                    `}
-                        onClick={clickOnRemoveAccountBtn}
-                    >
-                        <Trash />
-                    </button>
-                    :
-                    null
-            }
-        </div>
-
-        {
-            state.logInInfo?.id == accountId ?
-                <div className="text-center w-full">
-                    <button
-                        className="my-6 cursor-pointer underline text-blue-500"
-                        onClick={clickOnEditingAccountBtn}
-                    >
-                        {
-                            isShowEditingAccount ?
-                                "إلغاء تعديل الحساب"
-                                :
-                                " تعديل الحساب"
-                        }
-                    </button>
-                </div>
-                :
-                null
-        }
-
-
-        {
-            isShowEditingAccount ?
+                state.logInInfo?.id != accountDetails.id as any &&
                 <>
-                    {/* Account form */}
-                    <Account_Form
-                        name={theAccount.name}
-                        age={theAccount.age}
-                        password={theAccount.password}
-                        accountType={theAccount.type}
-                        onGetName={setGetName}
-                        onGetAge={setGetAge}
-                        onGetPassword={setGetPassword}
-                    />
+                    {/* Bg */}
+                    <div className="absolute top-0 left-0 w-full h-full bg-white blur-sm z-20"></div>
 
                     {
-                        checkTheChangeColor ?
-                            <div className="flex gap-3 justify-center mt-10">
-                                {
-                                    state.logInInfo?.type == "manager" ?
-                                        <div
-                                            className={`
-                                                bg-black w-10 h-10 rounded-lg
-                                                ${getColor == "#000000" ? "border-5 border-amber-500" : "cursor-pointer"}
-                                            `}
-                                            onClick={() => setGetColor("#000000")}
-                                        ></div>
-                                        :
-                                        null
-                                }
+                        state.logInInfo?.type == "manager" ?
+                            <div className="absolute z-50 w-full h-full flex justify-center items-center gap-5">
+                                <Custom_Btn
+                                    className="bg-emerald-500! border-emerald-600!"
+                                    onClick={clickOnLogInBtn}
+                                >
+                                    <p className="font-bold">
+                                        تسجيل الدخول للحساب
+                                    </p>
+                                </Custom_Btn>
 
-                                <div
-                                    className={`
-                                        bg-purple-500 w-10 h-10 rounded-lg
-                                        ${getColor == "#ad46ff" ? "border-5 border-amber-500" : "cursor-pointer"}
-                                    `}
-                                    onClick={() => setGetColor("#ad46ff")}
-                                ></div>
-
-                                <div
-                                    className={`
-                                        bg-[#3b82f6] w-10 h-10 rounded-lg
-                                        ${getColor == "#3b82f6" ? "border-5 border-amber-500" : "cursor-pointer"}
-                                    `}
-                                    onClick={() => setGetColor("#3b82f6")}
-                                ></div>
-
-                                <div
-                                    className={`
-                                        bg-lime-700 w-10 h-10 rounded-lg 
-                                        ${getColor == "#497d00" ? "border-5 border-amber-500" : "cursor-pointer"}
-                                    `}
-                                    onClick={() => setGetColor("#497d00")}
-                                ></div>
+                                <Custom_Btn onClick={clickOnRemoveAccountBtn}>
+                                    <p className="font-bold">
+                                        حذف الحساب
+                                    </p>
+                                </Custom_Btn>
                             </div>
                             :
-                            null
-                    }
+                            <div className="absolute z-50 w-full h-full flex flex-col justify-center items-center gap-10">
+                                <h3 className="text-center text-3xl font-bold select-none">
+                                    قم بتسجيل الدخول لمعرفة المعلومات
+                                </h3>
 
-                    <div className="flex justify-center my-5">
-                        <button
-                            className={`
-                                w-2/3 duration-300
-                                bg-(--thirdColor) text-white p-3 rounded-lg 
-                                ${isSaveChange ? "cursor-pointer opacity-100" : "cursor-not-allowed opacity-45"}
-                            `}
-                            onClick={clickOnSaveChangesBtn}
-                            disabled={!isSaveChange}
-                        >
-                            حفظ التغيرات
-                        </button>
-                    </div>
+                                <Password_Inp
+                                    account={{
+                                        id: Number(accountDetails?.id),
+                                        type: accountDetails?.type as any,
+                                        color: accountDetails?.color as any,
+                                        password: accountDetails?.password as any
+                                    }}
+                                    value={passwordInp}
+                                    onWrite={setPasswordInp}
+                                    onIsErrorPassword={setErrorMessage}
+                                />
+
+                                <p className="text-red-500 font-blold">
+                                    {errorMessage}
+                                </p>
+                            </div>
+                    }
                 </>
-                :
-                null
-        }
-    </section >
+            }
+
+
+            <h2 className="text-3xl font-bold my-10 text-center">
+                معلومات الحساب
+            </h2>
+
+            <Account_Form
+                name={getName.value}
+                age={getAge.value}
+                password={getPassword.value}
+                accountType={accountDetails.type}
+                onGetName={setGetName}
+                onGetAge={setGetAge}
+                onGetPassword={setGetPassword}
+            />
+
+            {/* Colors */}
+            <div className="flex gap-3 justify-center mt-10">
+                {
+                    state.logInInfo?.type == "manager" &&
+                    <div
+                        className={`
+                                bg-black w-10 h-10 rounded-lg
+                                ${getColor == "#000000" ? "border-5 border-amber-500" : "cursor-pointer"}
+                            `}
+                        onClick={() => setGetColor("#000000")}
+                    ></div>
+                }
+
+                <div
+                    className={`
+                        bg-purple-500 w-10 h-10 rounded-lg
+                        ${getColor == "#ad46ff" ? "border-5 border-amber-500" : "cursor-pointer"}
+                    `}
+                    onClick={() => setGetColor("#ad46ff")}
+                ></div>
+
+                <div
+                    className={`
+                        bg-[#3b82f6] w-10 h-10 rounded-lg
+                        ${getColor == "#3b82f6" ? "border-5 border-amber-500" : "cursor-pointer"}
+                    `}
+                    onClick={() => setGetColor("#3b82f6")}
+                ></div>
+
+                <div
+                    className={`
+                        bg-lime-700 w-10 h-10 rounded-lg 
+                        ${getColor == "#497d00" ? "border-5 border-amber-500" : "cursor-pointer"}
+                    `}
+                    onClick={() => setGetColor("#497d00")}
+                ></div>
+            </div>
+
+            {/* Btns and log out*/}
+            <div className="flex justify-between my-5">
+                <div className="flex gap-3">
+                    <Custom_Btn
+                        className="bg-emerald-500! border-emerald-600!"
+                        onClick={saveDate}
+                    >
+                        حفظ التغيرات
+                    </Custom_Btn>
+
+                    <Custom_Btn onClick={cancel}>
+                        إلغاء
+                    </Custom_Btn>
+                </div>
+
+                {
+                    state.logInInfo?.id == accountId as any ?
+                        <Custom_Btn onClick={clickOnLogOutBtn}>
+                            <LogOut />
+                        </Custom_Btn>
+                        :
+                        null
+                }
+            </div>
+        </div>
+    </section>
 }

@@ -1,22 +1,6 @@
-import { attendanceDetails_Type, boxInfoInTrainersPage_Type, item_Type, trainer_Type } from "./types"
+import React from "react"
+import { attendanceDetails_Type, subscriptionStatusBox_Type, item_Type, trainer_Type, trainersTypeBox_Type, yearsProfitsAndExpenses_Type, monthsProfitsAndExpenses_Type, daysProfitsAndExpenses_Type } from "./types"
 // ========================================================== //
-export interface Subscription_Info_Form_Props {
-    subscriptionStart: string | null,
-    subscriptionEnd: string | null,
-    onGetSubscriptionName: (x: string | null) => void,
-    onGetPrice: (x: number | null) => void,
-    onGetSessions: (x: number | null) => void,
-    onGetActiveSomeSessions?: (x: number) => void
-}
-
-export interface Trainer_Info_Form_Props {
-    onGetFirstName: (x: string | null) => void,
-    onGetLastName: (x: string | null) => void,
-    onGetPhone: (x: number | null) => void,
-    onGetAddress: (x: string | null) => void,
-    onGetTrainerType: (x: "man" | "women") => void
-}
-
 export interface Btn_Subscription_Renewal_Props {
     trainer: trainer_Type,
     subscriptionStart: string | null,
@@ -24,8 +8,9 @@ export interface Btn_Subscription_Renewal_Props {
 }
 
 export interface Permissions_Props {
+    accountId?: number,
     permissionsList?: string[] | "fullAccess",
-    onGetPermissionsList: (x: string[]) => void,
+    onGetPermissionsList?: (x: string[]) => void,
 }
 
 export interface Filter_For_Attendance_Props {
@@ -43,7 +28,8 @@ export interface Date_Box_Props {
 
 export interface Filter_For_Trainers_Props {
     onGetTrainers: (x: trainer_Type[]) => void,
-    onGetBoxInfo: (x: boxInfoInTrainersPage_Type) => void,
+    onGetSubscriptionStatusBox: (x: subscriptionStatusBox_Type) => void,
+    onGetTrainersTypeBox: (x: trainersTypeBox_Type) => void,
 }
 
 export interface Info_Box_For_Profits_Expenses_Props {
@@ -54,7 +40,6 @@ export interface Info_Box_For_Profits_Expenses_Props {
     expensesTotal: number,
     target: number,
     targetType: "year" | "month" | "day",
-    isHiddenTheWord?: boolean,
     className?: string,
     styleBoxWhenSelect?: string | null,
     monthNumber?: number,
@@ -72,13 +57,12 @@ export interface Layers_Date_Props {
 }
 
 export interface Table_For_Read_Profits_Expenses_Props {
-    yearId: number,
-    monthId: number,
-    countRowsInSlide: number,
-    dayInfo: {
-        id: null | number,
-        title: null | number
+    layersIds: {
+        yearId: number,
+        monthId: number,
+        dayId: number,
     }
+    countRowsInSlide: number,
 }
 
 export interface Add_Item_Props {
@@ -109,12 +93,6 @@ export interface Cover_Img_Props {
     isChangeCoverImg: boolean
 }
 
-export interface Date_Info_Form_Props {
-    sessions: number | null,
-    onGetSubscriptionStart: (x: string | null) => void,
-    onGetSubscriptionEnd: (x: string | null) => void
-}
-
 export interface The_Setting_Props {
     title: string,
     discription?: string,
@@ -139,4 +117,109 @@ export interface Item_Details_Props {
     expensesTotalInDay: number,
     mainItem: item_Type,
     onIsShowItemDetails: (x: boolean) => void
+}
+
+export interface Subscription_Info_Form_Props {
+    subscriptionName?: string,
+    price?: number,
+    sessions?: number,
+    subscriptionStart: string | null,
+    subscriptionEnd: string | null,
+    debt?: number,
+    onGetSubscriptionName: (x: {
+        value: string,
+        isTrue: boolean
+    }) => void,
+    onGetPrice: (x: {
+        value: number,
+        isTrue: boolean
+    }) => void,
+    onGetSessions: (x: {
+        value: number,
+        isTrue: boolean
+    }) => void,
+    onGetDebt: (x: number) => void,
+    onGetActiveSomeSessions?: (x: number) => void,
+}
+
+export interface Trainer_Info_Form_Props {
+    trainerType?: "man" | "woman",
+    firstName?: string,
+    lastName?: string,
+    phone?: number,
+    address?: string,
+    notes?: string,
+
+    onGetTrainerType: (x: "man" | "woman") => void,
+    onGetFirstName: (x: {
+        value: string,
+        isTrue: boolean
+    }) => void,
+    onGetLastName: (x: {
+        value: string,
+        isTrue: boolean
+    }) => void,
+    onGetPhone: (x: {
+        value: number,
+        isTrue: boolean
+    }) => void,
+    onGetAddress: (x: {
+        value: string,
+        isTrue: boolean
+    }) => void,
+    onGetNotes: (x: string) => void
+}
+
+export interface Date_Info_Form_Props {
+    SubscriptionStart?: string,
+    SubscriptionEnd?: string,
+    sessions: number | null,
+    subscriptionStatus?: string,
+    onGetSubscriptionStart: (x: string | null) => void,
+    onGetSubscriptionEnd: (x: string | null) => void
+}
+
+export interface Box_for_setting_Props {
+    title: string,
+    children: React.ReactNode,
+    discription?: string,
+}
+
+export interface Sessions_Props {
+    trainerId: number,
+    sessionsCount: number,
+    subscriptionStatus: string,
+}
+
+
+export interface Btn_Cancel_Subscription_Props {
+    trainerId: number,
+    subscriptionPrice: number,
+    pay: number,
+}
+
+export interface Btn_Delete_Trainer_Props {
+    trainerId: number,
+    subscriptionPrice: number,
+    pay: number,
+}
+
+export interface Years_Box_Props {
+    allYears: yearsProfitsAndExpenses_Type[],
+    onGetYearInfo: (x: { id: number, yearNumber: number }) => void,
+}
+
+export interface Months_Layers_Props {
+    yearId: number | null,
+    allMonths: monthsProfitsAndExpenses_Type[],
+    onGetMonthInfo: (x: { id: number, monthName: string, monthNumber: number }) => void,
+}
+
+export interface Days_Layers_Props {
+    monthInfo: {
+        id: number | null,
+        number: number | null,
+    }
+    allDays: daysProfitsAndExpenses_Type[],
+    onGetDayInfo: (x: { id: number, dayNumber: number }) => void,
 }

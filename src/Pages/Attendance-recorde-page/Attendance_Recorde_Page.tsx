@@ -1,17 +1,15 @@
 import Box from "@/Global-components/Box/Box";
 import { BookUser, CalendarDays } from "lucide-react";
-import Date_Box from "./Components/Date-box/Date_Box";
-import Table_For_Trainers from "@/Global-components/Table-for-trainers/Table_For_Trainers";
-import { useEffect, useState } from "react";
+import Date_Box from "./Components/Date_Box";
+import Custom_Table_For_Trainers from "@/Global-components/Custom-Table-for-trainers/Table_For_Trainers";
+import { useState } from "react";
 import { attendanceDetails_Type, trainer_Type } from "../types";
-import Fitler from "./Components/Filter/Fitler";
+import Fitler from "./Components/Fitler";
 import Search_Box_For_Trainers from "@/Global-components/Search-box-for-trainers/Search_Box_For_Trainers";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
-import { getAllRowsInAttendanceTable } from "@/Rtk/Slices/Db-slices/attendanceSlice";
 // ========================================================== //
 export default function Attendance_Recorde_Page() {
-    const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
             attendance: state.attendance,
@@ -21,24 +19,16 @@ export default function Attendance_Recorde_Page() {
     }, shallowEqual);
 
 
-    const [datesTotal, setDatesTotal] = useState(0);
-    const [getTrainers, setGetTrainers] = useState<trainer_Type[]>([]);
-
     const [getAllAttendanceInSpecificDate, setGetAllAttendanceInSpecificDate] = useState<attendanceDetails_Type[]>([])
     const [filterType, setFilterType] = useState<number | "allTrainers">("allTrainers");
 
-
-
-    useEffect(function () {
-        if (state.attendance?.length == 0) {
-            dispatch(getAllRowsInAttendanceTable() as any);
-        }
-    }, [state.attendance?.length]);
+    const [datesTotal, setDatesTotal] = useState(0);
+    const [getTrainers, setGetTrainers] = useState<trainer_Type[]>([]);
 
 
 
 
-    return <div>
+    return <section className="mt-10">
         {/* Boxes */}
         <div className="mb-7 grid grid-cols-2 gap-3">
             <Box
@@ -63,14 +53,14 @@ export default function Attendance_Recorde_Page() {
         </div>
 
         {/* Search & date box & filter attendee */}
-        <div className="bg-slate-100 p-3 py-7 rounded-lg grid grid-cols-4 gap-3">
+        <div className="bg-slate-100 p-3 py-7 rounded-lg flex flex-col justify-center gap-4">
             {/* Search */}
-            <div className="col-span-2">
+            <div className="h-[70px]">
                 <Search_Box_For_Trainers arrayForSearch={getTrainers} />
             </div>
 
             {/* Date box & filter attendee */}
-            <div className="col-span-2 grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3">
                 <Date_Box
                     onGetDatesTotal={setDatesTotal}
                     onChangeFilterType={setFilterType}
@@ -86,9 +76,9 @@ export default function Attendance_Recorde_Page() {
             </div>
         </div>
 
-        <Table_For_Trainers
+        <Custom_Table_For_Trainers
             trainersList={getTrainers}
             countRowsInSlide={Number(state.settings.rowsInAttendanceTable)}
         />
-    </div>
+    </section>
 }

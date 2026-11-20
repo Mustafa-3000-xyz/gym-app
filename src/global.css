@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 /* ====== */
 :root {
     --thirdColor: #4f607e;
@@ -6,6 +7,7 @@
 
 body {
     background-color: #ECECEC;
+    font-family: "arabic";
 }
 
 ::-webkit-scrollbar {
