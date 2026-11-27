@@ -66,10 +66,10 @@ export default function Btn_Cancel_Subscription(
                 titleBeforeSubmit: "قبل إلغاء الإشتراك",
                 textAfterSubmitAction: `تم إلغاء اشتراك المتدرب بنجاح`,
                 textBeforeSubmitAction: "هل تود إضافة باند مصروف يحتوي على سعر الاشتراك النهائي ؟",
-                isShowNoBtn: true,
-                runFunctionAfterConfirm: function () {
+                isShowDeniedBtn: true,
+                runFunctionAfterConfirm: async function () {
                     systemForProfitesAndExpenses();
-                    deleteRowsInActiveSessionsTableToLinkedTheTrainerById(trainerId);
+                    await deleteRowsInActiveSessionsTableToLinkedTheTrainerById(trainerId);
 
 
                     dispatch(updateAnyPropertyInRowInTrainersTable({
@@ -91,9 +91,8 @@ export default function Btn_Cancel_Subscription(
                     dispatch(changeStatusTheShowForSideBar("show"));
                     navigation(trainerPagePath);
                 },
-                runFunctionAfterDenied: function () {
-                    deleteRowsInActiveSessionsTableToLinkedTheTrainerById(trainerId);
-
+                runFunctionAfterDenied: async function () {
+                    await deleteRowsInActiveSessionsTableToLinkedTheTrainerById(trainerId);
 
                     dispatch(updateAnyPropertyInRowInTrainersTable({
                         id: trainerId as any,

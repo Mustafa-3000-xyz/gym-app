@@ -4,7 +4,7 @@ import Date_Box from "./Components/Date_Box";
 import Custom_Table_For_Trainers from "@/Global-components/Custom-Table-for-trainers/Table_For_Trainers";
 import { useState } from "react";
 import { attendanceDetails_Type, trainer_Type } from "../types";
-import Fitler from "./Components/Fitler";
+import Filter from "./Components/Filter";
 import Search_Box_For_Trainers from "@/Global-components/Search-box-for-trainers/Search_Box_For_Trainers";
 import { shallowEqual, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
@@ -24,6 +24,7 @@ export default function Attendance_Recorde_Page() {
 
     const [datesTotal, setDatesTotal] = useState(0);
     const [getTrainers, setGetTrainers] = useState<trainer_Type[]>([]);
+
 
 
 
@@ -67,7 +68,7 @@ export default function Attendance_Recorde_Page() {
                     onGetDayDetails={setGetAllAttendanceInSpecificDate}
                 />
 
-                <Fitler
+                <Filter
                     filterType={filterType}
                     dayDetails={getAllAttendanceInSpecificDate}
                     onGetTrainers={setGetTrainers}

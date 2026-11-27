@@ -1,5 +1,5 @@
 import { IdCardLanyard, Plus, Shell } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Box from "@/Global-components/Box/Box";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
@@ -45,6 +45,14 @@ export default function Accounts_Page() {
         accountId: Number(state.logInInfo?.id),
         permissionType: CREATE_NEW_ACCOUNTS
     });
+
+
+    const totalSessions = useMemo(function () {
+        const result = Math.trunc(state.accounts?.reduce((sum, ele) => sum + Number(ele.numberOfActiveSessions), 0) || 0);
+
+
+        return isNaN(result) ? "00" : result;
+    }, []);
 
 
 
@@ -150,7 +158,7 @@ export default function Accounts_Page() {
                 icon={<Shell size={25} />}
                 title="مجموع الحصص المفعله"
                 styleIcon="bg-neutral-200 text-neutral-500"
-                total={Math.trunc(state.accounts?.reduce((sum, ele) => sum + Number(ele.numberOfActiveSessions), 0) || 0)}
+                total={totalSessions as any}
             />
         </div>
 

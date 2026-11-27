@@ -3,13 +3,14 @@ import { updateAnyPropertyInRowInSettingsTable_Type } from "@/Rtk/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const db = await Database.load("sqlite:gym-app.db");
 
 
 
 export const getAllRowsInSettingsTable = createAsyncThunk(
     "settingsSlice/getAllRowsInSettingsTable",
     async function () {
+        const db = await Database.load("sqlite:gym-app.db");
+
         const getData = await db.select(
             "SELECT * FROM settings",
         ) as any;
@@ -27,6 +28,7 @@ export const getAllRowsInSettingsTable = createAsyncThunk(
 export const updateAnyPropertyInRowInSettingsTable = createAsyncThunk(
     "settingsSlice/updateAnyPropertyInRowInSettingsTable",
     async function (settings: updateAnyPropertyInRowInSettingsTable_Type) {
+        const db = await Database.load("sqlite:gym-app.db");
         const keys = Object.keys(settings) as (keyof settings_Type)[];
 
         if (keys.length === 0) return {};

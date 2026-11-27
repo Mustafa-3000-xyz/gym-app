@@ -5,8 +5,6 @@ import { format } from "date-fns";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useDispatch } from "react-redux";
-import { changeStatusTheShowForSideBar } from "@/Rtk/Slices/UI-slices/sideBarSlice";
 // ========================================================== //
 export default function Search_Result(
     {
@@ -14,7 +12,6 @@ export default function Search_Result(
         onIsShowSearchResult,
     }: Search_Result_Props
 ) {
-    const dispatch = useDispatch();
     const navigate = useNavigate();
     const searchResultRef = useRef<HTMLDivElement>(null);
 
@@ -23,8 +20,6 @@ export default function Search_Result(
     function showTrainer(trainerId: number) {
         onIsShowSearchResult(false);
         navigate(trainerDetailsPagePath.replace(":trainerId", trainerId as any));
-
-        dispatch(changeStatusTheShowForSideBar("hidden"));
     }
 
 

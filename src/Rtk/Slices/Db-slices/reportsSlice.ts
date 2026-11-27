@@ -3,13 +3,10 @@ import { updateAnyPropertyInRowInReportsTable_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
 import { reports_Type } from "@/Pages/types";
 // ======================================= //
-const db = await Database.load("sqlite:gym-app.db");
-
-
-
 export const getAllRowsInReportsTable = createAsyncThunk(
     "reportsSlice/getAllRowsInReportsTable",
     async function () {
+        const db = await Database.load("sqlite:gym-app.db");
         return await db.select("SELECT * FROM reports");
     }
 );
@@ -17,6 +14,7 @@ export const getAllRowsInReportsTable = createAsyncThunk(
 export const addRowInReportsTable = createAsyncThunk(
     "reportsSlice/addRowInReportsTable",
     async function (data: reports_Type) {
+        const db = await Database.load("sqlite:gym-app.db");
         const query = `
             INSERT INTO reports (
                 linkWithPerson, additionTime, title, description, reportedBy 
@@ -46,6 +44,7 @@ export const updateAnyPropertyInRowInReportsTable = createAsyncThunk(
     async function (
         { id, values }: updateAnyPropertyInRowInReportsTable_Type
     ) {
+        const db = await Database.load("sqlite:gym-app.db");
         const keys = Object.keys(values);
 
 
@@ -71,6 +70,7 @@ export const updateAnyPropertyInRowInReportsTable = createAsyncThunk(
 export const deleteRowInReportsTableById = createAsyncThunk(
     "reportsSlice/deleteRowInReportsTableById",
     async function (id: number | string) {
+        const db = await Database.load("sqlite:gym-app.db");
 
         await db.execute(
             "DELETE FROM reports WHERE id = ?",
@@ -84,6 +84,7 @@ export const deleteRowInReportsTableById = createAsyncThunk(
 export const deleteAllRowsInReportsTable = createAsyncThunk(
     "reportsSlice/deleteAllRowsInReportsTable",
     async function () {
+        const db = await Database.load("sqlite:gym-app.db");
         await db.execute(`DELETE FROM reports;`);
     }
 );

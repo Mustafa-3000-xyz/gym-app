@@ -3,7 +3,7 @@ export interface alert_Type {
     titleAfterSubmit?: string,
     textBeforeSubmitAction: string,
     textAfterSubmitAction?: string | undefined,
-    isShowNoBtn?: boolean,
+    isShowDeniedBtn?: boolean,
     iconStyleBeforeSubmit?: "success" | "error" | "question" | "info" | "warning"
     runFunctionAfterConfirm?: () => void,
     runFunctionAfterDenied?: () => void,

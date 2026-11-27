@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Progress_Props } from "../typesProps";
+import { Progress_Props } from "../../../Global-components/typesProps";
 // ========================================================== //
 export default function Progress(
     {

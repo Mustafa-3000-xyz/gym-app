@@ -1,10 +1,9 @@
-import { regexFirstName, regexLastName, regexPhone } from "@/Lib/REGEX";
-import { useEffect, useState } from "react";
+import { regexAddress, regexFirstName, regexLastName, regexPhone } from "@/Lib/REGEX";
+import { useCallback } from "react";
 import Max_Min_Length from "@/Global-components/Max-min-length/Max_Min_Length";
 import { Checkbox } from "primereact/checkbox";
 import { InputText } from "primereact/inputtext";
 import { Trainer_Info_Form_Props } from "@/Pages/typesProps";
-import { useParams } from "react-router-dom";
 // ========================================================== //
 export default function Trainer_Info_Form(
     {
@@ -14,99 +13,79 @@ export default function Trainer_Info_Form(
         phone,
         address,
         notes,
+        onGetTrainerType,
         onGetFirstName,
         onGetLastName,
         onGetPhone,
         onGetAddress,
-        onGetTrainerType,
         onGetNotes
     }: Trainer_Info_Form_Props
 ) {
-    const [trainerTypeInp, setTrainerTypeInp] = useState<"man" | "woman">("man");
-    const [firstNameInp, setFirstNameInp] = useState<string>("");
-    const [lastNameInp, setLastNameInp] = useState<string>("");
-    const [phoneInp, setPhoneInp] = useState<number>(0);
-    const [addressInp, setAddressInp] = useState<string>("");
-    const [notesInp, setNotesInp] = useState<string>("");
+    const handleTrainerType = useCallback(function (value: "man" | "woman") {
+        onGetTrainerType(value);
+    }, []);
 
-    const { trainerId } = useParams();
-
-
-
-
-    // When open trainerDetails details, i want show his values
-    useEffect(function () {
-        if (trainerId) {
-            setTrainerTypeInp(trainerType!);
-            setFirstNameInp(firstName!);
-            setLastNameInp(lastName!);
-            setPhoneInp(phone!);
-            setAddressInp(address!);
-            setNotesInp(notes!);
-        } else {
-            setTrainerTypeInp("man");
-            setFirstNameInp("");
-            setLastNameInp("");
-            setPhoneInp(0);
-            setAddressInp("");
-            setNotesInp("");
-        }
-    }, [trainerId]);
-
-    // Send values
-    useEffect(function () {
-        onGetTrainerType(trainerTypeInp as any);
-
-        if (firstNameInp?.match(regexFirstName)) {
+    const handleFirstName = useCallback(function (value: string) {
+        if (value?.match(regexFirstName)) {
             onGetFirstName({
-                value: firstNameInp,
+                value: value,
                 isTrue: true
             });
         } else {
             onGetFirstName({
-                value: firstNameInp,
+                value: value,
                 isTrue: false
             });
         }
+    }, [regexFirstName]);
 
-        if (lastNameInp?.match(regexLastName)) {
+    const handleLastName = useCallback(function (value: string) {
+        if (value?.match(regexLastName)) {
             onGetLastName({
-                value: lastNameInp,
+                value: value,
                 isTrue: true
             });
         } else {
             onGetLastName({
-                value: lastNameInp,
+                value: value,
                 isTrue: false
             });
         }
+    }, [regexLastName]);
 
-        if (phoneInp?.toString().match(regexPhone) || phoneInp == 0) {
-            onGetPhone({
-                value: Number(phoneInp),
+    const handlePhone = useCallback(function (value: number) {
+        console.log(value);
+        
+        if (value?.toString().match(regexPhone) || value == 0) {
+            onGetPhone?.({
+                value: value,
                 isTrue: true
             });
         } else {
-            onGetPhone({
-                value: Number(phoneInp),
+            onGetPhone?.({
+                value: value,
                 isTrue: false
             });
         }
+    }, [regexPhone]);
 
-        if (addressInp.length <= 30 || addressInp?.length == 0) {
-            onGetAddress({
-                value: addressInp,
+    const handleAddress = useCallback(function (value: string) {
+        if (value?.match(regexAddress)) {
+            onGetAddress?.({
+                value: value,
                 isTrue: true
             });
         } else {
-            onGetAddress({
-                value: addressInp,
+            onGetAddress?.({
+                value: value,
                 isTrue: false
             });
         }
+    }, [regexAddress]);
 
-        onGetNotes(notesInp);
-    }, [trainerTypeInp, firstNameInp, lastNameInp, phoneInp, addressInp, notesInp]);
+    const handleNotes = useCallback(function (value: string) {
+        onGetNotes(value);
+    }, []);
 
 
 
@@ -121,8 +100,8 @@ export default function Trainer_Info_Form(
 
                     <InputText
                         className="h-10 text-center!"
-                        value={firstNameInp}
-                        onChange={(e) => setFirstNameInp(e.target.value)}
+                        value={firstName}
+                        onChange={(e) => handleFirstName(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key == ' ' || e.code == 'Space') {
                                 e.preventDefault();
@@ -136,8 +115,8 @@ export default function Trainer_Info_Form(
                     >
                         <Max_Min_Length
                             maxLength={13}
-                            minLength={firstNameInp.length}
-                            isGreenFlag={firstNameInp?.length >= 3 && firstNameInp?.length <= 13}
+                            minLength={firstName.length}
+                            isGreenFlag={firstName.match(regexFirstName) ? true : false}
                         />
                     </small>
                 </div>
@@ -148,8 +127,8 @@ export default function Trainer_Info_Form(
 
                     <InputText
                         className="h-10 text-center!"
-                        value={lastNameInp}
-                        onChange={(e) => setLastNameInp(e.target.value)}
+                        value={lastName}
+                        onChange={(e) => handleLastName(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === ' ' || e.code === 'Space') {
                                 e.preventDefault();
@@ -163,8 +142,8 @@ export default function Trainer_Info_Form(
                     >
                         <Max_Min_Length
                             maxLength={13}
-                            minLength={lastNameInp.length}
-                            isGreenFlag={lastNameInp?.length >= 3 && lastNameInp?.length <= 13}
+                            minLength={lastName.length}
+                            isGreenFlag={lastName.match(regexLastName) ? true : false}
                         />
                     </small>
                 </div>
@@ -176,8 +155,8 @@ export default function Trainer_Info_Form(
                     <InputText
                         type="number"
                         className="h-10 text-center!"
-                        value={phoneInp == 0 ? "" : phoneInp as any}
-                        onChange={(e) => setPhoneInp(Number(e.target.value))}
+                        value={phone == 0 ? "" : phone as any}
+                        onChange={(e) => handlePhone(Number(e.target.value))}
                     />
 
                     <small
@@ -186,8 +165,8 @@ export default function Trainer_Info_Form(
                     >
                         <Max_Min_Length
                             maxLength={10}
-                            minLength={phoneInp == 0 ? 0 : phoneInp?.toString().length as any}
-                            isGreenFlag={phoneInp.toString().match(regexPhone) || phoneInp == 0 ? true : false}
+                            minLength={phone == 0 ? 0 : phone?.toString().length as any}
+                            isGreenFlag={phone.toString().match(regexPhone) || phone == 0 ? true : false}
                         />
                     </small>
                 </div>
@@ -198,8 +177,8 @@ export default function Trainer_Info_Form(
 
                     <InputText
                         className="h-10 text-center!"
-                        value={addressInp}
-                        onChange={(e) => setAddressInp(e.target.value)}
+                        value={address}
+                        onChange={(e) => handleAddress(e.target.value)}
                     />
 
                     <small
@@ -208,8 +187,8 @@ export default function Trainer_Info_Form(
                     >
                         <Max_Min_Length
                             maxLength={30}
-                            minLength={addressInp.length}
-                            isGreenFlag={addressInp?.length <= 30}
+                            minLength={address.length}
+                            isGreenFlag={address.match(regexAddress) ? true : false}
                         />
                     </small>
                 </div>
@@ -220,9 +199,9 @@ export default function Trainer_Info_Form(
                 <label className="font-bold"> ملاحظات (اختياري)</label>
 
                 <textarea
-                    value={notesInp}
+                    value={notes}
                     className="bg-white w-full p-2 h-12 resize-none border border-gray-300 rounded-lg duration-300 outline-0 focus:border-gray-500"
-                    onChange={e => setNotesInp(e.target.value)}
+                    onChange={e => handleNotes(e.target.value)}
                 ></textarea>
             </div>
         </div>
@@ -238,13 +217,13 @@ export default function Trainer_Info_Form(
                 {/* Man */}
                 <div
                     className="flex gap-2 items-center"
-                    onClick={() => setTrainerTypeInp("man")}
+                    onClick={() => handleTrainerType("man")}
                 >
                     <p className="text-2xl font-bold">
                         ذكر
                     </p>
 
-                    <Checkbox checked={trainerTypeInp == "man" ? true : false} />
+                    <Checkbox checked={trainerType == "man" ? true : false} />
                 </div>
 
                 <div className="bg-black h-5 w-0.5"></div>
@@ -252,13 +231,13 @@ export default function Trainer_Info_Form(
                 {/* Girl */}
                 <div
                     className="flex gap-2 items-center cursor-pointer"
-                    onClick={() => setTrainerTypeInp("woman")}
+                    onClick={() => handleTrainerType("woman")}
                 >
                     <p className="text-2xl font-bold">
                         انثى
                     </p>
 
-                    <Checkbox checked={trainerTypeInp == "woman" ? true : false} />
+                    <Checkbox checked={trainerType == "woman" ? true : false} />
                 </div>
             </div>
         </div>

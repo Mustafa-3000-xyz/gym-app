@@ -3,7 +3,6 @@ export const styleDate = "yyyy/MM/dd";
 // Maxes
 export const maxSessions = 60;
 export const maxSubscriptionPrice = 999999;
-export const maxForCreateItems = 24;
 
 // These for subscription status
 export const statusIsActive = "active";

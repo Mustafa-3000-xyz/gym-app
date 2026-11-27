@@ -120,12 +120,13 @@ export interface Item_Details_Props {
 }
 
 export interface Subscription_Info_Form_Props {
-    subscriptionName?: string,
-    price?: number,
-    sessions?: number,
+    subscriptionName: string,
+    price: number,
+    sessions: number,
     subscriptionStart: string | null,
     subscriptionEnd: string | null,
-    debt?: number,
+    debt: number,
+    activeSomeSessions?: number,
     onGetSubscriptionName: (x: {
         value: string,
         isTrue: boolean
@@ -143,12 +144,12 @@ export interface Subscription_Info_Form_Props {
 }
 
 export interface Trainer_Info_Form_Props {
-    trainerType?: "man" | "woman",
-    firstName?: string,
-    lastName?: string,
-    phone?: number,
-    address?: string,
-    notes?: string,
+    trainerType: "man" | "woman",
+    firstName: string,
+    lastName: string,
+    phone: number,
+    address: string,
+    notes: string,
 
     onGetTrainerType: (x: "man" | "woman") => void,
     onGetFirstName: (x: {

@@ -1,5 +1,5 @@
 import Subscriptions_Menu from "@/Pages/Trainers-page/Components/Subscriptions_Menus";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChartPie, Shell } from "lucide-react";
 import { maxSessions, maxSubscriptionPrice } from "@/Lib/constants";
 import { differenceInDays } from "date-fns";
@@ -17,31 +17,106 @@ export default function Subscription_Info_Form(
         subscriptionStart,
         subscriptionEnd,
         debt,
+        activeSomeSessions,
         onGetSubscriptionName,
-        onGetPrice,
         onGetSessions,
+        onGetPrice,
         onGetActiveSomeSessions,
         onGetDebt
     }: Subscription_Info_Form_Props
 ) {
     const [alertForActiveSomeSubscription, setAlertForActiveSomeSubscription] = useState<string | null>("");
     const [maxForActiveSomeSessions, setMaxForActiveSomeSessions] = useState(0);
-    const [activeSomeSessionsInp, setActiveSomeSessionsInp] = useState(0);
-
-    const [subscriptionNameInp, setSubscriptionNameInp] = useState<string>("");
-    const [sessionsInp, setSessionsInp] = useState<number>(0);
-    const [priceInp, setPriceInp] = useState<number>(0);
-
-    const [debtInp, setDebtInp] = useState<number>(0);
 
     // Dont't change the startingInHalfNight value 
-    const todayDate = new Date(new Date().setHours(0,0,0,0));
+    const todayDate = new Date(new Date().setHours(0, 0, 0, 0));
     const { trainerId } = useParams();
 
 
 
+    const handleName = useCallback(function (value: string) {
+        if (value?.match(regexSubscriptionName)) {
+            onGetSubscriptionName({
+                value: value,
+                isTrue: true
+            });
+        } else {
+            onGetSubscriptionName({
+                value: value,
+                isTrue: false
+            });
+        }
+    }, [regexSubscriptionName]);
+
+    const handleSession = useCallback(function (value: number) {
+        if (value == 0) {
+            onGetSessions({
+                value: 0,
+                isTrue: false
+            });
+        }
+        else if (value < maxSessions) {
+            onGetSessions({
+                value: value,
+                isTrue: true
+            });
+        }
+        else if (value >= maxSessions) {
+            onGetSessions({
+                value: maxSessions,
+                isTrue: true
+            });
+        }
+
+        onGetActiveSomeSessions?.(0);
+    }, [maxSessions]);
+
+    const handlePrice = useCallback(function (value: number) {
+        if (value == 0) {
+            onGetPrice({
+                value: 0,
+                isTrue: false
+            });
+        }
+        else if (value < maxSubscriptionPrice) {
+            onGetPrice({
+                value: value,
+                isTrue: true
+            });
+        }
+        else if (value >= maxSubscriptionPrice) {
+            onGetPrice({
+                value: maxSubscriptionPrice,
+                isTrue: true
+            });
+        }
+
+        onGetDebt(0);
+    }, [maxSubscriptionPrice]);
+
+    const handleDebt = useCallback(function (value: number) {
+        if (value <= price) {
+            onGetDebt(value);
+        }
+        else {
+            onGetDebt(price);
+        }
+    }, [price]);
+
+    const handleActiceSomeSessions = useCallback(function (value: number) {
+        if (value > Number(maxForActiveSomeSessions)) {
+            onGetActiveSomeSessions?.(maxForActiveSomeSessions);
+        }
+        else {
+            onGetActiveSomeSessions?.(value);
+        }
+    }, [maxForActiveSomeSessions]);
+
+
+
+
     function makeAlertForActiveSomeSubscription() {
-        if (!sessionsInp) {
+        if (!sessions) {
             setAlertForActiveSomeSubscription("قم بكتابة عدد الحصص");
         }
         else if (!subscriptionStart) {
@@ -49,12 +124,14 @@ export default function Subscription_Info_Form(
         }
         else if (new Date(subscriptionStart).getTime() >= todayDate.getTime()) {
             setAlertForActiveSomeSubscription("تاريخ بداية الاشتراك غير مناسب لاستخدام ميزة تفعيل بعض الحصص");
+            onGetActiveSomeSessions?.(0);
         }
         else if (!subscriptionEnd && new Date(subscriptionStart).getTime() < todayDate.getTime()) {
             setAlertForActiveSomeSubscription("قم بختيار تاريخ نهاية الاشتراك");
         }
         else if (new Date(subscriptionEnd as any).getTime() < todayDate.getTime() || new Date(subscriptionEnd as any).getTime() == todayDate.getTime()) {
             setAlertForActiveSomeSubscription("تاريخ نهاية الاشتراك غير مناسب لاستخدام ميزة تفعيل بعض الحصص");
+            onGetActiveSomeSessions?.(0);
         }
         else {
             setAlertForActiveSomeSubscription(null);
@@ -62,96 +139,31 @@ export default function Subscription_Info_Form(
     }
 
 
-
-
-    useEffect(() => {
-        // When read trainer details, i want show his values
-        if (trainerId) {
-            setSubscriptionNameInp(subscriptionName as string);
-            setSessionsInp(sessions as number);
-            setPriceInp(price ?? 0);
-            setDebtInp(debt as number);
-        }
-        else {
-            setSubscriptionNameInp("");
-            setSessionsInp(0);
-            setPriceInp(0);
-            setDebtInp(0);
-        }
-    }, [trainerId]);
-
-    useEffect(function () {
-        if (activeSomeSessionsInp == 0) {
-            onGetActiveSomeSessions?.(0);
-        } else {
-            onGetActiveSomeSessions?.(activeSomeSessionsInp);
-        }
-    }, [activeSomeSessionsInp]);
-
-    // send values
-    useEffect(function () {
-        if (subscriptionNameInp?.match(regexSubscriptionName)) {
-            onGetSubscriptionName({
-                value: subscriptionNameInp,
-                isTrue: true
-            });
-        } else {
-            onGetSubscriptionName({
-                value: subscriptionNameInp,
-                isTrue: false
-            });
-        }
-
-        if (sessionsInp > 0) {
-            onGetSessions({
-                value: sessionsInp,
-                isTrue: true
-            });
-        } else {
-            onGetSessions({
-                value: sessionsInp,
-                isTrue: false
-            });
-        }
-
-        if (priceInp > 0) {
-            onGetPrice({
-                value: priceInp,
-                isTrue: true
-            });
-        } else {
-            onGetPrice({
-                value: priceInp,
-                isTrue: false
-            });
-        }
-
-
-        onGetDebt(debtInp);
-    }, [subscriptionNameInp, sessionsInp, priceInp, debtInp]);
-
     // This for active some sessions
     useEffect(() => {
+        makeAlertForActiveSomeSubscription();
+
+        if (!sessions || !subscriptionStart || !subscriptionEnd) {
+            onGetActiveSomeSessions?.(0);
+            return
+        }
+
+
         const subscriptionStartDate = new Date(subscriptionStart as any);
         const subscriptionEndDate = new Date(subscriptionEnd as any);
 
         if (
-            sessionsInp && subscriptionStart && subscriptionEnd &&
             subscriptionStartDate.getTime() < todayDate.getTime() &&
             subscriptionEndDate.getTime() > todayDate.getTime()
         ) {
             const diff = Math.abs(differenceInDays(todayDate, subscriptionStart));
-            const result = diff >= sessionsInp ? sessionsInp - 1 : diff
+            const result = diff >= sessions ? sessions - 1 : diff
 
             setMaxForActiveSomeSessions(result);
         } else {
             setMaxForActiveSomeSessions(0);
         }
-
-        setActiveSomeSessionsInp(0);
-        onGetActiveSomeSessions?.(0);
-        makeAlertForActiveSomeSubscription();
-    }, [subscriptionStart, subscriptionEnd, sessionsInp, todayDate]);
+    }, [subscriptionStart, subscriptionEnd, sessions, todayDate]);
 
 
 
@@ -164,9 +176,24 @@ export default function Subscription_Info_Form(
         {/* Subscription info */}
         <div className="col-span-2 rounded-lg flex flex-col justify-between border border-slate-300 p-4">
             <Subscriptions_Menu
-                onGetSubscriptionName={setSubscriptionNameInp}
-                onGetSesions={setSessionsInp}
-                onGetPrice={setPriceInp}
+                onGetSubscriptionName={(value) => {
+                    onGetSubscriptionName({
+                        value: value,
+                        isTrue: true
+                    })
+                }}
+                onGetSesions={(value) => {
+                    onGetSessions({
+                        value: value,
+                        isTrue: true
+                    })
+                }}
+                onGetPrice={(value) => {
+                    onGetPrice({
+                        value: value,
+                        isTrue: true
+                    })
+                }}
             />
 
             <div className="grid grid-cols-3 gap-2 mt-5">
@@ -176,8 +203,8 @@ export default function Subscription_Info_Form(
 
                     <InputText
                         className="h-10 text-center!"
-                        value={subscriptionNameInp}
-                        onChange={(e) => setSubscriptionNameInp(e.target.value)}
+                        value={subscriptionName}
+                        onChange={(e) => handleName(e.target.value)}
                     />
 
                     <small
@@ -186,8 +213,8 @@ export default function Subscription_Info_Form(
                     >
                         <Max_Min_Length
                             maxLength={11}
-                            minLength={subscriptionNameInp.length}
-                            isGreenFlag={subscriptionNameInp?.length >= 3 && subscriptionNameInp?.length <= 11}
+                            minLength={subscriptionName.length}
+                            isGreenFlag={subscriptionName?.length >= 3 && subscriptionName?.length <= 11}
                         />
                     </small>
                 </div>
@@ -199,15 +226,8 @@ export default function Subscription_Info_Form(
                     <InputText
                         type="number"
                         className="h-10 text-center!"
-                        value={sessionsInp == 0 ? "" : sessionsInp as any}
-                        onChange={(e) => {
-                            if (Number(e.target.value) < maxSessions) {
-                                setSessionsInp(Number(e.target.value));
-                            }
-                            else if (Number(e.target.value) >= maxSessions) {
-                                setSessionsInp(Number(maxSessions));
-                            }
-                        }}
+                        value={sessions == 0 ? "" : sessions as any}
+                        onChange={(e) => handleSession(Number(e.target.value))}
                     />
 
                     <small
@@ -227,17 +247,8 @@ export default function Subscription_Info_Form(
                     <InputText
                         type="number"
                         className="h-10 text-center!"
-                        value={priceInp == 0 ? "" : priceInp as any}
-                        onChange={(e) => {
-                            if (Number(e.target.value) < maxSubscriptionPrice) {
-                                setPriceInp(Number(e.target.value));
-                            }
-                            else if (Number(e.target.value) >= maxSubscriptionPrice) {
-                                setPriceInp(maxSubscriptionPrice);
-                            }
-
-                            setDebtInp(0);
-                        }}
+                        value={price == 0 ? "" : price as any}
+                        onChange={(e) => handlePrice(Number(e.target.value))}
                     />
 
                     <small
@@ -268,33 +279,26 @@ export default function Subscription_Info_Form(
                 </div>
 
                 <p className="opacity-45 font-bold">
-                    اكتب السعر المتبقي من سعر الاشتراك
+                    اكتب السعر الذي لم يتم سداده من الاشتراك
                 </p>
             </div>
 
             {
-                priceInp == 0 ?
+                price == 0 ?
                     <p className="bg-red-500 font-bold border border-slate-300 p-2 py-3 rounded-lg focus:outline-0 w-full cursor-not-allowed text-center">
                         من فضلك, قم بكتابة سعر الاشتراك
                     </p>
                     :
                     <div className="flex flex-col gap-2">
                         <label className="font-bold">
-                            الحد الاقصى للمديونيه : {priceInp}
+                            الحد الاقصى للمديونيه : {price}
                         </label>
 
                         <InputText
                             type="number"
                             className="text-center! w-full"
-                            value={debtInp == 0 ? "" : debtInp as any}
-                            onChange={(e) => {
-                                if (Number(e.target.value) > priceInp) {
-                                    setDebtInp(priceInp);
-                                }
-                                else {
-                                    setDebtInp(Number(e.target.value));
-                                }
-                            }}
+                            value={debt == 0 ? "" : debt as any}
+                            onChange={(e) => handleDebt(Number(e.target.value))}
                         />
                     </div>
             }
@@ -331,15 +335,8 @@ export default function Subscription_Info_Form(
                                 <InputText
                                     type="number"
                                     className="text-center! w-full"
-                                    value={activeSomeSessionsInp == 0 ? "" : activeSomeSessionsInp as any}
-                                    onChange={(e) => {
-                                        if (Number(e.target.value) > Number(maxForActiveSomeSessions)) {
-                                            setActiveSomeSessionsInp(maxForActiveSomeSessions);
-                                        }
-                                        else {
-                                            setActiveSomeSessionsInp(Number(e.target.value));
-                                        }
-                                    }}
+                                    value={activeSomeSessions == 0 ? "" : activeSomeSessions as any}
+                                    onChange={(e) => handleActiceSomeSessions(Number(e.target.value))}
                                 />
                             </div>
                             :

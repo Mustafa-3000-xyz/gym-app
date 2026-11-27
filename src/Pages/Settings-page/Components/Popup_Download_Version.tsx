@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import Progress from "@/Global-components/Progress/Progress";
+import Progress from "@/Pages/Settings-page/Components/Progress";
 import { Popup_Download_Version_Props } from "@/Global-components/typesProps";
 // ========================================================== //
 export default function Popup_Download_Version(

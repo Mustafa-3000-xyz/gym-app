@@ -4,7 +4,7 @@ import { subscriptionStatusBox_Type, trainer_Type, trainersTypeBox_Type } from "
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import Box from "@/Global-components/Box/Box";
-import { activeSubscriptions, addTrainerPagePath, allSubscriptions, allTrainers, pendingSubscriptions } from "@/Lib/constants";
+import { activeSubscriptions, addTrainerPagePath, allSubscriptions, allTrainers, pendingSubscriptions, statusIsFinished } from "@/Lib/constants";
 import Custom_Table_For_Trainers from "@/Global-components/Custom-Table-for-trainers/Table_For_Trainers";
 import Search_Box_For_Trainers from "@/Global-components/Search-box-for-trainers/Search_Box_For_Trainers";
 import { normalAlert } from "@/Lib/functions";
@@ -12,14 +12,15 @@ import Filter from "./Components/Filter";
 import { getAllRowsInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
 import Database from "@tauri-apps/plugin-sql";
 import { useNavigate } from "react-router-dom";
-import { changeStatusTheShowForSideBar } from "@/Rtk/Slices/UI-slices/sideBarSlice";
 import Custom_Btn from "@/Global-components/Custom-btn/Custom_Btn";
+import { deleteRowsInActiveSessionsTableToLinkedTheTrainerById } from "@/Lib/functionsWithDb";
 // ========================================================== //
 export default function Trainers_Page() {
     const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
             trainers: state.trainers,
+            subscriptionsMenus: state.subscriptionsMenus,
             settings: state.settings
         }
     }, shallowEqual);
@@ -28,14 +29,12 @@ export default function Trainers_Page() {
     const [trainersTypeBox, setTrainersTypeBox] = useState<trainersTypeBox_Type | null>(null);
 
     const [getTrainersAfterFilter, setGetTrainersAfterFilter] = useState<trainer_Type[]>([]);
-    const [todayDate, setTodayDate] = useState(new Date());
 
     const navigate = useNavigate();
 
 
     const handelAddTrainer = useCallback(function () {
         navigate(addTrainerPagePath);
-        dispatch(changeStatusTheShowForSideBar("hidden"));
     }, []);
 
 
@@ -45,6 +44,10 @@ export default function Trainers_Page() {
 
 
         try {
+            interface TrainerIdRow {
+                id: number;
+            }
+
             const resultActuive = await db.execute(`
                 UPDATE trainers
                 SET subscriptionStatus = 'active'
@@ -53,22 +56,56 @@ export default function Trainers_Page() {
                     AND DATE(subscriptionEnd, 'localtime') > DATE('now', 'localtime');
             `);
 
-            const resultFinished = await db.execute(`
-                UPDATE trainers
-                SET subscriptionStatus = 'finished'
+            const getRowsFinished = await db.select(`
+                SELECT id FROM trainers
                 WHERE subscriptionStatus != 'finished'
                     AND DATE(subscriptionEnd, 'localtime') <= DATE('now', 'localtime');
-            `);
+            `) as TrainerIdRow[];
 
 
-            if (resultActuive.rowsAffected > 0 || resultFinished.rowsAffected > 0) {
+
+            if (getRowsFinished.length > 0) {
+                await db.execute(`
+                    UPDATE trainers SET subscriptionStatus = 'finished'
+                    WHERE subscriptionStatus != 'finished'
+                        AND DATE(subscriptionEnd, 'localtime') <= DATE('now', 'localtime');
+                `);
+
+                for (const ele of getRowsFinished) {
+                    await deleteRowsInActiveSessionsTableToLinkedTheTrainerById(ele.id);
+                }
+
                 dispatch(getAllRowsInTrainersTable() as any);
             }
 
+            if (resultActuive.rowsAffected > 0) {
+                dispatch(getAllRowsInTrainersTable() as any);
+            }
         }
         catch (error) {
             normalAlert({
                 title: "لا نستطيع التحقق من حالة الاشتراكات الخاصه بالمتدربين",
+                text: String(error),
+                icon: "error"
+            });
+        }
+    }
+
+    // This for remove some traines who not renwal after six month
+    async function checkTheForWhoTrainerIsRemove() {
+        const db = await Database.load("sqlite:gym-app.db");
+
+        try {
+            await db.execute(
+                `DELETE FROM trainers WHERE subscriptionStatus = ?
+                    AND DATE (subscriptionEnd, 'localtime') <= DATE('now', 'localtime', '-6 months');
+            `, [statusIsFinished]);
+
+            dispatch(getAllRowsInTrainersTable() as any);
+        }
+        catch (error) {
+            normalAlert({
+                title: "لا نستطيع حذف المتدربين القدامى",
                 text: String(error),
                 icon: "error"
             });
@@ -81,8 +118,7 @@ export default function Trainers_Page() {
             const db = await Database.load("sqlite:gym-app.db");
             const result = await db.execute(`
                 UPDATE trainers
-                SET trainerType = 'woman'
-                WHERE trainerType = 'women';
+                SET trainerType = 'woman' WHERE trainerType = 'women';
             `);
 
             if (result.rowsAffected > 0) {
@@ -100,31 +136,38 @@ export default function Trainers_Page() {
 
 
 
+
     useEffect(function () {
+        let today = new Date();
+        const tomorrow = new Date(
+            today.getFullYear(),
+            today.getMonth(),
+            today.getDate() + 1,
+            0, 0, 0, 0
+        );
+
+
+        const timer = setTimeout(function () {
+            today = tomorrow;
+            checkTheSubscriptionStatusInTrainer();
+        }, tomorrow.getTime() - today.getTime());
+
+
         fixTrainerType();
+        checkTheSubscriptionStatusInTrainer();
+        return () => clearTimeout(timer);
     }, []);
 
     useEffect(function () {
-        checkTheSubscriptionStatusInTrainer();
-
-        const tomorrow = new Date();
-        tomorrow.setDate(todayDate.getDate() + 1);
-        tomorrow.setHours(0, 0, 0, 0);
-
-        const timer = setTimeout(function () {
-            checkTheSubscriptionStatusInTrainer();
-            setTodayDate(tomorrow);
-        }, tomorrow.getTime() - todayDate.getTime());
+        if (
+            state.settings.isDeleteSomeTrainersWhoNotRenwal == "false"
+            ||
+            !JSON.parse(state.settings.isDeleteSomeTrainersWhoNotRenwal as any ?? "false")
+        ) return;
 
 
-        return () => clearTimeout(timer);
-    }, [todayDate]);
-
-    useEffect(function () {
-        if (state.trainers?.length == 0) {
-            dispatch(getAllRowsInTrainersTable() as any);
-        }
-    }, [state.trainers?.length]);
+        checkTheForWhoTrainerIsRemove();
+    }, [state.settings.isDeleteSomeTrainersWhoNotRenwal]);
 
 
 

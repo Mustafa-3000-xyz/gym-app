@@ -3,13 +3,10 @@ import { updateAnyPropertyInRowInItemsTable_Type } from "@/Rtk/types";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const db = await Database.load("sqlite:gym-app.db");
-
-
-
 export const getAllRowsInItemsTableLinkedToDay = createAsyncThunk(
     "itemsSlice/getAllRowsInItemsTableLinkedToDay",
     async function (dayId: number) {
+        const db = await Database.load("sqlite:gym-app.db");
         return await db.select(
             "SELECT * FROM items WHERE linkWithDay = ?",
             [dayId]
@@ -20,6 +17,7 @@ export const getAllRowsInItemsTableLinkedToDay = createAsyncThunk(
 export const addRowInItemsTable = createAsyncThunk(
     "itemsSlice/addRowInItemsTable",
     async function (data: item_Type) {
+        const db = await Database.load("sqlite:gym-app.db");
         const query = `
             INSERT INTO items (
                 linkWithDay, additionTime, category, itemName, price
@@ -46,6 +44,7 @@ export const addRowInItemsTable = createAsyncThunk(
 export const updateAnyPropertyInRowInItemsTable = createAsyncThunk(
     "itemsSlice/updateAnyPropertyInRowInItemsTable",
     async function ({ id, values }: updateAnyPropertyInRowInItemsTable_Type) {
+        const db = await Database.load("sqlite:gym-app.db");
         const keys = Object.keys(values);
 
         if (keys.length === 0) return;
@@ -70,6 +69,7 @@ export const updateAnyPropertyInRowInItemsTable = createAsyncThunk(
 export const deleteRowInItemsTableById = createAsyncThunk(
     "itemsSlice/deleteRowInItemsTableById",
     async function (id: number) {
+        const db = await Database.load("sqlite:gym-app.db");
         const query = "DELETE FROM items WHERE id = ?";
 
         await db.execute(query, [id]);

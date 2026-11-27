@@ -1,5 +1,4 @@
 import { accounte_Type } from "@/Pages/types";
-import { Shell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { profilePagePath } from "@/Lib/constants";
 import { useEffect, useState } from "react";
@@ -55,20 +54,6 @@ export default function Account_Card(
         `}
         onClick={showAccountDetail}
     >
-        {/* Sessions */}
-        <div className="flex gap-2 absolute bg-neutral-200 text-neutral-500 top-0 left-0 p-3 rounded-br-2xl rounded-tl-2xl">
-            <Shell size={25} />
-
-            <h3>
-                {
-                    Math.trunc(Math.abs(account?.numberOfActiveSessions)) > 99 ?
-                        `99+`
-                        :
-                        Math.trunc(Math.abs(account?.numberOfActiveSessions))
-                }
-            </h3>
-        </div>
-
         {/* Account image & Name & Tagline */}
         <div className="flex flex-col items-center gap-3 select-none">
             <div className=" w-28 h-28">

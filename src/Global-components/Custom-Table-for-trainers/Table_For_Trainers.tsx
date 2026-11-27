@@ -6,16 +6,14 @@ import Not_Found from "@/Global-components/Not-found/Not_Found";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Table_For_Trainers_Props } from "../typesProps";
-import { changeStatusTheShowForSideBar } from "@/Rtk/Slices/UI-slices/sideBarSlice";
 // ========================================================== //
 export default function Custom_Table_For_Trainers(
     { trainersList, countRowsInSlide }: Table_For_Trainers_Props
 ) {
-    const dispatch = useDispatch();
     const state = useSelector(function (state: store_Type) {
         return {
             logInInfo: state.logInInfo,
@@ -50,7 +48,6 @@ export default function Custom_Table_For_Trainers(
 
     function clickOnTrainer(trainer: trainer_Type) {
         navigate(trainerDetailsPagePath.replace(":trainerId", trainer.id as any));
-        dispatch(changeStatusTheShowForSideBar("hidden"));
 
         // when show trianer details and the user want back the page الي كان فيها, so back the page using localStorage
         localStorage.setItem("thisPageWhenClickOnTrainer", pathname);

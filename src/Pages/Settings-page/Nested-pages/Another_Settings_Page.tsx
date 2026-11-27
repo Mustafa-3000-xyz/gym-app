@@ -251,7 +251,7 @@ export default function Another_Settings_Page() {
         {/* Active more sessions in day */}
         <Box_for_setting
             title="تفعيل اكثر من حصه في اليوم الواحد"
-            discription="هذا الإجراء تحت التطوير .. إذا تم تفعيله ينصح بعدم إغلاقه حتى يأتي اليوم الجديد"
+            discription="إذا تم تفعيله ينصح بعدم إغلاقه حتى يأتي اليوم الجديد"
         >
             <Toggle_Btn
                 value={isActiveMoreSessionInDay as boolean}

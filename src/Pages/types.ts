@@ -147,7 +147,7 @@ export interface settings_Type {
     rowsInTrainerTable: number,
     rowsInAttendanceTable: number,
     rowsInItemsTable: number,
-    isDeleteSomeTrainersWhoNotRenwal: boolean,
+    isDeleteSomeTrainersWhoNotRenwal: boolean | "true" | "false",
     isActiveMoreSessionInDay: boolean
 }
 // ==================================================================== //

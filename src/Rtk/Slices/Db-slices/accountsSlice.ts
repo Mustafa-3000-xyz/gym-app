@@ -3,13 +3,11 @@ import { accounte_Type } from "@/Pages/types";
 import { updateAnyPropertyInAccount_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const db = await Database.load("sqlite:gym-app.db");
-
-
-
 export const getAllRowsInAccountsTable = createAsyncThunk(
     "accountsSlice/getAllRowsInAccountsTable",
     async function () {
+        const db = await Database.load("sqlite:gym-app.db");
+
         return await db.select("SELECT * FROM accounts");
     }
 );
@@ -17,6 +15,7 @@ export const getAllRowsInAccountsTable = createAsyncThunk(
 export const addRowInAccountsTable = createAsyncThunk(
     "accountsSlice/addRowInAccountsTable",
     async function (data: accounte_Type) {
+        const db = await Database.load("sqlite:gym-app.db");
         const query = `
             INSERT INTO accounts (
                 name, age, password, type, color, profileImg, coverImg, 
@@ -51,6 +50,7 @@ export const addRowInAccountsTable = createAsyncThunk(
 export const deleteRowInAccountsTableById = createAsyncThunk(
     "accountsSlice/deleteRowInAccountsTableById",
     async function (id: number) {
+        const db = await Database.load("sqlite:gym-app.db");
 
         await db.execute(
             "DELETE FROM accounts WHERE id = ?",
@@ -64,6 +64,8 @@ export const deleteRowInAccountsTableById = createAsyncThunk(
 export const deleteAllRowsInAccountsTable = createAsyncThunk(
     "accountsSlice/deleteAllRowsInAccountsTable",
     async function () {
+        const db = await Database.load("sqlite:gym-app.db");
+
         await db.execute(`DELETE FROM accounts WHERE type != 'manager';`);
     }
 );
@@ -73,6 +75,7 @@ export const updateAnyPropertyInRowInAccountsTable = createAsyncThunk(
     async function (
         { id, values }: updateAnyPropertyInAccount_Type
     ) {
+        const db = await Database.load("sqlite:gym-app.db");
         const keys = Object.keys(values);
 
 

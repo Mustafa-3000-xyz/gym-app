@@ -8,16 +8,13 @@ import { incrementOrDecrementForTotalSessionsInAccount, normalAlert } from "@/Li
 import { format } from "date-fns";
 import { statusIsFinished, statusIsPending, styleDate, trainerDetailsPagePath } from "@/Lib/constants";
 import { useNavigate } from "react-router-dom";
-import { shallowEqual, useDispatch, useSelector } from "react-redux";
-import { changeStatusTheShowForSideBar } from "@/Rtk/Slices/UI-slices/sideBarSlice";
+import { shallowEqual, useSelector } from "react-redux";
 import { store_Type } from "@/Rtk/types";
 import { addRowInActiveSessionsTable, getAllAttendanceInSpecificDate, systemForAttendance } from "@/Lib/functionsWithDb";
 // ========================================================== //
 function Search_Box_For_Trainers(
     { arrayForSearch }: { arrayForSearch: trainer_Type[] }
 ) {
-    const dispacth = useDispatch();
-
     const state = useSelector(function (state: store_Type) {
         return {
             logInInfo: state.logInInfo,
@@ -55,7 +52,10 @@ function Search_Box_For_Trainers(
             normalAlert({
                 title: "معلق",
                 text: "حالة اشتراك المتدرب معلقه, لا يمكنك تفعيل حصه",
-                icon: "error"
+                icon: "error",
+                runFunctionAfterConfirm() {
+                    navigate(trainerDetailsPagePath.replace(":trainerId", searchValue))
+                }
             });
 
             return;
@@ -64,7 +64,10 @@ function Search_Box_For_Trainers(
             normalAlert({
                 title: "منتهي",
                 text: "حالة اشتراك المتدرب تكون منتهيه, لا يمكنك تفعيل حصه",
-                icon: "error"
+                icon: "error",
+                runFunctionAfterConfirm() {
+                    navigate(trainerDetailsPagePath.replace(":trainerId", searchValue))
+                }
             });
 
             return;
@@ -93,7 +96,6 @@ function Search_Box_For_Trainers(
                 });
             }
             else if (!isTrainerHere && allSessionsActiveList.length + 1 == trainer.sessionsCount) {
-                dispacth(changeStatusTheShowForSideBar("hidden"));
                 navigate(trainerDetailsPagePath.replace(":trainerId", trainer.id as any));
             }
             // Add session
@@ -131,7 +133,6 @@ function Search_Box_For_Trainers(
 
         catch (err) {
             if (allSessionsActiveList.length + 1 == trainer.sessionsCount) {
-                dispacth(changeStatusTheShowForSideBar("hidden"));
                 navigate(trainerDetailsPagePath.replace(":trainerId", trainer.id as any));
             }
             // Add session

@@ -12,7 +12,7 @@ export default function Update_App() {
     const [versionSize, setVersionSize] = useState(0);
     const [downloaded, setDownloaded] = useState(0);
 
-    const versionAppNow = "1.1.0";
+    const versionAppNow = "1.1.1";
 
 
 
@@ -140,15 +140,9 @@ export default function Update_App() {
                 </button>
         }
 
-        <ul className="text-lg font-bold list-disc flex items-center gap-10">
-            <li>
-                اصدار البرنامج ({versionAppNow})
-            </li>
-
-            <li>
-                نسخة البرنامج (BETA)
-            </li>
-        </ul>
+        <h3 className="font-bold">
+            اصدار البرنامج ({versionAppNow})
+        </h3>
 
 
         {

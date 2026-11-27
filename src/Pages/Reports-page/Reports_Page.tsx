@@ -5,12 +5,12 @@ import Popup_Component from "@/Global-components/Popup-component/Popup_Component
 import { styleDate } from "@/Lib/constants";
 import { customAlert, normalAlert } from "@/Lib/functions";
 import { regexReportDescription, regexReportTitle } from "@/Lib/REGEX";
-import { addRowInReportsTable, deleteRowInReportsTableById, getAllRowsInReportsTable } from "@/Rtk/Slices/Db-slices/reportsSlice";
+import { addRowInReportsTable, deleteRowInReportsTableById } from "@/Rtk/Slices/Db-slices/reportsSlice";
 import { store_Type } from "@/Rtk/types";
 import { format } from "date-fns";
 import { Plus, Trash } from "lucide-react";
 import { InputText } from "primereact/inputtext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 // ========================================================== //
 export default function Reports_Page() {
@@ -131,15 +131,6 @@ export default function Reports_Page() {
 
 
 
-    useEffect(function () {
-        if (state.reports.length == 0) {
-            dispatch(getAllRowsInReportsTable() as any);
-        }
-    }, [state.reports]);
-
-
-
-
 
 
     return <section className="mt-10">
@@ -169,11 +160,17 @@ export default function Reports_Page() {
                                     {ele.title}
                                 </h3>
 
-                                <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600 font-mono">
-                                    {
-                                        format(new Date(ele.additionTime), styleDate)
-                                    }
-                                </span>
+                                <div className="flex flex-col gap-3 justify-center items-center">
+                                    <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-600 font-mono">
+                                        {
+                                            format(new Date(ele.additionTime), styleDate)
+                                        }
+                                    </span>
+
+                                    <span className="rounded bg-gray-100 px-5 py-0.5 text-xs text-gray-600 font-mono">
+                                        {format(new Date(ele.additionTime), "hh:mm:ss a")}
+                                    </span>
+                                </div>
                             </div>
 
                             {/* Description */}

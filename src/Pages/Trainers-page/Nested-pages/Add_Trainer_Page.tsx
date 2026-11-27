@@ -1,6 +1,6 @@
 import { Presentation, UserRound } from "lucide-react";
 import Trainer_Info_Form from "../Components/Trainer_Info_Form";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Subscription_Info_Form from "../Components/Subscription_Info_Form";
 import Date_Info_Form from "../Components/Date_Info_Form";
 import { customAlert, incrementOrDecrementForTotalSessionsInAccount, normalAlert } from "@/Lib/functions";
@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { changeStatusTheShowForSideBar } from "@/Rtk/Slices/UI-slices/sideBarSlice";
 import { statusIsActive, statusIsFinished, statusIsPending, styleDate, trainerPagePath } from "@/Lib/constants";
 import { addRowInActiveSessionsTable, systemForAddYearsMonthesDaysAndItems, getAllAttendanceInSpecificDate } from "@/Lib/functionsWithDb";
+import { addRowInReportsTable } from "@/Rtk/Slices/Db-slices/reportsSlice";
 // ========================================================== //
 export default function Add_Trainer_Page() {
     const dispatch = useDispatch();
@@ -28,7 +29,6 @@ export default function Add_Trainer_Page() {
 
     // Get trainer_Type info
     const [getTrainerType, setGetTrainerType] = useState<"man" | "woman">("man");
-    const [getNotes, setGetNotes] = useState("");
     const [getFirstName, setGetFirstName] = useState({
         value: "",
         isTrue: false,
@@ -39,17 +39,17 @@ export default function Add_Trainer_Page() {
     });
     const [getPhone, setGetPhone] = useState({
         value: 0,
-        isTrue: false,
+        isTrue: true,
     });
     const [getAddress, setGetAddress] = useState({
         value: "",
-        isTrue: false,
+        isTrue: true,
     });
+    const [getNotes, setGetNotes] = useState("");
+
 
 
     // Get subscription info
-    const [getActiveSomeSessions, setGetActiveSomeSessions] = useState<number>(0);
-    const [getDebt, setGetDebt] = useState<number>(0);
     const [getSubscriptionName, setGetSubscriptionName] = useState({
         value: "",
         isTrue: false
@@ -62,13 +62,14 @@ export default function Add_Trainer_Page() {
         value: 0,
         isTrue: false
     });
+    const [getDebt, setGetDebt] = useState<number>(0);
+    const [getActiveSomeSessions, setGetActiveSomeSessions] = useState<number>(0);
 
 
     // Date info
     const [getSubscriptionStart, setGetSubscriptionStart] = useState<string | null>(null);
     const [getSubscriptionEnd, setGetSubscriptionEnd] = useState<string | null>(null);
 
-    const [isSaveData, setIsSaveData] = useState(false);
     const navigate = useNavigate();
 
 
@@ -91,70 +92,171 @@ export default function Add_Trainer_Page() {
 
 
 
+    const handleSaveTrainerInfo = useCallback(async function () {
+        const errorsMessagesList: string[] = [];
 
-
-    async function saveTrainerInfo() {
-        if (!isSaveData) {
-            findTheValueNotComplete();
-            return;
+        if (!getFirstName.isTrue) {
+            errorsMessagesList.push("يجب الاسم الاول يحتوي على عدد حروف لا تقل ع ثلاثه ولا تزيد عن ثلاثة عشر");
         }
 
+        if (!getLastName.isTrue) {
+            errorsMessagesList.push("يجب الاسم الثاني يحتوي على عدد حروف لا تقل ع ثلاثه ولا تزيد عن ثلاثة عشر");
+        }
 
-        customAlert({
-            textBeforeSubmitAction: "هل تريد بالفعل إضافة ذلك المتدرب ؟",
-            textAfterSubmitAction: "تمت إضافة المتدرب بنجاح",
-            runFunctionAfterConfirm: async function () {
-                dispatch(updateAnyPropertyInRowInAccountsTable({
-                    id: Number(state.logInInfo?.id),
-                    values: {
-                        trainersTotal: Number(state.accounts?.find(ele => ele.id == state.logInInfo?.id)?.trainersTotal) + 1
-                    }
-                }) as any);
+        if (!getPhone.isTrue) {
+            errorsMessagesList.push("يجب رقم الهاتف يكون عشر ارقام ويبدا برقم واحد");
+        }
 
-                const getTrainerId = await dispatch(
-                    addRowInTrainersTable({
-                        trainerType: getTrainerType,
-                        firstName: getFirstName.value,
-                        lastName: getLastName.value,
-                        phone: Number(getPhone.value),
-                        address: getAddress.value,
-                        notes: getNotes,
-                        subscriptionName: getSubscriptionName.value,
-                        sessionsCount: getSessions.value,
-                        price: Number(getPrice.value),
-                        subscriptionStart: getSubscriptionStart,
-                        subscriptionEnd: getSubscriptionEnd,
-                        subscriptionStatus: statusTheSubscription,
-                        debt: getDebt
-                    } as trainer_Type) as any
-                ).unwrap() as trainer_Type;
+        if (!getAddress.isTrue) {
+            errorsMessagesList.push("يجب العنوان لا يزيد عن ثلاثين حرف");
+        }
 
+        if (!getSubscriptionName.isTrue) {
+            errorsMessagesList.push("يجب اسم الاشتراك يحتوي على عدد حروف لا تقل عن ثلاثه ولا تزيد عن احدى عشر");
+        }
 
-                await systemForAddYearsMonthesDaysAndItems(
-                    new Date(),
-                    {
-                        year: { profites: getPrice.value - getDebt },
-                        month: { profites: getPrice.value - getDebt },
-                        day: { profites: getPrice.value - getDebt },
-                        item: {
-                            additionTime: new Date().toISOString(),
-                            category: "profit",
-                            title: "إضافة متدرب جديد",
-                            price: getPrice.value - getDebt
+        if (!getSessions.isTrue) {
+            errorsMessagesList.push("يجب كتابة عدد الحصص");
+        }
+
+        if (!getPrice.isTrue) {
+            errorsMessagesList.push("يحب كتابه سعر الاشتراك");
+        }
+
+        if (!getSubscriptionStart) {
+            errorsMessagesList.push("يجب اختيار تاريخ بداية الاشتراك");
+        }
+
+        if (!getSubscriptionEnd) {
+            errorsMessagesList.push("يجب اختيار تاريخ نهاية الاشتراك");
+        }
+
+        if (errorsMessagesList.length > 0) {
+            normalAlert({
+                title: "يوجد بيانات غير صالحه",
+                text: errorsMessagesList.join(" / "),
+                icon: "error"
+            });
+        }
+        else {
+            customAlert({
+                textBeforeSubmitAction: "هل تريد بالفعل إضافة ذلك المتدرب ؟",
+                textAfterSubmitAction: "تمت إضافة المتدرب بنجاح",
+                runFunctionAfterConfirm: async function () {
+                    dispatch(updateAnyPropertyInRowInAccountsTable({
+                        id: Number(state.logInInfo?.id),
+                        values: {
+                            trainersTotal: Number(state.accounts?.find(ele => ele.id == state.logInInfo?.id)?.trainersTotal) + 1
                         }
+                    }) as any);
+
+                    const getTrainerId = await dispatch(
+                        addRowInTrainersTable({
+                            trainerType: getTrainerType,
+                            firstName: getFirstName.value,
+                            lastName: getLastName.value,
+                            phone: Number(getPhone.value),
+                            address: getAddress.value,
+                            notes: getNotes,
+                            subscriptionName: getSubscriptionName.value,
+                            sessionsCount: getSessions.value,
+                            price: Number(getPrice.value),
+                            subscriptionStart: getSubscriptionStart,
+                            subscriptionEnd: getSubscriptionEnd,
+                            subscriptionStatus: statusTheSubscription,
+                            debt: getDebt
+                        } as trainer_Type) as any
+                    ).unwrap() as trainer_Type;
+
+                    dispatch(addRowInReportsTable({
+                        linkWithPerson: "bemo",
+                        additionTime: new Date().toISOString(),
+                        title: "إضافة متدرب جديد",
+                        description: `لقد قام الحساب رقم ${state.logInInfo?.id} بإضافة متدرب جديد الذي يحمل رقم ${getTrainerId.id}`,
+                        reportedBy: "بيمو"
+                    }) as any);
+
+                    await systemForAddYearsMonthesDaysAndItems(
+                        new Date(),
+                        {
+                            year: { profites: getPrice.value - getDebt },
+                            month: { profites: getPrice.value - getDebt },
+                            day: { profites: getPrice.value - getDebt },
+                            item: {
+                                additionTime: new Date().toISOString(),
+                                category: "profit",
+                                title: "إضافة متدرب جديد",
+                                price: getPrice.value - getDebt
+                            }
+                        }
+                    );
+
+                    if (getActiveSomeSessions && getTrainerId.id) {
+                        await activeSomeSessions(Number(getTrainerId.id));
                     }
-                )
 
-
-                if (getActiveSomeSessions && getTrainerId.id) {
-                    await activeSomeSessions(Number(getTrainerId.id));
+                    navigate(trainerPagePath);
+                    dispatch(changeStatusTheShowForSideBar("show"));
                 }
+            });
+        }
+    }, [
+        getFirstName,
+        getLastName,
+        getPhone,
+        getAddress,
+        getSubscriptionName,
+        getSessions,
+        getPrice,
+        getSubscriptionStart,
+        getSubscriptionEnd,
+        getTrainerType,
+        getNotes,
+        getDebt,
+        statusTheSubscription,
+        getActiveSomeSessions,
+        state.logInInfo?.id,
+        state.accounts,
+    ]);
 
-                navigate(trainerPagePath);
-                dispatch(changeStatusTheShowForSideBar("show"));
-            }
-        });
-    }
+    const handleCanceleChanges = useCallback(function () {
+        if (
+            getFirstName.value ||
+            getLastName.value ||
+            getPhone.value ||
+            getAddress.value ||
+            getSubscriptionName.value ||
+            getSessions.value ||
+            getPrice.value ||
+            getSubscriptionStart != null ||
+            getSubscriptionEnd != null
+        ) {
+            customAlert({
+                textBeforeSubmitAction: "هل تود بالفعل عدم استكمال كتابة البيانات ؟",
+                runFunctionAfterConfirm: function () {
+                    navigate(trainerPagePath);
+                    dispatch(changeStatusTheShowForSideBar("show"));
+                }
+            });
+        }
+        else {
+            navigate(trainerPagePath);
+            dispatch(changeStatusTheShowForSideBar("show"));
+        }
+    }, [
+        getFirstName.value,
+        getLastName.value,
+        getPhone.value,
+        getAddress.value,
+        getSubscriptionName.value,
+        getSessions.value,
+        getPrice.value,
+        getSubscriptionStart,
+        getSubscriptionEnd,
+    ]);
+
+
+
 
     async function activeSomeSessions(trainerId: number) {
         let dateNow: any = new Date(getSubscriptionStart as any).toISOString();
@@ -202,102 +304,11 @@ export default function Add_Trainer_Page() {
         incrementOrDecrementForTotalSessionsInAccount(Number(state.logInInfo?.id), getActiveSomeSessions, "increment");
     }
 
-    function findTheValueNotComplete() {
-        const errorsMessagesList = [];
 
 
-        if (!getFirstName.isTrue) {
-            errorsMessagesList.push("يجب الاسم الاول يحتوي على عدد حروف لا تقل ع ثلاثه ولا تزيد عن ثلاثة عشر");
-        }
-
-        if (!getLastName.isTrue) {
-            errorsMessagesList.push("يجب الاسم الثاني يحتوي على عدد حروف لا تقل ع ثلاثه ولا تزيد عن ثلاثة عشر");
-        }
-
-        if (!getPhone.isTrue) {
-            errorsMessagesList.push("يجب رقم الهاتف يكون عشر ارقام ويبدا برقم واحد");
-        }
-
-        if (!getAddress.isTrue) {
-            errorsMessagesList.push("يجب العنوان لا يزيد عن ثلاثين حرف");
-        }
-
-        if (!getSubscriptionName.isTrue) {
-            errorsMessagesList.push("يجب اسم الاشتراك يحتوي على عدد حروف لا تقل عن ثلاثه ولا تزيد عن احدى عشر");
-        }
-
-        if (!getSessions.isTrue) {
-            errorsMessagesList.push("يجب كتابة عدد الحصص");
-        }
-
-        if (!getPrice.isTrue) {
-            errorsMessagesList.push("يحب كتابه سعر الاشتراك");
-        }
-
-        if (!getSubscriptionStart) {
-            errorsMessagesList.push("يجب اختيار تاريخ بداية الاشتراك");
-        }
-
-        if (!getSubscriptionEnd) {
-            errorsMessagesList.push("يجب اختيار تاريخ نهاية الاشتراك");
-        }
-
-
-        normalAlert({
-            title: "تنبيه",
-            text: errorsMessagesList.join(" / "),
-            icon: "info"
-        });
-    }
-
-    function canceleChanges() {
-        if (
-            getFirstName.value ||
-            getLastName.value ||
-            getPhone.value ||
-            getAddress.value ||
-            getSubscriptionName.value ||
-            getSessions.value ||
-            getPrice.value ||
-            getSubscriptionStart != null ||
-            getSubscriptionEnd != null
-        ) {
-            customAlert({
-                textBeforeSubmitAction: "هل تود بالفعل عدم استكمال كتابة البيانات ؟",
-                runFunctionAfterConfirm: function () {
-                    navigate(trainerPagePath);
-                    dispatch(changeStatusTheShowForSideBar("show"));
-                }
-            });
-        }
-        else {
-            navigate(trainerPagePath);
-            dispatch(changeStatusTheShowForSideBar("show"));
-        }
-    }
-
-
-
-    // Check all data is complete or no
     useEffect(function () {
-        if (
-            getFirstName.isTrue &&
-            getLastName.isTrue &&
-            getPhone.isTrue &&
-            getAddress.isTrue &&
-            getSubscriptionName.isTrue &&
-            getSessions.isTrue &&
-            getPrice.isTrue &&
-            getSubscriptionStart != null &&
-            getSubscriptionEnd != null
-        ) {
-            setIsSaveData(true);
-        } else {
-            setIsSaveData(false);
-        }
-    }, [getFirstName, getLastName, getPhone, getAddress, getSubscriptionName, getSessions,
-        getPrice, getSubscriptionStart, getSubscriptionEnd
-    ]);
+        dispatch(changeStatusTheShowForSideBar("hidden"));
+    }, []);
 
 
 
@@ -317,6 +328,12 @@ export default function Add_Trainer_Page() {
                 </div>
 
                 <Trainer_Info_Form
+                    trainerType={getTrainerType}
+                    firstName={getFirstName.value}
+                    lastName={getLastName.value}
+                    phone={getPhone.value}
+                    address={getAddress.value}
+                    notes={getNotes}
                     onGetFirstName={setGetFirstName}
                     onGetLastName={setGetLastName}
                     onGetPhone={setGetPhone}
@@ -334,6 +351,11 @@ export default function Add_Trainer_Page() {
                 </div>
 
                 <Subscription_Info_Form
+                    subscriptionName={getSubscriptionName.value}
+                    price={getPrice.value}
+                    sessions={getSessions.value}
+                    debt={getDebt}
+                    activeSomeSessions={getActiveSomeSessions}
                     subscriptionStart={getSubscriptionStart}
                     subscriptionEnd={getSubscriptionEnd}
                     onGetSubscriptionName={setGetSubscriptionName}
@@ -359,7 +381,7 @@ export default function Add_Trainer_Page() {
                         active:border-b-[2px] active:brightness-90 active:translate-y-[2px]
                         border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
                     `}
-                    onClick={saveTrainerInfo}
+                    onClick={handleSaveTrainerInfo}
                 >
                     حفظ البيانات
                 </button>
@@ -372,7 +394,7 @@ export default function Add_Trainer_Page() {
                         active:border-b-[2px] active:brightness-90 active:translate-y-[2px]
                         border-b-[4px] hover:brightness-110 hover:-translate-y-[1px] hover:border-b-[6px]
                     `}
-                    onClick={canceleChanges}
+                    onClick={handleCanceleChanges}
                 >
                     الرجوع
                 </button>

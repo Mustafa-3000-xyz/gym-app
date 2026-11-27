@@ -4,12 +4,10 @@ import { addTrainerInTrash, customAlert, checkPermissionesInAccount, normalAlert
 import { deleteRowsInActiveSessionsTableToLinkedTheTrainerById } from '@/Lib/functionsWithDb';
 import { reports_Type } from '@/Pages/types';
 import { Btn_Delete_Trainer_Props } from '@/Pages/typesProps';
-import { getAllRowsInAttendanceTable } from '@/Rtk/Slices/Db-slices/attendanceSlice';
 import { addRowInReportsTable } from '@/Rtk/Slices/Db-slices/reportsSlice';
 import { deleteRowInTrainersTableById } from '@/Rtk/Slices/Db-slices/trainersSlice';
 import { changeStatusTheShowForSideBar } from '@/Rtk/Slices/UI-slices/sideBarSlice';
 import { store_Type } from '@/Rtk/types';
-import Database from '@tauri-apps/plugin-sql';
 import { Trash } from 'lucide-react'
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -39,32 +37,6 @@ export default function Btn_Delete_Trainer(
 
 
 
-    async function removeTrainerInAttendanceRecord() {
-        const db = await Database.load("sqlite:gym-app.db");
-
-        try {
-            await db.execute(`
-                UPDATE attendance SET trainers = (
-                SELECT json_group_array(value) 
-                    FROM json_each(attendance.trainers) 
-                    WHERE value != ? AND value != ?
-                )
-                WHERE attendance.trainers LIKE ?;
-            `, [trainerId, trainerId.toString(), `%${trainerId}%`]);
-
-            await db.execute(`
-                DELETE FROM attendance 
-                WHERE trainers IS NULL 
-                OR trainers = '[]' 
-                OR json_array_length(trainers) = 0;
-            `);
-
-            dispatch(getAllRowsInAttendanceTable() as any);
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
     function deleteTrainer() {
         if (checkDeletePermission) {
             customAlert({
@@ -72,7 +44,6 @@ export default function Btn_Delete_Trainer(
                 textBeforeSubmitAction: `هل تود بالفعل حذف ذلك المتدرب ؟`,
                 textAfterSubmitAction: "تم حذف المتدرب",
                 runFunctionAfterConfirm: function () {
-                    removeTrainerInAttendanceRecord();
                     addTrainerInTrash(Number(state.logInInfo?.id), 1);
                     deleteRowsInActiveSessionsTableToLinkedTheTrainerById(trainerId);
 
@@ -88,6 +59,8 @@ export default function Btn_Delete_Trainer(
                     } as reports_Type) as any);
                     dispatch(deleteRowInTrainersTableById(trainerId) as any);
                     dispatch(changeStatusTheShowForSideBar("show"));
+
+
                     navigation(trainerPagePath);
                 }
             });

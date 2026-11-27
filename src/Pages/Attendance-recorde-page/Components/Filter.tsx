@@ -1,13 +1,14 @@
 import Bottom_Content_For_The_Drop from "@/Global-components/Drop-menu/Bottom-content-for-the-drop/Bottom_Content_For_The_Drop";
 import Drop_Menu from "@/Global-components/Drop-menu/Drop_Menu";
 import Top_Content_For_The_Drop from "@/Global-components/Drop-menu/Top-content-for-the-drop/Top_Content_For_The_Drop";
+import { trainer_Type } from "@/Pages/types";
 import { Filter_For_Attendance_Props } from "@/Pages/typesProps";
 import { store_Type } from "@/Rtk/types";
 import { ArrowDownWideNarrow } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { shallowEqual, useSelector } from "react-redux";
 // ========================================================== //
-export default function (
+export default function Filter(
     {
         filterType,
         dayDetails,
@@ -15,11 +16,11 @@ export default function (
         onChangeFilterType
     }: Filter_For_Attendance_Props
 ) {
-    const [trainersIds, setTrainersIds] = useState<number[]>([]);
     const state = useSelector(function (state: store_Type) {
         return {
             trainers: state.trainers,
             accounts: state.accounts,
+            logInInfo: state.logInInfo
         }
     }, shallowEqual);
 
@@ -27,57 +28,46 @@ export default function (
 
 
 
-
-    // This for get all trainers ids 
     useEffect(function () {
-        if (dayDetails.length == 0) return;
+        if (state.trainers?.length == 0 || dayDetails.length == 0) {
+            onGetTrainers([]);
+            return;
+        }
 
-        let arr: number[] = [];
 
         if (filterType == "allTrainers") {
-            dayDetails.forEach(function (ele) {
-                const parsed =
-                    typeof ele.trainers === "string"
-                        ? JSON.parse(ele.trainers)
-                        : ele.trainers;
+            const trainersIds: number[] = [];
 
-                if (Array.isArray(parsed)) {
-                    arr.push(...parsed);
+
+            dayDetails.forEach(function (ele) {
+                const convert = typeof ele.trainers == "string" ? JSON.parse(ele.trainers) : ele.trainers;
+                trainersIds.push(...convert);
+            });
+
+            const filter = state.trainers?.filter(function (ele) {
+                if (trainersIds.find(id => id == ele.id)) {
+                    return ele;
                 }
             });
+
+
+            onGetTrainers(filter as trainer_Type[]);
         }
+
         else {
-            const getRowByAccountId = dayDetails.find(ele => ele.accountId == filterType);
+            const getRow = dayDetails.find(ele => ele.accountId == filterType);
+            const convertArray = (typeof getRow?.trainers == "string" ? JSON.parse(getRow?.trainers) : getRow?.trainers) as number[];
 
-
-            if (getRowByAccountId) {
-                const parsed =
-                    typeof getRowByAccountId.trainers === "string"
-                        ? JSON.parse(getRowByAccountId.trainers)
-                        : getRowByAccountId.trainers;
-
-                if (Array.isArray(parsed)) {
-                    arr.push(...parsed);
+            const filter = state.trainers?.filter(function (ele) {
+                if (convertArray.find(id => id == ele.id)) {
+                    return ele;
                 }
-            }
+            });
+
+
+            onGetTrainers(filter as trainer_Type[]);
         }
-
-
-        setTrainersIds(arr);
-    }, [filterType, dayDetails]);
-
-    // This for get all trainers
-    useEffect(function () {
-        const result = state.trainers?.filter(function (ele) {
-            const searchId = trainersIds.find(id => id == ele.id);
-
-            if (searchId) {
-                return ele
-            }
-        });
-
-        onGetTrainers(result as any);
-    }, [trainersIds, state.trainers]);
+    }, [filterType, dayDetails, state.trainers]);
 
 
 
@@ -92,7 +82,7 @@ export default function (
 
         {
             dayDetails.length != 0 ?
-                <Bottom_Content_For_The_Drop className={`${trainersIds.length >= 4 ? "h-[209px] overflow-auto p-3" : ""}`}>
+                <Bottom_Content_For_The_Drop className="h-[209px] overflow-auto p-3">
                     {
                         dayDetails.map(ele => {
                             const getAccount = state.accounts?.find(acc => acc.id == ele.accountId);

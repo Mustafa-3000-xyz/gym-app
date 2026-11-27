@@ -3,13 +3,11 @@ import { subscriptionsMenus_Type } from "@/Pages/types";
 import { updateAnyPropertyInRowInSubscriptionsMenusTable_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const db = await Database.load("sqlite:gym-app.db");
-
-
-
 export const getAllRowsInSubscriptionsMenusTable = createAsyncThunk(
     "subscriptionsMenusSlice/getAllRowsInSubscriptionsMenusTable",
     async function () {
+        const db = await Database.load("sqlite:gym-app.db");
+
         return await db.select("SELECT * FROM subscriptionsMenus");
     }
 );
@@ -17,6 +15,9 @@ export const getAllRowsInSubscriptionsMenusTable = createAsyncThunk(
 export const addRowInSubscriptionsMenusTable = createAsyncThunk(
     "subscriptionsMenusSlice/addRowInSubscriptionsMenusTable",
     async function (data: subscriptionsMenus_Type) {
+        const db = await Database.load("sqlite:gym-app.db");
+
+
         const query = `
             INSERT INTO subscriptionsMenus (
                 subscriptionName, sessionsCount, price, isActive
@@ -45,6 +46,7 @@ export const addRowInSubscriptionsMenusTable = createAsyncThunk(
 export const updateAnyPropertyInRowInSubscriptionsMenusTable = createAsyncThunk(
     "subscriptionsMenusSlice/updateAnyPropertyInRowInSubscriptionsMenusTable",
     async function ({ id, values }: updateAnyPropertyInRowInSubscriptionsMenusTable_Type) {
+        const db = await Database.load("sqlite:gym-app.db");
         const keys = Object.keys(values);
 
         if (keys.length === 0) return;
@@ -69,6 +71,7 @@ export const updateAnyPropertyInRowInSubscriptionsMenusTable = createAsyncThunk(
 export const deleteRowInSubscriptionsMenusTableById = createAsyncThunk(
     "subscriptionsMenusSlice/deleteRowInSubscriptionsMenusTableById",
     async function (id: number | string) {
+        const db = await Database.load("sqlite:gym-app.db");
         const query = "DELETE FROM subscriptionsMenus WHERE id = ?";
 
         await db.execute(query, [id]);
@@ -80,6 +83,8 @@ export const deleteRowInSubscriptionsMenusTableById = createAsyncThunk(
 export const deleteAllRowsInSubscriptionsMenusTable = createAsyncThunk(
     "subscriptionsMenusSlice/deleteAllRowsInSubscriptionsMenusTable",
     async function () {
+        const db = await Database.load("sqlite:gym-app.db");
+
         await db.execute(`DELETE FROM subscriptionsMenus;`);
         return [];
     }

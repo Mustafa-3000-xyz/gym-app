@@ -90,7 +90,7 @@ export default function Sing_Up_Page() {
                 className="w-full"
             >
                 <h1 className="text-center text-2xl font-bold mb-10">
-                    الان قم بملئ تلك البيانات
+                    قم بكتابة تلك البيانات
                 </h1>
 
                 <Account_Form
@@ -108,7 +108,6 @@ export default function Sing_Up_Page() {
                     className="py-3 bg-emerald-500! border-emerald-600! font-bold w-full"
                     onClick={clickOnNextBtn}
                 >
-
                     التالي
                 </Custom_Btn>
             </motion.div>

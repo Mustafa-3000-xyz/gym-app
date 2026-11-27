@@ -3,13 +3,11 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Database from "@tauri-apps/plugin-sql";
 import { updatePropertyInAttendance_Type } from "../../types";
 // ======================================= //
-const db = await Database.load("sqlite:gym-app.db");
-
-
-
 export const getAllRowsInAttendanceTable = createAsyncThunk(
     "attendanceSlice/getAllRowsInAttendanceTable",
     async function () {
+        const db = await Database.load("sqlite:gym-app.db");
+
         return await db.select("SELECT * FROM attendance");
     }
 );
@@ -17,6 +15,7 @@ export const getAllRowsInAttendanceTable = createAsyncThunk(
 export const addRowInAttendanceTable = createAsyncThunk(
     " attendanceSlice/addRowInAttendanceTable",
     async function (data: attendanceDetails_Type) {
+        const db = await Database.load("sqlite:gym-app.db");
         const query = "INSERT INTO attendance (date, accountId, trainers) VALUES (?, ?, ?)";
         const values = [
             data.date,
@@ -35,6 +34,7 @@ export const addRowInAttendanceTable = createAsyncThunk(
 export const deleteRowInAttendanceTableById = createAsyncThunk(
     "attendanceSlice/deleteRowInAttendanceTableById",
     async function (id: number) {
+        const db = await Database.load("sqlite:gym-app.db");
         const query = "DELETE FROM attendance WHERE id = ?";
         const value = [id];
 
@@ -47,6 +47,7 @@ export const deleteRowInAttendanceTableById = createAsyncThunk(
 export const deleteAllRowsInAttendanceTable = createAsyncThunk(
     "attendanceSlice/deleteAllRowsInAttendanceTable",
     async function () {
+        const db = await Database.load("sqlite:gym-app.db");
         await db.execute(`DELETE FROM attendance;`);
         return [];
     }
@@ -61,6 +62,7 @@ export const updatePropertyInRowInAttendanceTable = createAsyncThunk(
             value
         }: updatePropertyInAttendance_Type
     ) {
+        const db = await Database.load("sqlite:gym-app.db");
 
         await db.execute(`UPDATE attendance SET ${column} = ? WHERE id = ?`, [JSON.stringify(value), id]);
 

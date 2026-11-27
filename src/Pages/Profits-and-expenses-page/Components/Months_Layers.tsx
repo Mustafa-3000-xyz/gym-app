@@ -157,55 +157,28 @@ export default function Months_Layers(
     }
 
     function saveChanges() {
-        const errorsMessagesList = [];
+        customAlert({
+            textBeforeSubmitAction: "هل تريد بالفعل تعديل ذلك الشهر ؟",
+            textAfterSubmitAction: "تم التعديل بنجاح",
+            runFunctionAfterConfirm: function () {
+                dispatch(updateAnyPropertyInRowInMonthsProfitsAndExpensesTable({
+                    id: Number(layerIdForEditing),
+                    values: {
+                        profitsTotal: profitsTotalInput,
+                        expensesTotal: expensesTotalInput,
+                        target: targetInput
+                    }
+                }) as any);
 
 
-        if (!profitsTotalInput) {
-            errorsMessagesList.push("يجب كتابة مجموع الارباح الجديد");
-        }
+                setProfitsTotalInput(0);
+                setExpensesTotalInput(0);
+                setTargetInput(0);
 
-
-        if (!expensesTotalInput) {
-            errorsMessagesList.push("يجب كتابة مجموع المصروفات الجديد");
-        }
-
-        if (!targetInput) {
-            errorsMessagesList.push("يجب كتابة الهدف السنوي الجديد");
-        }
-
-
-
-        if (errorsMessagesList.length > 0) {
-            normalAlert({
-                title: "يوجد بيانات غير صالحه",
-                text: errorsMessagesList.join(" / "),
-                icon: "error"
-            })
-        }
-        else {
-            customAlert({
-                textBeforeSubmitAction: "هل تريد بالفعل تعديل ذلك الشهر ؟",
-                textAfterSubmitAction: "تم التعديل بنجاح",
-                runFunctionAfterConfirm: function () {
-                    dispatch(updateAnyPropertyInRowInMonthsProfitsAndExpensesTable({
-                        id: Number(layerIdForEditing),
-                        values: {
-                            profitsTotal: profitsTotalInput,
-                            expensesTotal: expensesTotalInput,
-                            target: targetInput
-                        }
-                    }) as any);
-
-
-                    setProfitsTotalInput(0);
-                    setExpensesTotalInput(0);
-                    setTargetInput(0);
-
-                    setLayerIdForEditing(-1);
-                    setIsEditing(false);
-                }
-            });
-        }
+                setLayerIdForEditing(-1);
+                setIsEditing(false);
+            }
+        });
     }
 
     function cancelChanges() {
@@ -315,7 +288,7 @@ export default function Months_Layers(
                                             <input
                                                 type="number"
                                                 className="text-center border-b-2 focus:outline-0 w-20 font-bold"
-                                                value={profitsTotalInput == 0 ? "" : profitsTotalInput}
+                                                value={profitsTotalInput}
                                                 onChange={(e) => setProfitsTotalInput(Number(e.target.value))}
                                             />
                                             :
@@ -336,7 +309,7 @@ export default function Months_Layers(
                                             <input
                                                 type="number"
                                                 className="text-center border-b-2 focus:outline-0 w-20 font-bold"
-                                                value={expensesTotalInput == 0 ? "" : expensesTotalInput}
+                                                value={expensesTotalInput}
                                                 onChange={(e) => setExpensesTotalInput(Number(e.target.value))}
                                             />
                                             :
@@ -357,7 +330,7 @@ export default function Months_Layers(
                                             <input
                                                 type="number"
                                                 className="text-center border-b-2 focus:outline-0 w-20 font-bold"
-                                                value={targetInput == 0 ? "" : targetInput}
+                                                value={targetInput}
                                                 onChange={(e) => setTargetInput(Number(e.target.value))}
                                             />
                                             :
@@ -383,20 +356,14 @@ export default function Months_Layers(
                                             className="px-3!"
                                             onClick={cancelChanges}
                                         >
-                                            <X
-                                                size={20}
-                                                className="duration-300 cursor-pointer hover:scale-110"
-                                            />
+                                            <X size={20} />
                                         </Custom_Btn>
 
                                         <Custom_Btn
-                                            className="bg-emerald-500! border-emerald-600!"
+                                            className="bg-emerald-500! border-emerald-600! px-6!"
                                             onClick={saveChanges}
                                         >
-                                            <Save
-                                                size={20}
-                                                className="duration-300 cursor-pointer hover:scale-110"
-                                            />
+                                            <Save size={20} />
                                         </Custom_Btn>
                                     </>
                                     :
@@ -407,10 +374,7 @@ export default function Months_Layers(
                                             setLayerIdForEditing(Number(ele.id));
                                         }}
                                     >
-                                        <Pen
-                                            size={20}
-                                            className="duration-300 cursor-pointer hover:scale-110"
-                                        />
+                                        <Pen size={20} />
                                     </Custom_Btn>
                             }
                         </div>

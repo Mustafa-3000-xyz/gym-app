@@ -1,6 +1,6 @@
 import { statusIsActive, statusIsFinished, statusIsPending } from "@/Lib/constants";
 import { updateAnyPropertyInRowInTrainersTable } from "@/Rtk/Slices/Db-slices/trainersSlice";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { ArrowLeft, ArrowRight, RefreshCcw, SquarePen } from "lucide-react";
 import Date_Info_Form from "../Components/Date_Info_Form";
@@ -13,7 +13,7 @@ import Btn_Delete_Trainer from "../Components/Btn_Delete_Trainer";
 import { customAlert, normalAlert } from "@/Lib/functions";
 import { changeStatusTheShowForSideBar } from "@/Rtk/Slices/UI-slices/sideBarSlice";
 import { useNavigate, useParams } from "react-router-dom";
-import { activeSession_Type, reports_Type, trainer_Type } from "@/Pages/types";
+import { reports_Type, trainer_Type } from "@/Pages/types";
 import Database from "@tauri-apps/plugin-sql";
 import Sessions from "../Components/Sessions";
 import Custom_Btn from "@/Global-components/Custom-btn/Custom_Btn";
@@ -36,7 +36,6 @@ export default function Trainer_Details_Page() {
 
     // Trainer info
     const [getTrainerType, setGetTrainerType] = useState<"man" | "woman">("man");
-    const [getNotes, setGetNotes] = useState("");
     const [getFirstName, setGetFirstName] = useState({
         value: "",
         isTrue: false,
@@ -53,9 +52,9 @@ export default function Trainer_Details_Page() {
         value: "",
         isTrue: false,
     });
+    const [getNotes, setGetNotes] = useState("");
 
     // Subscription info
-    const [getDebt, setGetDebt] = useState<number>(0);
     const [getSubscriptionName, setGetSubscriptionName] = useState({
         value: "",
         isTrue: false
@@ -68,6 +67,8 @@ export default function Trainer_Details_Page() {
         value: 0,
         isTrue: false
     });
+    const [getDebt, setGetDebt] = useState<number>(0);
+
 
     // Date info
     const [getSubscriptionStart, setGetSubscriptionStart] = useState<string | null>(null);
@@ -97,26 +98,7 @@ export default function Trainer_Details_Page() {
 
 
 
-    // This for get trainer details from db using id
-    useEffect(function () {
-        async function x() {
-            const db = await Database.load("sqlite:gym-app.db");
-            const [result] = await db.select(
-                "SELECT * FROM trainers WHERE id = $1",
-                [trainerId]
-            ) as any;
-
-            setTrainerDetails(result);
-        }
-
-        x();
-    }, [trainerId]);
-
-
-
-
-
-    function clickOnSaveBtn() {
+    const clickOnSaveBtn = useCallback(function () {
         let isAnyValueChange: boolean = true;
 
 
@@ -131,7 +113,7 @@ export default function Trainer_Details_Page() {
             &&
             trainerDetails?.trainerType == getTrainerType
             &&
-            trainerDetails.notes == getNotes
+            trainerDetails?.notes == getNotes
             &&
             trainerDetails?.subscriptionName == getSubscriptionName.value
             &&
@@ -139,16 +121,16 @@ export default function Trainer_Details_Page() {
             &&
             trainerDetails?.price == getPrice.value
             &&
-            trainerDetails.debt == getDebt
+            trainerDetails?.debt == getDebt
             &&
             trainerDetails?.subscriptionStart == getSubscriptionStart
             &&
             trainerDetails?.subscriptionEnd == getSubscriptionEnd
             &&
             (
-                trainerDetails.subscriptionStatus == statusIsActive
+                trainerDetails?.subscriptionStatus == statusIsActive
                 ||
-                trainerDetails.subscriptionStatus == statusIsPending
+                trainerDetails?.subscriptionStatus == statusIsPending
             )
         ) {
             normalAlert({
@@ -212,9 +194,24 @@ export default function Trainer_Details_Page() {
         else if (trainerDetails?.subscriptionStatus == statusIsFinished) {
             saveChangesWhenSubscriptionIsFinished(obj);
         }
-    }
+    }, [
+        trainerDetails,
+        getFirstName,
+        getLastName,
+        getPhone,
+        getAddress,
+        getTrainerType,
+        getNotes,
+        getSubscriptionName,
+        getSessions,
+        getPrice,
+        getDebt,
+        getSubscriptionStart,
+        getSubscriptionEnd,
+        subscriptionStatus,
+    ]);
 
-    function clickOnBackBtn() {
+    const clickOnBackBtn = useCallback(function () {
         if (
             trainerDetails?.firstName != getFirstName.value
             ||
@@ -257,6 +254,45 @@ export default function Trainer_Details_Page() {
             const getPage = localStorage.getItem("thisPageWhenClickOnTrainer");
             navigate(getPage as string);
         }
+    }, [
+        trainerDetails,
+        getFirstName,
+        getLastName,
+        getPhone,
+        getAddress,
+        getTrainerType,
+        getNotes,
+        getSubscriptionName,
+        getSessions,
+        getPrice,
+        getDebt,
+        getSubscriptionStart,
+        getSubscriptionEnd,
+    ]);
+
+
+
+    async function systemForProfitesAndExpenses(subscriptionPrice: number) {
+        await systemForAddYearsMonthesDaysAndItems(
+            new Date(),
+            {
+                year: {
+                    profites: subscriptionPrice
+                },
+                month: {
+                    profites: subscriptionPrice
+                },
+                day: {
+                    profites: subscriptionPrice
+                },
+                item: {
+                    category: "profit",
+                    additionTime: new Date().toISOString(),
+                    title: "تجديد اشتراك لمتدرب",
+                    price: subscriptionPrice,
+                }
+            }
+        );
     }
 
     function findTheValueNotComplete() {
@@ -331,44 +367,6 @@ export default function Trainer_Details_Page() {
         });
     }
 
-    // This is for removing active sessions for a trainer when their subscription finishes by date.
-    async function removeActiveSessions() {
-        const db = await Database.load("sqlite:gym-app.db");
-        const sessionActive = await db.select(
-            `SELECT * FROM activeSessions WHERE linkWithTrainer = ? LIMIT 1;`,
-            [trainerDetails?.id]
-        ) as activeSession_Type[];
-
-
-
-        if (sessionActive.length > 0) {
-            deleteRowsInActiveSessionsTableToLinkedTheTrainerById(Number(trainerDetails?.id));
-        }
-    }
-
-    async function systemForProfitesAndExpenses(subscriptionPrice: number) {
-        await systemForAddYearsMonthesDaysAndItems(
-            new Date(),
-            {
-                year: {
-                    profites: subscriptionPrice
-                },
-                month: {
-                    profites: subscriptionPrice
-                },
-                day: {
-                    profites: subscriptionPrice
-                },
-                item: {
-                    category: "profit",
-                    additionTime: new Date().toISOString(),
-                    title: "تجديد اشتراك لمتدرب",
-                    price: subscriptionPrice,
-                }
-            }
-        );
-    }
-
     function saveChangesWhenSubscriptionIsFinished(trainer: trainer_Type) {
         if (
             todayDate.getTime() > new Date(trainer.subscriptionStart as any).getTime()
@@ -390,7 +388,6 @@ export default function Trainer_Details_Page() {
                 runFunctionAfterConfirm: function () {
                     const subscriptionPrice = Number(trainer?.price) - Number(trainer.debt);
                     systemForProfitesAndExpenses(subscriptionPrice);
-                    removeActiveSessions();
 
 
                     dispatch(changeStatusTheShowForSideBar("show"));
@@ -421,6 +418,88 @@ export default function Trainer_Details_Page() {
     }
 
 
+
+    useEffect(function () {
+        dispatch(changeStatusTheShowForSideBar("hidden"));
+    }, []);
+
+    // This for get trainer details from db using id
+    useEffect(function () {
+        async function x() {
+            const db = await Database.load("sqlite:gym-app.db");
+            const [result] = await db.select(
+                "SELECT * FROM trainers WHERE id = $1",
+                [trainerId]
+            ) as any;
+
+            setTrainerDetails(result);
+        }
+
+        x();
+    }, [trainerId]);
+
+    // Get old values
+    useEffect(function () {
+        if (!trainerDetails) return;
+
+        const firstName = trainerDetails.firstName ?? "";
+        const lastName = trainerDetails.lastName ?? "";
+        const phone = Number(trainerDetails.phone ?? 0);
+        const address = trainerDetails.address ?? "";
+        const notes = trainerDetails.notes ?? "";
+        const trainerType = trainerDetails.trainerType;
+        // ====================== //
+        const subscriptionName = trainerDetails.subscriptionName ?? "";
+        const sessions = Number(trainerDetails.sessionsCount ?? 0);
+        const price = Number(trainerDetails.price ?? 0);
+        const debt = Number(trainerDetails.debt ?? 0);
+        // ====================== //
+        const subscriptionStart = trainerDetails.subscriptionStart;
+        const subscriptionEnd = trainerDetails.subscriptionEnd;
+
+
+
+        setGetTrainerType(trainerType);
+        setGetFirstName({
+            value: firstName,
+            isTrue: true,
+        });
+
+        setGetLastName({
+            value: lastName,
+            isTrue: true,
+        });
+
+        setGetPhone({
+            value: phone,
+            isTrue: true,
+        });
+
+        setGetAddress({
+            value: address,
+            isTrue: true,
+        });
+        setGetNotes(notes);
+        // ====================== //
+        setGetSubscriptionName({
+            value: subscriptionName,
+            isTrue: true,
+        });
+
+        setGetSessions({
+            value: sessions,
+            isTrue: true,
+        });
+
+        setGetPrice({
+            value: price,
+            isTrue: true,
+        });
+        setGetDebt(debt);
+        // ====================== //
+        setGetSubscriptionStart(subscriptionStart);
+        setGetSubscriptionEnd(subscriptionEnd);
+    }, [trainerDetails]);
 
 
 
@@ -487,17 +566,17 @@ export default function Trainer_Details_Page() {
                 {
                     <SwiperSlide className="w-full!">
                         <Trainer_Info_Form
-                            trainerType={trainerDetails.trainerType as any}
-                            firstName={trainerDetails.firstName}
-                            lastName={trainerDetails.lastName}
-                            phone={trainerDetails.phone}
-                            address={trainerDetails.address}
-                            notes={trainerDetails.notes}
-                            onGetTrainerType={setGetTrainerType}
+                            trainerType={getTrainerType}
+                            firstName={getFirstName.value}
+                            lastName={getLastName.value}
+                            phone={getPhone.value}
+                            address={getAddress.value}
+                            notes={getNotes}
                             onGetFirstName={setGetFirstName}
                             onGetLastName={setGetLastName}
                             onGetPhone={setGetPhone}
                             onGetAddress={setGetAddress}
+                            onGetTrainerType={setGetTrainerType}
                             onGetNotes={setGetNotes}
                         />
                     </SwiperSlide>
@@ -506,15 +585,15 @@ export default function Trainer_Details_Page() {
                 {/* Subscription info & Date info*/}
                 <SwiperSlide className="pb-6 w-full!">
                     <Subscription_Info_Form
-                        subscriptionName={trainerDetails.subscriptionName}
-                        price={trainerDetails.price}
-                        sessions={trainerDetails.sessionsCount}
+                        subscriptionName={getSubscriptionName.value}
+                        price={getPrice.value}
+                        sessions={getSessions.value}
+                        debt={getDebt}
                         subscriptionStart={getSubscriptionStart}
                         subscriptionEnd={getSubscriptionEnd}
-                        debt={trainerDetails.debt}
                         onGetSubscriptionName={setGetSubscriptionName}
-                        onGetSessions={setGetSessions}
                         onGetPrice={setGetPrice}
+                        onGetSessions={setGetSessions}
                         onGetDebt={setGetDebt}
                     />
 

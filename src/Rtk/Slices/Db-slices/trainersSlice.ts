@@ -3,13 +3,11 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { updateAnyPropertyInRowInTrainersTable_Type } from "../../types";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const db = await Database.load("sqlite:gym-app.db");
-
-
-
 export const getAllRowsInTrainersTable = createAsyncThunk(
     "trainersSlice/getAllRowsInTrainersTable",
     async function () {
+        const db = await Database.load("sqlite:gym-app.db");
+
         return await db.select("SELECT * FROM trainers");
     }
 );
@@ -17,6 +15,8 @@ export const getAllRowsInTrainersTable = createAsyncThunk(
 export const addRowInTrainersTable = createAsyncThunk(
     "trainersSlice/addRowInTrainersTable",
     async function (data: trainer_Type) {
+        const db = await Database.load("sqlite:gym-app.db");
+
         const query = `
             INSERT INTO trainers (
                 trainerType, firstName, lastName, phone, address, notes,
@@ -53,6 +53,8 @@ export const addRowInTrainersTable = createAsyncThunk(
 export const updateAnyPropertyInRowInTrainersTable = createAsyncThunk(
     "trainersSlice/updateAnyPropertyInRowInTrainersTable",
     async function ({ id, values }: updateAnyPropertyInRowInTrainersTable_Type) {
+        const db = await Database.load("sqlite:gym-app.db");
+
         const keys = Object.keys(values);
 
         if (keys.length === 0) return;
@@ -77,6 +79,8 @@ export const updateAnyPropertyInRowInTrainersTable = createAsyncThunk(
 export const deleteRowInTrainersTableById = createAsyncThunk(
     "trainersSlice/deleteRowInTrainersTableById",
     async function (id: number) {
+        const db = await Database.load("sqlite:gym-app.db");
+
         const query = "DELETE FROM trainers WHERE id = ?";
 
         await db.execute(query, [id]);
@@ -87,6 +91,8 @@ export const deleteRowInTrainersTableById = createAsyncThunk(
 export const deleteAllRowsInTrainersTable = createAsyncThunk(
     "trainersSlice/deleteAllRowsInTrainersTable",
     async function () {
+        const db = await Database.load("sqlite:gym-app.db");
+
         await db.execute(`DELETE FROM trainers;`);
         return [];
     }

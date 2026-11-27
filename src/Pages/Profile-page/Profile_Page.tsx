@@ -3,7 +3,7 @@ import Box from "@/Global-components/Box/Box";
 import { accountesPagePath, logInPagePath, profilePagePath } from "@/Lib/constants";
 import { deleteRowInAccountsTableById, updateAnyPropertyInRowInAccountsTable } from "@/Rtk/Slices/Db-slices/accountsSlice";
 import { LogOut, Shell, Trash, UsersRound } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import { accounte_Type } from "../types";
 import Permissions from "../../Global-components/Permissions/Permissions";
@@ -54,6 +54,16 @@ export default function Profile_Page() {
 
     const navigate = useNavigate();
     const { accountId } = useParams();
+
+
+    const totalSessions = useMemo(function () {
+        if (!accountDetails) return;
+
+
+        const result = Math.trunc(Number(accountDetails?.numberOfActiveSessions));
+
+        return isNaN(result) ? "00" : result;
+    }, [accountDetails]);
 
 
 
@@ -338,7 +348,7 @@ export default function Profile_Page() {
                 icon={<Shell />}
                 styleIcon="bg-(--thirdColor)/10 text-(--thirdColor)"
                 title="عدد الحصص المفعله"
-                total={Math.trunc(Math.abs(accountDetails?.numberOfActiveSessions))}
+                total={totalSessions as any}
             />
 
             <Box

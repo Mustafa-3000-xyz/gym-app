@@ -3,13 +3,10 @@ import { updateِAnyPropertyInRowInYearsProfitsAndExpensesTable_Type } from "@/R
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Database from "@tauri-apps/plugin-sql";
 // ======================================= //
-const db = await Database.load("sqlite:gym-app.db");
-
-
-
 export const getAllRowsInYearsProfitsAndExpensesTable = createAsyncThunk(
     "yearsProfitsAndExpensesSlice/getAllRowsInYearsProfitsAndExpensesTable",
     async function () {
+        const db = await Database.load("sqlite:gym-app.db");
         return await db.select("SELECT * FROM yearsProfitsAndExpenses");
     }
 );
@@ -17,6 +14,7 @@ export const getAllRowsInYearsProfitsAndExpensesTable = createAsyncThunk(
 export const addRowInYearsProfitsAndExpensesTable = createAsyncThunk(
     "yearsProfitsAndExpensesSlice/addRowInYearsProfitsAndExpensesTable",
     async function (data: yearsProfitsAndExpenses_Type) {
+        const db = await Database.load("sqlite:gym-app.db");
         const query = `
             INSERT INTO yearsProfitsAndExpenses (
                 yearNumber, profitsTotal, expensesTotal, target
@@ -42,6 +40,7 @@ export const addRowInYearsProfitsAndExpensesTable = createAsyncThunk(
 export const updateِAnyPropertyInRowInYearsProfitsAndExpensesTable = createAsyncThunk(
     "yearsProfitsAndExpensesSlice/updateِAnyPropertyInRowInYearsProfitsAndExpensesTable",
     async function ({ id, values }: updateِAnyPropertyInRowInYearsProfitsAndExpensesTable_Type) {
+        const db = await Database.load("sqlite:gym-app.db");
         const keys = Object.keys(values);
 
         if (keys.length === 0) return;
