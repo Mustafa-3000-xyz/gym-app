@@ -24,19 +24,21 @@ function App() {
     const appWindow = getCurrentWindow();
 
     await appWindow.listen('tauri://close-requested', async () => {
-      if (isLoginAtom) {
-        await logOutFromOldAccount(isLoginAtom.id);
-      }
-
+      logOutFromOldAccount(isLoginAtom.id);
+      
       localStorage.setItem("theAccount", JSON.stringify(null));
-      await appWindow.destroy();
+
+      // I using setTimeout because i want the logOutFromOldAccount function work
+      setTimeout(async function(){
+        await appWindow.destroy();
+      }, 500);
     });
   }
 
 
   useEffect(function () {
     const filtetObj = {
-      arrange: fromOldToNew ,
+      arrange: fromOldToNew,
       subscriptionType: allSubscriptions
     };
 
